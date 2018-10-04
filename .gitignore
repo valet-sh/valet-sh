@@ -1,0 +1,7 @@
+.idea
+*.retry
+.install
+.version
+.upgrade
+.tmp
+/playbooks/backup

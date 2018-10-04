@@ -1,0 +1,100 @@
+---
+#
+# valet.sh | elasticsearch
+#
+# @author: "Johann Zelger"
+# @description: "Elasticsearch privisioning commands"
+
+- name: "install elasticsearch5"
+  hosts: local
+  gather_facts: True
+  vars:
+    install_java_filename: 'jdk-8u181-macosx-x64.dmg'
+    install_java_mount: 'JDK 8 Update 181'
+    install_elasticsearch_version: '5.6.12'
+    install_elasticsearch_config_version: '5'
+    install_elasticsearch_plugins:
+    - analysis-phonetic
+    - analysis-icu
+
+  tasks:
+
+  - name: Check if java is installed in version 8
+    raw: /usr/libexec/java_home -v 1.8
+    register: install_java_check
+    ignore_errors: yes
+
+  - name: Download Java for macOS
+    get_url:
+      url: "https://github.com/frekele/oracle-java/releases/download/8u181-b13/{{ install_java_filename }}"
+      dest: "/tmp/{{ install_java_filename }}"
+    when: install_java_check.rc != 0
+
+  - name: Mount Java DMG File
+    shell: "hdiutil attach /tmp/{{ install_java_filename }}"
+    when: install_java_check.rc != 0
+
+  - name: Install Java
+    become: True
+    shell: 'installer -pkg "/Volumes/{{ install_java_mount }}/{{ install_java_mount }}.pkg" -target /'
+    when: install_java_check.rc != 0
+
+  - name: Umount Java DMG File
+    shell: 'diskutil umount "/Volumes/{{ install_java_mount }}"'
+    when: install_java_check.rc != 0
+
+  - name: Delete Java DMG File
+    shell: "rm -rf /tmp/{{ install_java_filename }}"
+    when: install_java_check.rc != 0
+
+  - name: Ensure base directory exists
+    become: true
+    file:
+      path: "{{ install_base_path }}"
+      state: directory
+      owner: "{{ current_user }}"
+      group: "{{ current_group }}"
+      mode: 0755
+
+  - name: Check if elasticsearch installation exist
+    stat:
+      path: "{{ install_base_path }}/elasticsearch-{{ install_elasticsearch_version }}"
+    register: path_elasticsearch_obj
+
+  - name: Download Elasticsearch
+    get_url:
+      url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ install_elasticsearch_version }}.tar.gz"
+      dest: "/tmp/elasticsearch-{{ install_elasticsearch_version }}.tar.gz"
+    when: path_elasticsearch_obj.stat.exists == False
+
+  - name: Extract elasticsearch
+    shell: "tar -xzf /tmp/elasticsearch-{{ install_elasticsearch_version }}.tar.gz -C {{ install_base_path }}"
+    when: path_elasticsearch_obj.stat.exists == False
+
+  - name: Ensure elasticsearch config is deployed
+    template:
+      src: "elasticsearch/elasticsearch{{ install_elasticsearch_config_version }}.yml.j2"
+      dest: "{{ install_base_path }}/elasticsearch-{{ install_elasticsearch_version }}/config/elasticsearch.yml"
+      owner: "{{ current_user }}"
+      group: "{{ current_group }}"
+      mode: '0644'
+    when: path_elasticsearch_obj.stat.exists == False
+
+  - name: Ensure all elasticsearch plugins are installed
+    shell: "{{ install_base_path }}/elasticsearch-{{ install_elasticsearch_version }}/bin/elasticsearch-plugin install {{ item }}"
+    with_items: "{{ install_elasticsearch_plugins }}"
+    when: path_elasticsearch_obj.stat.exists == False
+
+  - name: Ensure elasticsearch launchdaemon is deployed
+    become: true
+    template:
+      src: "elasticsearch/sh.valet.elasticsearch.plist.j2"
+      dest: "{{ launch_daemons_path }}/sh.valet.elasticsearch-{{ install_elasticsearch_version }}.plist"
+      owner: root
+      group: staff
+      mode: '0644'
+    when: path_elasticsearch_obj.stat.exists == False
+
+  - name: Start elasticsearch
+    become: True
+    shell: "launchctl load -w {{ launch_daemons_path }}/sh.valet.elasticsearch-{{ install_elasticsearch_version }}.plist"
