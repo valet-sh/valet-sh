@@ -1,6 +1,6 @@
 ---
 
-install_base_path: '/usr/local/valet.sh'
+install_base_path: '/usr/local/valet-sh'
 
 launch_daemons_path: "/Library/LaunchDaemons"
 
