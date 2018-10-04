@@ -5,7 +5,7 @@ Installation
 ------------
 
 ```bash
-bash <(curl -s https://github.com/valet-sh/valet-sh/raw/master/valet.sh) install
+bash <(curl -s https://raw.githubusercontent.com/valet-sh/valet-sh/master/valet.sh) install
 ```
 
 Usage
