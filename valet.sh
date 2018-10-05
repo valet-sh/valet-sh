@@ -364,7 +364,8 @@ function main {
     case "${1--h}" in
         -h) print_usage;;
         -v) ;;
-        install|upgrade) install_upgrade;;
+        # install) install_upgrade;;
+        upgrade) install_upgrade;;
         # try to execute playbook based on command
         # ansible will throw an error if specific playbook does not exist
         *) execute_ansible_playbook $@;;

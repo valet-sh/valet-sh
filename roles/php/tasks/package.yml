@@ -1,0 +1,8 @@
+---
+
+- include_role:
+    name: package-manager
+  vars:
+    package:
+      name: php
+      version: 7.0

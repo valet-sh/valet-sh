@@ -1,0 +1,21 @@
+---
+
+- shell: sw_vers -productVersion
+  register: sw_vers
+
+# todo: remove hardcoded os_version when go live
+- set_fact:
+    #os_version: "{{ sw_vers.stdout }}"
+     os_version: "10.12"
+
+- name: ensure base directory exists
+  file:
+    path: "{{ base_dir }}"
+    state: directory
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: 0755
+  become: true
+
+#- include_role:
+#    name: gnutar

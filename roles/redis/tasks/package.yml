@@ -1,0 +1,8 @@
+---
+
+- include_role:
+    name: package-manager
+  vars:
+    package:
+      name: redis
+      version: 3.2

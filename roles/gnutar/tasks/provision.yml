@@ -1,0 +1,11 @@
+---
+
+- file:
+    src: "{{ package_candidate.base_dir }}/dist/bin/tar"
+    dest: "/usr/local/bin/tar"
+    state: link
+  become: true
+
+
+
+
