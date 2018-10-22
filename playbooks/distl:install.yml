@@ -3,11 +3,11 @@
 # valet.sh
 #
 # @author: "Johann Zelger"
-# @command: "install"
-# @description: "Install command"
+# @command: "distil:install"
+# @description: "Install distl packages"
 # @subcommands: ["all","redis"]
 
-- name: "install"
+- name: "distil:install"
   hosts: local
   gather_facts: True
 

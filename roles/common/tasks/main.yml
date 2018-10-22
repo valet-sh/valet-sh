@@ -3,7 +3,7 @@
 - shell: sw_vers -productVersion
   register: sw_vers
 
-# todo: remove hardcoded os_version when go live
+# todo: remove hardcoded os_version when introducing distil package-manager
 - set_fact:
     #os_version: "{{ sw_vers.stdout }}"
      os_version: "10.12"

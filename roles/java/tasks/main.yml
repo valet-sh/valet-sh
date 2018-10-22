@@ -1,0 +1,29 @@
+---
+
+- name: Check if java is installed in version 8
+  raw: /usr/libexec/java_home -v 1.8
+  register: install_java_check
+  ignore_errors: yes
+
+- name: Download Java for macOS
+  get_url:
+    url: "https://github.com/frekele/oracle-java/releases/download/8u181-b13/{{ install_java_filename }}"
+    dest: "/tmp/{{ install_java_filename }}"
+  when: install_java_check.rc != 0
+
+- name: Mount Java DMG File
+  shell: "hdiutil attach /tmp/{{ install_java_filename }}"
+  when: install_java_check.rc != 0
+
+- name: Install Java
+  become: True
+  shell: 'installer -pkg "/Volumes/{{ install_java_mount }}/{{ install_java_mount }}.pkg" -target /'
+  when: install_java_check.rc != 0
+
+- name: Umount Java DMG File
+  shell: 'diskutil umount "/Volumes/{{ install_java_mount }}"'
+  when: install_java_check.rc != 0
+
+- name: Delete Java DMG File
+  shell: "rm -rf /tmp/{{ install_java_filename }}"
+  when: install_java_check.rc != 0
