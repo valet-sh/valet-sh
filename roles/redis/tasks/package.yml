@@ -1,7 +1,7 @@
 ---
 
 - include_role:
-    name: package-manager
+    name: distil.package-manager
   vars:
     package:
       name: redis
