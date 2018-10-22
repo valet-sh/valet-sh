@@ -115,7 +115,7 @@ function prepare {
     # define variables
     APPLICATION_NAME="valet.sh"
     : "${APPLICATION_MODE:=production}"
-    APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://gitlab.ci.bdf.tdintern.de/bdf/ansible-dev.git"}
+    APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/valet-sh/valet-sh"}
     ANSIBLE_PLAYBOOKS_DIR="playbooks"
     SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
     INSTALL_DIR="$HOME/.${APPLICATION_NAME}";
