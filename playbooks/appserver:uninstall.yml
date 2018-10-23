@@ -1,0 +1,43 @@
+---
+#
+# valet.sh | appserver
+#
+# @author: "Tim Wagner"
+# @description: "appserver.io provisioning commands"
+#
+# @todo Do we need a temporary directory for the downloaded artefacts that needs to be cleaned-up after finishing the installation?
+# @todo How do we handle link/unlink the appserver distributions?
+# @todo Can playbooks be chained, e. g. play install > link?
+
+- name: "Uninstall appserver"
+  hosts: local
+  gather_facts: True
+  vars:
+    arg1: '1.1.15'
+
+  tasks:
+
+# 1. Query whether or not the reuested appserver.io installation has already been installed, if yes, stop processing
+
+  - name: Check if appserver.io {{ arg1 }} has already been installed
+    stat:
+      path: "{{ install_base_path }}/appserver-{{ arg1 }}"
+    register: path_appserver_obj
+
+# 2. Stop a running appserver.io instance
+
+  - import_tasks: appserver/stop.yml
+
+# 3. Remove the symlink to the installation target directory
+
+  - import_tasks: appserver/unlink.yml
+    vars:
+      version: "{{ arg1 }}"
+
+# 4. Finally, remove the installation target directory
+
+  - name: Remove the installation directory
+    file:
+      path: "{{ install_base_path }}/appserver-{{ arg1 }}"
+      state: absent
+    when: path_appserver_obj.stat.exists == True

@@ -1,0 +1,22 @@
+---
+#
+# valet.sh | appserver
+#
+# @author: "Tim Wagner"
+# @description: "appserver.io provisioning commands"
+
+# 1. Stop the running appserver.io process
+
+  - name: Get running appserver.io processes
+    shell: "ps -ef | grep -v grep | grep \"/opt/appserver/bin/appserver \" | awk '{print $2}'"
+    register: running_processes
+
+  - name: Stop symlinked appserver.io version
+    shell: "/opt/appserver/sbin/appserverctl stop"
+    when: running_processes.stdout_lines != ""
+
+  - wait_for:
+      path: "/proc/{{ item }}/status"
+      state: absent
+    with_items: "{{ running_processes.stdout_lines }}"
+    ignore_errors: yes

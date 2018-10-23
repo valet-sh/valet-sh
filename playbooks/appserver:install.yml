@@ -1,0 +1,121 @@
+---
+#
+# valet.sh | appserver
+#
+# @author: "Tim Wagner"
+# @description: "appserver.io provisioning commands"
+#
+# @todo Do we need a temporary directory for the downloaded artefacts that needs to be cleaned-up after finishing the installation?
+
+- name: "Install appserver"
+  hosts: local
+  gather_facts: True
+  vars:
+    arg1: '1.1.15'
+    install_appserver_download_src_baseurl: 'https://github.com/appserver-io/appserver/archive'
+    install_appserver_download_runtime_baseurl: 'http://builds.appserver.io/mac'
+    install_appserver_dist_repo: 'https://github.com/appserver-io-dist/osx.git'
+    install_appserver_runtime_version: '1.1.9-118'
+
+  tasks:
+
+# 1. Query whether or not the reuested appserver.io installation has already been installed, if yes, stop processing
+
+  - name: Check if appserver.io {{ arg1 }} has already been installed
+    stat:
+      path: "{{ install_base_path }}/appserver-{{ arg1 }}"
+    register: path_appserver_obj
+
+# 2. Create the installation target directory
+
+  - name: Ensure base directory for appserver.io {{ arg1 }} already exists
+    file:
+      path: "{{ install_base_path }}/appserver-{{ arg1 }}"
+      state: directory
+      owner: "{{ current_user }}"
+      group: "{{ current_group }}"
+      mode: 0755
+    when: path_appserver_obj.stat.exists == False
+
+# 3. Download/Clone the runtime, the sources and the dist repository
+
+  - name: Download appserver.io {{ install_appserver_runtime_version }} runtime
+    get_url:
+      url: "{{ install_appserver_download_runtime_baseurl }}/appserver-runtime_{{ install_appserver_runtime_version }}_x86_64.tar.gz"
+      dest: "/tmp/appserver-runtime_{{ install_appserver_runtime_version }}_x86_64.tar.gz"
+    when: path_appserver_obj.stat.exists == False
+
+  - name: Download appserver.io {{ arg1 }} sources
+    get_url:
+      url: "{{ install_appserver_download_src_baseurl }}/{{ arg1 }}.tar.gz"
+      dest: "/tmp/{{ arg1 }}.tar.gz"
+    when: path_appserver_obj.stat.exists == False
+
+  - name: Clone appserver.io dist repository
+    shell: "git clone {{ install_appserver_dist_repo }}"
+    args:
+      chdir: /tmp
+      creates: /tmp/osx/src
+    when: path_appserver_obj.stat.exists == False
+
+# 4. Extract the runtime and sources, copy all files to the installation target directory
+
+  - name: Extract appserver.io {{ arg1 }} source files
+    shell: "tar -xzf  /tmp/{{ arg1 }}.tar.gz -C /tmp"
+    when: path_appserver_obj.stat.exists == False
+
+  - name: Move appserverio {{ arg1 }} source files to destination
+    shell: "mv -f /tmp/appserver-{{ arg1 }} {{ install_base_path }}"
+    when: path_appserver_obj.stat.exists == False
+
+  - name: Extract appserver.io {{ install_appserver_runtime_version }} runtime
+    shell: "tar -xzf  /tmp/appserver-runtime_{{ install_appserver_runtime_version }}_x86_64.tar.gz -C /tmp"
+    when: path_appserver_obj.stat.exists == False
+
+  - name: Move appserver.io {{ install_appserver_runtime_version }} runtime files to destination
+    shell: "cp -R /tmp/appserver/* {{ install_base_path }}/appserver-{{ arg1 }}/"
+    when: path_appserver_obj.stat.exists == False
+
+  - name: Move distribution files to destination
+    shell: "cp -R /tmp/osx/src/source/src/opt/appserver/* {{ install_base_path }}/appserver-{{ arg1 }}/"
+    when: path_appserver_obj.stat.exists == False
+
+# 5. Stop a running appserver.io instance
+
+  - import_tasks: appserver/stop.yml
+
+# 6. Create the symlink to /opt/appserver, because binary has been built based on this directory only
+
+  - import_tasks: appserver/unlink.yml
+    vars:
+      version: "{{ arg1 }}"
+
+  - import_tasks: appserver/link.yml
+    vars:
+      version: "{{ arg1 }}"
+
+# 7. Install the Composer dependencies after everything has been prepared
+
+  - name: Install composer dependencies
+    shell: "bin/composer install --prefer-dist --no-dev --no-interaction --optimize-autoloader"
+    args:
+      chdir: /opt/appserver
+    when: path_appserver_obj.stat.exists == False
+
+# 8. Customize the Configuration because we don't require root privileges to start appserver.io nor want we to run appserver.io as root user
+
+  - name: Update user in appserver configuration
+    shell: "sed -i -e \"s/!= 0/== 0/g\" sbin/appserverctl"
+    args:
+      chdir: /opt/appserver
+    when: path_appserver_obj.stat.exists == False
+
+  - name: Remove root only restriction from sbin files
+    shell: "sed -i -e \"s/_www/{{ current_user }}/g\" etc/appserver/appserver.xml"
+    args:
+      chdir: /opt/appserver
+    when: path_appserver_obj.stat.exists == False
+
+# 9. Finally, start the installed appserver.io instance
+
+  - import_tasks: appserver/start.yml

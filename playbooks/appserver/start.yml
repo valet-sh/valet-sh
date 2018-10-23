@@ -1,0 +1,11 @@
+---
+#
+# valet.sh | appserver
+#
+# @author: "Tim Wagner"
+# @description: "appserver.io provisioning commands"
+
+# 1. Remove the symlink to /opt/appserver
+
+  - name: Start symlinked appserver.io version
+    shell: "/opt/appserver/sbin/appserverctl start"

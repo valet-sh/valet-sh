@@ -1,0 +1,23 @@
+---
+#
+# valet.sh | appserver
+#
+# @author: "Tim Wagner"
+# @description: "appserver.io provisioning commands"
+
+# 1. Remove the symlink to /opt/appserver
+
+- name: Remove symbolic link
+  file:
+    path: /opt/appserver
+    state: absent
+  when: path_appserver_obj.stat.exists == True
+
+# 2. Symlink the version passed as commandline argument to /opt/appserver
+
+- name: Create new symbolic link
+  file:
+    src: "{{ install_base_path }}/appserver-{{ version }}"
+    dest: /opt/appserver
+    state: link
+  when: path_appserver_obj.stat.exists == False

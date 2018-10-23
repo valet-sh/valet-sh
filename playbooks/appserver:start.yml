@@ -1,0 +1,16 @@
+---
+#
+# valet.sh | appserver
+#
+# @author: "Tim Wagner"
+# @description: "appserver.io provisioning commands"
+
+- name: "Start appserver.io"
+  hosts: local
+  gather_facts: True
+
+  tasks:
+
+# 1. Query whether or not the reuested appserver.io installation has already been installed, if yes, stop processing
+
+  - import_tasks: appserver/start.yml

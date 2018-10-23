@@ -1,0 +1,29 @@
+---
+#
+# valet.sh | appserver
+#
+# @author: "Tim Wagner"
+# @description: "appserver.io provisioning commands"
+
+- name: "Link appserver version {{ arg1 }}"
+  hosts: local
+  gather_facts: True
+  vars:
+    arg1: '1.1.15'
+
+  tasks:
+
+# 1. Query whether or not the reuested appserver.io installation has already been installed, if yes, stop processing
+
+  - name: Query whether or not the appserver.io version to symlink exists, or not
+    stat:
+      path: "{{ install_base_path }}/appserver-{{ version }}"
+    register: path_appserver_obj
+
+  - import_tasks: appserver/unlink.yml
+    vars:
+      version: "{{ arg1 }}"
+
+  - import_tasks: appserver/link.yml
+    vars:
+      version: "{{ arg1 }}"
