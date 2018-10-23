@@ -1,2 +1,7 @@
 ---
-# @description: "Upgrades valetng to the latest version of the current major"
+#
+# valet.sh
+#
+# @author: "Johann Zelger"
+# @command: "upgrade"
+# @description: "Upgrades valet.sh to the latest version of current major version"

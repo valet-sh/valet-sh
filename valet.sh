@@ -19,11 +19,11 @@
 function log { 
     if [ "$2" == "error" ]; then
         printf "\e[1mERROR: \033[1;31m$1\033[0m\n";
-        exit 1;
     else
         printf "\033[1;32m$1\033[0m\n";
     fi
 }
+
 
 #######################################
 # Validates version against semver
@@ -37,8 +37,8 @@ function log {
 function version_validate {
     local version=$1
     if [[ "$version" =~ $SEMVER_REGEX ]]; then
-        if [ "$#" -eq "2" ]; then       
-            local major=${BASH_REMATCH[1]}         
+        if [ "$#" -eq "2" ]; then
+            local major=${BASH_REMATCH[1]}
             local minor=${BASH_REMATCH[2]}
             local patch=${BASH_REMATCH[3]}
             local prere=${BASH_REMATCH[4]}
@@ -110,11 +110,12 @@ function version_compare {
 #   None
 #######################################
 function prepare {
+    APPLICATION_RETURN_CODE=0
     APPLICATION_START_TIME=$(ruby -e 'puts Time.now.to_f');
     # define variables
     APPLICATION_NAME="valet.sh"
     : "${APPLICATION_MODE:=production}"
-    APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://gitlab.ci.bdf.tdintern.de/bdf/ansible-dev.git"}
+    APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/valet-sh/valet-sh"}
     ANSIBLE_PLAYBOOKS_DIR="playbooks"
     SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
     INSTALL_DIR="$HOME/.${APPLICATION_NAME}";
@@ -132,10 +133,10 @@ function prepare {
     if [ -d $BASE_DIR/.git ]; then
         # get the current version from git
         APPLICATION_VERSION=$(git --git-dir=${BASE_DIR}/.git --work-tree=${BASE_DIR} describe --tags)
+        # set cwd to base dir
+        cd $BASE_DIR
     fi
 
-    # set cwd to base dir
-    cd $BASE_DIR
 }
 
 #######################################
@@ -182,7 +183,7 @@ function install_upgrade {
     RELEASE_TAG=$APPLICATION_VERSION
 
     if [ $APPLICATION_MODE = "production" ]; then
-        # create tmp directory for cloning valet.sh (aka. ansible-dev)
+        # create tmp directory for cloning valet.sh
         local tmp_dir=$(mktemp -d)
         local src_dir=$tmp_dir
 
@@ -217,7 +218,7 @@ function install_upgrade {
         # install
         cp -r $src_dir $INSTALL_DIR
         # create symlink to default included PATH
-        sudo ln -s $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
+        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
         # output log
         log "Installed version $RELEASE_TAG"
     else
@@ -234,6 +235,9 @@ function install_upgrade {
         # checkout target release tag
         git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} checkout --quiet $RELEASE_TAG
     fi
+
+    # change directory to install dir
+    cd $INSTALL_DIR
 
     # clean tmp dir
     rm -rf $tmp_dir
@@ -286,6 +290,10 @@ function print_footer {
     printf "  Application mode: \e[1m%s\033[0m\n" $APPLICATION_MODE
     printf "\e[34m"
     printf "  Execution time: \e[1m%f sec.\033[0m\n" $APPLICATION_EXECUTION_TIME
+    printf "\e[34m"
+    printf "  Logfile: \e[1m%s\033[0m\n" $LOG_FILE
+    printf "\e[34m"
+    printf "  Exitcode: \e[1m%s\033[0m\n" $APPLICATION_RETURN_CODE
     printf "\e[34m\033[0m"
     printf "\n"
     printf "\n"
@@ -327,9 +335,48 @@ function print_usage {
 }
 
 #######################################
-# Executes command via ansible playbook 
+# Prepares logfile
+# Globals:
+#   LOG_PATH
+#   LOG_FILE
+# Arguments:
+#   Command
+# Returns:
+#   None
+#######################################
+function prepare_logfile {
+    # define log file
+    LOG_PATH=${BASE_DIR}/log
+    if [ ! -d $LOG_PATH ]; then
+        mkdir $LOG_PATH
+    fi
+    LOG_FILE="$( mktemp ${LOG_PATH}/XXXXXXXXXXXXX ).log"
+}
+
+#######################################
+# Cleanup logfiles
+# Globals:
+#   LOG_PATH
+# Arguments:
+#   Command
+# Returns:
+#   None
+#######################################
+function cleanup_logfiles {
+    # cleanup log directory and keep last 10 execution logs
+    if [ -d $LOG_PATH ]; then
+        cd $LOG_PATH
+        cleanup_logfiles=$(ls -t1 | tail -n +11)
+        test "$cleanup_logfiles" && rm $cleanup_logfiles
+        cd ..
+    fi
+}
+
+#######################################
+# Executes command via ansible playbook
 # Globals:
 #   ANSIBLE_PLAYBOOKS_DIR
+#   APPLICATION_RETURN_CODE
 # Arguments:
 #   Command
 # Returns:
@@ -339,6 +386,7 @@ function execute_ansible_playbook {
     local playbook="$ANSIBLE_PLAYBOOKS_DIR/$1.yml"
     local option_extra_vars="--extra-vars"
     local extra_vars=""
+    local ansible_ret_code=0
 
     # prepare extra vars if needed
     if [ "$#" -gt 1 ]; then
@@ -347,20 +395,48 @@ function execute_ansible_playbook {
 
     # check if requested playbook yml exist and execute it
     if [ -f "$playbook" ]; then
+
+        prepare_logfile
+
+        log "Executing $1..."
+
         # check if extra vars are given
         if [ -n "$extra_vars" ]; then
-             ansible-playbook $playbook $option_extra_vars "$extra_vars"
+            ansible-playbook $playbook $option_extra_vars "$extra_vars" &> $LOG_FILE || ansible_ret_code=$? && true
         else
-            ansible-playbook $playbook
+            ansible-playbook $playbook &> $LOG_FILE || ansible_ret_code=$? && true
         fi
+
+        cleanup_logfiles
+
     else
         log "Command $1 not available" error
-        exit 1
+    fi
+
+    # check if exit code was not 0
+    if [ $ansible_ret_code != 0 ]; then
+        log "Failed to execute command: '$1'" error
+        # set global ret code like ansible ret code
+        APPLICATION_RETURN_CODE=$ansible_ret_code
     fi
 }
 
 #######################################
-# Main 
+# Shutdown cli client script
+# Globals:
+#   APPLICATION_RETURN_CODE
+# Arguments:
+#   Command
+# Returns:
+#   None
+#######################################
+function shutdown {
+    # exit with given return code
+    exit $APPLICATION_RETURN_CODE
+}
+
+#######################################
+# Main
 # Globals:
 #   None
 # Arguments:
@@ -372,6 +448,7 @@ function execute_ansible_playbook {
 function main {
     prepare
     print_header
+
     case "${1--h}" in
         -h) print_usage;;
         -v) ;;
@@ -379,8 +456,10 @@ function main {
         # try to execute playbook based on command
         # ansible will throw an error if specific playbook does not exist
         *) execute_ansible_playbook $@;;
-     esac
-     print_footer
+    esac
+
+    print_footer
+    shutdown
 }
 
 # start console tool with command line args

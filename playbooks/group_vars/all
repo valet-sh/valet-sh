@@ -1,8 +1,0 @@
----
-
-install_base_path: '/usr/local/valet.sh'
-
-launch_daemons_path: "/Library/LaunchDaemons"
-
-current_user: "{{ lookup('env','USER') }}"
-current_group: staff
