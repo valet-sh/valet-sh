@@ -133,10 +133,10 @@ function prepare {
     if [ -d $BASE_DIR/.git ]; then
         # get the current version from git
         APPLICATION_VERSION=$(git --git-dir=${BASE_DIR}/.git --work-tree=${BASE_DIR} describe --tags)
+        # set cwd to base dir
+        cd $BASE_DIR
     fi
 
-    # set cwd to base dir
-    cd $BASE_DIR
 }
 
 #######################################
@@ -218,7 +218,7 @@ function install_upgrade {
         # install
         cp -r $src_dir $INSTALL_DIR
         # create symlink to default included PATH
-        sudo ln -s $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
+        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
         # output log
         log "Installed version $RELEASE_TAG"
     else
@@ -235,6 +235,9 @@ function install_upgrade {
         # checkout target release tag
         git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} checkout --quiet $RELEASE_TAG
     fi
+
+    # change directory to install dir
+    cd $INSTALL_DIR
 
     # clean tmp dir
     rm -rf $tmp_dir
