@@ -1,0 +1,23 @@
+---
+#
+# valet.sh
+#
+# @author: "Johann Zelger"
+# @command: "tests"
+# @description: "test command"
+
+- name: "tests"
+  hosts: local
+  gather_facts: True
+
+  roles:
+    - role: common
+
+  tasks:
+
+  - debug:
+      msg: "{{ current_user }}"
+
+
+
+

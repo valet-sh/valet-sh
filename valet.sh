@@ -5,6 +5,54 @@
 # Copyright: (C) 2018 TechDivision GmbH - All Rights Reserved
 # Author: Johann Zelger <j.zelger@techdivision.com>
 
+#######################################
+# Toggles spinner animation
+# Globals:
+#   SPINNER_PID
+# Arguments:
+#   Message
+# Returns:
+#   None
+#######################################
+spinner_toogle() {
+
+    # Start spinner background function
+    function _spinner_start() {
+        local list=( $(echo -e '\xe2\xa0\x8b')
+                     $(echo -e '\xe2\xa0\x99')
+                     $(echo -e '\xe2\xa0\xb9')
+                     $(echo -e '\xe2\xa0\xb8')
+                     $(echo -e '\xe2\xa0\xbc')
+                     $(echo -e '\xe2\xa0\xb4')
+                     $(echo -e '\xe2\xa0\xa6')
+                     $(echo -e '\xe2\xa0\xa7')
+                     $(echo -e '\xe2\xa0\x87')
+                     $(echo -e '\xe2\xa0\x8f') )
+        local i=0
+        tput sc
+        while [ 1 ]; do
+            printf "\e[32m%s\e[39m $1 " "${list[i]}"
+            i=$(($i+1))
+            i=$(($i%10))
+            sleep 0.1
+            tput rc
+        done
+    }
+
+    # check if spinner pid exist
+    if [[ "$SPINNER_PID" -lt 1 ]]; then
+        tput sc
+        _spinner_start "$1" &
+        SPINNER_PID=$!
+    else
+        kill $SPINNER_PID > /dev/null 2>&1
+        wait $! 2>/dev/null
+        SPINNER_PID=0
+        tput rc
+    fi
+
+}
+
 
 #######################################
 # Logs messages in given type
@@ -16,12 +64,12 @@
 # Returns:
 #   None
 #######################################
-function log { 
-    if [ "$2" == "error" ]; then
-        printf "\e[1mERROR: \033[1;31m$1\033[0m\n";
-    else
-        printf "\033[1;32m$1\033[0m\n";
-    fi
+function log {
+    case "${1--h}" in
+        error) printf "\033[1;31m✘ %s\033[0m\n" "$2";;
+        success) printf "\033[1;32m✔ %s\033[0m\n" "$2";;
+        *) printf "%s\n" "$2";;
+    esac
 }
 
 
@@ -48,7 +96,7 @@ function version_validate {
             echo "$version"
         fi
     else
-        log "Version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information." error
+        log error "Version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information." error
     fi
 }
 
@@ -126,7 +174,6 @@ function prepare {
     # use current bash source script dir as base_dir
     BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
 
-    # install os deps
     install_deps
 
     # check if git dir is available
@@ -151,17 +198,22 @@ function prepare {
 function install_deps {
     # check if macOS command line tools are available by checking git bin
     if [ ! -f /Library/Developer/CommandLineTools/usr/bin/git ]; then
+        spinner_toogle "Installing CommandLineTools \e[32m$command\e[39m"
         # if git command is not available, install command line tools
         # create macOS flag file, that CommandLineTools can be installed on demand
-        touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress;
+        touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
         # install command line tools
-        softwareupdate -i "$(softwareupdate -l | grep -B 1 -E 'Command Line Tools' | awk -F'*' '/^ +\*/ {print $2}' | sed 's/^ *//' | tail -n1)";
+        SOFTWARE_UPDATE_NAME=$(softwareupdate -l | grep -B 1 -E "Command Line Tools.*$(sw_vers -productVersion)" | awk -F'*' '/^ +\*/ {print $2}' | sed 's/^ *//' | tail -n1)
+        softwareupdate -i "$SOFTWARE_UPDATE_NAME"
+        spinner_toogle
     fi
     # check if ansible command is available
     if [ ! -x "$(command -v ansible)" ]; then
+        spinner_toogle "Installing Ansible \e[32m$command\e[39m"
         # if ansible is not available, install pip and ansible
         sudo easy_install pip;
         sudo pip install -Iq ansible;
+        spinner_toogle
     fi
 }
 
@@ -220,14 +272,14 @@ function install_upgrade {
         # create symlink to default included PATH
         sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
         # output log
-        log "Installed version $RELEASE_TAG"
+        log success "Installed version $RELEASE_TAG"
     else
         CURRENT_INSTALLED_VERSION=$(git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} describe --tags)
         # compare application version to release tag version
         if [ $(version_compare ${CURRENT_INSTALLED_VERSION} $RELEASE_TAG) -gt 0 ]; then
-            log "Already on the latest version $RELEASE_TAG"
+            log error "Already on the latest version $RELEASE_TAG"
         else
-            log "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
+            log success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
         fi
 
         # update tags
@@ -280,6 +332,7 @@ function print_footer {
     APPLICATION_END_TIME=$(ruby -e 'puts Time.now.to_f')
     APPLICATION_EXECUTION_TIME=$(echo "$APPLICATION_END_TIME - $APPLICATION_START_TIME" | bc);
 
+    printf "\n"
     printf "\e[34m"
     printf "\n"
     printf "\e[1mDebug information:\033[0m"
@@ -331,7 +384,6 @@ function print_usage {
         local cmd_description="Installs valet.sh"
         printf "  \e[32m%s %s \e[39m${cmd_description}\n" $cmd_name "${cmd_output_space:${#cmd_name}}"
     fi
-    printf "\n"
 }
 
 #######################################
@@ -383,42 +435,54 @@ function cleanup_logfiles {
 #   None
 #######################################
 function execute_ansible_playbook {
-    local playbook="$ANSIBLE_PLAYBOOKS_DIR/$1.yml"
-    local option_extra_vars="--extra-vars"
-    local extra_vars=""
+    local command=$1
+    local ansible_playbook_file="$ANSIBLE_PLAYBOOKS_DIR/$command.yml"
+    local parsed_args=""
     local ansible_ret_code=0
 
-    # prepare extra vars if needed
+    # prepare cli arguments if given and transform them to ansible extra vars format
     if [ "$#" -gt 1 ]; then
-        for i in `seq 2 $#`; do extra_vars+="arg$((i-1))=${!i} "; done
+        for i in `seq 2 $#`; do  if [ $i -gt 2 ]; then parsed_args+=,; fi; parsed_args+="\"${!i}\""; done
     fi
 
-    # check if requested playbook yml exist and execute it
-    if [ -f "$playbook" ]; then
+    # define complete extra vars object
+    read -r -d '' ansible_extra_vars << EOM
+--extra-vars='{
+    "cli": {
+        "name": ${APPLICATION_NAME},
+        "mode": ${APPLICATION_MODE},
+        "version": ${APPLICATION_VERSION},
+        "args": [${parsed_args}]
+    }
+}'
+EOM
 
+    # check if requested playbook yml exist and execute it
+    if [ -f "$ansible_playbook_file" ]; then
         prepare_logfile
 
-        log "Executing $1..."
+        spinner_toogle "Running \e[32m$command\e[39m"
+        bash -c "ansible-playbook ${ansible_playbook_file} ${ansible_extra_vars}" &> ${LOG_FILE} || ansible_ret_code=$? && true
+        spinner_toogle
 
-        # check if extra vars are given
-        if [ -n "$extra_vars" ]; then
-            ansible-playbook $playbook $option_extra_vars "$extra_vars" &> $LOG_FILE || ansible_ret_code=$? && true
-        else
-            ansible-playbook $playbook &> $LOG_FILE || ansible_ret_code=$? && true
-        fi
+        # log exact command line as typed in shell with user and path info
+        echo "$PWD $USER: $0 $*" >> ${LOG_FILE}
 
         cleanup_logfiles
 
+        # check if exit code was not 0
+        if [ $ansible_ret_code != 0 ]; then
+            log error
+        else
+            log success
+        fi
+
     else
-        log "Command $1 not available" error
+        log error "Command '$command' not available"
     fi
 
-    # check if exit code was not 0
-    if [ $ansible_ret_code != 0 ]; then
-        log "Failed to execute command: '$1'" error
-        # set global ret code like ansible ret code
-        APPLICATION_RETURN_CODE=$ansible_ret_code
-    fi
+    # set global ret code like ansible ret code
+    APPLICATION_RETURN_CODE=$ansible_ret_code
 }
 
 #######################################
@@ -455,7 +519,7 @@ function main {
         install|upgrade) install_upgrade;;
         # try to execute playbook based on command
         # ansible will throw an error if specific playbook does not exist
-        *) execute_ansible_playbook $@;;
+        *) execute_ansible_playbook "$@";;
     esac
 
     print_footer
@@ -463,4 +527,5 @@ function main {
 }
 
 # start console tool with command line args
-main $@
+main "$@"
+
