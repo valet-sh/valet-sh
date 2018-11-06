@@ -260,8 +260,8 @@ function install_upgrade {
             fi
         done
 
-        # checkout latest release tag in given major version
-        git checkout --quiet $RELEASE_TAG
+        # force checkout latest release tag in given major version
+        git checkout --quiet --force $RELEASE_TAG
     else
         # take base dir for developer installation
         src_dir=$BASE_DIR
@@ -287,7 +287,7 @@ function install_upgrade {
         # update tags
         git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} fetch --tags --quiet
         # checkout target release tag
-        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} checkout --quiet $RELEASE_TAG
+        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} checkout --force --quiet $RELEASE_TAG
     fi
 
     # change directory to install dir
