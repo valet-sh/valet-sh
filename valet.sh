@@ -30,6 +30,8 @@ spinner_toogle() {
                      $(echo -e '\xe2\xa0\x8f') )
         local i=0
         tput sc
+        # wait for .inprogress flag file to be created by ansible callback plugin
+        while [ ! -f $BASE_DIR/.inprogress ]; do sleep 0.5; done
         while [ 1 ]; do
             printf "\e[32m%s\e[39m $1 " "${list[i]}"
             i=$(($i+1))
@@ -173,6 +175,9 @@ function prepare {
 
     # use current bash source script dir as base_dir
     BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
+
+    # aks for sudo password to be cached in macOS sudo timeout manner
+    sudo true
 
     install_deps
 

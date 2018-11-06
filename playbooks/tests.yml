@@ -1,3 +1,4 @@
+#!/usr/bin/env ansible-playbook
 ---
 #
 # valet.sh
@@ -17,7 +18,3 @@
 
   - debug:
       msg: "{{ current_user }}"
-
-
-
-

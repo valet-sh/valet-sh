@@ -2,6 +2,7 @@
 
 install_base_path: '/usr/local/valet-sh'
 base_dir: '/usr/local/valet-sh'
+working_dir: "{{ lookup('env','PWD') }}"
 
 launch_daemons_path: "/Library/LaunchDaemons"
 

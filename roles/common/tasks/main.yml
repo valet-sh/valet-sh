@@ -1,5 +1,9 @@
 ---
 
+# check if sudo password works
+- command: "true"
+  become: True
+
 - shell: sw_vers -productVersion
   register: sw_vers
 
