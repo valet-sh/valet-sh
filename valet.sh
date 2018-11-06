@@ -176,9 +176,6 @@ function prepare {
     # use current bash source script dir as base_dir
     BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
 
-    # aks for sudo password to be cached in macOS sudo timeout manner
-    sudo true
-
     install_deps
 
     # check if git dir is available
