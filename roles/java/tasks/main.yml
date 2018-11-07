@@ -27,3 +27,11 @@
 - name: Delete Java DMG File
   shell: "rm -rf /tmp/{{ install_java_filename }}"
   when: install_java_check.rc != 0
+
+- name: Get Java Home
+  shell: "/usr/libexec/java_home -v 1.8"
+  register: java_home_libexec
+
+- name: Set java_home fact
+  set_fact:
+    java_home: "{{ java_home_libexec.stdout }}"

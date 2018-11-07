@@ -17,4 +17,4 @@
   tasks:
 
   - debug:
-      msg: "{{ current_user }}"
+      msg: "{{ cli }}"
