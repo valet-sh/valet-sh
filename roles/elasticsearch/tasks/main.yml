@@ -38,7 +38,12 @@
   with_items: "{{ install_elasticsearch_plugins }}"
   when: path_elasticsearch_obj.stat.exists == False
 
-- name: Ensure elasticsearch launchdaemon is deployed
+- name: Try to stop an existing elasticsearch
+  become: True
+  shell: "launchctl unload -w {{ launch_daemons_path }}/sh.valet.elasticsearch-{{ install_elasticsearch_version }}.plist"
+  ignore_errors: True
+
+- name: Provision elasticsearch macOS launchdaemon
   become: true
   template:
     src: "elasticsearch/sh.valet.elasticsearch.plist.j2"
@@ -46,7 +51,6 @@
     owner: root
     group: staff
     mode: '0644'
-  when: path_elasticsearch_obj.stat.exists == False
 
 - name: Start elasticsearch
   become: True

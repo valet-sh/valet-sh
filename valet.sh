@@ -207,6 +207,8 @@ function install_deps {
         # install command line tools
         SOFTWARE_UPDATE_NAME=$(softwareupdate -l | grep -B 1 -E "Command Line Tools.*$(sw_vers -productVersion)" | awk -F'*' '/^ +\*/ {print $2}' | sed 's/^ *//' | tail -n1)
         softwareupdate -i "$SOFTWARE_UPDATE_NAME"
+        # cleanup in-progress file for macos softwareupdate util
+        rm -rf /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
         spinner_toogle
     fi
     # check if ansible command is available
