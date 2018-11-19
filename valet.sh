@@ -444,7 +444,6 @@ function print_footer() {
     printf "  Exitcode: \e[1m%s\033[0m\n" $APPLICATION_RETURN_CODE
     printf "\e[34m\033[0m"
     printf "\n"
-    printf "\n"
 }
 
 #######################################
