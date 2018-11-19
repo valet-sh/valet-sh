@@ -226,7 +226,7 @@ function init() {
     APPLICATION_GIT_REPOSITORY=${APPLICATION_GIT_REPOSITORY:="valet-sh"}
     APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
     APPLICATION_GIT_API_URL=${APPLICATION_GIT_API_URL:="https://api.github.com/repos/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
-    APPLICATION_GIT_API_TOKEN="eeae1f37cd23eb4a727e8cf369a2108861d3721b"
+    APPLICATION_GIT_API_TOKEN="03bc08e00d48ca9d4c4663aea2338cabad85df0e"
     # define default playbook dir
     ANSIBLE_PLAYBOOKS_DIR="playbooks"
     # define semver regular expression for checkout valid versions on upgrade
