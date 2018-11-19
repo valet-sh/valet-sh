@@ -50,6 +50,7 @@ spinner_toogle() {
         kill $SPINNER_PID > /dev/null 2>&1
         wait $! 2>/dev/null
         SPINNER_PID=0
+        rm -rf $BASE_DIR/.inprogress
         tput rc
     fi
 
@@ -66,7 +67,7 @@ spinner_toogle() {
 # Returns:
 #   None
 #######################################
-function log {
+function log() {
     case "${1--h}" in
         error) printf "\033[1;31m✘ %s\033[0m\n" "$2";;
         success) printf "\033[1;32m✔ %s\033[0m\n" "$2";;
@@ -74,6 +75,20 @@ function log {
     esac
 }
 
+
+#######################################
+# Returns the latest release version tag name
+# Globals:
+#   None
+# Arguments:
+#   None
+# Returns:
+#   String  The tag name
+#######################################
+get_latest_release_version() {
+    # get latest release from GitHub api
+    curl --silent -H "Authorization: token ${APPLICATION_GIT_API_TOKEN}" "${APPLICATION_GIT_API_URL}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+}
 
 #######################################
 # Validates version against semver
@@ -84,7 +99,7 @@ function log {
 # Returns:
 #   None
 #######################################
-function version_validate {
+function version_validate() {
     local version=$1
     if [[ "$version" =~ $SEMVER_REGEX ]]; then
         if [ "$#" -eq "2" ]; then
@@ -114,7 +129,7 @@ function version_validate {
 #   0   if version1 == version2
 #   1   if version1 > version2
 #######################################
-function version_compare {
+function version_compare() {
     version_validate "$1" V
     version_validate "$2" V_
 
@@ -143,31 +158,80 @@ function version_compare {
 }
 
 #######################################
+# Returns the latest release version tag name
+# Globals:
+#   None
+# Arguments:
+#   None
+# Returns:
+#   String  The tag name
+#######################################
+get_latest_release_version() {
+    # get latest release from GitHub api
+    curl --silent -H "Authorization: token ${APPLICATION_GIT_API_TOKEN}" "${APPLICATION_GIT_API_URL}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+}
+
+#######################################
+# Returns if application is installed
+# Globals:
+#   None
+# Arguments:
+#   None
+# Returns:
+#   Bool
+#######################################
+function is_installed() {
+    if [ -d "${INSTALL_DIR}" ]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+#######################################
 # Prepares variables and other stuff
 # Globals:
+#   APPLICATION_RETURN_CODE
 #   APPLICATION_START_TIME
 #   APPLICATION_NAME
 #   APPLICATION_MODE
 #   APPLICATION_VERSION
-#   ANSIBLE_PLAYBOOKS_DIR
+#   APPLICATION_GIT_NAMESPACE
+#   APPLICATION_GIT_REPOSITORY
 #   APPLICATION_GIT_URL
+#   APPLICATION_GIT_API_URL
+#   APPLICATION_GIT_API_TOKEN
+#   ANSIBLE_PLAYBOOKS_DIR
 #   SEMVER_REGEX
 #   INSTALL_DIR
+#   SCRIPT_PATH
 #   BASE_DIR
 # Arguments:
 #   None
 # Returns:
 #   None
 #######################################
-function prepare {
+function init() {
+    # set default return code 0
     APPLICATION_RETURN_CODE=0
+    # track start time
     APPLICATION_START_TIME=$(ruby -e 'puts Time.now.to_f');
     # define variables
     APPLICATION_NAME="valet.sh"
+    # define default application mode for future usage
     : "${APPLICATION_MODE:=production}"
-    APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/valet-sh/valet-sh"}
+    # define default git relevant variables
+    APPLICATION_GIT_NAMESPACE=${APPLICATION_GIT_NAMESPACE:="valet-sh"}
+    APPLICATION_GIT_REPOSITORY=${APPLICATION_GIT_REPOSITORY:="valet-sh"}
+    APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
+    APPLICATION_GIT_API_URL=${APPLICATION_GIT_API_URL:="https://api.github.com/repos/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
+    APPLICATION_GIT_API_TOKEN="eeae1f37cd23eb4a727e8cf369a2108861d3721b"
+    # define default playbook dir
     ANSIBLE_PLAYBOOKS_DIR="playbooks"
+    # define semver regular expression for checkout valid versions on upgrade
     SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
+    # define default install directory
     INSTALL_DIR="$HOME/.${APPLICATION_NAME}";
 
     # resolve symlink if needed
@@ -176,16 +240,32 @@ function prepare {
     # use current bash source script dir as base_dir
     BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
 
-    install_deps
-
-    # check if git dir is available
-    if [ -d $BASE_DIR/.git ]; then
+    # check if version cache is available
+    if [ -f ${INSTALL_DIR}/.version ]; then
         # get the current version from git
-        APPLICATION_VERSION=$(git --git-dir=${BASE_DIR}/.git --work-tree=${BASE_DIR} describe --tags)
-        # set cwd to base dir
-        cd $BASE_DIR
+        APPLICATION_VERSION=$(cat ${INSTALL_DIR}/.version)
+    else
+        APPLICATION_VERSION=$(get_latest_release_version)
     fi
+}
 
+#######################################
+# Prepares application by installing dependencies and itself
+# Globals:
+#   BASE_DIR
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+function prepare() {
+    install_deps
+    # install application if not done yet
+    if ! is_installed; then
+        install
+    fi
+    # set cwd to base dir
+    cd $BASE_DIR
 }
 
 #######################################
@@ -197,7 +277,10 @@ function prepare {
 # Returns:
 #   None
 #######################################
-function install_deps {
+function install_deps() {
+
+    # TODO: move command line tools installation to ansible
+
     # check if macOS command line tools are available by checking git bin
     if [ ! -f /Library/Developer/CommandLineTools/usr/bin/git ]; then
         spinner_toogle "Installing CommandLineTools \e[32m$command\e[39m"
@@ -211,6 +294,7 @@ function install_deps {
         rm -rf /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
         spinner_toogle
     fi
+
     # check if ansible command is available
     if [ ! -x "$(command -v ansible)" ]; then
         spinner_toogle "Installing Ansible \e[32m$command\e[39m"
@@ -222,81 +306,88 @@ function install_deps {
 }
 
 #######################################
-# Install and upgrade logic
+# Install logic
 # Globals:
+#   LATEST_RELEASE_VERSION
 #   APPLICATION_NAME
-#   APPLICATION_VERSION
-#   APPLICATION_GIT_URL
-#   BASE_DIR
+#   APPLICATION_GIT_API_URL
+#   INSTALL_DIR
 # Arguments:
 #   None
 # Returns:
 #   None
 #######################################
-function install_upgrade {
+function install() {
 
-    # reset release tag to current application version
-    RELEASE_TAG=$APPLICATION_VERSION
+    # init latest release version
+    LATEST_RELEASE_VERSION=$(get_latest_release_version)
 
-    if [ $APPLICATION_MODE = "production" ]; then
-        # create tmp directory for cloning valet.sh
-        local tmp_dir=$(mktemp -d)
-        local src_dir=$tmp_dir
+    # spinner on
+    spinner_toogle "Installing..."
+    touch ${BASE_DIR}/.inprogress
 
-        # clone project git repo to tmp dir
-        rm -rf $tmp_dir
-        git clone --quiet $APPLICATION_GIT_URL $tmp_dir
-        cd $tmp_dir
+    # define tmp directory
+    local tmp_dir=$(mktemp -d)
+    # define tmp_filepath filepath for downloading
+    local tmp_filepath=${tmp_dir}/valet-sh-latest.zip
+    # download latest release from api url
+    curl --silent -L  -H "Authorization: token ${APPLICATION_GIT_API_TOKEN}" "${APPLICATION_GIT_API_URL}/zipball" > ${tmp_filepath}
+    # get root directory of zip
+    local zip_root_dir=$(unzip -Z -1 ${tmp_filepath} | head -1)
+    # unzip root directory to target dir
+    unzip -qq ${tmp_filepath} -d "${tmp_dir}"
+    # install
+    mv ${tmp_dir}/${zip_root_dir} ${INSTALL_DIR}
+    # cache current installed version
+    echo $LATEST_RELEASE_VERSION > ${INSTALL_DIR}/.version
+    # create symlink to default included PATH
+    sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
+    # spinner off
+    spinner_toogle
+    # output log
+    log success "Installation successfully"
+    # exit normally
+    shutdown
+}
 
-        # fetch all tags from application git repo
-        git fetch --tags
-
-        # get available release tags sorted by refname
-        RELEASE_TAGS=$(git tag --sort "-v:refname" )
-
-        # get latest semver conform git version tag on current major version releases
-        for GIT_TAG in $RELEASE_TAGS; do
-            if [[ "$GIT_TAG" =~ $SEMVER_REGEX ]]; then
-                RELEASE_TAG=$GIT_TAG
-                break;
-            fi
-        done
-
-        # force checkout latest release tag in given major version
-        git checkout --quiet --force $RELEASE_TAG
+#######################################
+# Check if application is upgradable
+# Globals:
+#   APPLICATION_VERSION
+#   LAST_RELEASE_VERSION
+# Arguments:
+#   None
+# Returns:
+#   Bool
+#######################################
+function is_upgradable() {
+    # get latest release version from github api
+    LAST_RELEASE_VERSION="$(get_latest_release_version)"
+    # compare application version to release tag version
+    if [[ $(version_compare "${APPLICATION_VERSION}" "${LAST_RELEASE_VERSION}") = 0 ]]; then
+        return 1
     else
-        # take base dir for developer installation
-        src_dir=$BASE_DIR
+        return 0
     fi
+}
 
-    # check if install dir exist
-    if [ ! -d $INSTALL_DIR ]; then
-        # install
-        cp -r $src_dir $INSTALL_DIR
-        # create symlink to default included PATH
-        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
-        # output log
-        log success "Installed version $RELEASE_TAG"
+#######################################
+# Upgrade application
+# Globals:
+#   LAST_RELEASE_VERSION
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+function upgrade() {
+    if is_upgradable; then
+        log success "New version ${LAST_RELEASE_VERSION} available!"
+        rm -rf $INSTALL_DIR
+        install
     else
-        CURRENT_INSTALLED_VERSION=$(git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} describe --tags)
-        # compare application version to release tag version
-        if [ $(version_compare ${CURRENT_INSTALLED_VERSION} $RELEASE_TAG) -gt 0 ]; then
-            log error "Already on the latest version $RELEASE_TAG"
-        else
-            log success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
-        fi
-
-        # update tags
-        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} fetch --tags --quiet
-        # checkout target release tag
-        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} checkout --force --quiet $RELEASE_TAG
+        log success "Already on the latest version ${LAST_RELEASE_VERSION}"
     fi
-
-    # change directory to install dir
-    cd $INSTALL_DIR
-
-    # clean tmp dir
-    rm -rf $tmp_dir
 }
 
 #######################################
@@ -310,7 +401,7 @@ function install_upgrade {
 # Returns:
 #   None
 #######################################
-function print_header {
+function print_header() {
     printf "\e[1m\e[34m$APPLICATION_NAME\033[0m $APPLICATION_VERSION\033[0m\n"
     printf "\e[2m  (c) 2018 TechDivision GmbH\033[0m\n"
     printf "\n"
@@ -330,7 +421,7 @@ function print_header {
 # Returns:
 #   None
 #######################################
-function print_footer {
+function print_footer() {
     LC_NUMERIC="en_US.UTF-8"
 
     APPLICATION_END_TIME=$(ruby -e 'puts Time.now.to_f')
@@ -365,7 +456,7 @@ function print_footer {
 # Returns:
 #   None
 #######################################
-function print_usage {
+function print_usage() {
     local cmd_output_space='                                '
     printf "\e[33mUsage:\e[39m\n"
     printf "  command [options] [arguments]\n"
@@ -400,7 +491,7 @@ function print_usage {
 # Returns:
 #   None
 #######################################
-function prepare_logfile {
+function prepare_logfile() {
     # define log file
     LOG_PATH=${BASE_DIR}/log
     if [ ! -d $LOG_PATH ]; then
@@ -418,7 +509,7 @@ function prepare_logfile {
 # Returns:
 #   None
 #######################################
-function cleanup_logfiles {
+function cleanup_logfiles() {
     # cleanup log directory and keep last 10 execution logs
     if [ -d $LOG_PATH ]; then
         cd $LOG_PATH
@@ -438,7 +529,7 @@ function cleanup_logfiles {
 # Returns:
 #   None
 #######################################
-function execute_ansible_playbook {
+function execute_ansible_playbook() {
     local command=$1
     local ansible_playbook_file="$ANSIBLE_PLAYBOOKS_DIR/$command.yml"
     local parsed_args=""
@@ -498,7 +589,7 @@ EOM
 # Returns:
 #   None
 #######################################
-function shutdown {
+function shutdown() {
     # exit with given return code
     exit $APPLICATION_RETURN_CODE
 }
@@ -513,14 +604,15 @@ function shutdown {
 # Returns:
 #   None
 #######################################
-function main {
-    prepare
+function main() {
+    init
     print_header
+    prepare
 
     case "${1--h}" in
         -h) print_usage;;
         -v) ;;
-        install|upgrade) install_upgrade;;
+        upgrade) upgrade;;
         # try to execute playbook based on command
         # ansible will throw an error if specific playbook does not exist
         *) execute_ansible_playbook "$@";;
@@ -532,4 +624,3 @@ function main {
 
 # start console tool with command line args
 main "$@"
-

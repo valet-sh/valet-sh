@@ -4,9 +4,9 @@
 # valet.sh
 #
 # @author: "Johann Zelger"
-# @command: "distil:install"
-# @description: "Install distil packages"
-# @subcommands: ["all","redis"]
+# @command: "install"
+# @description: "Install packages"
+# @subcommands: ["all","php","nginx","redis"]
 
 - name: "distil:install"
   hosts: local
