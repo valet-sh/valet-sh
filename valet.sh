@@ -83,19 +83,19 @@ function out() {
 }
 
 
-#######################################
-# Returns the latest release version tag name
-# Globals:
-#   None
-# Arguments:
-#   None
-# Returns:
-#   String  The tag name
-#######################################
-get_latest_release_version() {
-    # get latest release from GitHub api
-    curl --silent -H "Authorization: token ${APPLICATION_GIT_API_TOKEN}" "${APPLICATION_GIT_API_URL}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
-}
+    #######################################
+    # Returns the latest release version tag name
+    # Globals:
+    #   None
+    # Arguments:
+    #   None
+    # Returns:
+    #   String  The tag name
+    #######################################
+    #get_latest_release_version() {
+        # get latest release from GitHub api
+    #    curl --silent -H "${CURL_GIT_API_TOKEN_HEADER_LINE}" "${APPLICATION_GIT_API_URL}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+    #}
 
 #######################################
 # Validates version against semver
@@ -162,20 +162,6 @@ function version_compare() {
     fi
 
     echo 0
-}
-
-#######################################
-# Returns the latest release version tag name
-# Globals:
-#   None
-# Arguments:
-#   None
-# Returns:
-#   String  The tag name
-#######################################
-get_latest_release_version() {
-    # get latest release from GitHub api
-    curl --silent -H "${CURL_GIT_API_TOKEN_HEADER_LINE}" "${APPLICATION_GIT_API_URL}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
 }
 
 #######################################
@@ -625,7 +611,7 @@ EOM
 function error() {
     # output error message to user
     out error "$*"
-    # Todo: contstants for return codes
+    # Todo: constants for return codes
     APPLICATION_RETURN_CODE=255
     # trigger immediate shutdown
     shutdown
