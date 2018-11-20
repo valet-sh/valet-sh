@@ -301,7 +301,6 @@ function install_deps() {
 function verify_deps() {
     # check if ansible command is available
     if ! ansible-playbook --version &> /dev/null; then
-        #Todo ansible-playbook
         error "Dependency not met: Failed to run ansible-playbook command"
     fi
 }
