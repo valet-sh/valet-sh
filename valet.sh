@@ -10,6 +10,9 @@
 # Set a global trap for e.g. ctrl+c to run shutdown routine
 trap shutdown INT
 
+# define script main function
+: "${MAIN_FUNCTION:=main}"
+
 #######################################
 # Toggles spinner animation
 # Globals:
@@ -79,7 +82,7 @@ function out() {
     case "${1--h}" in
         error) printf "\033[1;31m✘ %s\033[0m\n" "$2";;
         success) printf "\033[1;32m✔ %s\033[0m\n" "$2";;
-        task) printf -- "- %s\n" "$2";;
+        task) printf "▸ %s\n" "$2";;
         *) printf "%s\n" "$*";;
     esac
 }
@@ -263,9 +266,6 @@ function prepare() {
 #   None
 #######################################
 function install_deps() {
-    # test and trigger sudo for MacOS timeout (sudo)
-    sudo true || error "Failed to sudo"
-
     # check if macOS command line tools are available by checking git bin
     if [ ! -f /Library/Developer/CommandLineTools/usr/bin/git ]; then
         # trigger git, this will prompt installation of Command Line tools
@@ -276,6 +276,9 @@ function install_deps() {
 
     # check if ansible command is available
     if [ ! -x "$(command -v ansible)" ]; then
+        # test and trigger sudo for MacOS timeout (sudo)
+        sudo true || error "Failed to sudo"
+
         spinner_toggle "Installing Ansible"
         touch "$APPLICATION_INPROGRESS_FILE_PATH"
         # if ansible is not available, install pip and ansible
@@ -641,5 +644,25 @@ function main() {
     shutdown
 }
 
+#######################################
+# Run tests via bats
+# Globals:
+#   None
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+function run_tests() {
+    # export all functions for testing purpose
+    export -f out
+    export -f version_validate
+    export -f version_compare
+    export -f is_installed
+
+    # execute tests via bats
+    bats tests
+}
+
 # start cli with given command line args
-main "$@"
+${MAIN_FUNCTION} "$@";
