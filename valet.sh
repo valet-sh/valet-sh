@@ -42,8 +42,8 @@ spinner_toggle() {
         while [ ! -f "$APPLICATION_INPROGRESS_FILE_PATH" ]; do sleep 0.5; done
         while true; do
             printf "\e[32m%s\e[39m $1 " "${list[i]}"
-            i=$(($i+1))
-            i=$(($i%10))
+            i=$((i+1))
+            i=$((i%10))
             sleep 0.1
             tput rc
         done
@@ -661,7 +661,7 @@ function run_tests() {
     export -f is_installed
 
     # execute tests via bats
-    bats tests
+    bats --pretty tests
 }
 
 # start cli with given command line args
