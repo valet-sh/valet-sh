@@ -4,6 +4,10 @@
 #
 # Copyright: (C) 2018 TechDivision GmbH - All Rights Reserved
 # Author: Johann Zelger <j.zelger@techdivision.com>
+#
+
+# Set a global trap for e.g. ctrl+c to run shutdown routine
+trap shutdown INT
 
 #######################################
 # Toggles spinner animation
@@ -14,7 +18,7 @@
 # Returns:
 #   None
 #######################################
-spinner_toogle() {
+spinner_toggle() {
 
     # Start spinner background function
     function _spinner_start() {
@@ -31,8 +35,8 @@ spinner_toogle() {
         local i=0
         tput sc
         # wait for .inprogress flag file to be created by ansible callback plugin
-        while [ ! -f $BASE_DIR/.inprogress ]; do sleep 0.5; done
-        while [ 1 ]; do
+        while [ ! -f "$APPLICATION_INPROGRESS_FILE_PATH" ]; do sleep 0.5; done
+        while true; do
             printf "\e[32m%s\e[39m $1 " "${list[i]}"
             i=$(($i+1))
             i=$(($i%10))
@@ -41,17 +45,21 @@ spinner_toogle() {
         done
     }
 
+    function _spinner_stop() {
+        kill "$SPINNER_PID" > /dev/null 2>&1
+        wait $! 2>/dev/null
+        SPINNER_PID=0
+        rm -rf "$APPLICATION_INPROGRESS_FILE_PATH"
+        tput rc
+    }
+
     # check if spinner pid exist
     if [[ "$SPINNER_PID" -lt 1 ]]; then
         tput sc
         _spinner_start "$1" &
         SPINNER_PID=$!
     else
-        kill $SPINNER_PID > /dev/null 2>&1
-        wait $! 2>/dev/null
-        SPINNER_PID=0
-        rm -rf $BASE_DIR/.inprogress
-        tput rc
+        _spinner_stop
     fi
 
 }
@@ -66,11 +74,12 @@ spinner_toogle() {
 # Returns:
 #   None
 #######################################
-function log() {
+function out() {
     case "${1--h}" in
         error) printf "\033[1;31m✘ %s\033[0m\n" "$2";;
         success) printf "\033[1;32m✔ %s\033[0m\n" "$2";;
-        *) printf "%s\n" "$2";;
+        task) printf -- "- %s\n" "$2";;
+        *) printf "%s\n" "$*";;
     esac
 }
 
@@ -97,7 +106,7 @@ function version_validate() {
             echo "$version"
         fi
     else
-        log error "Version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information." error
+        out error "Version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information." error
     fi
 }
 
@@ -173,6 +182,7 @@ function is_installed() {
 #   ANSIBLE_PLAYBOOKS_DIR
 #   SEMVER_REGEX
 #   INSTALL_DIR
+#   TEMP_DIR
 #   SCRIPT_PATH
 #   BASE_DIR
 # Arguments:
@@ -193,10 +203,15 @@ function init() {
     APPLICATION_GIT_NAMESPACE=${APPLICATION_GIT_NAMESPACE:="valet-sh"}
     APPLICATION_GIT_REPOSITORY=${APPLICATION_GIT_REPOSITORY:="valet-sh"}
     APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
+
     # define default playbook dir
     ANSIBLE_PLAYBOOKS_DIR="playbooks"
     # define semver regular expression for checkout valid versions on upgrade
     SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
+    # define global temp dir
+    TEMP_DIR="/tmp"
+    # temporary application-in-progress file used e.g. by ansible or spinner function
+    APPLICATION_INPROGRESS_FILE_PATH="${TEMP_DIR}/valet-sh.inprogress"
     # define default install directory
     INSTALL_DIR="$HOME/.${APPLICATION_NAME}";
 
@@ -207,7 +222,7 @@ function init() {
     BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
 
     # check if git dir is available
-    if [ -d ${BASE_DIR}/.git ]; then
+    if [ -d "${BASE_DIR}/.git" ]; then
         # get the current version from git
         APPLICATION_VERSION=$(git --git-dir=${BASE_DIR}/.git --work-tree=${BASE_DIR} describe --tags)
         # set cwd to base dir
@@ -246,28 +261,47 @@ function prepare() {
 #   None
 #######################################
 function install_deps() {
+    # test and trigger sudo for MacOS timeout (sudo)
+    sudo true || error "Failed to sudo"
 
     # check if macOS command line tools are available by checking git bin
     if [ ! -f /Library/Developer/CommandLineTools/usr/bin/git ]; then
-        spinner_toogle "Installing CommandLineTools \e[32m$command\e[39m"
-        # if git command is not available, install command line tools
-        # create macOS flag file, that CommandLineTools can be installed on demand
-        touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-        # install command line tools
-        SOFTWARE_UPDATE_NAME=$(softwareupdate -l | grep -B 1 -E "Command Line Tools.*$(sw_vers -productVersion)" | awk -F'*' '/^ +\*/ {print $2}' | sed 's/^ *//' | tail -n1)
-        softwareupdate -i "$SOFTWARE_UPDATE_NAME"
-        # cleanup in-progress file for macos softwareupdate util
-        rm -rf /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-        spinner_toogle
+        # trigger git, this will prompt installation of Command Line tools
+        git &> /dev/null
+        # exit with error message, CLT should be installed by MacOS routine using the user prompt - this ensures clean install (without using a custom install routine)
+        error "Please install Command Line tools first (using the newly opened propmt) and re-run $APPLICATION_NAME"
     fi
 
     # check if ansible command is available
     if [ ! -x "$(command -v ansible)" ]; then
-        spinner_toogle "Installing Ansible \e[32m$command\e[39m"
+        spinner_toggle "Installing Ansible"
+        touch "$APPLICATION_INPROGRESS_FILE_PATH"
         # if ansible is not available, install pip and ansible
-        sudo easy_install pip;
-        sudo pip install -Iq ansible;
-        spinner_toogle
+        # Todo: Redirect output to logfile
+        sudo easy_install pip &> /dev/null || error "Failed to installed pip"
+        sudo pip install -Iq ansible &> /dev/null || error "Failed to install ansible"
+        spinner_toggle
+    fi
+
+    # verfiy all dependencies
+    verify_deps
+}
+
+
+#######################################
+# Verify dependencies
+# Globals:
+#   None
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+function verify_deps() {
+    # check if ansible command is available
+    if ! ansible-playbook --version &> /dev/null; then
+        #Todo ansible-playbook
+        error "Dependency not met: Failed to run ansible-playbook command"
     fi
 }
 
@@ -286,17 +320,19 @@ function install_deps() {
 function install_upgrade() {
 
     # reset release tag to current application version
-    RELEASE_TAG=$APPLICATION_VERSION
+    RELEASE_TAG="$APPLICATION_VERSION"
 
-    if [ $APPLICATION_MODE = "production" ]; then
+    if [ "$APPLICATION_MODE" = "production" ]; then
+        spinner_toggle "Installing $APPLICATION_NAME"
+        touch "$APPLICATION_INPROGRESS_FILE_PATH"
         # create tmp directory for cloning valet.sh
-        local tmp_dir=$(mktemp -d)
-        local src_dir=$tmp_dir
+        local tmp_dir=$(mktemp -d) || error "Failed to create temporary directory, try running script at different path"
+        local src_dir="$tmp_dir"
 
         # clone project git repo to tmp dir
-        rm -rf $tmp_dir
-        git clone --quiet $APPLICATION_GIT_URL $tmp_dir
-        cd $tmp_dir
+        rm -rf "$tmp_dir" &> /dev/null
+        git clone --quiet "$APPLICATION_GIT_URL" "$tmp_dir"
+        cd "$tmp_dir" || error "Failed to access temporary directory"
 
         # fetch all tags from application git repo
         git fetch --tags
@@ -313,28 +349,30 @@ function install_upgrade() {
         done
 
         # force checkout latest release tag in given major version
-        git checkout --quiet --force $RELEASE_TAG
+        git checkout --quiet --force "$RELEASE_TAG"
+
+        spinner_toggle
     else
         # take base dir for developer installation
-        src_dir=$BASE_DIR
+        src_dir="$BASE_DIR"
     fi
 
     # check if install dir exist
-    if [ ! -d $INSTALL_DIR ]; then
+    if [ ! -d "$INSTALL_DIR" ]; then
         # install
-        cp -r $src_dir $INSTALL_DIR
+        cp -r "$src_dir" "$INSTALL_DIR"
         # create symlink to default included PATH
-        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
+        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin/
         # output log
-        log success "Installed version $RELEASE_TAG"
+        out success "Installed version $RELEASE_TAG"
     else
         CURRENT_INSTALLED_VERSION=$(git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} describe --tags)
 
         # compare application version to release tag version
         if [ $(version_compare ${CURRENT_INSTALLED_VERSION} $RELEASE_TAG) = 0 ]; then
-            log success "Already on the latest version $RELEASE_TAG"
+            out success "Already on the latest version $RELEASE_TAG"
         else
-            log success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
+            out success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
         fi
 
         # update tags
@@ -344,10 +382,10 @@ function install_upgrade() {
     fi
 
     # change directory to install dir
-    cd $INSTALL_DIR
+    cd "$INSTALL_DIR"
 
     # clean tmp dir
-    rm -rf $tmp_dir
+    rm -rf "$tmp_dir" &> /dev/null
 }
 
 #######################################
@@ -362,9 +400,8 @@ function install_upgrade() {
 #   None
 #######################################
 function print_header() {
-    printf "\e[1m\e[34m$APPLICATION_NAME\033[0m $APPLICATION_VERSION\033[0m\n"
-    printf "\e[2m  (c) 2018 TechDivision GmbH\033[0m\n"
-    printf "\n"
+    echo -e "\033[1m\033[34m$APPLICATION_NAME\033[0m $APPLICATION_VERSION\033[0m"
+    echo -e "\033[2m  (c) 2018 TechDivision GmbH\033[0m\n"
 }
 
 #######################################
@@ -393,15 +430,15 @@ function print_footer() {
     printf "\e[1mDebug information:\033[0m"
     printf "\e[34m"
     printf "\n"
-    printf "  Version: \e[1m%s\033[0m\n" $APPLICATION_VERSION
+    printf "  Version: \e[1m%s\033[0m\n" "$APPLICATION_VERSION"
     printf "\e[34m"
-    printf "  Application mode: \e[1m%s\033[0m\n" $APPLICATION_MODE
+    printf "  Application mode: \e[1m%s\033[0m\n" "$APPLICATION_MODE"
     printf "\e[34m"
-    printf "  Execution time: \e[1m%f sec.\033[0m\n" $APPLICATION_EXECUTION_TIME
+    printf "  Execution time: \e[1m%f sec.\033[0m\n" "$APPLICATION_EXECUTION_TIME"
     printf "\e[34m"
-    printf "  Logfile: \e[1m%s\033[0m\n" $LOG_FILE
+    printf "  Logfile: \e[1m%s\033[0m\n" "$LOG_FILE"
     printf "\e[34m"
-    printf "  Exitcode: \e[1m%s\033[0m\n" $APPLICATION_RETURN_CODE
+    printf "  Exitcode: \e[1m%s\033[0m\n" "$APPLICATION_RETURN_CODE"
     printf "\e[34m\033[0m"
     printf "\n"
 }
@@ -453,8 +490,8 @@ function print_usage() {
 function prepare_logfile() {
     # define log file
     LOG_PATH=${BASE_DIR}/log
-    if [ ! -d $LOG_PATH ]; then
-        mkdir $LOG_PATH
+    if [ ! -d "$LOG_PATH" ]; then
+        mkdir "$LOG_PATH" || log error "Failed to create log directory"
     fi
     LOG_FILE="$( mktemp ${LOG_PATH}/XXXXXXXXXXXXX ).log"
 }
@@ -470,11 +507,9 @@ function prepare_logfile() {
 #######################################
 function cleanup_logfiles() {
     # cleanup log directory and keep last 10 execution logs
-    if [ -d $LOG_PATH ]; then
-        cd $LOG_PATH
-        cleanup_logfiles=$(ls -t1 | tail -n +11)
-        test "$cleanup_logfiles" && rm $cleanup_logfiles
-        cd ..
+    if [ -d "$LOG_PATH" ]; then
+        cleanup_logfiles=$(ls -d1 -t1 "${LOG_PATH}/*" | tail -n +11)
+        test "$cleanup_logfiles" && rm "$cleanup_logfiles"
     fi
 }
 
@@ -515,9 +550,9 @@ EOM
     if [ -f "$ansible_playbook_file" ]; then
         prepare_logfile
 
-        spinner_toogle "Running \e[32m$command\e[39m"
+        spinner_toggle "Running \e[32m$command\e[39m"
         bash -c "ansible-playbook ${ansible_playbook_file} ${ansible_extra_vars}" &> ${LOG_FILE} || ansible_ret_code=$? && true
-        spinner_toogle
+        spinner_toggle
 
         # log exact command line as typed in shell with user and path info
         echo "$PWD $USER: $0 $*" >> ${LOG_FILE}
@@ -526,17 +561,35 @@ EOM
 
         # check if exit code was not 0
         if [ $ansible_ret_code != 0 ]; then
-            log error
+            out error
         else
-            log success
+            out success
         fi
 
     else
-        log error "Command '$command' not available"
+        out error "Command '$command' not available"
     fi
 
     # set global ret code like ansible ret code
     APPLICATION_RETURN_CODE=$ansible_ret_code
+}
+
+#######################################
+# Error handling and abort function with log message
+# Globals:
+#   None
+# Arguments:
+#   Command
+# Returns:
+#   None
+#######################################
+function error() {
+    # output error message to user
+    out error "$*"
+    # Todo: constants for return codes
+    APPLICATION_RETURN_CODE=255
+    # trigger immediate shutdown
+    shutdown
 }
 
 #######################################
@@ -549,8 +602,14 @@ EOM
 #   None
 #######################################
 function shutdown() {
-    # exit with given return code
-    exit $APPLICATION_RETURN_CODE
+    # Tidyup spinner PID
+    if [[ -n "$SPINNER_PID" && "$SPINNER_PID" -gt 0 ]]; then
+        kill "$SPINNER_PID" &> /dev/null
+    fi
+    # Remove APPLICATION_INPROGRESS file
+    rm -rf "$APPLICATION_INPROGRESS_FILE_PATH" &> /dev/null
+    # exit
+    exit "$APPLICATION_RETURN_CODE"
 }
 
 #######################################
