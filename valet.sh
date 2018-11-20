@@ -219,12 +219,7 @@ function init() {
     APPLICATION_GIT_NAMESPACE=${APPLICATION_GIT_NAMESPACE:="valet-sh"}
     APPLICATION_GIT_REPOSITORY=${APPLICATION_GIT_REPOSITORY:="valet-sh"}
     APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
-    APPLICATION_GIT_API_URL=${APPLICATION_GIT_API_URL:="https://api.github.com/repos/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
-    # define curl git api header token if given token is given from environment
-    CURL_GIT_API_TOKEN_HEADER_LINE=""
-    if [ -n "$APPLICATION_GIT_API_TOKEN" ]; then
-        CURL_GIT_API_TOKEN_HEADER_LINE="Authorization: token ${APPLICATION_GIT_API_TOKEN}"
-    fi
+
     # define default playbook dir
     ANSIBLE_PLAYBOOKS_DIR="playbooks"
     # define semver regular expression for checkout valid versions on upgrade
@@ -242,12 +237,12 @@ function init() {
     # use current bash source script dir as base_dir
     BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
 
-    # check if version cache is available
-    if [ -f ${INSTALL_DIR}/.version ]; then
+    # check if git dir is available
+    if [ -d ${BASE_DIR}/.git ]; then
         # get the current version from git
-        APPLICATION_VERSION=$(cat ${INSTALL_DIR}/.version)
-    else
-        APPLICATION_VERSION=$(get_latest_release_version)
+        APPLICATION_VERSION=$(git --git-dir=${BASE_DIR}/.git --work-tree=${BASE_DIR} describe --tags)
+        # set cwd to base dir
+        cd ${BASE_DIR}
     fi
 }
 
@@ -264,7 +259,9 @@ function prepare() {
     install_deps
     # install application if not done yet
     if ! is_installed; then
-        install
+        install_upgrade
+        # shutdown after initial installation
+        shutdown
     fi
     # set cwd to base dir
     cd $BASE_DIR
@@ -280,9 +277,10 @@ function prepare() {
 #   None
 #######################################
 function install_deps() {
-
     out "Verifying dependencies"
+    # test and trigger sudo for MacOS timeout (sudo)
     sudo true || error "Failed to sudo"
+
 
     # check if macOS command line tools are available by checking git bin
     if [ ! -f /Library/Developer/CommandLineTools/usr/bin/git ]; then
@@ -326,88 +324,82 @@ function verify_deps() {
 }
 
 #######################################
-# Install logic
+# Install and upgrade logic
 # Globals:
-#   LATEST_RELEASE_VERSION
 #   APPLICATION_NAME
-#   APPLICATION_GIT_API_URL
-#   INSTALL_DIR
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-function install() {
-
-    # init latest release version
-    LATEST_RELEASE_VERSION=$(get_latest_release_version)
-
-    # spinner on
-    spinner_toggle "Installing..."
-    touch "$APPLICATION_INPROGRESS_FILE_PATH"
-
-    # define tmp directory
-    local tmp_dir=$(mktemp -d)
-    # define tmp_filepath filepath for downloading
-    local tmp_filepath=${tmp_dir}/valet-sh-latest.zip
-    # download latest release from api url
-    curl --silent -L  -H "${CURL_GIT_API_TOKEN_HEADER_LINE}" "${APPLICATION_GIT_API_URL}/zipball" > ${tmp_filepath}
-    # get root directory of zip
-    local zip_root_dir=$(unzip -Z -1 ${tmp_filepath} | head -1)
-    # unzip root directory to target dir
-    unzip -qq ${tmp_filepath} -d "${tmp_dir}"
-    # install
-    mv ${tmp_dir}/${zip_root_dir} ${INSTALL_DIR}
-    # cache current installed version
-    echo $LATEST_RELEASE_VERSION > ${INSTALL_DIR}/.version
-    # create symlink to default included PATH
-    sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
-    # spinner off
-    spinner_toggle
-    # output log
-    out success "Installation successfully"
-    # exit normally
-    shutdown
-}
-
-#######################################
-# Check if application is upgradable
-# Globals:
 #   APPLICATION_VERSION
-#   LAST_RELEASE_VERSION
+#   APPLICATION_GIT_URL
+#   BASE_DIR
 # Arguments:
 #   None
 # Returns:
-#   Bool
+#   None
 #######################################
-function is_upgradable() {
-    # get latest release version from github api
-    LAST_RELEASE_VERSION="$(get_latest_release_version)"
-    # compare application version to release tag version
-    if [[ $(version_compare "${APPLICATION_VERSION}" "${LAST_RELEASE_VERSION}") = 0 ]]; then
-        return 1
-    else
-        return 0
-    fi
-}
+function install_upgrade() {
 
-#######################################
-# Upgrade application
-# Globals:
-#   LAST_RELEASE_VERSION
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-function upgrade() {
-    if is_upgradable; then
-        out success "New version ${LAST_RELEASE_VERSION} available!"
-        rm -rf $INSTALL_DIR
-        install
+    # reset release tag to current application version
+    RELEASE_TAG=$APPLICATION_VERSION
+
+    if [ $APPLICATION_MODE = "production" ]; then
+        # create tmp directory for cloning valet.sh
+        local tmp_dir=$(mktemp -d)
+        local src_dir=$tmp_dir
+
+        # clone project git repo to tmp dir
+        rm -rf $tmp_dir
+        git clone --quiet $APPLICATION_GIT_URL $tmp_dir
+        cd $tmp_dir
+
+        # fetch all tags from application git repo
+        git fetch --tags
+
+        # get available release tags sorted by refname
+        RELEASE_TAGS=$(git tag --sort "-v:refname" )
+
+        # get latest semver conform git version tag on current major version releases
+        for GIT_TAG in $RELEASE_TAGS; do
+            if [[ "$GIT_TAG" =~ $SEMVER_REGEX ]]; then
+                RELEASE_TAG=$GIT_TAG
+                break;
+            fi
+        done
+
+        # force checkout latest release tag in given major version
+        git checkout --quiet --force $RELEASE_TAG
     else
-        out success "Already on the latest version ${LAST_RELEASE_VERSION}"
+        # take base dir for developer installation
+        src_dir=$BASE_DIR
     fi
+
+    # check if install dir exist
+    if [ ! -d $INSTALL_DIR ]; then
+        # install
+        cp -r $src_dir $INSTALL_DIR
+        # create symlink to default included PATH
+        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
+        # output log
+        log success "Installed version $RELEASE_TAG"
+    else
+        CURRENT_INSTALLED_VERSION=$(git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} describe --tags)
+
+        # compare application version to release tag version
+        if [ $(version_compare ${CURRENT_INSTALLED_VERSION} $RELEASE_TAG) = 0 ]; then
+            log success "Already on the latest version $RELEASE_TAG"
+        else
+            log success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
+        fi
+
+        # update tags
+        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} fetch --tags --quiet
+        # checkout target release tag
+        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} checkout --force --quiet $RELEASE_TAG
+    fi
+
+    # change directory to install dir
+    cd $INSTALL_DIR
+
+    # clean tmp dir
+    rm -rf $tmp_dir
 }
 
 #######################################
@@ -655,7 +647,7 @@ function main() {
     case "${1--h}" in
         -h) print_usage;;
         -v) ;;
-        upgrade) upgrade;;
+        upgrade) install_upgrade;;
         # try to execute playbook based on command
         # ansible will throw an error if specific playbook does not exist
         *) execute_ansible_playbook "$@";;
@@ -665,5 +657,5 @@ function main() {
     shutdown
 }
 
-# start console tool with command line args
+# start cli with given command line args
 main "$@"
