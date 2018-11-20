@@ -221,7 +221,7 @@ function init() {
     INSTALL_DIR="$HOME/.${APPLICATION_NAME}";
 
     # resolve symlink if needed
-    test -h ${BASH_SOURCE[0]} && SCRIPT_PATH="$(readlink "${BASH_SOURCE[0]}")" || SCRIPT_PATH="${BASH_SOURCE[0]}"
+    test -h "${BASH_SOURCE[0]}" && SCRIPT_PATH="$(readlink "${BASH_SOURCE[0]}")" || SCRIPT_PATH="${BASH_SOURCE[0]}"
 
     # use current bash source script dir as base_dir
     BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
@@ -229,9 +229,9 @@ function init() {
     # check if git dir is available
     if [ -d "${BASE_DIR}/.git" ]; then
         # get the current version from git
-        APPLICATION_VERSION=$(git --git-dir=${BASE_DIR}/.git --work-tree=${BASE_DIR} describe --tags)
+        APPLICATION_VERSION=$(git --git-dir="${BASE_DIR}/.git" --work-tree="${BASE_DIR}" describe --tags)
         # set cwd to base dir
-        cd ${BASE_DIR}
+        cd "${BASE_DIR}" || error "Unable to set cwd to ${BASE_DIR}"
     fi
 }
 
@@ -253,7 +253,7 @@ function prepare() {
         shutdown
     fi
     # set cwd to base dir
-    cd $BASE_DIR
+    cd "${BASE_DIR}" || error "Unable to set cwd to ${BASE_DIR}"
 }
 
 #######################################
@@ -330,8 +330,10 @@ function install_upgrade() {
         spinner_toggle "Installing $APPLICATION_NAME"
         touch "$APPLICATION_INPROGRESS_FILE_PATH"
         # create tmp directory for cloning valet.sh
-        local tmp_dir=$(mktemp -d) || error "Failed to create temporary directory, try running script at different path"
-        local src_dir="$tmp_dir"
+        local tmp_dir
+        tmp_dir=$(mktemp -d) || error "Failed to create temporary directory, try running script at different path"
+        local src_dir
+        src_dir="$tmp_dir"
 
         # clone project git repo to tmp dir
         rm -rf "$tmp_dir" &> /dev/null
@@ -366,27 +368,27 @@ function install_upgrade() {
         # install
         cp -r "$src_dir" "$INSTALL_DIR"
         # create symlink to default included PATH
-        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin/
+        sudo ln -sf "${INSTALL_DIR}/${APPLICATION_NAME}" /usr/local/bin/
         # output log
         out success "Installed version $RELEASE_TAG"
     else
-        CURRENT_INSTALLED_VERSION=$(git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} describe --tags)
+        CURRENT_INSTALLED_VERSION=$(git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" describe --tags)
 
         # compare application version to release tag version
-        if [ $(version_compare ${CURRENT_INSTALLED_VERSION} $RELEASE_TAG) = 0 ]; then
+        if [ $(version_compare "${CURRENT_INSTALLED_VERSION}" "${RELEASE_TAG}") = 0 ]; then
             out success "Already on the latest version $RELEASE_TAG"
         else
             out success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
         fi
 
         # update tags
-        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} fetch --tags --quiet
+        git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" fetch --tags --quiet
         # checkout target release tag
-        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} checkout --force --quiet $RELEASE_TAG
+        git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" checkout --force --quiet $RELEASE_TAG
     fi
 
     # change directory to install dir
-    cd "$INSTALL_DIR"
+    cd "${INSTALL_DIR}" || error "Unable to set cwd to ${INSTALL_DIR}"
 
     # clean tmp dir
     rm -rf "$tmp_dir" &> /dev/null
@@ -468,8 +470,10 @@ function print_usage() {
 
     if [ -d "$BASE_DIR/playbooks" ]; then
         for file in ./playbooks/**.yml; do
-            local cmd_name=$(basename $file .yml);
-            local cmd_description=$(grep '^\#[[:space:]]@description:' -m 1 $file | awk -F'"' '{ print $2}');
+            local cmd_name
+            cmd_name="$(basename ${file} .yml)"
+            local cmd_description
+            cmd_description=$(grep '^\#[[:space:]]@description:' -m 1 "${file}" | awk -F'"' '{ print $2}');
             printf "  \e[32m%s %s \e[39m${cmd_description}\n" $cmd_name "${cmd_output_space:${#cmd_name}}"
         done
     fi
@@ -477,7 +481,7 @@ function print_usage() {
     if [ ! -d "$INSTALL_DIR" ]; then
         local cmd_name="install"
         local cmd_description="Installs valet.sh"
-        printf "  \e[32m%s %s \e[39m${cmd_description}\n" $cmd_name "${cmd_output_space:${#cmd_name}}"
+        printf "  \e[32m%s %s \e[39m${cmd_description}\n" "${cmd_name}" "${cmd_output_space:${#cmd_name}}"
     fi
 }
 
@@ -497,7 +501,8 @@ function prepare_logfile() {
     if [ ! -d "$LOG_PATH" ]; then
         mkdir "$LOG_PATH" || log error "Failed to create log directory"
     fi
-    LOG_FILE="$( mktemp ${LOG_PATH}/XXXXXXXXXXXXX ).log"
+    LOG_FILE=$( mktemp "${LOG_PATH}/XXXXXXXXXXXXX" )
+    LOG_FILE="${LOG_FILE}.log"
 }
 
 #######################################
@@ -535,7 +540,7 @@ function execute_ansible_playbook() {
 
     # prepare cli arguments if given and transform them to ansible extra vars format
     if [ "$#" -gt 1 ]; then
-        for i in `seq 2 $#`; do  if [ $i -gt 2 ]; then parsed_args+=,; fi; parsed_args+="\"${!i}\""; done
+        for i in $(seq 2 $#); do  if [ "${i}" -gt 2 ]; then parsed_args+=,; fi; parsed_args+="\"${!i}\""; done
     fi
 
     # define complete extra vars object
@@ -555,11 +560,11 @@ EOM
         prepare_logfile
 
         spinner_toggle "Running \e[32m$command\e[39m"
-        bash -c "ansible-playbook ${ansible_playbook_file} ${ansible_extra_vars}" &> ${LOG_FILE} || ansible_ret_code=$? && true
+        bash -c "ansible-playbook ${ansible_playbook_file} ${ansible_extra_vars}" &> "${LOG_FILE}" || ansible_ret_code=$? && true
         spinner_toggle
 
         # log exact command line as typed in shell with user and path info
-        echo "$PWD $USER: $0 $*" >> ${LOG_FILE}
+        echo "${PWD} ${USER}: $0 $*" >> "${LOG_FILE}"
 
         cleanup_logfiles
 
