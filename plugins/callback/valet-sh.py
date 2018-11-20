@@ -17,13 +17,13 @@ class CallbackModule(CallbackModule_debug):
 
     def __init__(self):
         # create .inprogress flag file for valet.sh cli spinner to start
-        open('.inprogress', 'a').close()
+        open('/tmp/valet-sh.inprogress', 'a').close()
         # call parent class function
         super(CallbackModule, self).__init__()
 
     def v2_playbook_on_stats(self, task):
         # remove .inprogress flag file for valet.sh cli spinner to stop
-        os.unlink('.inprogress')
+        os.unlink('/tmp/valet-sh.inprogress')
         # call parent class function
         super(CallbackModule, self).v2_playbook_on_stats(task)
 
