@@ -7,7 +7,7 @@
 #
 
 # Set a global trap for e.g. ctrl+c to run shutdown routine
-trap shutdown INT
+#trap shutdown INT
 
 #######################################
 # Toggles spinner animation
@@ -78,6 +78,7 @@ function out() {
     case "${1--h}" in
         error) printf "\033[1;31m✘ %s\033[0m\n" "$2";;
         success) printf "\033[1;32m✔ %s\033[0m\n" "$2";;
+        task) printf -- "- %s\n" "$2";;
         *) printf "%s\n" "$*";;
     esac
 }
@@ -221,7 +222,7 @@ function init() {
     BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
 
     # check if git dir is available
-    if [ -d ${BASE_DIR}/.git ]; then
+    if [ -d "${BASE_DIR}/.git" ]; then
         # get the current version from git
         APPLICATION_VERSION=$(git --git-dir=${BASE_DIR}/.git --work-tree=${BASE_DIR} describe --tags)
         # set cwd to base dir
@@ -260,10 +261,8 @@ function prepare() {
 #   None
 #######################################
 function install_deps() {
-    out "Verifying dependencies"
     # test and trigger sudo for MacOS timeout (sudo)
     sudo true || error "Failed to sudo"
-
 
     # check if macOS command line tools are available by checking git bin
     if [ ! -f /Library/Developer/CommandLineTools/usr/bin/git ]; then
@@ -278,8 +277,9 @@ function install_deps() {
         spinner_toggle "Installing Ansible"
         touch "$APPLICATION_INPROGRESS_FILE_PATH"
         # if ansible is not available, install pip and ansible
-        sudo easy_install pip || error "Failed to installed pip"
-        sudo pip install -Iq ansible || error "Failed to install ansible"
+        # Todo: Redirect output to logfile
+        sudo easy_install pip &> /dev/null || error "Failed to installed pip"
+        sudo pip install -Iq ansible &> /dev/null || error "Failed to install ansible"
         spinner_toggle
     fi
 
@@ -298,11 +298,10 @@ function install_deps() {
 #   None
 #######################################
 function verify_deps() {
-
     # check if ansible command is available
-    if [ -x "$(command -v ansible)" ]; then
+    if ! ansible-playbook --version &> /dev/null; then
         #Todo ansible-playbook
-        echo "yis"
+        error "Dependency not met: Failed to run ansible-playbook command"
     fi
 }
 
@@ -365,15 +364,15 @@ function install_upgrade() {
         # create symlink to default included PATH
         sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin/
         # output log
-        log success "Installed version $RELEASE_TAG"
+        out success "Installed version $RELEASE_TAG"
     else
         CURRENT_INSTALLED_VERSION=$(git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} describe --tags)
 
         # compare application version to release tag version
         if [ $(version_compare ${CURRENT_INSTALLED_VERSION} $RELEASE_TAG) = 0 ]; then
-            log success "Already on the latest version $RELEASE_TAG"
+            out success "Already on the latest version $RELEASE_TAG"
         else
-            log success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
+            out success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
         fi
 
         # update tags
@@ -386,7 +385,7 @@ function install_upgrade() {
     cd "$INSTALL_DIR"
 
     # clean tmp dir
-    rm -rf "$tmp_dir"
+    rm -rf "$tmp_dir" &> /dev/null
 }
 
 #######################################
@@ -402,7 +401,7 @@ function install_upgrade() {
 #######################################
 function print_header() {
     echo -e "\033[1m\033[34m$APPLICATION_NAME\033[0m $APPLICATION_VERSION\033[0m"
-    echo -e "\033[2m  (c) 2018 TechDivision GmbH\033[0m"
+    echo -e "\033[2m  (c) 2018 TechDivision GmbH\033[0m\n"
 }
 
 #######################################
@@ -603,14 +602,14 @@ function error() {
 #   None
 #######################################
 function shutdown() {
-    # Tidyup spinner tput rc
-    kill "$SPINNER_PID" > /dev/null 2>&1
-    wait $! 2>/dev/null
-    SPINNER_PID=0
-    rm -rf "$APPLICATION_INPROGRESS_FILE_PATH"
-    tput rc
-    # exit with given return code
-    exit $APPLICATION_RETURN_CODE
+    # Tidyup spinner PID
+    if [[ -n "$SPINNER_PID" && "$SPINNER_PID" -gt 0 ]]; then
+        kill "$SPINNER_PID" &> /dev/null
+    fi
+    # Remove APPLICATION_INPROGRESS file
+    rm -rf "$APPLICATION_INPROGRESS_FILE_PATH" &> /dev/null
+    # exit
+    exit "$APPLICATION_RETURN_CODE"
 }
 
 #######################################
