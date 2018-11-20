@@ -5,4 +5,4 @@
 #
 # @author: "Johann Zelger"
 # @command: "upgrade"
-# @description: "Upgrades valet.sh to the latest version of current major version"
+# @description: "Upgrade to the latest current major version"
