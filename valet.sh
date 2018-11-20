@@ -384,7 +384,7 @@ function install_upgrade() {
         # update tags
         git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" fetch --tags --quiet
         # checkout target release tag
-        git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" checkout --force --quiet $RELEASE_TAG
+        git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" checkout --force --quiet "${RELEASE_TAG}"
     fi
 
     # change directory to install dir
@@ -471,10 +471,10 @@ function print_usage() {
     if [ -d "$BASE_DIR/playbooks" ]; then
         for file in ./playbooks/**.yml; do
             local cmd_name
-            cmd_name="$(basename ${file} .yml)"
+            cmd_name="$(basename "${file}" .yml)"
             local cmd_description
             cmd_description=$(grep '^\#[[:space:]]@description:' -m 1 "${file}" | awk -F'"' '{ print $2}');
-            printf "  \e[32m%s %s \e[39m${cmd_description}\n" $cmd_name "${cmd_output_space:${#cmd_name}}"
+            printf "  \e[32m%s %s \e[39m${cmd_description}\n" "${cmd_name}" "${cmd_output_space:${#cmd_name}}"
         done
     fi
 
@@ -501,8 +501,7 @@ function prepare_logfile() {
     if [ ! -d "$LOG_PATH" ]; then
         mkdir "$LOG_PATH" || log error "Failed to create log directory"
     fi
-    LOG_FILE=$( mktemp "${LOG_PATH}/XXXXXXXXXXXXX" )
-    LOG_FILE="${LOG_FILE}.log"
+    LOG_FILE="$( mktemp "${LOG_PATH}/XXXXXXXXXXXXX" ).log"
 }
 
 #######################################
