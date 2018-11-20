@@ -4,7 +4,11 @@ addons:
   apt:
     sources:
     - sourceline: 'ppa:duggan/bats'
+    - debian-sid
     packages:
+    - shellcheck
     - bats
     - bc
-script: MAIN_FUNCTION="run_tests" ./valet.sh
+script:
+  - shellcheck valet.sh
+  - MAIN_FUNCTION="run_tests" ./valet.sh
