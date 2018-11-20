@@ -4,7 +4,8 @@
 #
 # Copyright: (C) 2018 TechDivision GmbH - All Rights Reserved
 # Author: Johann Zelger <j.zelger@techdivision.com>
-#
+# Author: Florian Schmid <f.schmid@techdivision.com>
+##
 
 # Set a global trap for e.g. ctrl+c to run shutdown routine
 trap shutdown INT
