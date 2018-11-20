@@ -7,7 +7,7 @@
 #
 
 # Set a global trap for e.g. ctrl+c to run shutdown routine
-#trap shutdown INT
+trap shutdown INT
 
 #######################################
 # Toggles spinner animation
