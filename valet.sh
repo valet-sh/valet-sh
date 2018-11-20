@@ -508,7 +508,7 @@ function prepare_logfile() {
 function cleanup_logfiles() {
     # cleanup log directory and keep last 10 execution logs
     if [ -d "$LOG_PATH" ]; then
-        cleanup_logfiles=$(ls -t1 "$LOG_PATH" | tail -n +11)
+        cleanup_logfiles=$(ls -d1 -t1 "${LOG_PATH}/*" | tail -n +11)
         test "$cleanup_logfiles" && rm "$cleanup_logfiles"
     fi
 }
