@@ -4,9 +4,7 @@ addons:
   apt:
     sources:
     - sourceline: 'ppa:duggan/bats'
-    - debian-sid
     packages:
-    - shellcheck
     - bats
     - bc
 script:
