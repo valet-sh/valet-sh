@@ -82,21 +82,6 @@ function out() {
     esac
 }
 
-
-    #######################################
-    # Returns the latest release version tag name
-    # Globals:
-    #   None
-    # Arguments:
-    #   None
-    # Returns:
-    #   String  The tag name
-    #######################################
-    #get_latest_release_version() {
-        # get latest release from GitHub api
-    #    curl --silent -H "${CURL_GIT_API_TOKEN_HEADER_LINE}" "${APPLICATION_GIT_API_URL}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
-    #}
-
 #######################################
 # Validates version against semver
 # Globals:
@@ -193,8 +178,6 @@ function is_installed() {
 #   APPLICATION_GIT_NAMESPACE
 #   APPLICATION_GIT_REPOSITORY
 #   APPLICATION_GIT_URL
-#   APPLICATION_GIT_API_URL
-#   APPLICATION_GIT_API_TOKEN
 #   ANSIBLE_PLAYBOOKS_DIR
 #   SEMVER_REGEX
 #   INSTALL_DIR
@@ -338,17 +321,19 @@ function verify_deps() {
 function install_upgrade() {
 
     # reset release tag to current application version
-    RELEASE_TAG=$APPLICATION_VERSION
+    RELEASE_TAG="$APPLICATION_VERSION"
 
-    if [ $APPLICATION_MODE = "production" ]; then
+    if [ "$APPLICATION_MODE" = "production" ]; then
+        spinner_toggle "Installing $APPLICATION_NAME"
+        touch "$APPLICATION_INPROGRESS_FILE_PATH"
         # create tmp directory for cloning valet.sh
-        local tmp_dir=$(mktemp -d)
-        local src_dir=$tmp_dir
+        local tmp_dir=$(mktemp -d) || error "Failed to create temporary directory, try running script at different path"
+        local src_dir="$tmp_dir"
 
         # clone project git repo to tmp dir
-        rm -rf $tmp_dir
-        git clone --quiet $APPLICATION_GIT_URL $tmp_dir
-        cd $tmp_dir
+        rm -rf "$tmp_dir" &> /dev/null
+        git clone --quiet "$APPLICATION_GIT_URL" "$tmp_dir"
+        cd "$tmp_dir" || error "Failed to access temporary directory"
 
         # fetch all tags from application git repo
         git fetch --tags
@@ -365,18 +350,20 @@ function install_upgrade() {
         done
 
         # force checkout latest release tag in given major version
-        git checkout --quiet --force $RELEASE_TAG
+        git checkout --quiet --force "$RELEASE_TAG"
+
+        spinner_toggle
     else
         # take base dir for developer installation
-        src_dir=$BASE_DIR
+        src_dir="$BASE_DIR"
     fi
 
     # check if install dir exist
-    if [ ! -d $INSTALL_DIR ]; then
+    if [ ! -d "$INSTALL_DIR" ]; then
         # install
-        cp -r $src_dir $INSTALL_DIR
+        cp -r "$src_dir" "$INSTALL_DIR"
         # create symlink to default included PATH
-        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
+        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin/
         # output log
         log success "Installed version $RELEASE_TAG"
     else
@@ -396,10 +383,10 @@ function install_upgrade() {
     fi
 
     # change directory to install dir
-    cd $INSTALL_DIR
+    cd "$INSTALL_DIR"
 
     # clean tmp dir
-    rm -rf $tmp_dir
+    rm -rf "$tmp_dir"
 }
 
 #######################################
@@ -414,9 +401,8 @@ function install_upgrade() {
 #   None
 #######################################
 function print_header() {
-    printf "\e[1m\e[34m$APPLICATION_NAME\033[0m $APPLICATION_VERSION\033[0m\n"
-    printf "\e[2m  (c) 2018 TechDivision GmbH\033[0m\n"
-    printf "\n"
+    echo -e "\033[1m\033[34m$APPLICATION_NAME\033[0m $APPLICATION_VERSION\033[0m"
+    echo -e "\033[2m  (c) 2018 TechDivision GmbH\033[0m"
 }
 
 #######################################
@@ -445,15 +431,15 @@ function print_footer() {
     printf "\e[1mDebug information:\033[0m"
     printf "\e[34m"
     printf "\n"
-    printf "  Version: \e[1m%s\033[0m\n" $APPLICATION_VERSION
+    printf "  Version: \e[1m%s\033[0m\n" "$APPLICATION_VERSION"
     printf "\e[34m"
-    printf "  Application mode: \e[1m%s\033[0m\n" $APPLICATION_MODE
+    printf "  Application mode: \e[1m%s\033[0m\n" "$APPLICATION_MODE"
     printf "\e[34m"
-    printf "  Execution time: \e[1m%f sec.\033[0m\n" $APPLICATION_EXECUTION_TIME
+    printf "  Execution time: \e[1m%f sec.\033[0m\n" "$APPLICATION_EXECUTION_TIME"
     printf "\e[34m"
-    printf "  Logfile: \e[1m%s\033[0m\n" $LOG_FILE
+    printf "  Logfile: \e[1m%s\033[0m\n" "$LOG_FILE"
     printf "\e[34m"
-    printf "  Exitcode: \e[1m%s\033[0m\n" $APPLICATION_RETURN_CODE
+    printf "  Exitcode: \e[1m%s\033[0m\n" "$APPLICATION_RETURN_CODE"
     printf "\e[34m\033[0m"
     printf "\n"
 }
@@ -505,8 +491,8 @@ function print_usage() {
 function prepare_logfile() {
     # define log file
     LOG_PATH=${BASE_DIR}/log
-    if [ ! -d $LOG_PATH ]; then
-        mkdir $LOG_PATH
+    if [ ! -d "$LOG_PATH" ]; then
+        mkdir "$LOG_PATH" || log error "Failed to create log directory"
     fi
     LOG_FILE="$( mktemp ${LOG_PATH}/XXXXXXXXXXXXX ).log"
 }
@@ -522,11 +508,9 @@ function prepare_logfile() {
 #######################################
 function cleanup_logfiles() {
     # cleanup log directory and keep last 10 execution logs
-    if [ -d $LOG_PATH ]; then
-        cd $LOG_PATH
-        cleanup_logfiles=$(ls -t1 | tail -n +11)
-        test "$cleanup_logfiles" && rm $cleanup_logfiles
-        cd ..
+    if [ -d "$LOG_PATH" ]; then
+        cleanup_logfiles=$(ls -t1 "$LOG_PATH" | tail -n +11)
+        test "$cleanup_logfiles" && rm "$cleanup_logfiles"
     fi
 }
 
