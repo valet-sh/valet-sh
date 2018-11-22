@@ -10,8 +10,8 @@
 # Set a global trap for e.g. ctrl+c to run shutdown routine
 trap shutdown INT
 
-# define script main function
-: "${MAIN_FUNCTION:=main}"
+# define application to be auto startet in case of testing purpose for example
+: "${APPLICATION_AUTOSTART:=1}"
 
 #######################################
 # Toggles spinner animation
@@ -226,6 +226,9 @@ function init() {
     # use current bash source script dir as base_dir
     BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
 
+    # define log filepath
+    LOG_PATH=${BASE_DIR}/log
+
     # check if git dir is available
     if [ -d "${BASE_DIR}/.git" ]; then
         # get the current version from git
@@ -375,16 +378,16 @@ function install_upgrade() {
         CURRENT_INSTALLED_VERSION=$(git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" describe --tags)
 
         # compare application version to release tag version
-        if [ $(version_compare "${CURRENT_INSTALLED_VERSION}" "${RELEASE_TAG}") = 0 ]; then
+        if [ "$(version_compare "${CURRENT_INSTALLED_VERSION}" "${RELEASE_TAG}")" = "0" ]; then
             out success "Already on the latest version $RELEASE_TAG"
         else
             out success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
+            # update tags
+            git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" fetch --tags --quiet
+            # checkout target release tag
+            git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" checkout --force --quiet "${RELEASE_TAG}"
         fi
 
-        # update tags
-        git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" fetch --tags --quiet
-        # checkout target release tag
-        git --git-dir="${INSTALL_DIR}/.git" --work-tree="${INSTALL_DIR}" checkout --force --quiet "${RELEASE_TAG}"
     fi
 
     # change directory to install dir
@@ -496,12 +499,11 @@ function print_usage() {
 #   None
 #######################################
 function prepare_logfile() {
-    # define log file
-    LOG_PATH=${BASE_DIR}/log
     if [ ! -d "$LOG_PATH" ]; then
         mkdir "$LOG_PATH" || log error "Failed to create log directory"
     fi
-    LOG_FILE="$( mktemp "${LOG_PATH}/XXXXXXXXXXXXX" ).log"
+    LOG_FILE="${LOG_PATH}/$(date +%s%N).log"
+    touch "${LOG_FILE}"
 }
 
 #######################################
@@ -516,8 +518,7 @@ function prepare_logfile() {
 function cleanup_logfiles() {
     # cleanup log directory and keep last 10 execution logs
     if [ -d "$LOG_PATH" ]; then
-        cleanup_logfiles=$(ls -d1 -t1 "${LOG_PATH}/*" | tail -n +11)
-        test "$cleanup_logfiles" && rm "$cleanup_logfiles"
+        find "${LOG_PATH}" -type f | sort | head -n -10 | xargs rm -rf {}
     fi
 }
 
@@ -648,25 +649,8 @@ function main() {
     shutdown
 }
 
-#######################################
-# Run tests via bats
-# Globals:
-#   None
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-function run_tests() {
-    # export all functions for testing purpose
-    export -f out
-    export -f version_validate
-    export -f version_compare
-    export -f is_installed
+# start cli with given command line args if autostart is enabled
+if [ "${APPLICATION_AUTOSTART}" = "1" ]; then
+    main "$@";
+fi
 
-    # execute tests via bats
-    bats --pretty tests
-}
-
-# start cli with given command line args
-${MAIN_FUNCTION} "$@";

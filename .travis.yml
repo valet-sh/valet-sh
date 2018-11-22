@@ -9,4 +9,4 @@ addons:
     - bc
 script:
   - shellcheck valet.sh
-  - MAIN_FUNCTION="run_tests" ./valet.sh
+  - ./tests.sh
