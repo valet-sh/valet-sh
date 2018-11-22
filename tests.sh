@@ -8,15 +8,12 @@
 # Author: Johann Zelger <j.zelger@techdivision.com>
 ##
 
+set -a
+
 export APPLICATION_AUTOSTART=0
 
+# shellcheck disable=SC1091
 source ./valet.sh
-
-# export all relevant functions for testing purpose
-export -f out
-export -f version_validate
-export -f version_compare
-export -f is_installed
 
 # execute tests via bats
 bats --pretty tests
