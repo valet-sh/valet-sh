@@ -9,4 +9,4 @@ addons:
     - bc
 script:
   - shellcheck valet.sh
-  - ./tests.sh
+  - tests/test_functions.bats

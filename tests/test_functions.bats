@@ -173,19 +173,5 @@ load bootstrap
 #################################################################################################
 # Testing function: is_installed
 #################################################################################################
-@test "Testing function is_installed if not installed" {
-    uninstall
-    run is_installed
 
-    debug "${status}" "${output}" "${lines}"
-    [ "$status" = "1" ]
-}
-
-
-@test "Testing function is_installed if installed" {
-    run is_installed
-
-    debug "${status}" "${output}" "${lines}"
-    [ "$status" = "0" ]
-}
-
+# tbd
