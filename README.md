@@ -1,6 +1,9 @@
 valet.sh
 ========
 
+[![Build Status](https://travis-ci.org/valet-sh/valet-sh.svg?branch=master)](https://travis-ci.org/valet-sh/valet-sh)
+
+
 Installation
 ------------
 
