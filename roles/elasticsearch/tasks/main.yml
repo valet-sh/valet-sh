@@ -1,57 +1,10 @@
 ---
 
-- name: Ensure base directory exists
-  become: true
-  file:
-    path: "{{ install_base_path }}"
-    state: directory
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: 0755
+- include: test.yml
 
-- name: Check if elasticsearch installation exist
-  stat:
-    path: "{{ install_base_path }}/elasticsearch-{{ install_elasticsearch_version }}"
-  register: path_elasticsearch_obj
+#- include: verify.yml
 
-- name: Download Elasticsearch
-  get_url:
-    url: "{{ install_elasticsearch_download_baseurl }}{{ install_elasticsearch_version }}.tar.gz"
-    dest: "/tmp/elasticsearch-{{ install_elasticsearch_version }}.tar.gz"
-  when: path_elasticsearch_obj.stat.exists == False
+#- include: prepare.yml
 
-- name: Extract elasticsearch
-  shell: "tar -xzf /tmp/elasticsearch-{{ install_elasticsearch_version }}.tar.gz -C {{ install_base_path }}"
-  when: path_elasticsearch_obj.stat.exists == False
-
-- name: Ensure elasticsearch config is deployed
-  template:
-    src: "elasticsearch/elasticsearch{{ install_elasticsearch_config_version }}.yml.j2"
-    dest: "{{ install_base_path }}/elasticsearch-{{ install_elasticsearch_version }}/config/elasticsearch.yml"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: '0644'
-  when: path_elasticsearch_obj.stat.exists == False
-
-- name: Ensure all elasticsearch plugins are installed
-  shell: "{{ install_base_path }}/elasticsearch-{{ install_elasticsearch_version }}/bin/{{ install_elasticsearch_plugin_bin }} install {{ item }}"
-  with_items: "{{ install_elasticsearch_plugins }}"
-  when: path_elasticsearch_obj.stat.exists == False
-
-- name: Try to stop an existing elasticsearch
-  become: True
-  shell: "launchctl unload -w {{ launch_daemons_path }}/sh.valet.elasticsearch-{{ install_elasticsearch_version }}.plist"
-  ignore_errors: True
-
-- name: Provision elasticsearch macOS launchdaemon
-  become: true
-  template:
-    src: "elasticsearch/sh.valet.elasticsearch.plist.j2"
-    dest: "{{ launch_daemons_path }}/sh.valet.elasticsearch-{{ install_elasticsearch_version }}.plist"
-    owner: root
-    group: staff
-    mode: '0644'
-
-- name: Start elasticsearch
-  become: True
-  shell: "launchctl load -w {{ launch_daemons_path }}/sh.valet.elasticsearch-{{ install_elasticsearch_version }}.plist"
+#- include: install.yml
+#  when: action == 'install'

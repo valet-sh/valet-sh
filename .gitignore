@@ -4,6 +4,7 @@
 .install
 .version
 .upgrade
+.history
 .inprogress
 .tmp
 /log

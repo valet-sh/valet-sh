@@ -1,0 +1,4 @@
+---
+
+- name: "include variables for given version request"
+  include_vars: "{{ cli.args[1] }}.yml"
