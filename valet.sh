@@ -433,7 +433,7 @@ function execute_ansible_playbook() {
     local command=$1
     local ansible_playbook_file="$ANSIBLE_PLAYBOOKS_DIR/$command.yml"
     local parsed_args=""
-    local ansible_ret_code=0
+
     # prepare cli arguments if given and transform them to ansible extra vars format
     if [ "$#" -gt 1 ]; then
         for i in $(seq 2 $#); do  if [ "${i}" -gt 2 ]; then parsed_args+=,; fi; parsed_args+="\"${!i}\""; done
