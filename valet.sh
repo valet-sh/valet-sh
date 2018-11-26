@@ -378,7 +378,6 @@ function print_footer() {
 function print_usage() {
     local cmd_output_space='        '
     local cmd_name="-x"
-    printf "\\n"
     printf "\\e[33mUsage:\\e[39m\\n"
     printf "  command [options] [command] [arguments]\\n"
     printf "\\n"
@@ -459,25 +458,16 @@ EOM
         # start spinner in waiting mode
         spinner_toggle "Running \\e[32m$command\\e[39m"
         # execute ansible-playbook with given params
-        ##ANSIBLE_OUTPUT=$(ansible-playbook "${ansible_playbook_file}" "${ansible_extra_vars[@]}" 2>&1 >"${LOG_FILE}" ) || ansible_ret_code=$?
-        ansible-playbook "${ansible_playbook_file}" "${ansible_extra_vars[@]}" || ansible_ret_code=$?
+        ansible-playbook "${ansible_playbook_file}" "${ansible_extra_vars[@]}" || APPLICATION_RETURN_CODE=$?
         # stop spinner
         spinner_toggle
         # log exact command line as typed in shell with user and path info
         echo "${PWD} ${USER}: $0 $*" >> "${LOG_FILE}"
         # cleanup logfiles
         cleanup_logfiles
-        # check if exit code was not 0
-        if [ $ansible_ret_code != 0 ]; then
-            out error "${ANSIBLE_OUTPUT}"
-        else
-            out success "${ANSIBLE_OUTPUT}"
-        fi
     else
         out error "Command '$command' not available"
     fi
-    # set global ret code like ansible ret code
-    APPLICATION_RETURN_CODE=$ansible_ret_code
 }
 
 ##############################################################################
@@ -519,7 +509,6 @@ function shutdown() {
 function process_args() {
     # check if no arguments were given
     if [ $# -eq 0 ];
-    #if ( ! getopts ":dvh" opt); then
     then
         # just display usage in case of zero arguments
         print_usage
@@ -554,6 +543,8 @@ function process_args() {
                 # ansible will throw an error if specific playbook does not exist
                 *) execute_ansible_playbook "$@";;
             esac
+        else
+            print_usage
         fi
     fi
 }
