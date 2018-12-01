@@ -7,5 +7,6 @@
 .history
 .inprogress
 .tmp
+.vagrant
+.vscode
 /log
-/playbooks/backup
