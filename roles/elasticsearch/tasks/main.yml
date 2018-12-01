@@ -2,9 +2,9 @@
 
 - include: test.yml
 
-#- include: verify.yml
+- include: verify.yml
 
-#- include: prepare.yml
+- include: prepare.yml
 
-#- include: install.yml
-#  when: action == 'install'
+- include: install.yml
+  when: action == 'install'

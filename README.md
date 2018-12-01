@@ -11,7 +11,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/valet-sh/install/master/inst
 ## Usage
 
 See command descriptions when executing `valet.sh`
-```
+
+```bash
 Usage:
   command [options] [command] [arguments]
 ```

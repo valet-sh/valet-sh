@@ -395,7 +395,7 @@ function process_args() {
             case $opt in
                 d)
                     # enable debug info
-                    APPLICATION_DEBUG_INFO_ENABLED=1
+                    export APPLICATION_DEBUG_INFO_ENABLED=1
                     ;;
                 v)
                     # immediate shutdown to display version only
