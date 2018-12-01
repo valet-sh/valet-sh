@@ -69,12 +69,12 @@ class CallbackModule(CallbackModule_debug):
         jsonObj = json.loads(json.dumps(ast.literal_eval(resultDict)))
         # get msg from object
         if 'msg' in jsonObj :
-            msg = jsonObj['msg']
+            vsh_msg = jsonObj['msg']
         if 'message' in jsonObj :
-            msg = jsonObj['message']
+            vsh_msg = jsonObj['message']
 
         # send msg to stderr
-        self._display.display(msg, None, True)
+        self._display.display(vsh_msg, None, True)
 
         # call parent class function
         super(CallbackModule, self).v2_runner_on_failed(result, ignore_errors)

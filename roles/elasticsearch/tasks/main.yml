@@ -1,7 +1,5 @@
 ---
 
-- include: test.yml
-
 - include: verify.yml
 
 - include: prepare.yml
