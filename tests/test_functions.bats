@@ -124,30 +124,6 @@ load bootstrap
 
 
 #################################################################################################
-# Testing function: version_validate
-#################################################################################################
-@test "Testing function version_validate with valid semantic version" {
-    version="1.4.2-beta1+4718762"
-    run version_validate "${version}"
-
-    debug "${status}" "${output}" "${lines}"
-    [ "$status" = "0" ]
-
-    unset version
-}
-
-@test "Testing function version_validate with invalid semantic version" {
-    version="1+4-2-beta1_4718762"
-    run version_validate "${version}"
-
-    debug "${status}" "${output}" "${lines}"
-    [ "$status" = "1" ]
-
-    unset version
-}
-
-
-#################################################################################################
 # Testing function: error
 #################################################################################################
 @test "Testing function error with message" {
@@ -168,10 +144,3 @@ load bootstrap
     [ "$output" = "no error message given" ]
     [ "$status" = "${APPLICATION_RETURN_CODE_ERROR}" ]
 }
-
-
-#################################################################################################
-# Testing function: is_installed
-#################################################################################################
-
-# tbd
