@@ -342,6 +342,8 @@ EOM
         echo "${PWD} ${USER}: $0 $*" >> "${LOG_FILE}"
         # cleanup logfiles
         cleanup_logfiles
+        # success
+        out success
     else
         out error "Command '$command' not available"
     fi
