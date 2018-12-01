@@ -1,79 +1,126 @@
 #!/usr/bin/env bash
-#
+
+################################################################################
 # valet.sh
 #
 # Copyright: (C) 2018 TechDivision GmbH - All Rights Reserved
 # Author: Johann Zelger <j.zelger@techdivision.com>
+# Author: Florian Schmid <f.schmid@techdivision.com>
+################################################################################
 
-#######################################
+# Set a global trap for e.g. ctrl+c to run shutdown routine
+trap shutdown INT
+
+# track start time
+APPLICATION_START_TIME=$(ruby -e 'puts Time.now.to_f');
+
+# define application to be auto startet in case of testing purpose for example
+: "${APPLICATION_AUTOSTART:=1}"
+# define default spinner enabled
+: "${SPINNER_ENABLED:=1}"
+# define application return codes
+APPLICATION_RETURN_CODE_ERROR=255
+APPLICATION_RETURN_CODE_SUCCESS=0
+# set default return code 0
+APPLICATION_RETURN_CODE=$APPLICATION_RETURN_CODE_SUCCESS
+# define default setting for debug info output
+APPLICATION_DEBUG_INFO_ENABLED=0;
+# define variables
+APPLICATION_NAME="valet.sh"
+# define default git relevant variables
+APPLICATION_GIT_NAMESPACE=${APPLICATION_GIT_NAMESPACE:="valet-sh"}
+APPLICATION_GIT_REPOSITORY=${APPLICATION_GIT_REPOSITORY:="valet-sh"}
+APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
+# semver validator regex
+SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
+# define default playbook dir
+ANSIBLE_PLAYBOOKS_DIR="playbooks"
+# define global temp dir
+TEMP_DIR="/tmp"
+# temporary application-in-progress file used e.g. by ansible or spinner function
+APPLICATION_INPROGRESS_FILE_PATH="${TEMP_DIR}/valet-sh.inprogress"
+# define default install directory
+APPLICATION_REPO_DIR="/usr/local/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}";
+# resolve symlinked bash source if needed
+test -h "${BASH_SOURCE[0]}" && SCRIPT_PATH="$(readlink "${BASH_SOURCE[0]}")" || SCRIPT_PATH="${BASH_SOURCE[0]}"
+# use current bash source script dir as base_dir
+BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
+# define log filepath
+LOG_PATH=${BASE_DIR}/log
+
+# check if git dir is available in base dir
+if [ -d "${BASE_DIR}/.git" ]; then
+    # get the current version from git repository in base dir
+    APPLICATION_VERSION=$(git --git-dir="${BASE_DIR}/.git" --work-tree="${BASE_DIR}" describe --tags)
+fi
+
+##############################################################################
 # Toggles spinner animation
-# Globals:
-#   SPINNER_PID
-# Arguments:
-#   Message
-# Returns:
-#   None
-#######################################
-spinner_toogle() {
-
-    # Start spinner background function
+##############################################################################
+spinner_toggle() {
+    # check if spinner animation is globally enabled
+    if [ "${SPINNER_ENABLED}" != "1" ]
+    then
+        return 0
+    fi
+    # start spinner background function
     function _spinner_start() {
-        local list=( $(echo -e '\xe2\xa0\x8b')
-                     $(echo -e '\xe2\xa0\x99')
-                     $(echo -e '\xe2\xa0\xb9')
-                     $(echo -e '\xe2\xa0\xb8')
-                     $(echo -e '\xe2\xa0\xbc')
-                     $(echo -e '\xe2\xa0\xb4')
-                     $(echo -e '\xe2\xa0\xa6')
-                     $(echo -e '\xe2\xa0\xa7')
-                     $(echo -e '\xe2\xa0\x87')
-                     $(echo -e '\xe2\xa0\x8f') )
+        local list=( "$(echo -e '\xe2\xa0\x8b')"
+                     "$(echo -e '\xe2\xa0\x99')"
+                     "$(echo -e '\xe2\xa0\xb9')"
+                     "$(echo -e '\xe2\xa0\xb8')"
+                     "$(echo -e '\xe2\xa0\xbc')"
+                     "$(echo -e '\xe2\xa0\xb4')"
+                     "$(echo -e '\xe2\xa0\xa6')"
+                     "$(echo -e '\xe2\xa0\xa7')"
+                     "$(echo -e '\xe2\xa0\x87')"
+                     "$(echo -e '\xe2\xa0\x8f')" )
         local i=0
         tput sc
         # wait for .inprogress flag file to be created by ansible callback plugin
-        while [ ! -f $BASE_DIR/.inprogress ]; do sleep 0.5; done
-        while [ 1 ]; do
-            printf "\e[32m%s\e[39m $1 " "${list[i]}"
-            i=$(($i+1))
-            i=$(($i%10))
+        while [ ! -f "$APPLICATION_INPROGRESS_FILE_PATH" ]; do sleep 0.5; done
+        while true; do
+            printf "\\e[32m%s\\e[39m $1 " "${list[i]}"
+            i=$((i+1))
+            i=$((i%10))
             sleep 0.1
             tput rc
         done
     }
-
-    # check if spinner pid exist
+    # stop spinner background function
+    function _spinner_stop() {
+        kill "$SPINNER_PID" > /dev/null 2>&1
+        wait "$!" 2>/dev/null
+        SPINNER_PID=0
+        rm -rf "$APPLICATION_INPROGRESS_FILE_PATH"
+        tput rc
+    }
+    # check if spinner pid doen not exist
     if [[ "$SPINNER_PID" -lt 1 ]]; then
         tput sc
+        # if function has $2 given with -f then force spinner to start on
+        # toggle call by touching inprogress file on its own
+        if [[ "$#" -eq "2" && "$2" = "-f" ]]; then
+            touch "$APPLICATION_INPROGRESS_FILE_PATH"
+        fi
         _spinner_start "$1" &
-        SPINNER_PID=$!
+        SPINNER_PID="$!"
     else
-        kill $SPINNER_PID > /dev/null 2>&1
-        wait $! 2>/dev/null
-        SPINNER_PID=0
-        tput rc
+        _spinner_stop
     fi
-
 }
 
-
-#######################################
+##############################################################################
 # Logs messages in given type
-# Globals:
-#   None
-# Arguments:
-#   Message
-#   Type
-# Returns:
-#   None
-#######################################
-function log {
+##############################################################################
+function out() {
     case "${1--h}" in
-        error) printf "\033[1;31m✘ %s\033[0m\n" "$2";;
-        success) printf "\033[1;32m✔ %s\033[0m\n" "$2";;
-        *) printf "%s\n" "$2";;
+        error) printf "\\033[1;31m✘ %s\\033[0m\\n" "$2";;
+        success) printf "\\033[1;32m✔ %s\\033[0m\\n" "$2";;
+        task) printf "▸ %s\\n" "$2";;
+        *) printf "%s\\n" "$*";;
     esac
 }
-
 
 #######################################
 # Validates version against semver
@@ -84,9 +131,9 @@ function log {
 # Returns:
 #   None
 #######################################
-function version_validate {
+function version_validate() {
     local version=$1
-    if [[ "$version" =~ $SEMVER_REGEX ]]; then
+    if [[ "$version" =~ ${SEMVER_REGEX} ]]; then
         if [ "$#" -eq "2" ]; then
             local major=${BASH_REMATCH[1]}
             local minor=${BASH_REMATCH[2]}
@@ -98,23 +145,14 @@ function version_validate {
             echo "$version"
         fi
     else
-        log error "Version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information." error
+        out error "Version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information." error
     fi
 }
 
-#######################################
+##############################################################################
 # Compares versions
-# Globals:
-#   None
-# Arguments:
-#   Version1
-#   Version2
-# Returns:
-#  -1   if version1 < version2
-#   0   if version1 == version2
-#   1   if version1 > version2
-#######################################
-function version_compare {
+##############################################################################
+function version_compare() {
     version_validate "$1" V
     version_validate "$2" V_
 
@@ -142,394 +180,264 @@ function version_compare {
     echo 0
 }
 
-#######################################
-# Prepares variables and other stuff
-# Globals:
-#   APPLICATION_START_TIME
-#   APPLICATION_NAME
-#   APPLICATION_MODE
-#   APPLICATION_VERSION
-#   ANSIBLE_PLAYBOOKS_DIR
-#   APPLICATION_GIT_URL
-#   SEMVER_REGEX
-#   INSTALL_DIR
-#   BASE_DIR
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-function prepare {
-    APPLICATION_RETURN_CODE=0
-    APPLICATION_START_TIME=$(ruby -e 'puts Time.now.to_f');
-    # define variables
-    APPLICATION_NAME="valet.sh"
-    : "${APPLICATION_MODE:=production}"
-    APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/valet-sh/valet-sh"}
-    ANSIBLE_PLAYBOOKS_DIR="playbooks"
-    SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
-    INSTALL_DIR="$HOME/.${APPLICATION_NAME}";
-
-    # resolve symlink if needed
-    test -h ${BASH_SOURCE[0]} && SCRIPT_PATH="$(readlink "${BASH_SOURCE[0]}")" || SCRIPT_PATH="${BASH_SOURCE[0]}"
-
-    # use current bash source script dir as base_dir
-    BASE_DIR="$( dirname "${SCRIPT_PATH}" )"
-
-    install_deps
-
-    # check if git dir is available
-    if [ -d $BASE_DIR/.git ]; then
-        # get the current version from git
-        APPLICATION_VERSION=$(git --git-dir=${BASE_DIR}/.git --work-tree=${BASE_DIR} describe --tags)
-        # set cwd to base dir
-        cd $BASE_DIR
-    fi
-
+##############################################################################
+# Prepares application by installing dependencies and itself
+##############################################################################
+function prepare() {
+    # set cwd to base dir
+    cd "${BASE_DIR}" || error "Unable to set cwd to ${BASE_DIR}"
 }
 
-#######################################
-# Install ansible if not availabe
-# Globals:
-#   None
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-function install_deps {
-    # check if macOS command line tools are available by checking git bin
-    if [ ! -f /Library/Developer/CommandLineTools/usr/bin/git ]; then
-        spinner_toogle "Installing CommandLineTools \e[32m$command\e[39m"
-        # if git command is not available, install command line tools
-        # create macOS flag file, that CommandLineTools can be installed on demand
-        touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-        # install command line tools
-        SOFTWARE_UPDATE_NAME=$(softwareupdate -l | grep -B 1 -E "Command Line Tools.*$(sw_vers -productVersion)" | awk -F'*' '/^ +\*/ {print $2}' | sed 's/^ *//' | tail -n1)
-        softwareupdate -i "$SOFTWARE_UPDATE_NAME"
-        # cleanup in-progress file for macos softwareupdate util
-        rm -rf /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-        spinner_toogle
-    fi
-    # check if ansible command is available
-    if [ ! -x "$(command -v ansible)" ]; then
-        spinner_toogle "Installing Ansible \e[32m$command\e[39m"
-        # if ansible is not available, install pip and ansible
-        sudo easy_install pip;
-        sudo pip install -Iq ansible;
-        spinner_toogle
-    fi
-}
-
-#######################################
-# Install and upgrade logic
-# Globals:
-#   APPLICATION_NAME
-#   APPLICATION_VERSION
-#   APPLICATION_GIT_URL
-#   BASE_DIR
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-function install_upgrade {
-
-    # reset release tag to current application version
-    RELEASE_TAG=$APPLICATION_VERSION
-
-    if [ $APPLICATION_MODE = "production" ]; then
-        # create tmp directory for cloning valet.sh
-        local tmp_dir=$(mktemp -d)
-        local src_dir=$tmp_dir
-
-        # clone project git repo to tmp dir
-        rm -rf $tmp_dir
-        git clone --quiet $APPLICATION_GIT_URL $tmp_dir
-        cd $tmp_dir
-
-        # fetch all tags from application git repo
-        git fetch --tags
-
-        # get available release tags sorted by refname
-        RELEASE_TAGS=$(git tag --sort "-v:refname" )
-
-        # get latest semver conform git version tag on current major version releases
-        for GIT_TAG in $RELEASE_TAGS; do
-            if [[ "$GIT_TAG" =~ $SEMVER_REGEX ]]; then
-                RELEASE_TAG=$GIT_TAG
-                break;
-            fi
-        done
-
-        # force checkout latest release tag in given major version
-        git checkout --quiet --force $RELEASE_TAG
-    else
-        # take base dir for developer installation
-        src_dir=$BASE_DIR
-    fi
-
-    # check if install dir exist
-    if [ ! -d $INSTALL_DIR ]; then
-        # install
-        cp -r $src_dir $INSTALL_DIR
-        # create symlink to default included PATH
-        sudo ln -sf $INSTALL_DIR/${APPLICATION_NAME} /usr/local/bin
-        # output log
-        log success "Installed version $RELEASE_TAG"
-    else
-        CURRENT_INSTALLED_VERSION=$(git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} describe --tags)
-        # compare application version to release tag version
-        if [ $(version_compare ${CURRENT_INSTALLED_VERSION} $RELEASE_TAG) -gt 0 ]; then
-            log error "Already on the latest version $RELEASE_TAG"
-        else
-            log success "Upgraded from $CURRENT_INSTALLED_VERSION to latest version $RELEASE_TAG"
+##############################################################################
+# Upgrade meachanism
+##############################################################################
+function upgrade() {
+    spinner_toggle "Upgrading" -f
+    # fetch all tags from application git repo
+    git --git-dir="${APPLICATION_REPO_DIR}/.git" --work-tree="${APPLICATION_REPO_DIR}" fetch --tags --quiet
+    # get available release tags sorted by refname
+    GIT_TAGS=$(git --git-dir="${APPLICATION_REPO_DIR}/.git" --work-tree="${APPLICATION_REPO_DIR}" tag --sort "-v:refname" )
+    # get latest semver conform git version tag on current major version releases
+    for GIT_TAG in ${GIT_TAGS}; do
+        if [[ "${GIT_TAG}" =~ ${SEMVER_REGEX} ]]; then
+            git --git-dir="${APPLICATION_REPO_DIR}/.git" --work-tree="${APPLICATION_REPO_DIR}" checkout --force --quiet "${GIT_TAG}"
+            break
         fi
-
-        # update tags
-        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} fetch --tags --quiet
-        # checkout target release tag
-        git --git-dir=${INSTALL_DIR}/.git --work-tree=${INSTALL_DIR} checkout --force --quiet $RELEASE_TAG
+    done
+    # stop spinner
+    spinner_toggle
+    # output specific upgrade status message
+    if [ "$(version_compare "${APPLICATION_VERSION}" "${GIT_TAG}")" = "0" ]; then
+        out success "Already on the latest version $GIT_TAG"
+    else
+        out success "Successfully upgraded from ${APPLICATION_VERSION} to latest version ${GIT_TAG}"
     fi
-
-    # change directory to install dir
-    cd $INSTALL_DIR
-
-    # clean tmp dir
-    rm -rf $tmp_dir
 }
 
-#######################################
+##############################################################################
 # Prints the console tool header
-# Globals:
-#   APPLICATION_NAME
-#   APPLICATION_VERSION
-#   APPLICATION_MODE
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-function print_header {
-    printf "\e[1m\e[34m$APPLICATION_NAME\033[0m $APPLICATION_VERSION\033[0m\n"
-    printf "\e[2m  (c) 2018 TechDivision GmbH\033[0m\n"
-    printf "\n"
+##############################################################################
+function print_header() {
+    echo -e "\\033[1m$APPLICATION_NAME\\033[0m \\033[34m$APPLICATION_VERSION\\033[0m"
+    printf "\\n"
 }
 
-#######################################
+##############################################################################
 # Prints the console tool header
-# Globals:
-#   LC_NUMERIC
-#   APPLICATION_END_TIME
-#   APPLICATION_EXECUTION_TIME
-#   APPLICATION_NAME
-#   APPLICATION_VERSION
-#   APPLICATION_MODE
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-function print_footer {
+##############################################################################
+function print_footer() {
     LC_NUMERIC="en_US.UTF-8"
 
     APPLICATION_END_TIME=$(ruby -e 'puts Time.now.to_f')
     APPLICATION_EXECUTION_TIME=$(echo "$APPLICATION_END_TIME - $APPLICATION_START_TIME" | bc);
 
-    printf "\n"
-    printf "\e[34m"
-    printf "\n"
-    printf "\e[1mDebug information:\033[0m"
-    printf "\e[34m"
-    printf "\n"
-    printf "  Version: \e[1m%s\033[0m\n" $APPLICATION_VERSION
-    printf "\e[34m"
-    printf "  Application mode: \e[1m%s\033[0m\n" $APPLICATION_MODE
-    printf "\e[34m"
-    printf "  Execution time: \e[1m%f sec.\033[0m\n" $APPLICATION_EXECUTION_TIME
-    printf "\e[34m"
-    printf "  Logfile: \e[1m%s\033[0m\n" $LOG_FILE
-    printf "\e[34m"
-    printf "  Exitcode: \e[1m%s\033[0m\n" $APPLICATION_RETURN_CODE
-    printf "\e[34m\033[0m"
-    printf "\n"
-    printf "\n"
+    printf "\\n"
+
+    if [ $APPLICATION_DEBUG_INFO_ENABLED = 1 ]; then
+        printf "\\e[34m"
+        printf "\\e[1mDebug information:\\033[0m"
+        printf "\\e[34m"
+        printf "\\n"
+        printf "  Version: \\e[1m%s\\033[0m\\n" "$APPLICATION_VERSION"
+        printf "\\e[34m"
+        printf "  Execution time: \\e[1m%f sec.\\033[0m\\n" "$APPLICATION_EXECUTION_TIME"
+        printf "\\e[34m"
+        printf "  Logfile: \\e[1m%s\\033[0m\\n" "$LOG_FILE"
+        printf "\\e[34m"
+        printf "  Exitcode: \\e[1m%s\\033[0m\\n" "$APPLICATION_RETURN_CODE"
+        printf "\\e[34m\\033[0m"
+        printf "\\n"
+    fi
 }
 
-#######################################
+##############################################################################
 # Print usage help and command list
-# Globals:
-#   BASE_DIR
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-function print_usage {
-    local cmd_output_space='                                '
-    printf "\e[33mUsage:\e[39m\n"
-    printf "  command [options] [arguments]\n"
-    printf "\n"
-    printf "\e[32m  -h, --help            \e[39mDisplay this help message\n"
-    printf "\e[32m  -v, --version         \e[39mDisplay this application version\n"
-    printf "\n"
-    printf "\e[33mAvailable commands:\e[39m\n"
+##############################################################################
+function print_usage() {
+    local cmd_output_space='        '
+    local cmd_name="-x"
+    printf "\\e[33mUsage:\\e[39m\\n"
+    printf "  command [options] [command] [arguments]\\n"
+    printf "\\n"
+    printf "\\e[33mOptions:\\e[39m\\n"
+    printf "\\e[32m  -h %s \\e[39mDisplay this help message\\n" "${cmd_output_space:${#cmd_name}}"
+    printf "\\e[32m  -v %s \\e[39mDisplay this application version\\n" "${cmd_output_space:${#cmd_name}}"
+    printf "\\e[32m  -d %s \\e[39mDisplay debug information\\n" "${cmd_output_space:${#cmd_name}}"
+    printf "\\n"
+    printf "\\e[33mCommands:\\e[39m\\n"
+
+    local cmd_name="upgrade"
+    local cmd_description="Upgrade valet.sh to latest version"
+    printf "  \\e[32m%s %s \\e[39m${cmd_description}\\n" "${cmd_name}" "${cmd_output_space:${#cmd_name}}"
 
     if [ -d "$BASE_DIR/playbooks" ]; then
         for file in ./playbooks/**.yml; do
-            local cmd_name=$(basename $file .yml);
-            local cmd_description=$(grep '^\#[[:space:]]@description:' -m 1 $file | awk -F'"' '{ print $2}');
-            printf "  \e[32m%s %s \e[39m${cmd_description}\n" $cmd_name "${cmd_output_space:${#cmd_name}}"
+            local cmd_name
+            cmd_name="$(basename "${file}" .yml)"
+            local cmd_description
+            cmd_description=$(grep '^\#[[:space:]]@description:' -m 1 "${file}" | awk -F'"' '{ print $2}');
+            if [ ! -z "${cmd_description}" ]; then
+                printf "  \\e[32m%s %s \\e[39m${cmd_description}\\n" "${cmd_name}" "${cmd_output_space:${#cmd_name}}"
+            fi
         done
     fi
-
-    if [ ! -d "$INSTALL_DIR" ]; then
-        local cmd_name="install"
-        local cmd_description="Installs valet.sh"
-        printf "  \e[32m%s %s \e[39m${cmd_description}\n" $cmd_name "${cmd_output_space:${#cmd_name}}"
-    fi
 }
 
-#######################################
+##############################################################################
 # Prepares logfile
-# Globals:
-#   LOG_PATH
-#   LOG_FILE
-# Arguments:
-#   Command
-# Returns:
-#   None
-#######################################
-function prepare_logfile {
-    # define log file
-    LOG_PATH=${BASE_DIR}/log
-    if [ ! -d $LOG_PATH ]; then
-        mkdir $LOG_PATH
+##############################################################################
+function prepare_logfile() {
+    if [ ! -d "$LOG_PATH" ]; then
+        mkdir "$LOG_PATH" || log error "Failed to create log directory"
     fi
-    LOG_FILE="$( mktemp ${LOG_PATH}/XXXXXXXXXXXXX ).log"
+    LOG_FILE="${LOG_PATH}/${APPLICATION_START_TIME}.log"
+    touch "${LOG_FILE}"
 }
 
-#######################################
+##############################################################################
 # Cleanup logfiles
-# Globals:
-#   LOG_PATH
-# Arguments:
-#   Command
-# Returns:
-#   None
-#######################################
-function cleanup_logfiles {
+##############################################################################
+function cleanup_logfiles() {
     # cleanup log directory and keep last 10 execution logs
-    if [ -d $LOG_PATH ]; then
-        cd $LOG_PATH
-        cleanup_logfiles=$(ls -t1 | tail -n +11)
-        test "$cleanup_logfiles" && rm $cleanup_logfiles
-        cd ..
+    if [ -d "$LOG_PATH" ]; then
+        find "${LOG_PATH}" -type f | sort -r | tail -n +10 | xargs rm -rf {}
     fi
 }
 
-#######################################
+##############################################################################
 # Executes command via ansible playbook
-# Globals:
-#   ANSIBLE_PLAYBOOKS_DIR
-#   APPLICATION_RETURN_CODE
-# Arguments:
-#   Command
-# Returns:
-#   None
-#######################################
-function execute_ansible_playbook {
+##############################################################################
+function execute_ansible_playbook() {
     local command=$1
     local ansible_playbook_file="$ANSIBLE_PLAYBOOKS_DIR/$command.yml"
     local parsed_args=""
-    local ansible_ret_code=0
 
     # prepare cli arguments if given and transform them to ansible extra vars format
     if [ "$#" -gt 1 ]; then
-        for i in `seq 2 $#`; do  if [ $i -gt 2 ]; then parsed_args+=,; fi; parsed_args+="\"${!i}\""; done
+        for i in $(seq 2 $#); do  if [ "${i}" -gt 2 ]; then parsed_args+=,; fi; parsed_args+="\"${!i}\""; done
     fi
-
     # define complete extra vars object
     read -r -d '' ansible_extra_vars << EOM
---extra-vars='{
+{
     "cli": {
-        "name": ${APPLICATION_NAME},
-        "mode": ${APPLICATION_MODE},
-        "version": ${APPLICATION_VERSION},
+        "name": "${APPLICATION_NAME}",
+        "version": "${APPLICATION_VERSION}",
         "args": [${parsed_args}]
     }
-}'
+}
 EOM
+    ansible_extra_vars=("--extra-vars" "${ansible_extra_vars}")
 
     # check if requested playbook yml exist and execute it
     if [ -f "$ansible_playbook_file" ]; then
+        # prepare log file
         prepare_logfile
-
-        spinner_toogle "Running \e[32m$command\e[39m"
-        bash -c "ansible-playbook ${ansible_playbook_file} ${ansible_extra_vars}" &> ${LOG_FILE} || ansible_ret_code=$? && true
-        spinner_toogle
-
+        # start spinner in waiting mode
+        spinner_toggle "Running \\e[32m$command\\e[39m"
+        # execute ansible-playbook with given params
+        ansible-playbook "${ansible_playbook_file}" "${ansible_extra_vars[@]}" || APPLICATION_RETURN_CODE=$?
+        # stop spinner
+        spinner_toggle
         # log exact command line as typed in shell with user and path info
-        echo "$PWD $USER: $0 $*" >> ${LOG_FILE}
-
+        echo "${PWD} ${USER}: $0 $*" >> "${LOG_FILE}"
+        # cleanup logfiles
         cleanup_logfiles
-
-        # check if exit code was not 0
-        if [ $ansible_ret_code != 0 ]; then
-            log error
-        else
-            log success
-        fi
-
     else
-        log error "Command '$command' not available"
+        out error "Command '$command' not available"
     fi
-
-    # set global ret code like ansible ret code
-    APPLICATION_RETURN_CODE=$ansible_ret_code
 }
 
-#######################################
+##############################################################################
+# Error handling and abort function with log message
+##############################################################################
+function error() {
+    # check if error message is given
+    if [ -z "$*" ]; then
+        echo "no error message given"
+        shutdown $APPLICATION_RETURN_CODE_ERROR
+    fi
+    # output error message to user
+    out error "$*"    
+    # trigger immediate shutdown
+    shutdown $APPLICATION_RETURN_CODE_ERROR
+}
+
+##############################################################################
 # Shutdown cli client script
-# Globals:
-#   APPLICATION_RETURN_CODE
-# Arguments:
-#   Command
-# Returns:
-#   None
-#######################################
-function shutdown {
-    # exit with given return code
-    exit $APPLICATION_RETURN_CODE
+##############################################################################
+function shutdown() {
+    # kill spinner by pid
+    if [[ -n "${SPINNER_PID}" && "${SPINNER_PID}" -gt 0 ]]; then
+        kill "${SPINNER_PID}" &> /dev/null
+        wait "$!" 2>/dev/null
+    fi
+    # remove APPLICATION_INPROGRESS file
+    rm -rf "${APPLICATION_INPROGRESS_FILE_PATH}" &> /dev/null
+    # exit
+    if [ "$1" ]; then
+        APPLICATION_RETURN_CODE=$1
+    fi
+    exit "${APPLICATION_RETURN_CODE}"
 }
 
-#######################################
+##############################################################################
+# Process all bash args given from shell
+##############################################################################
+function process_args() {
+    # check if no arguments were given
+    if [ $# -eq 0 ];
+    then
+        # just display usage in case of zero arguments
+        print_usage
+    else
+        # parse options first and handle it
+        while getopts "dvh" opt; do
+            case $opt in
+                d)
+                    # enable debug info
+                    export APPLICATION_DEBUG_INFO_ENABLED=1
+                    ;;
+                v)
+                    # immediate shutdown to display version only
+                    shutdown
+                    ;;
+                h)
+                    # print usage for help
+                    print_usage
+                    ;;
+                *)
+                    # error in this case
+                    error "Invalid option: -${OPTARG}"
+            esac
+        done
+        shift $((OPTIND-1))
+        # handle remaining args if given
+        if [ ! -z "$*" ]; then 
+            case "${1--h}" in
+                upgrade) upgrade;;
+                uninstall) uninstall;;
+                # try to execute playbook based on command
+                # ansible will throw an error if specific playbook does not exist
+                *) execute_ansible_playbook "$@";;
+            esac
+        else
+            print_usage
+        fi
+    fi
+}
+
+##############################################################################
 # Main
-# Globals:
-#   None
-# Arguments:
-#   Command
-#   Subcommand
-# Returns:
-#   None
-#######################################
-function main {
+##############################################################################
+function main() {
     prepare
     print_header
-
-    case "${1--h}" in
-        -h) print_usage;;
-        -v) ;;
-        install|upgrade) install_upgrade;;
-        # try to execute playbook based on command
-        # ansible will throw an error if specific playbook does not exist
-        *) execute_ansible_playbook "$@";;
-    esac
-
+    process_args "$@"
     print_footer
     shutdown
 }
 
-# start console tool with command line args
-main "$@"
-
+# start cli with given command line args if autostart is enabled
+if [ "${APPLICATION_AUTOSTART}" = "1" ]; then
+    main "$@";
+fi

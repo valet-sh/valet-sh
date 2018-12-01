@@ -1,0 +1,15 @@
+---
+#
+# valet.sh | install
+#
+# @author: "Johann Zelger"
+# @command: "install"
+# @description: "Install package"
+
+- name: "install"
+  hosts: local
+  gather_facts: True
+
+  roles:
+    - common
+    - { role: "{{ cli.args[0] }}", action: install }

@@ -1,20 +1,24 @@
-valet.sh
-========
+# valet.sh
 
-Installation
-------------
+[![Build Status](https://travis-ci.org/valet-sh/valet-sh.svg?branch=master)](https://travis-ci.org/valet-sh/valet-sh)
+
+## Installation
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/valet-sh/valet-sh/master/valet.sh) install
+bash <(curl -fsSL https://raw.githubusercontent.com/valet-sh/install/master/install.sh)
 ```
 
-Usage
------
+## Usage
+
+See command descriptions when executing `valet.sh`
+
+```bash
+Usage:
+  command [options] [command] [arguments]
+```
+
 tbd.
 
-Credits
--------
+## Credits
+
 tbd.
-
-
-

@@ -1,0 +1,6 @@
+---
+
+- name: "check if valid accepted version was requested"
+  fail:
+    msg: "Unsupported elasticsearch version {{ cli.args[1] }}"
+  when: cli.args[1] not in install_elasticsearch_accepted_version

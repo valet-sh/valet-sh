@@ -1,8 +1,0 @@
-#!/usr/bin/env ansible-playbook
----
-#
-# valet.sh
-#
-# @author: "Johann Zelger"
-# @command: "upgrade"
-# @description: "Upgrades valet.sh to the latest version of current major version"
