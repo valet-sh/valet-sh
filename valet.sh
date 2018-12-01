@@ -124,9 +124,6 @@ function out() {
 # Compares versions
 ##############################################################################
 function version_compare() {
-    version_validate "$1" V
-    version_validate "$2" V_
-
     for i in 0 1 2; do
         local diff=$((${V[$i]} - ${V_[$i]}))
         if [[ $diff -lt 0 ]]; then
