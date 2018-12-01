@@ -31,6 +31,8 @@ APPLICATION_NAME="valet.sh"
 APPLICATION_GIT_NAMESPACE=${APPLICATION_GIT_NAMESPACE:="valet-sh"}
 APPLICATION_GIT_REPOSITORY=${APPLICATION_GIT_REPOSITORY:="valet-sh"}
 APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
+# semver validator regex
+SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
 # define default playbook dir
 ANSIBLE_PLAYBOOKS_DIR="playbooks"
 # define global temp dir
@@ -120,10 +122,40 @@ function out() {
     esac
 }
 
+#######################################
+# Validates version against semver
+# Globals:
+#   None
+# Arguments:
+#   Version
+# Returns:
+#   None
+#######################################
+function version_validate() {
+    local version=$1
+    if [[ "$version" =~ ${SEMVER_REGEX} ]]; then
+        if [ "$#" -eq "2" ]; then
+            local major=${BASH_REMATCH[1]}
+            local minor=${BASH_REMATCH[2]}
+            local patch=${BASH_REMATCH[3]}
+            local prere=${BASH_REMATCH[4]}
+            local build=${BASH_REMATCH[5]}
+            eval "$2=(\"$major\" \"$minor\" \"$patch\" \"$prere\" \"$build\")"
+        else
+            echo "$version"
+        fi
+    else
+        out error "Version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information." error
+    fi
+}
+
 ##############################################################################
 # Compares versions
 ##############################################################################
 function version_compare() {
+    version_validate "$1" V
+    version_validate "$2" V_
+
     for i in 0 1 2; do
         local diff=$((${V[$i]} - ${V_[$i]}))
         if [[ $diff -lt 0 ]]; then
@@ -167,7 +199,7 @@ function upgrade() {
     GIT_TAGS=$(git --git-dir="${APPLICATION_REPO_DIR}/.git" --work-tree="${APPLICATION_REPO_DIR}" tag --sort "-v:refname" )
     # get latest semver conform git version tag on current major version releases
     for GIT_TAG in ${GIT_TAGS}; do
-        if [[ "${GIT_TAG}" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+        if [[ "${GIT_TAG}" =~ ${SEMVER_REGEX} ]]; then
             git --git-dir="${APPLICATION_REPO_DIR}/.git" --work-tree="${APPLICATION_REPO_DIR}" checkout --force --quiet "${GIT_TAG}"
             break
         fi
