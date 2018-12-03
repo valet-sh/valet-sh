@@ -1,6 +1,6 @@
 # valet.sh
 
-[![Build Status](https://travis-ci.org/valet-sh/valet-sh.svg?branch=master)](https://travis-ci.org/valet-sh/valet-sh)
+[![Build Status](https://dev.azure.com/valet-sh/valet-sh/_apis/build/status/valet-sh.valet-sh)](https://dev.azure.com/valet-sh/valet-sh/_build/latest?definitionId=2)
 
 ## Installation
 
