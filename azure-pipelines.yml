@@ -5,6 +5,8 @@ steps:
   - bash: |
       brew update-reset /usr/local/Homebrew
       brew install shellcheck
+    displayName: Prepare
+  - bash: |
       shellcheck valet.sh
       tests/test_functions.bats
     displayName: Tests
