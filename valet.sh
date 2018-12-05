@@ -32,7 +32,7 @@ APPLICATION_GIT_NAMESPACE=${APPLICATION_GIT_NAMESPACE:="valet-sh"}
 APPLICATION_GIT_REPOSITORY=${APPLICATION_GIT_REPOSITORY:="valet-sh"}
 APPLICATION_GIT_URL=${APPLICATION_GIT_URL:="https://github.com/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}"}
 # semver validator regex
-SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
+SEMVER_REGEX='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$'
 # define default playbook dir
 ANSIBLE_PLAYBOOKS_DIR="playbooks"
 # define global temp dir
@@ -276,7 +276,7 @@ function print_usage() {
             cmd_name="$(basename "${file}" .yml)"
             local cmd_description
             cmd_description=$(grep '^\#[[:space:]]@description:' -m 1 "${file}" | awk -F'"' '{ print $2}');
-            if [ ! -z "${cmd_description}" ]; then
+            if [ -n "${cmd_description}" ]; then
                 printf "  \\e[32m%s %s \\e[39m${cmd_description}\\n" "${cmd_name}" "${cmd_output_space:${#cmd_name}}"
             fi
         done
@@ -414,7 +414,7 @@ function process_args() {
         done
         shift $((OPTIND-1))
         # handle remaining args if given
-        if [ ! -z "$*" ]; then 
+        if [ -n "$*" ]; then
             case "${1--h}" in
                 upgrade) upgrade;;
                 uninstall) uninstall;;
