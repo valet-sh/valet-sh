@@ -8,7 +8,8 @@
 - include_tasks: "common/distil.yml"
   # output: package_candidate
 
-- include_role:
+- name: "include role package-{{ package_name }}-{{ package_version }}"
+  include_role:
     name: "package-{{ package_name }}-{{ package_version }}"
   vars:
     action: "manifest"

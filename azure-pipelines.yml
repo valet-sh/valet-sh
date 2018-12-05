@@ -1,0 +1,10 @@
+pool:
+  vmImage: 'macOS 10.13'
+
+steps:
+  - bash: |
+      brew update-reset /usr/local/Homebrew
+      brew install bats shellcheck
+      shellcheck valet.sh
+      tests/test_functions.bats
+    displayName: Tests
