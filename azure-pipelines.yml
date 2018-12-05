@@ -8,4 +8,4 @@ steps:
       shellcheck valet.sh
       tests/test_functions.bats
     displayName: Tests
-    failOnStandardError: true
+    failOnStderr: true
