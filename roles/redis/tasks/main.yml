@@ -1,4 +1,0 @@
----
-
-- include_tasks: package.yml
-- include_tasks: provision.yml

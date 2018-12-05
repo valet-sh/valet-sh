@@ -1,0 +1,18 @@
+---
+
+- name: "download package {{ package_candidate.id }}"
+  get_url:
+    url: "{{ package_candidate.url }}"
+    dest: "{{ package_manager_tmp_dir }}/{{ package_candidate.filename }}"
+    force: true
+
+- name: "unarchive package"
+  unarchive:
+    src: "{{ package_manager_tmp_dir }}/{{ package_candidate.filename }}"
+    dest: "{{ package_base_dir }}"
+    remote_src: yes
+  when: package_candidate.name != "gnutar"
+
+- name: "raw unarchive package"
+  command: "tar -xcf {{ package_manager_tmp_dir }}/{{ package_candidate.filename }} -C {{ package_base_dir }} warn=False"
+  when: package_candidate.name == "gnutar"

@@ -1,0 +1,17 @@
+---
+#
+# valet.sh | stop
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @command: "stop"
+# @description: "Stop service"
+
+- hosts: local
+  gather_facts: false
+  vars:
+    service_action: "stop"
+    package_name: "{{ cli.args[0] }}"
+    package_version: "{{ cli.args[1] }}"
+  roles:
+    - service-manager

@@ -1,0 +1,6 @@
+---
+
+- name: set package_condition variable
+  set_fact:
+    package_condition: "{{ package_state[package_name + '-' + package_version] }}"
+  when: package_state[package_name + '-' + package_version] is defined

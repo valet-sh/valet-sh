@@ -3,13 +3,31 @@
 # valet.sh | install
 #
 # @author: "Johann Zelger"
+# @author: "Philipp Dittert"
 # @command: "install"
 # @description: "Install package"
+# @usage: "valet.sh install <package> <version>"
 
 - name: "install"
   hosts: local
   gather_facts: True
 
-  roles:
-    - common
-    - { role: "{{ cli.args[0] }}", action: install }
+  tasks:
+
+  - fail:
+      msg: 'cli argument package not defined'
+    when: cli.args.0 is not defined
+    
+  - fail:
+      msg: 'cli argument version not defined'
+    when: cli.args.1 is not defined
+
+  - debug:
+      msg: 'asdfasdfasdfasdfasdfasdf'
+
+  - import_role:
+      name: package-manager
+    vars:
+      package_action: "install"
+      package_name: "{{ cli.args.0 }}"
+      package_version: "{{ cli.args.1 }}"

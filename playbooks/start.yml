@@ -1,0 +1,17 @@
+---
+#
+# valet.sh | start
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @command: "start"
+# @description: "Start service"
+
+- hosts: local
+  gather_facts: false
+  vars:
+    service_action: "start"
+    package_name: "{{ cli.args[0] }}"
+    package_version: "{{ cli.args[1] }}"
+  roles:
+    - service-manager

@@ -10,16 +10,7 @@
 # todo: remove hardcoded os_version when introducing distil package-manager
 - set_fact:
     #os_version: "{{ sw_vers.stdout }}"
-     os_version: "10.12"
-
-- name: ensure base directory exists
-  file:
-    path: "{{ base_dir }}"
-    state: directory
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: 0755
-  become: true
+     os_version: "10.13"
 
 #- include_role:
 #    name: gnutar

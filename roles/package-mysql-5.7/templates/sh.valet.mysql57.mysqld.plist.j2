@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>             <string>{{ package_startup_script_filename }}</string>
+    <key>ProcessType</key>       <string>Interactive</string>
+    <key>Disabled</key>          <false/>
+    <key>RunAtLoad</key>         <true/>
+    <key>KeepAlive</key>         <true/>
+    <key>SessionCreate</key>     <true/>
+    <key>LaunchOnlyOnce</key>    <false/>
+    <key>UserName</key>          <string>{{ package_user }}</string>
+    <key>GroupName</key>         <string>{{ package_group }}</string>
+    <key>ExitTimeOut</key>       <integer>600</integer>
+    <key>Program</key>           <string>{{ package_bin_dir }}/mysqld</string>
+    <key>ProgramArguments</key>
+        <array>
+            <string>{{ package_bin_dir }}/mysqld</string>
+            <string>--defaults-file={{ package_etc_dir }}/my.cnf</string>
+            <string>--user={{ mysql_57_user }}</string>
+            <string>--basedir={{ package_dist_dir }}</string>
+            <string>--datadir={{ package_data_dir }}</string>
+            <string>--plugin-dir={{ package_dist_dir }}/lib/plugin</string>
+            <string>--log-error={{ package_data_dir }}/mysqld.local.err</string>
+            <string>--pid-file={{ package_data_dir }}/mysqld.local.pid</string>
+        </array>
+    <key>WorkingDirectory</key>  <string>{{ package_dist_dir }}</string>
+</dict>
+</plist>

@@ -1,10 +1,26 @@
 ---
+distil_base_url: "https://distil.valet.sh"
 
-install_base_path: '/usr/local/valet-sh'
-base_dir: '/usr/local/valet-sh'
 working_dir: "{{ lookup('env','PWD') }}"
+base_path: "/usr/local/valet-sh"
+state_file: "{{ base_path }}/state"
+launch_daemons_base_path: "/Library/LaunchDaemons"
 
-launch_daemons_path: "/Library/LaunchDaemons"
+package_channel: "testing"
+
+package_base_path: "{{ base_path }}/{{ package_name }}/{{ package_version }}"
+package_dist_path: "{{ base_path }}/{{ package_name }}/{{ package_version }}/dist"
+package_etc_path: "{{ package_base_path }}/etc"
+package_data_path: "{{ package_base_path }}/data"
+package_log_path: "{{ package_base_path }}/log"
+package_tmp_path: "{{ package_base_path }}/tmp"
+package_run_path: "{{ package_base_path }}/run"
 
 current_user: "{{ lookup('env','USER') }}"
-current_group: staff
+current_group: "staff"
+
+package_user: "{{ lookup('env','USER') }}"
+package_group: "staff"
+
+# linux only
+# package_group: "{{ lookup('env','USER') }}"

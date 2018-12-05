@@ -1,0 +1,13 @@
+---
+
+- name: service | mysql | started
+  command: "launchctl load -w {{ launch_daemons_base_dir }}/{{ mysql_startup_script_filename }}"
+  become: true
+
+- name: service | mysql | stopped
+  command: "launchctl unload -w {{ launch_daemons_base_dir }}/{{ mysql_startup_script_filename }}"
+  become: true
+
+- name: service | mysql | restarted
+  command: "launchctl unload -w {{ launch_daemons_base_dir }}/{{ mysql_startup_script_filename }} && launchctl load -w {{ launch_daemons_base_dir }}/{{ mysql_startup_script_filename }}"
+  become: true
