@@ -13,7 +13,7 @@
   gather_facts: True
 
   tasks:
-
+  
   - fail:
       msg: 'cli argument package not defined'
     when: cli.args.0 is not defined
@@ -21,9 +21,6 @@
   - fail:
       msg: 'cli argument version not defined'
     when: cli.args.1 is not defined
-
-  - debug:
-      msg: 'asdfasdfasdfasdfasdfasdf'
 
   - import_role:
       name: package-manager

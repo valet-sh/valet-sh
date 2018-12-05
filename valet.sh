@@ -336,11 +336,11 @@ EOM
         if [ "$APPLICATION_DEBUG_INFO_ENABLED" = 0 ]; then
             # start spinner in waiting mode
             # spinner_toggle "Running \\e[32m$command\\e[39m"
-            spinner_toggle
+            # spinner_toggle
             # execute ansible-playbook with given params and capture stdout
             ansible-playbook "${ansible_playbook_file}" "${ansible_extra_vars[@]}" || APPLICATION_RETURN_CODE=$?
             # stop spinner
-            spinner_toggle
+            # spinner_toggle
         else
             # execute ansible-playbook
             ansible-playbook -v "${ansible_playbook_file}" "${ansible_extra_vars[@]}" || APPLICATION_RETURN_CODE=$?

@@ -22,7 +22,7 @@ class CallbackModule(CallbackModule_debug):
 
     def __init__(self):
         self._play = None
-        self._last_task_name = None
+        self._last_task = None
         # create .inprogress flag file for valet.sh cli spinner to start
         open('/tmp/valet-sh.inprogress', 'a').close()
         super(CallbackModule, self).__init__()
@@ -48,9 +48,9 @@ class CallbackModule(CallbackModule_debug):
             super(CallbackModule, self)._print_task_banner(task)
         else:
             if task.name:
-                self._last_task_name = task.name
+                self._last_task = task
             else:
-                self._last_task_name = None
+                self._last_task = None
 
 
     def v2_runner_on_skipped(self, result):
@@ -58,12 +58,11 @@ class CallbackModule(CallbackModule_debug):
         if self._debug_enabled():
             super(CallbackModule, self).v2_runner_on_skipped(result)
         else:
-            if (self._last_task_name):
-                self._display.display(u"\u2714  %s" % (self._last_task_name), color=C.COLOR_SKIP)
+            if (self._last_task):
+                self._display.display(u"\u2714  %s" % (self._last_task.name), color=C.COLOR_SKIP)
 
 
     def v2_runner_on_ok(self, result):
-
         for key in result._result.keys():
             if key == 'msg':
                 print(result._result[key])
@@ -72,13 +71,14 @@ class CallbackModule(CallbackModule_debug):
         if self._debug_enabled():
             super(CallbackModule, self).v2_runner_on_ok(result)
         else:
-            if (self._last_task_name):
-                self._display.display(u"\u2714  %s" % (self._last_task_name), color=C.COLOR_OK)
+            if (self._last_task and self._last_task.name):
+                self._display.display(u"\u2714  %s" % (self._last_task.name), color=C.COLOR_OK)
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
+        vsh_msg = ''
         # if debug is enabled call super function
         if self._debug_enabled():
-            super(CallbackModule, self).v2_runner_on_ok(result)
+            super(CallbackModule, self).v2_runner_on_failed(result, ignore_errors)
         else:
             # get result ansible dict
             resultDict = "%s" % (result._result)
