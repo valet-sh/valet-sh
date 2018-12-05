@@ -22,10 +22,6 @@
   include_vars:
     file: "{{ package_yml_file }}"
 
-#- name: "fail when package {{ package_name }}-{{ package_version }} does not exist"
-#  fail:
-#    msg: "package {{ package_name }}-{{ package_version }} does not exist"
-#  when: packages[package_name + '-' + package_version] is not defined
 
 #- name: set initial package_candidate var
 # set_fact:
@@ -35,19 +31,20 @@
 #  set_fact:
 #    package_candidate: "{{ package_candidate|combine({'id':\"{{ package_name }}-{{ package_version}}\"}) }}"
 
-- name: check if requested package exists
+- name: "fail when package {{ package_name }}-{{ package_version }} does not exist"
+  fail:
+    msg: "package {{ package_name }}-{{ package_version }} is not available in channel {{ package_channel }}"
+  when: packages[package_name + '-' + package_version] is not defined
+
+- name: set package_channel_info
   set_fact:
-    package_channel_info: "{{ packages[package_name + '-' + package_version]  | default ('undefined') }}"
+    package_channel_info: "{{ packages[package_name + '-' + package_version] }}"
 
-- fail:
-    msg: "Package {{ package_name }}-{{ package_version }} not available in channel {{ package_channel }}"
-  when: package_channel_info is undefined
-
-- name: add id to object
+- name: add id to package
   set_fact:
     package_channel_info: "{{ package_channel_info|combine({'id':\"{{ package_name }}-{{ package_version}}\"}) }}"
 
-- name: add url to object
+- name: add url to package
   set_fact:
     package_candidate: "{{ package_channel_info|combine({'url':\"{{ distil_base_url }}/{{ os_version }}/{{ package_channel }}/{{ package_name }}/{{ package_version }}/{{ package_channel_info.filename }}\"}) }}"
 
