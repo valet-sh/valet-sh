@@ -20,41 +20,77 @@ class CallbackModule(CallbackModule_debug):
     CALLBACK_TYPE = 'stdout'
     CALLBACK_NAME = 'valet-sh'
 
+    def __init__(self):
+        self._play = None
+        self._last_task_name = None
+        # create .inprogress flag file for valet.sh cli spinner to start
+        open('/tmp/valet-sh.inprogress', 'a').close()
+        super(CallbackModule, self).__init__()
+
     def _debug_enabled(self):
         return os.environ.get('APPLICATION_DEBUG_INFO_ENABLED')=='1'
 
     def v2_playbook_on_play_start(self, play):
-        # create .inprogress flag file for valet.sh cli spinner to start
-        open('/tmp/valet-sh.inprogress', 'a').close()
-
-        # wip: get name of playbook
-        #name = play.get_name().strip()
-        #if not self._debug_enabled:
-        #    self._display.display(name);
-
         self._play = play
 
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_playbook_on_play_start(play)
+
+        #else:
+        #    if play.name:
+        #        self._display.display(play.name, color=C.COLOR_OK)
             
 
     def _print_task_banner(self, task):
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self)._print_task_banner(task)
+        else:
+            if task.name:
+                self._last_task_name = task.name
+            else:
+                self._last_task_name = None
 
 
     def v2_runner_on_skipped(self, result):
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_runner_on_skipped(result)
+        else:
+            if (self._last_task_name):
+                self._display.display(u"\u2714  %s" % (self._last_task_name), color=C.COLOR_SKIP)
 
 
     def v2_runner_on_ok(self, result):
+
+        for key in result._result.keys():
+            if key == 'msg':
+                print(result._result[key])
+
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_runner_on_ok(result)
+        else:
+            if (self._last_task_name):
+                self._display.display(u"\u2714  %s" % (self._last_task_name), color=C.COLOR_OK)
+
+    def v2_runner_on_failed(self, result, ignore_errors=False):
+        # if debug is enabled call super function
+        if self._debug_enabled():
+            super(CallbackModule, self).v2_runner_on_ok(result)
+        else:
+            # get result ansible dict
+            resultDict = "%s" % (result._result)
+            # convert to json object
+            jsonObj = json.loads(json.dumps(ast.literal_eval(resultDict)))
+            # get msg from object
+            if 'msg' in jsonObj :
+                vsh_msg = jsonObj['msg']
+            if 'message' in jsonObj :
+                vsh_msg = jsonObj['message']
+            # display error
+            self._display.error(vsh_msg)
 
 
     def v2_playbook_on_stats(self, task):
@@ -63,7 +99,6 @@ class CallbackModule(CallbackModule_debug):
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_playbook_on_stats(task)
-
 
     def v2_runner_item_on_ok(self, result):
         # if debug is enabled call super function
@@ -88,44 +123,4 @@ class CallbackModule(CallbackModule_debug):
         if self._debug_enabled():
             super(CallbackModule, self).v2_runner_item_on_failed(result)
 
-
-    def v2_runner_on_failed(self, result, ignore_errors=False):
-        # get result ansible dict
-        resultDict = "%s" % (result._result)
-
-        # convert to json object
-        jsonObj = json.loads(json.dumps(ast.literal_eval(resultDict)))
-        # get msg from object
-        if 'msg' in jsonObj :
-            vsh_msg = jsonObj['msg']
-        if 'message' in jsonObj :
-            vsh_msg = jsonObj['message']
-
-        delegated_vars = result._result.get('_ansible_delegated_vars', None)
-        self._clean_results(result._result, result._task.action)
-
-        if self._play.strategy == 'free' and self._last_task_banner != result._task._uuid:
-            self._print_task_banner(result._task)
-
-        self._handle_exception(result._result)
-        self._handle_warnings(result._result)
-
-        if result._task.loop and 'results' in result._result:
-            self._process_items(result)
-
-        else:
-            if delegated_vars:
-                if self._debug_enabled():
-                    self._display.display("fatal: [%s -> %s]: FAILED! => %s" % (result._host.get_name(), delegated_vars['ansible_host'],
-                                                                            self._dump_results(result._result)), color=C.COLOR_ERROR)
-            else:
-                if self._debug_enabled():
-                    self._display.display("fatal: [%s]: FAILED! => %s" % (result._host.get_name(), self._dump_results(result._result)), color=C.COLOR_ERROR)
-
-        if ignore_errors:
-            if self._debug_enabled():
-                self._display.display("...ignoring", color=C.COLOR_SKIP)
-        else:
-            if not self._debug_enabled:
-                self._display.display(vsh_msg, None, True)
             

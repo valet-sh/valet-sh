@@ -1,0 +1,55 @@
+---
+
+- tempfile:
+    state: file
+    suffix: temp
+  register: package_yml_file_object
+
+- set_fact:
+    package_yml_file: "{{ package_yml_file_object.path }}"
+
+- set_fact:
+    package_yml_url: "{{ distil_base_url }}/{{ os_version }}/{{ package_channel }}/package.yml"
+
+- name: "downloading {{ package_yml_url }}"
+  get_url:
+    url: "{{ package_yml_url }}"
+    dest: "{{ package_yml_file }}"
+    force: true
+  register: package_yml_download_obj
+
+- name: read package.yml
+  include_vars:
+    file: "{{ package_yml_file }}"
+
+#- name: "fail when package {{ package_name }}-{{ package_version }} does not exist"
+#  fail:
+#    msg: "package {{ package_name }}-{{ package_version }} does not exist"
+#  when: packages[package_name + '-' + package_version] is not defined
+
+#- name: set initial package_candidate var
+# set_fact:
+#    package_candidate: "{{ packages[package_name + '-' + package_version] }}"
+
+#- name: add package id to object
+#  set_fact:
+#    package_candidate: "{{ package_candidate|combine({'id':\"{{ package_name }}-{{ package_version}}\"}) }}"
+
+- name: check if requested package exists
+  set_fact:
+    package_channel_info: "{{ packages[package_name + '-' + package_version]  | default ('undefined') }}"
+
+- fail:
+    msg: "Package {{ package_name }}-{{ package_version }} not available in channel {{ package_channel }}"
+  when: package_channel_info is undefined
+
+- name: add id to object
+  set_fact:
+    package_channel_info: "{{ package_channel_info|combine({'id':\"{{ package_name }}-{{ package_version}}\"}) }}"
+
+- name: add url to object
+  set_fact:
+    package_candidate: "{{ package_channel_info|combine({'url':\"{{ distil_base_url }}/{{ os_version }}/{{ package_channel }}/{{ package_name }}/{{ package_version }}/{{ package_channel_info.filename }}\"}) }}"
+
+- set_fact:
+    package_candidate: "{{ package_candidate }}"

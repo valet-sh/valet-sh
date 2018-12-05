@@ -1,8 +1,0 @@
----
-
-- include_role:
-    name: distil.package-manager
-  vars:
-    package:
-      name: php
-      version: 7.0

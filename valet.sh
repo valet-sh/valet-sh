@@ -331,26 +331,25 @@ EOM
     # check if requested playbook yml exist and execute it
     if [ -f "$ansible_playbook_file" ]; then
         # prepare log file
-        prepare_logfile
-        # log exact command line as typed in shell with user and path info
-        echo "${PWD} ${USER}: $0 $*" >> "${LOG_FILE}"
-        
+        prepare_logfile      
+
         if [ "$APPLICATION_DEBUG_INFO_ENABLED" = 0 ]; then
             # start spinner in waiting mode
-            spinner_toggle "Running \\e[32m$command\\e[39m"
+            # spinner_toggle "Running \\e[32m$command\\e[39m"
+            spinner_toggle
             # execute ansible-playbook with given params and capture stdout
             ansible-playbook "${ansible_playbook_file}" "${ansible_extra_vars[@]}" || APPLICATION_RETURN_CODE=$?
             # stop spinner
             spinner_toggle
-            # handle exit code and output ansible msg
-            if [[ "${APPLICATION_RETURN_CODE}" -gt 0 ]]; then
-                out error
-            else
-                out succes
-            fi
         else
             # execute ansible-playbook
             ansible-playbook -v "${ansible_playbook_file}" "${ansible_extra_vars[@]}" || APPLICATION_RETURN_CODE=$?
+        fi
+
+        if [ $APPLICATION_RETURN_CODE = 0 ]; then
+            out success "$*"
+        else
+            out error "$*"
         fi
 
         # cleanup logfiles

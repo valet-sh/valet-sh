@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec {{ package_bin_dir }}/mysql --defaults-file={{ package_etc_dir }}/my.cnf $@

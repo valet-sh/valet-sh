@@ -1,0 +1,47 @@
+[client]
+user=root
+{% if mysql_root_password is defined %}
+password={{ mysql_root_password }}
+{% else %}
+password=
+{% endif %}
+host={{ mysql_bindaddress }}
+port={{ mysql_port }}
+socket={{ mysql_socket }}
+
+[mysqld]
+
+port={{ mysql_port }}
+bind-address={{ mysql_bindaddress }}
+socket={{ mysql_socket }}
+
+sql_mode="NO_ENGINE_SUBSTITUTION"
+innodb_file_per_table=OFF
+open_files_limit=999999
+log-error=/tmp/mysql.log
+local_infile=ON
+secure_file_priv=""
+sort_buffer_size=1024M
+max_allowed_packet=1073741824
+max_connections=100000
+max_connect_errors=1000000
+key_buffer_size=1024M
+table_open_cache=4096
+interactive_timeout=3600
+thread_cache_size=1024
+lower_case_table_names=2
+
+myisam_sort_buffer_size=1024M
+
+innodb_buffer_pool_instances=4
+innodb_buffer_pool_size=1024M
+innodb_sort_buffer_size=1024M
+innodb_flush_log_at_trx_commit=2
+innodb_log_file_size=25M
+
+query_cache_size=67108864
+query_cache_type=1
+query_cache_limit=4194304
+
+[mysqld_safe]
+open_files_limit=999999

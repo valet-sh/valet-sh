@@ -1,0 +1,54 @@
+---
+
+- name: "fail when package {{ package_name }}-{{ package_version }} is already installed"
+  fail:
+    msg: "package {{ package_name }}-{{ package_version }} is already installed"
+  when: package_condition is defined
+
+- include_tasks: "common/distil.yml"
+  # output: package_candidate
+
+- include_role:
+    name: "package-{{ package_name }}-{{ package_version }}"
+  vars:
+    action: "manifest"
+  # output: package
+
+- name: "ensure package directories existing"
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ package_user }}"
+    group: "{{ package_group }}"
+    mode: "0755"
+  with_items:
+    - "{{ package_base_path }}"
+    - "{{ package_etc_path }}"
+    - "{{ package_run_path }}"
+    - "{{ package_log_path }}"
+    - "{{ package_tmp_path }}"
+    - "{{ package_data_path }}"
+
+- name: "download package {{ package_candidate.id }}"
+  get_url:
+    url: "{{ package_candidate.url }}"
+    dest: "{{ package_tmp_path }}/{{ package_candidate.filename }}"
+    checksum: "sha256:{{ package_candidate.checksum }}"
+
+- name: "cleanup {{ package_dist_path }}"
+  file:
+    path: "{{ package_dist_path }}"
+    state: absent
+
+#- name: "unarchive package"
+#  unarchive:
+#    src: "{{ package_tmp_path }}/{{ package_candidate.filename }}"
+#    dest: "{{ package_base_path }}"
+#    remote_src: yes
+#  when: package_candidate.name != "gnutar"
+
+- name: "raw unarchive package"
+  command: "tar -xzf {{ package_tmp_path }}/{{ package_candidate.filename }} -C {{ package_base_path }} warn=False"
+  #when: package_candidate.name == "gnutar"
+
+

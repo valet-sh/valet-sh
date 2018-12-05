@@ -1,0 +1,69 @@
+---
+
+- name: "check mysql root password file"
+  stat:
+    path: "{{ package_data_dir }}/password.yml"
+  register: mysql_root_password_file_obj
+
+- name: Generate password for root user
+  shell: "openssl rand -hex 4"
+  register: mysql_root_password_obj
+  when: mysql_root_password_file_obj.stat.exists == false
+
+- name: set new root user password
+  set_fact:
+    mysql_root_password: "{{ mysql_root_password_obj.stdout }}"
+  when: mysql_root_password_file_obj.stat.exists == false
+
+- lineinfile:
+    path: "{{ package_data_dir }}/password.yml"
+    line: 'mysql_root_password: "{{ mysql_root_password }}"'
+    create: yes
+  when: mysql_root_password_file_obj.stat.exists == false
+
+- name: include password.yml
+  include_vars: "{{ package_data_dir }}/password.yml"
+  when: mysql_root_password_file_obj.stat.exists == true
+
+- name: ensure my.cnf for mysql is up2date
+  template:
+    src: "my.cnf.j2"
+    dest: "{{ mysql_etc_dir }}/my.cnf"
+    owner: "{{ package_user }}"
+    group: "{{ package_group }}"
+    mode: '0644'
+  notify: service | mysql | restarted
+
+- name: ensure startup config is deployed
+  template:
+    src: "{{ package_startup_script_filename }}.j2"
+    dest: "{{ launch_daemons_base_dir }}/{{ package_startup_script_filename }}"
+    owner: root
+    group: staff
+    mode: '0644'
+
+- name: "check mysql data folder"
+  stat:
+    path: "{{ package_data_path }}/mysql"
+  register: mysql_current_release_data_path_obj
+
+- name: "run mysql install command if data directory is empty"
+  command: "scripts/mysql_install_db --user={{ package_user }} --basedir={{ package_dist_path }} --datadir={{ package_data_path }}"
+  args:
+    chdir: "{{ package_dist_path }}"
+  when: mysql_current_release_data_path_obj.stat.exists == false
+
+- name: "start mysql service"
+  command: "launchctl load -w {{ launch_daemons_base_path }}/{{ package_startup_script_filename }}"
+  become: true
+
+- name: wait for mysqld to start
+  wait_for:
+    path: "{{ mysql_socket }}"
+    state: present
+
+- name: "set new root password"
+  command: "bin/mysqladmin --socket={{ mysql_socket }} -u root password '{{ mysql_root_password }}'"
+  args:
+    chdir: "{{ package_dist_path }}"
+  when: mysql_current_release_data_path_obj.stat.exists == false

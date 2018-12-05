@@ -1,0 +1,18 @@
+---
+
+mysql_57_user: "{{ current_user }}"
+mysql_57_group: "{{ current_group }}"
+mysql_57_base_dir: "{{ mysql_base_dir }}/5.7"
+mysql_57_etc_dir: "{{ mysql_57_base_dir }}/etc"
+mysql_57_data_dir: "{{ mysql_57_base_dir }}/data"
+mysql_57_dist_dir: "{{ mysql_57_base_dir }}/dist"
+mysql_57_startup_script_filename: "sh.valet.mysql57.mysqld.plist"
+
+mysql_57_dist_mysqld_bin: "{{ mysql_57_base_dir }}/bin/mysqld"
+mysql_57_dist_mysql_57_bin: "{{ mysql_57_base_dir }}/bin/mysql"
+mysql_57_dist_mysqldump_bin: "{{ mysql_57_base_dir }}/bin/mysqldump"
+
+mysql_57_port: 3306
+mysql_57_bindaddress: 127.0.0.1
+mysql_57_socket: /tmp/mysql56.sock
+mysql_57_root_password_length: "{{ mysql_root_password_length }}"
