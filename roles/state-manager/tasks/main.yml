@@ -1,23 +1,10 @@
 ---
 
-- block:
-  - name: check package state file
-    stat:
-      path: "{{ state_file }}"
-    register: state_file_obj
-
-  - name: load package state file
-    include_vars:
-      file: "{{ state_file }}"
-      name: package_state
-    when: state_file_obj.stat.exists
-
-  - name: set empty package_state object
-    set_fact:
-      package_state: []
-    when: not state_file_obj.stat.exists|bool
-  when: package_state is not defined
-
-
 - include_tasks: "get_state.yml"
   when: (state_action is defined) and (state_action == "get_state")
+
+- include_tasks: "update_state.yml"
+  when: (state_action is defined) and (state_action == "update_state")
+
+- include_tasks: "check_default.yml"
+  when: (state_action is defined) and (state_action == "check_default")

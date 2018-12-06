@@ -26,3 +26,26 @@
   set_fact:
     package_condition: "{{ package_state[state_package_name + '-' + state_package_version] }}"
   when: package_state[state_package_name + '-' + state_package_version] is defined
+
+- name: "create state object for current package"
+  set_fact:
+    tmp_package_obj: '{ "{{ package_candidate.name }}-{{ package_candidate.version }}": { "checksum": "{{ package_candidate.checksum }}" }}'
+
+- name: "add current package to list state list"
+  set_fact:
+    package_state: "{{ package_state|combine(tmp_package_obj) }}"
+
+#- name: "add 'packages' prefix to package list object"
+#  set_fact:
+#    package_state:
+#      state: "{{ package_state_obj }}"
+
+- name: "transform package_state into nice yaml output"
+  set_fact:
+    package_state_yml: "{{ package_state | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+- name: "write package_state file"
+  copy:
+    content: "{{ package_state_yml }}"
+    dest: "{{ packages_state_file }}"
+  become: true

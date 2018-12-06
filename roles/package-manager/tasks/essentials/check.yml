@@ -1,0 +1,15 @@
+---
+
+- name: load state-manager
+  include_role:
+    name: state-manager
+  vars:
+    state_action: get_state
+    state_package_name: "{{ current_package_name }}"
+    state_package_version: "{{ current_package_version }}"
+  # output: package_condition
+
+- name: "call install tasks"
+  include_tasks: install/main.yml
+  when: (package_condition is not defined) or (not package_condition)
+

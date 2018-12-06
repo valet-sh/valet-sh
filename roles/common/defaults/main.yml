@@ -3,24 +3,26 @@ distil_base_url: "https://distil.valet.sh"
 
 working_dir: "{{ lookup('env','PWD') }}"
 base_path: "/usr/local/valet-sh"
-state_file: "{{ base_path }}/state"
+packages_state_file: "{{ base_path }}/package_state"
+defaults_state_file: "{{ base_path }}/defaults_state"
 launch_daemons_base_path: "/Library/LaunchDaemons"
 
 package_channel: "testing"
 
-package_base_path: "{{ base_path }}/{{ package_name }}/{{ package_version }}"
-package_dist_path: "{{ base_path }}/{{ package_name }}/{{ package_version }}/dist"
-package_etc_path: "{{ package_base_path }}/etc"
-package_data_path: "{{ package_base_path }}/data"
-package_log_path: "{{ package_base_path }}/log"
-package_tmp_path: "{{ package_base_path }}/tmp"
-package_run_path: "{{ package_base_path }}/run"
-
 current_user: "{{ lookup('env','USER') }}"
 current_group: "staff"
 
-package_user: "{{ lookup('env','USER') }}"
-package_group: "staff"
+package_user: "{{ current_user }}"
+package_group: "{{ current_group }}"
 
 # linux only
 # package_group: "{{ lookup('env','USER') }}"
+
+
+package_defaults:
+  - "gnutar": "1.3"
+
+essential_packages:
+  - package_name: "gnutar"
+    package_version: "1.3"
+

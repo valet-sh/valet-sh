@@ -29,24 +29,24 @@
 
 #- name: add package id to object
 #  set_fact:
-#    package_candidate: "{{ package_candidate|combine({'id':\"{{ package_name }}-{{ package_version}}\"}) }}"
+#    package_candidate: "{{ package_candidate|combine({'id':\"{{ package_name }}-{{ current_package_version}}\"}) }}"
 
-- name: "fail when package {{ package_name }}-{{ package_version }} does not exist"
+- name: "fail when package {{ current_package_name }}-{{ current_package_version }} does not exist"
   fail:
-    msg: "package {{ package_name }}-{{ package_version }} is not available in channel {{ package_channel }}"
-  when: packages[package_name + '-' + package_version] is not defined
+    msg: "package {{ current_package_name }}-{{ current_package_version }} is not available in channel {{ package_channel }}"
+  when: packages[current_package_name + '-' + current_package_version] is not defined
 
 - name: set package_channel_info
   set_fact:
-    package_channel_info: "{{ packages[package_name + '-' + package_version] }}"
+    package_channel_info: "{{ packages[current_package_name + '-' + current_package_version] }}"
 
 - name: add id to package
   set_fact:
-    package_channel_info: "{{ package_channel_info|combine({'id':\"{{ package_name }}-{{ package_version}}\"}) }}"
+    package_channel_info: "{{ package_channel_info|combine({'id':\"{{ current_package_name }}-{{ current_package_version}}\"}) }}"
 
 - name: add url to package
   set_fact:
-    package_candidate: "{{ package_channel_info|combine({'url':\"{{ distil_base_url }}/{{ os_version }}/{{ package_channel }}/{{ package_name }}/{{ package_version }}/{{ package_channel_info.filename }}\"}) }}"
+    package_candidate: "{{ package_channel_info|combine({'url':\"{{ distil_base_url }}/{{ os_version }}/{{ package_channel }}/{{ current_package_name }}/{{ current_package_version }}/{{ package_channel_info.filename }}\"}) }}"
 
 - set_fact:
     package_candidate: "{{ package_candidate }}"

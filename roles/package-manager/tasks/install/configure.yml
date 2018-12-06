@@ -1,0 +1,12 @@
+---
+
+- name: "add links to /usr/local/bin"
+  file:
+    src: "{{ package_link_item.source }}"
+    dest: "{{ package_link_item.target }}"
+    state: link
+  with_items: "{{ package.links }}"
+  loop_control:
+    loop_var: package_link_item
+  when: package.links is defined
+  become: true

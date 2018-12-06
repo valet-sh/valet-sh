@@ -1,0 +1,9 @@
+---
+
+- set_fact:
+    package:
+      name: "gnutar"
+      version: "1.3"
+      links:
+        - source: "{{ package_dist_path }}/bin/tar"
+          target: "/usr/local/bin/tar"

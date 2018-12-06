@@ -1,0 +1,10 @@
+---
+
+- name: "call check task for "
+  include_tasks: essentials/check.yml
+  vars:
+    current_package_name: "{{ essential_package_item.package_name }}"
+    current_package_version: "{{ essential_package_item.package_version }}"
+  with_items: "{{ essential_packages }}"
+  loop_control:
+    loop_var: essential_package_item

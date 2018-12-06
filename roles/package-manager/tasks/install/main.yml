@@ -1,55 +1,29 @@
 ---
 
-- name: "fail when package {{ package_name }}-{{ package_version }} is already installed"
-  fail:
-    msg: "package {{ package_name }}-{{ package_version }} is already installed"
-  when: package_condition is defined
+- name: set package_base_path
+  set_fact:
+    package_base_path: "{{ base_path }}/{{ current_package_name }}/{{ current_package_version }}"
 
-- include_tasks: "common/distil.yml"
-  # output: package_candidate
+- name: set package variables
+  set_fact:
+    package_dist_path: "{{ package_base_path }}/dist"
+    package_etc_path: "{{ package_base_path }}/etc"
+    package_data_path: "{{ package_base_path }}/data"
+    package_log_path: "{{ package_base_path }}/log"
+    package_tmp_path: "{{ package_base_path }}/tmp"
+    package_run_path: "{{ package_base_path }}/run"
 
-- name: "include role package-{{ package_name }}-{{ package_version }}"
+- name: call install.yml
+  include_tasks: install/install.yml
+
+- name: call configure.yml
+  include_tasks: install/configure.yml
+
+
+- name: update state-manager
   include_role:
-    name: "package-{{ package_name }}-{{ package_version }}"
+    name: state-manager
   vars:
-    action: "manifest"
-  # output: package
-
-- name: "ensure package directories existing"
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ package_user }}"
-    group: "{{ package_group }}"
-    mode: "0755"
-  with_items:
-    - "{{ package_base_path }}"
-    - "{{ package_etc_path }}"
-    - "{{ package_run_path }}"
-    - "{{ package_log_path }}"
-    - "{{ package_tmp_path }}"
-    - "{{ package_data_path }}"
-
-- name: "download package {{ package_candidate.id }}"
-  get_url:
-    url: "{{ package_candidate.url }}"
-    dest: "{{ package_tmp_path }}/{{ package_candidate.filename }}"
-    checksum: "sha256:{{ package_candidate.checksum }}"
-
-- name: "cleanup {{ package_dist_path }}"
-  file:
-    path: "{{ package_dist_path }}"
-    state: absent
-
-#- name: "unarchive package"
-#  unarchive:
-#    src: "{{ package_tmp_path }}/{{ package_candidate.filename }}"
-#    dest: "{{ package_base_path }}"
-#    remote_src: yes
-#  when: package_candidate.name != "gnutar"
-
-- name: "raw unarchive package"
-  command: "tar -xzf {{ package_tmp_path }}/{{ package_candidate.filename }} -C {{ package_base_path }} warn=False"
-  #when: package_candidate.name == "gnutar"
-
-
+    state_action: update_state
+    state_package_name: "{{ current_package_name }}"
+    state_package_version: "{{ current_package_version }}"
