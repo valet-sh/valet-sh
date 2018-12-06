@@ -38,7 +38,7 @@ ANSIBLE_PLAYBOOKS_DIR="playbooks"
 # define global temp dir
 TEMP_DIR="/tmp"
 # temporary application-in-progress file used e.g. by ansible or spinner function
-APPLICATION_INPROGRESS_FILE_PATH="${TEMP_DIR}/valet-sh.inprogress"
+export APPLICATION_INPROGRESS_FILE_PATH="${TEMP_DIR}/.valet-sh_${APPLICATION_START_TIME}.inprogress"
 # define default install directory
 APPLICATION_REPO_DIR="/usr/local/${APPLICATION_GIT_NAMESPACE}/${APPLICATION_GIT_REPOSITORY}";
 # resolve symlinked bash source if needed
@@ -336,11 +336,11 @@ EOM
         if [ "$APPLICATION_DEBUG_INFO_ENABLED" = 0 ]; then
             # start spinner in waiting mode
             # spinner_toggle "Running \\e[32m$command\\e[39m"
-            # spinner_toggle
+            spinner_toggle
             # execute ansible-playbook with given params and capture stdout
             ansible-playbook "${ansible_playbook_file}" "${ansible_extra_vars[@]}" || APPLICATION_RETURN_CODE=$?
             # stop spinner
-            # spinner_toggle
+            spinner_toggle
         else
             # execute ansible-playbook
             ansible-playbook -v "${ansible_playbook_file}" "${ansible_extra_vars[@]}" || APPLICATION_RETURN_CODE=$?
