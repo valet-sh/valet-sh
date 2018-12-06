@@ -1,6 +1,6 @@
 DOCUMENTATION = '''
 ---
-module: valet-sh-table
+module: vsh-table
 short_description: This is a valet-sh module for table output on cli.
 description:
     - Table ansible module
@@ -14,7 +14,7 @@ options:
         description:
           - a list of rows which also are lists
 usage:
-    - valet-sh-table:
+    - vsh-table:
       headers: ['col1', 'col2', 'col3']
       rows: [
         ['row1val1', 'row1val2', 'row1val3'],
@@ -49,7 +49,7 @@ def main():
             module.fail_json(msg='row list count does not equal headers list count')        
         table.append_row(row)
     
-    module.exit_json(changed=True, msg=str(table))
+    module.exit_json(changed=True, vsh_stdout=str(table))
 
 if __name__ == '__main__':
     main()
