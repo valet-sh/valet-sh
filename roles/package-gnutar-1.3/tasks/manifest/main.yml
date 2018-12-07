@@ -5,6 +5,7 @@
       name: "gnutar"
       version: "1.3"
       config:
+        role_path: "{{ role_path }}"
         links:
           - source: "{{ package_dist_path }}/bin/tar"
             target: "/usr/local/bin/tar"
