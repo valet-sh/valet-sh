@@ -55,7 +55,7 @@
     state: present
 
 - name: "set new root password"
-  command: "bin/mysqladmin --socket={{ mysql_socket }} -u root password '{{ mysql_root_password }}'"
+  command: "bin/mysqladmin --socket={{ mysql_57_socket }} -u root password '{{ mysql_root_password }}'"
   args:
     chdir: "{{ package_dist_path }}"
   when: mysql_57_current_release_data_path_obj.stat.exists == false
