@@ -13,7 +13,7 @@
   gather_facts: True
 
   tasks:
-  
+
   - fail:
       msg: 'cli argument package not defined'
     when: cli.args.0 is not defined

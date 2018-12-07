@@ -20,37 +20,40 @@ class CallbackModule(CallbackModule_debug):
     CALLBACK_TYPE = 'stdout'
     CALLBACK_NAME = 'valet-sh'
 
+    INDICATOR_VALET_SH_CLI_OUTPUT = '@vsh'
+
     def __init__(self):
         self._play = None
         self._last_task = None
+        self._last_task_name = None
+        self._inprogress_file_path = os.environ.get('APPLICATION_INPROGRESS_FILE_PATH')
         # create .inprogress flag file for valet.sh cli spinner to start
-        open('/tmp/valet-sh.inprogress', 'a').close()
+        open(self._inprogress_file_path, 'a').close()
         super(CallbackModule, self).__init__()
+
 
     def _debug_enabled(self):
         return os.environ.get('APPLICATION_DEBUG_INFO_ENABLED')=='1'
 
+
     def v2_playbook_on_play_start(self, play):
         self._play = play
-
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_playbook_on_play_start(play)
 
-        #else:
-        #    if play.name:
-        #        self._display.display(play.name, color=C.COLOR_OK)
-            
 
     def _print_task_banner(self, task):
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self)._print_task_banner(task)
         else:
-            if task.name:
+            if task.name and self.INDICATOR_VALET_SH_CLI_OUTPUT in task.name:
                 self._last_task = task
+                self._last_task_name = task.name.strip(self.INDICATOR_VALET_SH_CLI_OUTPUT).strip()
             else:
                 self._last_task = None
+                self._last_task_name = None
 
 
     def v2_runner_on_skipped(self, result):
@@ -58,21 +61,21 @@ class CallbackModule(CallbackModule_debug):
         if self._debug_enabled():
             super(CallbackModule, self).v2_runner_on_skipped(result)
         else:
-            if (self._last_task):
-                self._display.display(u"\u2714  %s" % (self._last_task.name), color=C.COLOR_SKIP)
+            if (self._last_task and self._last_task.name):
+                self._display.display(u"\u2714  %s" % (self._last_task_name), color=C.COLOR_SKIP)
 
 
     def v2_runner_on_ok(self, result):
         for key in result._result.keys():
-            if key == 'msg':
+            if key == 'vsh_stdout':
                 print(result._result[key])
-
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_runner_on_ok(result)
         else:
             if (self._last_task and self._last_task.name):
-                self._display.display(u"\u2714  %s" % (self._last_task.name), color=C.COLOR_OK)
+                self._display.display(u"\u2714  %s" % (self._last_task_name), color=C.COLOR_OK)
+
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
         vsh_msg = ''
@@ -95,7 +98,7 @@ class CallbackModule(CallbackModule_debug):
 
     def v2_playbook_on_stats(self, task):
         # remove .inprogress flag file for valet.sh cli spinner to stop
-        os.unlink('/tmp/valet-sh.inprogress')
+        os.unlink(self._inprogress_file_path)
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_playbook_on_stats(task)
