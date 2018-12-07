@@ -5,15 +5,15 @@ password={{ mysql_root_password }}
 {% else %}
 password=
 {% endif %}
-host={{ mysql_bindaddress }}
-port={{ mysql_port }}
-socket={{ mysql_socket }}
+host={{ mysql_57_bindaddress }}
+port={{ mysql_57_port }}
+socket={{ mysql_57_socket }}
 
 [mysqld]
 
-port={{ mysql_port }}
-bind-address={{ mysql_bindaddress }}
-socket={{ mysql_socket }}
+port={{ mysql_57_port }}
+bind-address={{ mysql_57_bindaddress }}
+socket={{ mysql_57_socket }}
 
 sql_mode="NO_ENGINE_SUBSTITUTION"
 innodb_file_per_table=OFF

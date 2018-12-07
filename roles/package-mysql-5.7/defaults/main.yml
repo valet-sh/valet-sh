@@ -14,5 +14,5 @@ mysql_57_dist_mysqldump_bin: "{{ mysql_57_base_dir }}/bin/mysqldump"
 
 mysql_57_port: 3306
 mysql_57_bindaddress: 127.0.0.1
-mysql_57_socket: /tmp/mysql56.sock
+mysql_57_socket: /tmp/mysqld57.sock
 mysql_57_root_password_length: "{{ mysql_root_password_length }}"

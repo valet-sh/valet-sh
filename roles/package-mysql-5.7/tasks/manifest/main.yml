@@ -10,9 +10,9 @@
         templates:
           - source: "templates/mysql57.j2"
             target: "/usr/local/bin/mysql57"
-            mode: "0644"
+            mode: "0755"
           - source: "templates/mysqldump57.j2"
             target: "/usr/local/bin/mysqldump57"
-            mode: "0644"
-      post_install:
-        include: "install.yml"
+            mode: "0755"
+        install:
+          package_action: "install"

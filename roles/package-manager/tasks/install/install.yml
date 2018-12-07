@@ -12,7 +12,7 @@
   include_role:
     name: "package-{{ current_package_name }}-{{ current_package_version }}"
   vars:
-    action: "manifest"
+    package_action: "manifest"
   # output: package
 
 - name: "ensure package directories existing"

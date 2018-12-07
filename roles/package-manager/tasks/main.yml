@@ -1,6 +1,6 @@
 ---
 
-- name: "check for essential packages"
+- name: "@vsh check for essential packages"
   include_tasks: essentials/main.yml
 
 

@@ -21,6 +21,13 @@
   when: package.config.templates is defined
   become: true
 
+- name: "call install tasks for {{ current_package_name }}-{{ current_package_version }}"
+  include_role:
+    name: "package-{{ current_package_name }}-{{ current_package_version }}"
+  vars:
+    package_action: "{{ package.config.install.package_action }}"
+  when: (package.config.install is defined) and (package.config.install.package_action is defined)
+
 - name: "add links to /usr/local/bin"
   file:
     src: "{{ package.config.role_path }}/{{ package_link_item.source }}"
@@ -31,4 +38,3 @@
     loop_var: package_link_item
   when: package.config.links is defined
   become: true
-
