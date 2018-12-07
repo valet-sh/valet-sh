@@ -5,13 +5,14 @@
       name: "mysql"
       version: "5.7"
       config:
-        startup_script: "sh.valet.mysql57.mysqld.plist"
+        role_path: "{{ role_path }}"
+        startup_script: "templates/sh.valet.mysql57.plist"
         templates:
-          - source: "mysql57.j2"
+          - source: "templates/mysql57.j2"
             target: "/usr/local/bin/mysql57"
-            mode: "0755"
-          - source: "mysqldump57.j2"
+            mode: "0644"
+          - source: "templates/mysqldump57.j2"
             target: "/usr/local/bin/mysqldump57"
-            mode: "0755"
+            mode: "0644"
       post_install:
         include: "install.yml"

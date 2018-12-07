@@ -1,12 +1,34 @@
 ---
 
+
+
+- name: "provision startup-script"
+  template:
+    src: "{{ package.config.role_path }}/{{ package.config.startup_script }}.j2"
+    dest: "{{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
+    mode: "644"
+  when: package.config.startup_script is defined
+  become: true
+
+- name: "provision templates"
+  template:
+    src: "{{ package.config.role_path }}/{{ package_template_item.source }}"
+    dest: "{{ package_template_item.target }}"
+    mode: "{{ package_template_item.mode | default('644') }}"
+  with_items: "{{ package.config.templates }}"
+  loop_control:
+    loop_var: package_template_item
+  when: package.config.templates is defined
+  become: true
+
 - name: "add links to /usr/local/bin"
   file:
-    src: "{{ package_link_item.source }}"
+    src: "{{ package.config.role_path }}/{{ package_link_item.source }}"
     dest: "{{ package_link_item.target }}"
     state: link
-  with_items: "{{ package.links }}"
+  with_items: "{{ package.config.links }}"
   loop_control:
     loop_var: package_link_item
-  when: package.links is defined
+  when: package.config.links is defined
   become: true
+

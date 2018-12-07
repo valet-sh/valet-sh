@@ -4,7 +4,7 @@
   set_fact:
     package_base_path: "{{ base_path }}/{{ current_package_name }}/{{ current_package_version }}"
 
-- name: set package variables
+- name: set base package variables
   set_fact:
     package_dist_path: "{{ package_base_path }}/dist"
     package_etc_path: "{{ package_base_path }}/etc"
@@ -12,6 +12,10 @@
     package_log_path: "{{ package_base_path }}/log"
     package_tmp_path: "{{ package_base_path }}/tmp"
     package_run_path: "{{ package_base_path }}/run"
+
+- name: set additional variables
+  set_fact:
+    package_bin_path: "{{ package_dist_path }}/bin"
 
 - name: call install.yml
   include_tasks: install/install.yml
