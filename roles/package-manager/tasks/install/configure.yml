@@ -33,7 +33,6 @@
     src: "{{ package.config.role_path }}/{{ package_link_item.source }}"
     dest: "{{ package_link_item.target }}"
     state: link
-    force: true
   with_items: "{{ package.config.links }}"
   loop_control:
     loop_var: package_link_item
