@@ -1,13 +1,13 @@
 ---
 
 - name: service | mysql | started
-  command: "launchctl load -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
+  shell: "launchctl load -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
   become: true
 
 - name: service | mysql | stopped
-  command: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
+  shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
   become: true
 
 - name: service | mysql | restarted
-  command: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }} && launchctl load -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
+  shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }} && launchctl load -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
   become: true
