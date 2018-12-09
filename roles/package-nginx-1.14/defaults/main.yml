@@ -1,0 +1,4 @@
+---
+
+nginx_dhparams_file: dhparam.pem
+nginx_dhparams_keysize: 2048

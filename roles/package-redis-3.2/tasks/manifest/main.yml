@@ -1,0 +1,18 @@
+---
+
+- set_fact:
+    package:
+      name: "redis"
+      version: "3.2"
+      config:
+        role_path: "{{ role_path }}"
+        startup_script: "templates/sh.valet.redis32.plist"
+        templates:
+          - source: "templates/redis32.conf.j2"
+            target: "{{ package_etc_path }}/redis32.conf"
+            mode: "0755"
+          - source: "templates/redis-cli32.j2"
+            target: "/usr/local/bin/redis-cli32"
+            mode: "0755"
+        install:
+          package_action: "install"
