@@ -38,6 +38,9 @@ http {
     text/plain
     text/x-component;
 
+	access_log {{ package_log_path }}/access.log;
+	error_log {{ package_log_path }}/error.log;
+
     ssl_session_cache  shared:SSL:10m;
     ssl_session_timeout  5m;
     ssl_protocols TLSv1.1 TLSv1.2;
@@ -52,3 +55,4 @@ http {
     include {{ package_etc_path }}/servers/*;
     include {{ package_etc_path }}/conf.d/*.conf;
 }
+

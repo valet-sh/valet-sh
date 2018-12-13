@@ -19,7 +19,7 @@ stop-writes-on-bgsave-error yes
 rdbcompression yes
 rdbchecksum yes
 dbfilename dump.rdb
-dir {{ redis_32_data_dir }}
+dir {{ package_data_path }}
 slave-serve-stale-data yes
 slave-read-only yes
 repl-diskless-sync no
@@ -52,3 +52,5 @@ client-output-buffer-limit slave 256mb 64mb 60
 client-output-buffer-limit pubsub 32mb 8mb 60
 hz 10
 aof-rewrite-incremental-fsync yes
+
+

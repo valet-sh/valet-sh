@@ -1,13 +1,13 @@
 ---
 
-- name: service | mysql-5.7 | started
+- name: service | nginx-1.14 | started
   shell: "launchctl load -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
   become: true
 
-- name: service | mysql-5.7 | stopped
+- name: service | nginx-1.14 | stopped
   shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
   become: true
 
-- name: service | mysql-5.7 | restarted
+- name: service | nginx-1.14 | restarted
   shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }} && launchctl load -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
   become: true

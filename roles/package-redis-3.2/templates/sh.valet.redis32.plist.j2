@@ -12,10 +12,10 @@
     <key>UserName</key>          <string>{{ package_user }}</string>
     <key>GroupName</key>         <string>{{ package_group }}</string>
     <key>ExitTimeOut</key>       <integer>600</integer>
-    <key>Program</key>           <string>{{ redis_32_current_server_bin }}</string>
+    <key>Program</key>           <string>{{ package_bin_path}}/redis-server</string>
     <key>ProgramArguments</key>
         <array>
-            <string>{{ redis_32_current_server_bin }}</string>
+            <string>"{{ package_bin_path}}/redis-server"</string>
             <string>{{ package_etc_path }}/redis.conf</string>
         </array>
     <key>WorkingDirectory</key>  <string>{{ package_base_path }}</string>

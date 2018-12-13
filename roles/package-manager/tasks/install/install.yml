@@ -11,6 +11,7 @@
 - name: "include role package-{{ current_package_name }}-{{ current_package_version }}"
   include_role:
     name: "package-{{ current_package_name }}-{{ current_package_version }}"
+    public: yes
   vars:
     package_action: "manifest"
   # output: package

@@ -32,7 +32,7 @@
     owner: "{{ package_user }}"
     group: "{{ package_group }}"
     mode: '0644'
-  notify: service | mysql | restarted
+  notify: service | mysql-5.7 | restarted
 
 - name: "check mysql data folder"
   stat:
