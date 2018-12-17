@@ -1,5 +1,5 @@
 ---
 
 - name: "starting service {{ package.name }}-{{ package.version }}"
-  command: "launchctl load -w {{ launch_daemons_base_path }}/{{ package.config.startup_script }}"
+  command: "launchctl load -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
   become: true

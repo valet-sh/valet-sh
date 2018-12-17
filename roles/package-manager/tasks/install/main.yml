@@ -3,6 +3,7 @@
 - name: set package_base_path
   set_fact:
     package_base_path: "{{ base_path }}/{{ current_package_name }}/{{ current_package_version }}"
+    package_startup_script: "{{ launch_daemon_prefix }}.{{ current_package_name }}-{{ current_package_version }}.plist"
 
 - name: set base package variables
   set_fact:

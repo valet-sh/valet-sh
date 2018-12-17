@@ -46,7 +46,7 @@
   when: mysql_57_current_release_data_path_obj.stat.exists == false
 
 - name: "start mysql service"
-  command: "launchctl load -w {{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
+  command: "launchctl load -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
   become: true
 
 - name: wait for mysqld to start

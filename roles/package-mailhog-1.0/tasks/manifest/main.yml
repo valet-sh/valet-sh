@@ -1,0 +1,8 @@
+---
+
+- set_fact:
+    package:
+      name: "mailhog"
+      version: "1.0"
+      config:
+        role_path: "{{ role_path }}"

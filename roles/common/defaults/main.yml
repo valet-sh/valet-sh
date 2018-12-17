@@ -6,6 +6,7 @@ base_path: "/usr/local/valet-sh"
 packages_state_file: "{{ base_path }}/package_state"
 defaults_state_file: "{{ base_path }}/defaults_state"
 launch_daemons_base_path: "/Library/LaunchDaemons"
+launch_daemon_prefix: "sh.valet"
 
 package_channel: "testing"
 

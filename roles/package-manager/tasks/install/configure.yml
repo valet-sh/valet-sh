@@ -1,13 +1,16 @@
 ---
 
-
+- name: check path to startup script template
+  stat:
+    path: "{{ package.config.role_path }}/templates/{{ package_startup_script }}.j2"
+  register: package_startup_script_obj
 
 - name: "provision startup-script"
   template:
-    src: "{{ package.config.role_path }}/{{ package.config.startup_script }}.j2"
-    dest: "{{ launch_daemons_base_path }}/{{ package.config.startup_script | basename }}"
+    src: "{{ package_startup_script_obj.stat.path }}"
+    dest: "{{ launch_daemons_base_path }}/{{ package_startup_script }}"
     mode: "644"
-  when: package.config.startup_script is defined
+  when: package_startup_script_obj.stat.exists
   become: true
 
 - name: "provision templates"

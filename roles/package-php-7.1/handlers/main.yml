@@ -1,13 +1,13 @@
 ---
 
-- name: service | nginx-1.14 | started
+- name: service | php-7.1 | started
   shell: "launchctl load -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
   become: true
 
-- name: service | nginx-1.14 | stopped
+- name: service | php-7.1 | stopped
   shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
   become: true
 
-- name: service | nginx-1.14 | restarted
+- name: service | php-7.1 | restarted
   shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package_startup_script }} && launchctl load -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
   become: true
