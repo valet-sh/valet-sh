@@ -1,0 +1,13 @@
+---
+
+- name: service | dnsmasq-2.8 | started
+  shell: "launchctl load -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
+  become: true
+
+- name: service | dnsmasq-2.8 | stopped
+  shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
+  become: true
+
+- name: service | dnsmasq-2.8 | restarted
+  shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package_startup_script }} && launchctl load -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
+  become: true

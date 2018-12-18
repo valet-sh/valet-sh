@@ -1,0 +1,10 @@
+---
+
+- include_tasks: manifest/main.yml
+  when: (package_action is defined) and (package_action == "manifest")
+
+- include_tasks: install/main.yml
+  when: (package_action is defined) and (package_action == "install")
+
+- include_tasks: uninstall/main.yml
+  when: (package_action is defined) and ((package_action == "remove") or (package_action == "purge"))

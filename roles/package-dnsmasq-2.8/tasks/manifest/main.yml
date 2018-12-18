@@ -1,0 +1,12 @@
+---
+
+- set_fact:
+    package:
+      name: "dnsmasq"
+      version: "2.8"
+      config:
+        role_path: "{{ role_path }}"
+        templates:
+          - source: "templates/dnsmasq.conf.j2"
+            target: "{{ package_etc_path }}/dnsmasq.conf"
+            mode: "0755"
