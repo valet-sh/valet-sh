@@ -4,7 +4,10 @@ pool:
 steps:
   - bash: |
       brew update-reset /usr/local/Homebrew
-      brew install bats shellcheck
+      brew install shellcheck
+    displayName: Prepare
+  - bash: |
       shellcheck valet.sh
       tests/test_functions.bats
     displayName: Tests
+    failOnStderr: true
