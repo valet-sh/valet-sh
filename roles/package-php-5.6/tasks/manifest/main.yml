@@ -1,0 +1,23 @@
+---
+
+- set_fact:
+    package:
+      name: "php"
+      version: "7.0"
+      config:
+        role_path: "{{ role_path }}"
+        directories:
+          - "{{ package_etc_path }}/conf-available"
+        templates:
+          - source: "templates/fpm.conf.j2"
+            target: "{{ package_etc_path }}/fpm.conf"
+            mode: "0755"
+          - source: "templates/php.ini.j2"
+            target: "{{ package_etc_path }}/php.ini"
+            mode: "0755"
+          - source: "templates/conf/xdebug.ini.j2"
+            target: "{{ package_etc_path }}/conf-available/xdebug.ini"
+            mode: "0755"
+          - source: "templates/conf/opcache.ini.j2"
+            target: "{{ package_etc_path }}/conf-available/opcache.ini"
+            mode: "0755"

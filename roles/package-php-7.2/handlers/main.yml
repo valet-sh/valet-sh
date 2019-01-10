@@ -1,0 +1,13 @@
+---
+
+- name: service | php-7.2 | started
+  shell: "launchctl load -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
+  become: true
+
+- name: service | php-7.2 | stopped
+  shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
+  become: true
+
+- name: service | php-7.2 | restarted
+  shell: "launchctl unload -w {{ launch_daemons_base_path }}/{{ package_startup_script }} && launchctl load -w {{ launch_daemons_base_path }}/{{ package_startup_script }}"
+  become: true

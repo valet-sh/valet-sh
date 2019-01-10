@@ -1,14 +1,14 @@
 ---
 #
-# valet.sh | stop
+# valet.sh | restart
 #
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
-# @command: "stop"
-# @description: "Stop service"
-# @usage: "valet.sh stop <package> <version>"
+# @command: "restart"
+# @description: "Restart service"
+# @usage: "valet.sh restart <package> <version>"
 
-- name: "stop"
+- name: "restart"
   hosts: local
   gather_facts: True
 
@@ -25,6 +25,6 @@
   - import_role:
       name: service-manager
     vars:
-      service_action: "stop"
+      service_action: "restart"
       package_name: "{{ cli.args.0 }}"
       package_version: "{{ cli.args.1 }}"

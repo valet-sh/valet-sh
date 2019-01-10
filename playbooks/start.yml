@@ -6,12 +6,25 @@
 # @author: "Philipp Dittert"
 # @command: "start"
 # @description: "Start service"
+# @usage: "valet.sh start <package> <version>"
 
-- hosts: local
-  gather_facts: false
-  vars:
-    service_action: "start"
-    package_name: "{{ cli.args[0] }}"
-    package_version: "{{ cli.args[1] }}"
-  roles:
-    - service-manager
+- name: "start"
+  hosts: local
+  gather_facts: True
+
+  tasks:
+
+  - fail:
+      msg: 'cli argument package not defined'
+    when: cli.args.0 is not defined
+
+  - fail:
+      msg: 'cli argument version not defined'
+    when: cli.args.1 is not defined
+
+  - import_role:
+      name: service-manager
+    vars:
+      service_action: "start"
+      package_name: "{{ cli.args.0 }}"
+      package_version: "{{ cli.args.1 }}"
