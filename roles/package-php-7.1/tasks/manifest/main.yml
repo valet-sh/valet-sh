@@ -9,6 +9,9 @@
         directories:
           - "{{ package_etc_path }}/conf-available"
         templates:
+          - source: "templates/php7.1.j2"
+            target: "/usr/local/bin/php7.1"
+            mode: "0755"
           - source: "templates/fpm.conf.j2"
             target: "{{ package_etc_path }}/fpm.conf"
             mode: "0755"

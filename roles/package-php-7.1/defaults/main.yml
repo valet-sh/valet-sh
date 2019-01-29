@@ -1,5 +1,6 @@
 ---
 
+php71_cli_bin_path: "{{ package_bin_path}}/php"
 php71_fpm_socket_path: "/tmp/{{ current_package_name }}{{ current_package_version }}-fpm.sock"
 
 php71_default_ini_settings:

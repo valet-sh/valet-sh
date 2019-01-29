@@ -1,5 +1,6 @@
 ---
 
+php72_cli_bin_path: "{{ package_bin_path}}/php"
 php72_fpm_socket_path: "/tmp/{{ current_package_name }}{{ current_package_version }}-fpm.sock"
 
 php72_default_ini_settings:

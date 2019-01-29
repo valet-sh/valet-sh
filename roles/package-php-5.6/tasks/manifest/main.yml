@@ -3,12 +3,15 @@
 - set_fact:
     package:
       name: "php"
-      version: "7.0"
+      version: "5.6"
       config:
         role_path: "{{ role_path }}"
         directories:
           - "{{ package_etc_path }}/conf-available"
         templates:
+          - source: "templates/php5.6.j2"
+            target: "/usr/local/bin/php5.6"
+            mode: "0755"
           - source: "templates/fpm.conf.j2"
             target: "{{ package_etc_path }}/fpm.conf"
             mode: "0755"

@@ -1,5 +1,6 @@
 ---
 
+php56_cli_bin_path: "{{ package_bin_path}}/php"
 php56_fpm_socket_path: "/tmp/{{ current_package_name }}{{ current_package_version }}-fpm.sock"
 
 php56_default_ini_settings:
