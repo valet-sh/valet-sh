@@ -4,5 +4,5 @@ install_elasticsearch_version: '1.7.3'
 install_elasticsearch_config_version: '1'
 install_elasticsearch_plugin_bin: 'plugin'
 install_elasticsearch_plugins:
-- "elasticsearch/elasticsearch-analysis-phonetic/2.7.0"
-- "elasticsearch/elasticsearch-analysis-icu/2.7.0"
+  - "elasticsearch/elasticsearch-analysis-phonetic/2.7.0"
+  - "elasticsearch/elasticsearch-analysis-icu/2.7.0"
