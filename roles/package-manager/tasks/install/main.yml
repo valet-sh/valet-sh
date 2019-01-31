@@ -33,3 +33,11 @@
     state_action: update_state
     state_package_name: "{{ current_package_name }}"
     state_package_version: "{{ current_package_version }}"
+
+- name: start service via service-manager
+  include_role:
+    name: service-manager
+  vars:
+    service_action: start
+    service_package_name: "{{ current_package_name }}"
+    service_package_version: "{{ current_package_version }}"

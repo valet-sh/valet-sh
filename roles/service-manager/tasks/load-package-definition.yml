@@ -1,6 +1,6 @@
 ---
 
 - include_role:
-    name: "package-{{ package_name }}-{{ package_version }}"
+    name: "package-{{ service_package_name }}-{{ service_package_version }}"
   vars:
     action: "manifest"
