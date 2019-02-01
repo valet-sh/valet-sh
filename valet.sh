@@ -189,9 +189,9 @@ function prepare() {
 }
 
 ##############################################################################
-# Upgrade meachanism
+# Upgrade meachanism of valet.sh itself
 ##############################################################################
-function upgrade() {
+function self_upgrade() {
     spinner_toggle "Upgrading" -f
     # fetch all tags from application git repo
     git --git-dir="${APPLICATION_REPO_DIR}/.git" --work-tree="${APPLICATION_REPO_DIR}" fetch --tags --quiet
@@ -254,7 +254,7 @@ function print_footer() {
 # Print usage help and command list
 ##############################################################################
 function print_usage() {
-    local cmd_output_space='        '
+    local cmd_output_space='                '
     local cmd_name="-x"
     printf "\\e[33mUsage:\\e[39m\\n"
     printf "  command [options] [command] [arguments]\\n"
@@ -266,8 +266,8 @@ function print_usage() {
     printf "\\n"
     printf "\\e[33mCommands:\\e[39m\\n"
 
-    local cmd_name="upgrade"
-    local cmd_description="Upgrade valet.sh to latest version"
+    local cmd_name="self-upgrade"
+    local cmd_description="Upgrade valet.sh itself to latest version"
     printf "  \\e[32m%s %s \\e[39m${cmd_description}\\n" "${cmd_name}" "${cmd_output_space:${#cmd_name}}"
 
     if [ -d "$BASE_DIR/playbooks" ]; then
@@ -311,10 +311,23 @@ function execute_ansible_playbook() {
     local command=$1
     local ansible_playbook_file="$ANSIBLE_PLAYBOOKS_DIR/$command.yml"
     local parsed_args=""
+    local parsed_opts=""
 
     # prepare cli arguments if given and transform them to ansible extra vars format
     if [ "$#" -gt 1 ]; then
-        for i in $(seq 2 $#); do  if [ "${i}" -gt 2 ]; then parsed_args+=,; fi; parsed_args+="\"${!i}\""; done
+        for i in $(seq 2 $#); do
+            if [[ ${!i:0:1} == "-" ]]; then
+                if [ ${#parsed_opts} -gt 0 ]; then
+                    parsed_opts+=,;
+                fi
+                parsed_opts+="\"${!i}\"";
+            else
+                if [ ${#parsed_args} -gt 0 ]; then
+                    parsed_args+=,;
+                fi
+                parsed_args+="\"${!i}\"";
+            fi
+        done
     fi
     # define complete extra vars object
     read -r -d '' ansible_extra_vars << EOM
@@ -322,10 +335,12 @@ function execute_ansible_playbook() {
     "cli": {
         "name": "${APPLICATION_NAME}",
         "version": "${APPLICATION_VERSION}",
-        "args": [${parsed_args}]
+        "args": [${parsed_args}],
+        "opts": [${parsed_opts}]
     }
 }
 EOM
+
     ansible_extra_vars=("--extra-vars" "${ansible_extra_vars}")
 
     # check if requested playbook yml exist and execute it
@@ -427,8 +442,7 @@ function process_args() {
         # handle remaining args if given
         if [ -n "$*" ]; then
             case "${1--h}" in
-                upgrade) upgrade;;
-                uninstall) uninstall;;
+                self-upgrade) self-upgrade;;
                 # try to execute playbook based on command
                 # ansible will throw an error if specific playbook does not exist
                 *) execute_ansible_playbook "$@";;
