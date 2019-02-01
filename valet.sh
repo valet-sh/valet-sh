@@ -310,25 +310,9 @@ function cleanup_logfiles() {
 function execute_ansible_playbook() {
     local command=$1
     local ansible_playbook_file="$ANSIBLE_PLAYBOOKS_DIR/$command.yml"
-    local parsed_args=""
-    local parsed_opts=""
+    local parsed_args=$2
+    local parsed_opts=$3
 
-    # prepare cli arguments if given and transform them to ansible extra vars format
-    if [ "$#" -gt 1 ]; then
-        for i in $(seq 2 $#); do
-            if [[ ${!i:0:1} == "-" ]]; then
-                if [ ${#parsed_opts} -gt 0 ]; then
-                    parsed_opts+=,;
-                fi
-                parsed_opts+="\"${!i}\"";
-            else
-                if [ ${#parsed_args} -gt 0 ]; then
-                    parsed_args+=,;
-                fi
-                parsed_args+="\"${!i}\"";
-            fi
-        done
-    fi
     # define complete extra vars object
     read -r -d '' ansible_extra_vars << EOM
 {
@@ -412,6 +396,11 @@ function shutdown() {
 # Process all bash args given from shell
 ##############################################################################
 function process_args() {
+
+    local parsed_command=""
+    local parsed_args=""
+    local parsed_opts=""
+
     # check if no arguments were given
     if [ $# -eq 0 ];
     then
@@ -419,33 +408,67 @@ function process_args() {
         print_usage
     else
         # parse options first and handle it
-        while getopts "dvh" opt; do
-            case $opt in
-                d)
-                    # enable debug info
-                    export APPLICATION_DEBUG_INFO_ENABLED=1
-                    ;;
-                v)
-                    # immediate shutdown to display version only
-                    shutdown
-                    ;;
-                h)
-                    # print usage for help
-                    print_usage
-                    ;;
-                *)
-                    # error in this case
-                    error "Invalid option: -${OPTARG}"
-            esac
-        done
-        shift $((OPTIND-1))
+        
+        for i in "$@"; do
+
+            # parse double dash options (ansible)
+            if [[ ${i:0:2} == "--" ]]; then
+                if [ ${#parsed_opts} -gt 0 ]; then
+                    parsed_opts+=,;
+                fi
+                parsed_opts+="\"${i}\"";
+                shift
+                continue
+            fi
+
+            # parse single dash options (cli)
+            if [[ ${i:0:1} == "-" ]]; then
+                if [ ${#parsed_opts} -gt 0 ]; then
+                    parsed_opts+=,;
+                fi
+                parsed_opts+="\"${i}\"";
+                case ${i} in
+                    -d)
+                        # enable debug info
+                        export APPLICATION_DEBUG_INFO_ENABLED=1
+                        shift
+                        ;;
+                    -v)
+                        # immediate shutdown to display version only
+                        shutdown
+                        shift
+                        ;;
+                    -h)
+                        # print usage for help
+                        print_usage
+                        shift
+                        ;;
+                    -*)
+                        shift
+                        # error in this case
+                        error "Invalid option: ${i}"
+                esac
+
+            # parse command and given args
+            else
+                if [ ${#parsed_command} -gt 0 ]; then
+                    if [ ${#parsed_args} -gt 0 ]; then
+                        parsed_args+=,;
+                    fi
+                    parsed_args+="\"${i}\""
+                else
+                    parsed_command=$1;
+                fi
+            fi
+        done;
+
         # handle remaining args if given
         if [ -n "$*" ]; then
             case "${1--h}" in
                 self-upgrade) self-upgrade;;
                 # try to execute playbook based on command
                 # ansible will throw an error if specific playbook does not exist
-                *) execute_ansible_playbook "$@";;
+                *) execute_ansible_playbook "$parsed_command" "$parsed_args" "$parsed_opts";;
             esac
         else
             print_usage
