@@ -23,7 +23,6 @@
     loop_var: package_template_item
   when: package.config.templates is defined
   become: true
-  notify: "service | {{ current_package_name }}-{{ current_package_version }} | restarted"
 
 - name: "call install tasks for {{ current_package_name }}-{{ current_package_version }}"
   include_role:
