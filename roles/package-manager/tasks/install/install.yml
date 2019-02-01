@@ -5,6 +5,14 @@
     msg: "package {{ current_package_name }}-{{ current_package_version }} is already installed"
   when: package_condition
 
+- name: stop service via service-manager
+  include_role:
+    name: service-manager
+  vars:
+    service_action: stop
+    service_package_name: "{{ current_package_name }}"
+    service_package_version: "{{ current_package_version }}"
+
 - include_tasks: "common/distil.yml"
   # output: package_candidate
 
@@ -43,7 +51,6 @@
     loop_var: package_directory_item
   when: package.config.directories is defined
   become: true
-
 
 - name: "download package {{ package_candidate.id }}"
   get_url:

@@ -1,5 +1,5 @@
 ---
 
-- name: "@vsh stopping service {{ package_name }}-{{ package_version }}"
-  command: "launchctl unload -w {{ launch_daemons_base_path }}/{{ launch_daemon_prefix }}.{{ package_name }}-{{ package_version }}.plist"
+- name: "@vsh stopping service {{ service_package_name }}-{{ service_package_version }}"
+  command: "launchctl unload -w {{ launch_daemons_base_path }}/{{ launch_daemon_prefix }}.{{ service_package_name }}-{{ service_package_version }}.plist"
   become: True

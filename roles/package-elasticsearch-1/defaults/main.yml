@@ -1,0 +1,10 @@
+---
+
+redis_32_current_cli_bin: "{{ package_bin_path}}/redis-cli"
+redis_32_current_server_bin: "{{ package_bin_path}}/redis-server"
+redis_32_pidfile: "{{ package_run_path}}/redis.pid"
+
+redis_32_port: 6379
+redis_32_bindaddress: 127.0.0.1
+redis_32_socket: /tmp/redis32.sock
+

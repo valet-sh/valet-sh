@@ -1,0 +1,30 @@
+---
+#
+# valet.sh | upgrade
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @command: "upgrade"
+# @description: "upgrade package"
+# @usage: "valet.sh upgrade <package> <version>"
+
+- name: "upgrade"
+  hosts: local
+  gather_facts: True
+
+  tasks:
+
+  - fail:
+      msg: 'cli argument package not defined'
+    when: cli.args.0 is not defined
+    
+  - fail:
+      msg: 'cli argument version not defined'
+    when: cli.args.1 is not defined
+
+  - import_role:
+      name: package-manager
+    vars:
+      package_action: "upgrade"
+      package_name: "{{ cli.args.0 }}"
+      package_version: "{{ cli.args.1 }}"
