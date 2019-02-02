@@ -25,7 +25,7 @@
   become: true
 
 - name: "provision files"
-  template:
+  file:
     src: "{{ package.config.role_path }}/{{ package_file_item.source }}"
     dest: "{{ package_file_item.target }}"
     mode: "{{ package_file_item.mode | default('644') }}"
