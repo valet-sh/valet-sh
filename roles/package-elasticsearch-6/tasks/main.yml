@@ -1,0 +1,4 @@
+---
+
+- include_tasks: manifest/main.yml
+  when: (package_action is defined) and (package_action == "manifest")

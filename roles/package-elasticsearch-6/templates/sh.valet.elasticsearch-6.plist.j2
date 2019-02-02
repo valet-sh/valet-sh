@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>KeepAlive</key>
+  <false/>
+  <key>Label</key>
+  <string>{{ package_startup_script }}</string>
+  <key>UserName</key>
+  <string>{{ current_user }}</string>
+  <key>GroupName</key>
+  <string>{{ current_group }}</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>{{ package_bin_path }}/elasticsearch</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ES_PATH_CONF</key>
+    <string>{{ package_etc_path}}</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>WorkingDirectory</key>
+  <string>{{ package_base_path}}</string>
+  <key>StandardErrorPath</key>
+  <string>{{ package_log_path}}/elasticsearch.log</string>
+  <key>StandardOutPath</key>
+  <string>{{ package_log_path}}/elasticsearch.log</string>
+</dict>
+</plist>
