@@ -22,7 +22,6 @@
   loop_control:
     loop_var: package_template_item
   when: package.config.templates is defined
-  become: true
 
 - name: "provision files"
   file:
@@ -33,7 +32,6 @@
   loop_control:
     loop_var: package_file_item
   when: package.config.files is defined
-  become: true
 
 - name: "call install tasks for {{ current_package_name }}-{{ current_package_version }}"
   include_role:
