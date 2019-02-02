@@ -2,3 +2,6 @@
 
 - include_tasks: manifest/main.yml
   when: (package_action is defined) and (package_action == "manifest")
+
+- include_tasks: configure/main.yml
+  when: (package_action is defined) and (package_action == "configure")

@@ -6,6 +6,8 @@
       version: "2.8"
       config:
         role_path: "{{ role_path }}"
+        directories:
+          - "{{ package_etc_path }}/conf.d"
         templates:
           - source: "templates/dnsmasq.conf.j2"
             target: "{{ package_etc_path }}/dnsmasq.conf"
