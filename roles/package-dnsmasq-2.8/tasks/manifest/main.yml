@@ -9,4 +9,3 @@
         templates:
           - source: "templates/dnsmasq.conf.j2"
             target: "{{ package_etc_path }}/dnsmasq.conf"
-            mode: "0755"
