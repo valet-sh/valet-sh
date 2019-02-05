@@ -40,13 +40,15 @@
   set_fact:
     package_channel_info: "{{ packages[current_package_name + '-' + current_package_version] }}"
 
-- name: add id to package
+- name: generate url and id for package candidate to be added
   set_fact:
-    package_channel_info: "{{ package_channel_info|combine({'id':\"{{ current_package_name }}-{{ current_package_version}}\"}) }}"
+    package_additional_fields:
+      url: "{{ distil_base_url }}/{{ os_version }}/{{ package_channel }}/{{ current_package_name }}/{{ current_package_version }}/{{ package_channel_info.filename }}"
+      id: "{{ current_package_name }}-{{ current_package_version}}"
 
-- name: add url to package
+- name: add url and id fields to package
   set_fact:
-    package_candidate: "{{ package_channel_info|combine({'url':\"{{ distil_base_url }}/{{ os_version }}/{{ package_channel }}/{{ current_package_name }}/{{ current_package_version }}/{{ package_channel_info.filename }}\"}) }}"
+    package_candidate: "{{ package_channel_info | combine(package_additional_fields) }}"
 
 - set_fact:
     package_candidate: "{{ package_candidate }}"
