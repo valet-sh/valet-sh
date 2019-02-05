@@ -1,5 +1,11 @@
 ---
 
+- name: fail when dnsmasq_domain is not set
+  fail:
+    msg: "'dnsmasq_domain' var is not set"
+  when: dnsmasq_domain is not defined
+
+
 - name: ensure resolver directory '/etc/resolver/' exists
   file:
     path: "/etc/resolver"

@@ -1,7 +1,38 @@
 ---
 
-- include_tasks: manifest/main.yml
+##
+# Returns the package manifest
+#
+# @returns object package
+##
+- include_tasks: manifest.yml
   when: (package_action is defined) and (package_action == "manifest")
 
-- include_tasks: configure/main.yml
-  when: (package_action is defined) and (package_action == "configure")
+##
+# the package methods
+#
+# uncomment and modify the following lines if you want to use them!
+##
+
+- include_tasks: configure/add-domain.yml
+  when: (package_action is defined) and (package_action == "add-domain")
+
+- include_tasks: configure/delete-domain.yml
+  when: (package_action is defined) and (package_action == "delete-domain")
+
+
+
+##
+# the package observers
+#
+# uncomment and modify the following lines if you want to use them!
+##
+
+#- include_tasks: install.yml
+#  when: (package_action is defined) and (package_action == "install")
+#
+#- include_tasks: remove.yml
+#  when: (package_action is defined) and ((package_action == "remove")
+#
+#- include_tasks: purge.yml
+#  when: (package_action is defined) and ((package_action == "purge")
