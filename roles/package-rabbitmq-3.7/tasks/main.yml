@@ -1,0 +1,35 @@
+---
+
+##
+# Returns the package manifest
+#
+# @returns object package
+##
+- include_tasks: manifest.yml
+  when: (package_action is defined) and (package_action == "manifest")
+
+##
+# the package methods
+#
+# uncomment and modify the following lines if you want to use them!
+##
+
+#- include_tasks: update-settings.yml
+#  when: (package_action is defined) and (package_action == "update-settings")
+
+
+
+##
+# the package observers
+#
+# uncomment and modify the following lines if you want to use them!
+##
+
+#- include_tasks: install.yml
+#  when: (package_action is defined) and (package_action == "install")
+#
+#- include_tasks: remove.yml
+#  when: (package_action is defined) and ((package_action == "remove")
+#
+#- include_tasks: purge.yml
+#  when: (package_action is defined) and ((package_action == "purge")

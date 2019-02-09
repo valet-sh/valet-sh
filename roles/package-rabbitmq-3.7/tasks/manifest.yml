@@ -1,0 +1,12 @@
+---
+
+- set_fact:
+    package:
+      name: "rabbitmq"
+      version: "3.7"
+      config:
+        role_path: "{{ role_path }}"
+        templates:
+          - source: "templates/rabbitmq.config.j2"
+            target: "{{ package_etc_path }}/rabbitmq.config"
+            mode: "0755"

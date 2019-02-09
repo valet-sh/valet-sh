@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>             <string>{{ package_startup_script }}</string>
+    <key>RunAtLoad</key>         <true/>
+    <key>Program</key>           <string>{{ package_sbin_path}}/rabbitmq-server</string>
+    <key>WorkingDirectory</key>  <string>{{ package_base_path }}</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>RABBITMQ_HOME</key><string>{{ package_base_path}}</string>
+        <key>RABBITMQ_CONFIG_FILE</key><string>{{ package_etc_path}}/rabbitmq</string>
+        <key>RABBITMQ_MNESIA_BASE</key><string>{{ package_data_path}}</string>
+        <key>RABBITMQ_LOG_BASE</key><string>{{ package_log_path}}</string>
+    </dict>
+    <key>StandardErrorPath</key>
+    <string>{{ package_log_path}}/std_error.log</string>
+    <key>StandardOutPath</key>
+    <string>{{ package_log_path}}/std_out.log</string>
+</dict>
+</plist>
+
