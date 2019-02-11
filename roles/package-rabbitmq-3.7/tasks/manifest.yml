@@ -7,6 +7,7 @@
       config:
         role_path: "{{ role_path }}"
         templates:
-          - source: "templates/rabbitmq.config.j2"
-            target: "{{ package_etc_path }}/rabbitmq.config"
-            mode: "0755"
+          - source: "templates/rabbitmq.conf.j2"
+            target: "{{ package_etc_path }}/rabbitmq.conf"
+          - source: "templates/rabbitmq-env.conf.j2"
+            target: "{{ package_etc_path }}/rabbitmq-env.conf"
