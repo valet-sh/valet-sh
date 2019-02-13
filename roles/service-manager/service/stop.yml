@@ -17,8 +17,9 @@
 - name: fail when package has no launch daemon script
   fail:
     msg: "Package {{ service_package_name }}-{{ service_package_version }} has no launch daemon script"
-  when: current_launch_daemon_script_path_obj.stat.exists == false
+  when: (current_launch_daemon_script_path_obj.stat.exists == false) and (service_mode == "strict")
 
 - name: "@vsh stopping service {{ service_package_name }}-{{ service_package_version }}"
   command: "launchctl unload -w {{ launch_daemons_base_path }}/{{ launch_daemon_prefix }}.{{ service_package_name }}-{{ service_package_version }}.plist"
   become: true
+  when: current_launch_daemon_script_path_obj.stat.exists == true
