@@ -6,5 +6,8 @@
 - include_tasks: "update_state.yml"
   when: (state_action is defined) and (state_action == "update_state")
 
+- include_tasks: "delete_state.yml"
+  when: (state_action is defined) and (state_action == "delete_state")
+
 - include_tasks: "check_default.yml"
   when: (state_action is defined) and (state_action == "check_default")
