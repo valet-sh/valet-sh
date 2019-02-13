@@ -12,6 +12,7 @@
     service_action: stop
     service_package_name: "{{ current_package_name }}"
     service_package_version: "{{ current_package_version }}"
+    service_mode: soft
 
 - include_tasks: "common/distil.yml"
   # output: package_candidate
