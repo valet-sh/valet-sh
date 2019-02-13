@@ -6,25 +6,45 @@
 # @author: "Philipp Dittert"
 # @command: "start"
 # @description: "Start service"
-# @usage: "valet.sh start <package> <version>"
+# @usage: "valet.sh start <package>@<version>"
 
 - name: "start"
   hosts: local
   gather_facts: True
 
+  vars:
+    install_default_versions:
+      php: "7.2"
+      mysql: "5.7"
+      redis: "3.2"
+      nginx: "1.14"
+      elasticsearch: "6"
+      rabbitmq: "3.7"
+      dnsmasq: "2.8"
+      mailhog: "1.0"
+    install_default_packages:
+      - nginx
+      - php
+      - mysql
+      - redis
+      - elasticsearch
+
   tasks:
 
-  - fail:
-      msg: 'cli argument package not defined'
-    when: cli.args.0 is not defined
+    - include_role:
+        name: service-manager
+      vars:
+        service_action: "start"
+        service_package_name: "{{ item.split('@')[0] }}"
+        service_package_version: "{{ item.split('@')[1] | default(install_default_versions[item.split('@')[0]]) }}"
+      with_items: "{{ cli.args }}"
+      when: cli.args | length > 0
 
-  - fail:
-      msg: 'cli argument version not defined'
-    when: cli.args.1 is not defined
-
-  - import_role:
-      name: service-manager
-    vars:
-      service_action: "start"
-      package_name: "{{ cli.args.0 }}"
-      package_version: "{{ cli.args.1 }}"
+    - include_role:
+        name: service-manager
+      vars:
+        service_action: "start"
+        service_package_name: "{{ item }}"
+        service_package_version: "{{ install_default_versions[item] }}"
+      with_items: "{{ install_default_packages }}"
+      when: cli.args | length == 0

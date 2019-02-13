@@ -6,25 +6,47 @@
 # @author: "Philipp Dittert"
 # @command: "upgrade"
 # @description: "upgrade package"
-# @usage: "valet.sh upgrade <package> <version>"
+# @usage: "valet.sh upgrade <package>@<version>"
 
 - name: "upgrade"
   hosts: local
   gather_facts: True
 
+  vars:
+    install_default_versions:
+      php: "7.2"
+      mysql: "5.7"
+      redis: "3.2"
+      nginx: "1.14"
+      elasticsearch: "6"
+      rabbitmq: "3.7"
+      dnsmasq: "2.8"
+      mailhog: "1.0"
+    install_default_packages:
+      - nginx
+      - php
+      - mysql
+      - redis
+      - elasticsearch
+
   tasks:
 
-  - fail:
-      msg: 'cli argument package not defined'
-    when: cli.args.0 is not defined
-    
-  - fail:
-      msg: 'cli argument version not defined'
-    when: cli.args.1 is not defined
+    - include_role:
+        name: package-manager
+      vars:
+        package_action: "upgrade"
+        package_name: "{{ item.split('@')[0] }}"
+        package_version: "{{ item.split('@')[1] | default(install_default_versions[item.split('@')[0]]) }}"
+      with_items: "{{ cli.args }}"
+      when: cli.args | length > 0
 
-  - import_role:
-      name: package-manager
-    vars:
-      package_action: "upgrade"
-      package_name: "{{ cli.args.0 }}"
-      package_version: "{{ cli.args.1 }}"
+
+    - include_role:
+        name: package-manager
+      vars:
+        package_action: "upgrade"
+        package_name: "{{ item }}"
+        package_version: "{{ install_default_versions[item] }}"
+      with_items: "{{ install_default_packages }}"
+      when: cli.args | length == 0
+

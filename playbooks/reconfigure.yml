@@ -1,14 +1,14 @@
 ---
 #
-# valet.sh | stop
+# valet.sh | reconfigure
 #
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
-# @command: "stop"
-# @description: "Stop service"
-# @usage: "valet.sh stop <package>@<version>"
+# @command: "reconfigure"
+# @description: "reconfigure package"
+# @usage: "valet.sh reconfigure <package>@<version>"
 
-- name: "stop"
+- name: "reconfigure"
   hosts: local
   gather_facts: True
 
@@ -32,19 +32,21 @@
   tasks:
 
     - include_role:
-        name: service-manager
+        name: package-manager
       vars:
-        service_action: "stop"
-        service_package_name: "{{ item.split('@')[0] }}"
-        service_package_version: "{{ item.split('@')[1] | default(install_default_versions[item.split('@')[0]]) }}"
+        package_action: "reconfigure"
+        package_name: "{{ item.split('@')[0] }}"
+        package_version: "{{ item.split('@')[1] | default(install_default_versions[item.split('@')[0]]) }}"
       with_items: "{{ cli.args }}"
       when: cli.args | length > 0
 
+
     - include_role:
-        name: service-manager
+        name: package-manager
       vars:
-        service_action: "stop"
-        service_package_name: "{{ item }}"
-        service_package_version: "{{ install_default_versions[item] }}"
+        package_action: "reconfigure"
+        package_name: "{{ item }}"
+        package_version: "{{ install_default_versions[item] }}"
       with_items: "{{ install_default_packages }}"
       when: cli.args | length == 0
+
