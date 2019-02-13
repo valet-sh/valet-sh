@@ -1,7 +1,10 @@
 ---
 
-- name: "include role for package '{{ service_package_name }}-{{ service_package_version }}'"
+- name: load state-manager
   include_role:
-    name: "package-{{ service_package_name }}-{{ service_package_version }}"
+    name: state-manager
   vars:
-    action: "manifest"
+    state_action: get_state
+    state_package_name: "{{ service_package_name }}"
+    state_package_version: "{{ service_package_version }}"
+  # output: package_condition
