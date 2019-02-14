@@ -27,6 +27,13 @@
     current_package_version: "{{ package_version }}"
   when: (package_action is defined) and (package_action == "upgrade")
 
+- name: call upgrade tasks when package_action equals to "reconfigure"
+  include_tasks: reconfigure/main.yml
+  vars:
+    current_package_name: "{{ package_name }}"
+    current_package_version: "{{ package_version }}"
+  when: (package_action is defined) and (package_action == "reconfigure")
+
 - name: call remove tasks when package_action equals to "remove"
   include_tasks: remove/main.yml
   vars:
