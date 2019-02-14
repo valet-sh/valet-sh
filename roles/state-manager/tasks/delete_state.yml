@@ -21,23 +21,26 @@
 - name: "fail when package is not installed"
   fail:
     msg: "package {{ state_package_name }}-{{ state_package_version }} is not installed"
-  when: package_state[state_package_name + '-' + state_package_version] is not defined
+  when: (package_state[state_package_name + '-' + state_package_version] is not defined) and (state_mode == "strict")
 
-- set_fact:
-    new_package_state: "{{(new_package_state|default[])) |combine({item.key: item.value})}}"
-  when: "{{item.key not in [state_package_name + '-' + state_package_version]}}"
-  with_dict: "{{ package_state }}"
+- block:
+    - set_fact:
+        new_package_state: "{{(new_package_state|default[])) |combine({item.key: item.value})}}"
+      when: "{{item.key not in [state_package_name + '-' + state_package_version]}}"
+      with_dict: "{{ package_state }}"
 
-- name: reset package_stage object
-  set_fact:
-    package_state: "{{ new_package_state }}"
+    - name: reset package_stage object
+      set_fact:
+        package_state: "{{ new_package_state }}"
 
-- name: "transform package_state into nice yaml output"
-  set_fact:
-    package_state_yml: "{{ package_state | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+    - name: "transform package_state into nice yaml output"
+      set_fact:
+        package_state_yml: "{{ package_state | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
 
-- name: "write package_state file"
-  copy:
-    content: "{{ package_state_yml }}"
-    dest: "{{ packages_state_file }}"
-  become: true
+    - name: "write package_state file"
+      copy:
+        content: "{{ package_state_yml }}"
+        dest: "{{ packages_state_file }}"
+      become: true
+  when: package_state[state_package_name + '-' + state_package_version] is defined
+

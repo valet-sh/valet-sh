@@ -26,3 +26,17 @@
     current_package_name: "{{ package_name }}"
     current_package_version: "{{ package_version }}"
   when: (package_action is defined) and (package_action == "upgrade")
+
+- name: call remove tasks when package_action equals to "remove"
+  include_tasks: remove/main.yml
+  vars:
+    current_package_name: "{{ package_name }}"
+    current_package_version: "{{ package_version }}"
+  when: (package_action is defined) and (package_action == "remove")
+
+- name: call purge tasks when package_action equals to "purge"
+  include_tasks: purge/main.yml
+  vars:
+    current_package_name: "{{ package_name }}"
+    current_package_version: "{{ package_version }}"
+  when: (package_action is defined) and (package_action == "purge")
