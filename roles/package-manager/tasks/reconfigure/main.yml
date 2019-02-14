@@ -33,6 +33,14 @@
     service_package_version: "{{ current_package_version }}"
     service_mode: soft
 
+- name: "include role package-{{ current_package_name }}-{{ current_package_version }}"
+  include_role:
+    name: "package-{{ current_package_name }}-{{ current_package_version }}"
+    public: yes
+  vars:
+    package_action: "manifest"
+  # output: package
+
 - name: call configure.yml
   include_tasks: install/configure.yml
 
