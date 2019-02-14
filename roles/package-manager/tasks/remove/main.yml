@@ -5,7 +5,7 @@
     msg: "package {{ current_package_name }}-{{ current_package_version }} is not installed"
   when: (package_condition is not defined) or (package_condition == false)
 
-- name: stop service via service-manager
+- name: "stop service via service-manager"
   include_role:
     name: service-manager
   vars:
@@ -13,17 +13,24 @@
     service_package_name: "{{ current_package_name }}"
     service_package_version: "{{ current_package_version }}"
 
-- name: set package_base_path
+- name: "set package_base_path"
   set_fact:
     package_dist_path: "{{ base_path }}/{{ current_package_name }}/{{ current_package_version }}/dist"
     package_startup_script: "{{ launch_daemon_prefix }}.{{ current_package_name }}-{{ current_package_version }}.plist"
 
-- name: "delete launch daemon script for {{ current_package_name }}/{{ current_package_version }}"
+- name: "delete launch daemon script for {{ current_package_name }}@{{ current_package_version }}"
   file:
     state: absent
-    path: "{{ package_startup_script }}"
+    path: "{{ launch_daemons_base_path }}/{{ package_startup_script }}"
+  become: true
 
-- name: update state-manager
+- name: "delete package dist of {{ current_package_name }}@{{ current_package_version }}"
+  file:
+    state: absent
+    path: "{{ package_dist_path }}"
+  become: true
+
+- name: "update state-manager"
   include_role:
     name: state-manager
   vars:

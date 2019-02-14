@@ -22,12 +22,14 @@
 - name: "delete launch daemon script for {{ current_package_name }}-{{ current_package_version }}"
   file:
     state: absent
-    path: "{{ package_startup_script }}"
+    path: "{{ launch_daemons_base_path }}/{{ package_startup_script }}"
+  become: true
 
-- name: "delete all package files {{ current_package_name }}-{{ current_package_version }}"
+- name: "delete all package files {{ current_package_name }}@{{ current_package_version }}"
   file:
     state: absent
     path: "{{ package_base_path }}"
+  become: true
 
 - name: update state-manager
   include_role:

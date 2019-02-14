@@ -32,6 +32,7 @@
   vars_prompt:
     - name: "confirm_purge"
       prompt: "ALL DATA WILL BE DELETED for package. are you sure (yes/no)"
+      private: no
 
   tasks:
 
