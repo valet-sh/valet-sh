@@ -1,0 +1,27 @@
+---
+
+- name: set package_base_path
+  set_fact:
+    package_base_path: "{{ base_path }}/{{ current_package_name }}/{{ current_package_version }}"
+    package_startup_script: "{{ launch_daemon_prefix }}.{{ current_package_name }}-{{ current_package_version }}.plist"
+
+- name: set base package variables
+  set_fact:
+    package_dist_path: "{{ package_base_path }}/dist"
+    package_etc_path: "{{ package_base_path }}/etc"
+    package_data_path: "{{ package_base_path }}/data"
+    package_log_path: "{{ package_base_path }}/log"
+    package_tmp_path: "{{ package_base_path }}/tmp"
+    package_run_path: "{{ package_base_path }}/run"
+
+- name: set additional variables
+  set_fact:
+    package_bin_path: "{{ package_dist_path }}/bin"
+    package_sbin_path: "{{ package_dist_path }}/sbin"
+
+- name: "include role package-{{ current_package_name }}-{{ current_package_version }}"
+  include_role:
+    name: "package-{{ current_package_name }}-{{ current_package_version }}"
+    public: yes
+  vars:
+    package_action: "custom"

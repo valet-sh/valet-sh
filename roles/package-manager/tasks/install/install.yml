@@ -40,18 +40,6 @@
     - "{{ package_tmp_path }}"
     - "{{ package_data_path }}"
 
-- name: "provision templates"
-  file:
-    path: "{{ package_directory_item }}"
-    state: directory
-    owner: "{{ package_user }}"
-    group: "{{ package_group }}"
-    mode: "0755"
-  with_items: "{{ package.config.directories }}"
-  loop_control:
-    loop_var: package_directory_item
-  when: package.config.directories is defined
-  become: true
 
 - name: "download package {{ package_candidate.id }}"
   get_url:

@@ -13,6 +13,19 @@
   when: package_startup_script_obj.stat.exists
   become: true
 
+- name: "provision directories"
+  file:
+    path: "{{ package_directory_item }}"
+    state: directory
+    owner: "{{ package_user }}"
+    group: "{{ package_group }}"
+    mode: "0755"
+  with_items: "{{ package.config.directories }}"
+  loop_control:
+    loop_var: package_directory_item
+  when: package.config.directories is defined
+  become: true
+
 - name: "provision templates"
   template:
     src: "{{ package.config.role_path }}/{{ package_template_item.source }}"
