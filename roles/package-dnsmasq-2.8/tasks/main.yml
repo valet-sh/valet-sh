@@ -15,10 +15,10 @@
 ##
 
 - include_tasks: configure/add-domain.yml
-  when: (package_action is defined) and (package_action == "add-domain")
+  when: (package_custom_action is defined) and (package_custom_action == "add-domain")
 
 - include_tasks: configure/delete-domain.yml
-  when: (package_action is defined) and (package_action == "delete-domain")
+  when: (package_custom_action is defined) and (package_custom_action == "delete-domain")
 
 
 

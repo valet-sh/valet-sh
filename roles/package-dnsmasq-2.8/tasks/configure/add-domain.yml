@@ -19,6 +19,7 @@
     dest: "/etc/resolver/{{ dnsmasq_domain }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
+  become: true
 
 - name: "set dnsmasq configuration for domain '{{ dnsmasq_domain }}'"
   copy:
