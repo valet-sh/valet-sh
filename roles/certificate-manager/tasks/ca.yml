@@ -8,7 +8,6 @@
     group: staff
     mode: '0755'
   with_items:
-    - "{{ certificate_base_path }}"
     - "{{ certificate_ca_path }}"
   become: true
 
