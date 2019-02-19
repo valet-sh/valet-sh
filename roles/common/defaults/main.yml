@@ -3,6 +3,10 @@ distil_base_url: "https://distil.valet.sh"
 
 working_dir: "{{ lookup('env','PWD') }}"
 base_path: "/usr/local/valet-sh"
+
+valet_sh_base_path: "/usr/local/valet-sh"
+valet_sh_etc_path: "{{ valet_sh_base_path }}/etc"
+
 packages_state_file: "{{ base_path }}/package_state"
 defaults_state_file: "{{ base_path }}/defaults_state"
 launch_daemons_base_path: "/Library/LaunchDaemons"
