@@ -1,0 +1,178 @@
+---
+
+php_multi:
+  - version: "5.6"
+  - version: "7.0"
+  - version: "7.1"
+  - version: "7.2"
+    default: true
+    config:
+      php_modules:
+        - "xmlrpc"
+        - "xml"
+        - "readline"
+        - "opcache"
+        - "mysql"
+        - "json"
+        - "intl"
+        - "gd"
+        - "fpm"
+        - "curl"
+        - "cli"
+        - "soap"
+        - "mbstring"
+        - "zip"
+        - "bcmath"
+        - "ldap"
+        - "xdebug"
+  - version: "7.3"
+    config:
+      php_modules:
+        - "xmlrpc"
+        - "xml"
+        - "readline"
+        - "opcache"
+        - "mysql"
+        - "json"
+        - "intl"
+        - "gd"
+        - "fpm"
+        - "curl"
+        - "cli"
+        - "soap"
+        - "mbstring"
+        - "zip"
+        - "bcmath"
+        - "ldap"
+        - "xdebug"
+
+php_multi_available_version:
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+  - 7.3
+
+php_modules:
+  - "xmlrpc"
+  - "xml"
+  - "readline"
+  - "opcache"
+  - "mysql"
+  - "json"
+  - "intl"
+  - "gd"
+  - "fpm"
+  - "curl"
+  - "cli"
+  - "soap"
+  - "mbstring"
+  - "zip"
+  - "bcmath"
+  - "ldap"
+  - "mcrypt"
+  - "xdebug"
+
+php_version_string_default: "php{{ php_version }}"
+php_error_log_path_default: "/tmp/php_errors.log"
+php_cli_conf_path_default: "/etc/php/{{ php_version }}/cli/conf.d/99-custom.ini"
+php_fpm_conf_path_default: "/etc/php/{{ php_version }}/fpm/conf.d/99-custom.ini"
+php_fpm_pool_config_default: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
+
+mailhog_bin_target: "/usr/local/bin/mailhog"
+
+
+php_cli_settings_default:
+  - conf: "date.timezone"
+    value: "Europe/Berlin"
+  - conf: "error_log"
+    value: "{{ php_error_log_path }}"
+  - conf: "sendmail_path"
+    value: "{{ mailhog_bin_target }} sendmail test@test"
+  - conf: "memory_limit"
+    value: "8192M"
+  - conf: "xdebug.remote_enable"
+    value: "1"
+  - conf: "xdebug.remote_host"
+    value: "localhost"
+  - conf: "xdebug.remote_port"
+    value: "9000"
+  - conf: "xdebug.remote_autostart"
+    value: "1"
+  - conf: "xdebug.idekey"
+    value: "PHPSTORM"
+
+
+php_cli_settings_additional_default: []
+
+php_fpm_pool_configuration_default:
+  - conf: "user"
+    value: "{{ current_user }}"
+  - conf: "group"
+    value: "{{ current_group }}"
+  - conf: "listen.owner"
+    value: "{{ current_user }}"
+  - conf: "listen.group"
+    value: "{{ current_group }}"
+
+#php_fpm_pool_configuration:
+#  - conf: "listen"
+#    value: "127.0.0.1:9000"
+
+php_fpm_settings_default:
+  - conf: "date.timezone"
+    value: "Europe/Berlin"
+
+  - conf: "max_execution_time"
+    value: "900"
+
+  - conf: "error_log"
+    value: "{{ php_error_log_path }}"
+
+  - conf: "memory_limit"
+    value: "512M"
+
+  - conf: "upload_max_filesize"
+    value: "128M"
+
+  - conf: "post_max_size"
+    value: "128M"
+
+  - conf: "max_input_vars"
+    value: "10000"
+  - conf: "sendmail_path"
+    value: "{{ mailhog_bin_target }} sendmail test@test"
+  - conf: "memory_limit"
+    value: "8192M"
+  - conf: "xdebug.remote_enable"
+    value: "1"
+  - conf: "xdebug.remote_host"
+    value: "localhost"
+  - conf: "xdebug.remote_port"
+    value: "9000"
+  - conf: "xdebug.remote_autostart"
+    value: "1"
+  - conf: "xdebug.idekey"
+    value: "PHPSTORM"
+
+
+php_fpm_settings_additional_default: []
+
+php_modules_default:
+  - "xmlrpc"
+  - "xml"
+  - "readline"
+  - "opcache"
+  - "mysql"
+  - "mcrypt"
+  - "json"
+  - "intl"
+  - "gd"
+  - "fpm"
+  - "curl"
+  - "cli"
+  - "soap"
+  - "mbstring"
+  - "zip"
+  - "bcmath"
+  - "ldap"

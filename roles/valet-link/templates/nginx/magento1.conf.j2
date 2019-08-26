@@ -1,0 +1,59 @@
+server {
+    listen 127.0.0.1:80;
+
+    server_name {{ link_name }}.{{ development_tld }} *.{{ link_name }}.{{ development_tld }};
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+	listen 127.0.0.1:443 ssl http2;
+
+    server_name {{ link_name }}.{{ development_tld }} *.{{ link_name }}.{{ development_tld }};
+    root {{ link_path }};
+    set $upstream "{{ php_version | default('php71') }}";
+
+    ssl_certificate {{ certificate_server_domain_fullchain_file }};
+    ssl_certificate_key {{ certificate_server_domain_key_file }};
+
+	location  /. {
+		deny all;
+		access_log off;
+	    log_not_found off;
+	}
+
+	location ~ ^/(app|includes|lib|media/downloadable|downloader|pkginfo|report/config.xml|var)/ { deny all; }
+
+	location ~* \.(jpg|jpeg|gif|png|bmp|ico|pdf|flv|swf|exe|txt|css|js|ttf|svg)
+	{
+		expires 30d;
+		try_files $uri $uri/ @noimage;
+	}
+
+	location @noimage {
+		return 404;
+	}
+
+	location / {
+		index index.php;
+		try_files $uri $uri/ /index.php?$args;
+	}
+
+	location ~ .php/ { ## Forward paths like /js/index.php/x.js to relevant handler
+		rewrite ^(.*.php)/ $1 last;
+	}
+
+	location ~ .php$ { ## Execute PHP scripts
+		if (!-e $request_filename) { rewrite / /index.php last; }
+
+		expires    off;
+		fastcgi_pass   $upstream;
+		fastcgi_buffers 16 16k;
+		fastcgi_buffer_size 32k;
+		fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+		fastcgi_read_timeout 900;
+		include    fastcgi_params;
+	}
+}

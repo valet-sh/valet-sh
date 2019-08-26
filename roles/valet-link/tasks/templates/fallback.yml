@@ -1,0 +1,11 @@
+---
+
+- name: "provide nginx fallback vhost for {{ link_name }}.{{ development_tld }}"
+  template:
+    src: "nginx/fallback.conf.j2"
+    dest: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | nginx | reloaded
+  become: true

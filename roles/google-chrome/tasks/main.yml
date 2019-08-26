@@ -1,0 +1,22 @@
+---
+
+- name: add chrome repository signin key
+  apt_key:
+    url: https://dl.google.com/linux/linux_signing_key.pub
+    state: present
+  become: true
+
+- name: add chrome repository
+  apt_repository:
+    repo: "deb http://dl.google.com/linux/chrome/deb/ stable main"
+  become: true
+
+- name: install google chrome stable
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - google-chrome-stable
+  become: true

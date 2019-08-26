@@ -1,0 +1,29 @@
+---
+
+- name: systemd | network-manager | started
+  systemd:
+    daemon_reload: yes
+    name: network-manager
+    state: started
+  become: true
+
+- name: systemd | network-manager | stopped
+  systemd:
+    daemon_reload: yes
+    name: network-manager
+    state: stopped
+  become: true
+
+- name: systemd | network-manager | reload
+  systemd:
+    daemon_reload: yes
+    name: network-manager
+    state: reload
+  become: true
+
+- name: systemd | network-manager | restarted
+  systemd:
+    daemon_reload: yes
+    name: network-manager
+    state: restarted
+  become: true

@@ -1,0 +1,18 @@
+---
+#
+# valet.sh | unlink
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @command: "unlink"
+# @description: "Unlink current directory with given name"
+# @usage: "valet.sh unlink <name>"
+
+- name: "unlink"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_action: unlink
+    link_name: "{{ cli.args[0] }}"
+  roles:
+    - valet-link

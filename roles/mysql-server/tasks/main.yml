@@ -1,0 +1,59 @@
+---
+
+- name: Specify MySQL root password before installing
+  debconf:
+    name: 'mysql-server'
+    question: 'mysql-server/root_password'
+    value: '{{mysql_root_password | quote}}'
+    vtype: 'password'
+  changed_when: false
+  become: true
+
+- name: Confirm MySQL root password before installing
+  debconf:
+    name: 'mysql-server'
+    question: 'mysql-server/root_password_again'
+    value: '{{mysql_root_password | quote}}'
+    vtype: 'password'
+  changed_when: false
+  become: true
+
+- name: install mysql packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+  become: true
+  vars:
+    packages:
+     - mysql-client-5.7
+     - mysql-server-5.7
+     - python-mysqldb
+
+- name: ensure .my.cnf file exists in user's home directory
+  blockinfile:
+    path: "{{ current_home }}/.my.cnf"
+    block: |
+      [client]
+      default-character-set = utf8mb4
+      user = root
+      password = {{ mysql_root_password }}
+    create: true
+
+- name: ensure settings in mysqldump.cnf are up2date
+  lineinfile:
+    path: "/etc/mysql/conf.d/mysqldump.cnf"
+    line: "default-character-set = utf8mb4"
+    insertafter: EOF
+    create: true
+  become: true
+
+- name: "ensure mysqld settings are present"
+  lineinfile:
+    path: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+    line: "{{ current_mysqld_setting.param }}='{{ current_mysqld_setting.value }}'"
+    insertafter: EOF
+  with_items: "{{ mysql_mysqld_settings }}"
+  notify: "systemd | mysql | restarted"
+  become: true
+  loop_control:
+    loop_var: current_mysqld_setting

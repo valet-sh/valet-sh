@@ -1,5 +1,0 @@
----
-
-- include_tasks: "service/stop.yml"
-
-- include_tasks: "service/start.yml"

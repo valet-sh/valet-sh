@@ -1,0 +1,69 @@
+---
+
+- name: set current elasticsearch base path
+  set_fact:
+    current_elasticsearch_base_path: "{{ elasticsearch_base_path }}1"
+    current_elasticsearch_key: "elasticsearch1"
+
+- name: "get stats for dir {{ current_elasticsearch_base_path }}"
+  stat:
+    path: "{{ current_elasticsearch_base_path }}"
+  register: current_elasticsearch_base_path_obj
+
+- block:
+  - name: Download ElasticSearch package
+    get_url:
+      url: "{{ elasticsearch_version_1_download_url }}"
+      dest: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
+
+  - name: "create {{ current_elasticsearch_base_path }}"
+    file:
+      path: "{{ current_elasticsearch_base_path }}"
+      owner: "{{ current_user }}"
+      group: "{{ current_group }}"
+      mode: '0755'
+      state: directory
+    become: true
+
+  - name: Extract elasticsearch archive
+    unarchive:
+      src: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
+      dest: "{{ current_elasticsearch_base_path }}"
+      extra_opts: [--strip-components=1]
+
+  - name: "delete elasticsearch release tar.gz"
+    file:
+      path: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
+      state: absent
+
+  - name: "provide {{ current_elasticsearch_key }} configuration"
+    template:
+      src: "config/{{ current_elasticsearch_key }}.yml.j2"
+      dest: "{{ current_elasticsearch_base_path }}/config/elasticsearch.yml"
+      mode: '0644'
+    notify: "systemd | {{ current_elasticsearch_key }} | restarted"
+
+  - name: "provide {{ current_elasticsearch_key }} systemd unit file"
+    template:
+      src: "systemd/{{ current_elasticsearch_key }}.service.j2"
+      dest: "/etc/systemd/system/{{ current_elasticsearch_key }}.service"
+      owner: root
+      group: root
+      mode: '0644'
+    notify: "systemd | {{ current_elasticsearch_key }} | restarted"
+    become: true
+
+  - name: "install plugins"
+    shell: "{{ current_elasticsearch_base_path }}/bin/plugin install {{ current_elasticsearch_plugin }}"
+    with_items: "{{ elasticsearch_legacy_plugins }}"
+    notify: "systemd | {{ current_elasticsearch_key }} | restarted"
+    loop_control:
+      loop_var: current_elasticsearch_plugin
+
+  - name: "be sure {{ current_elasticsearch_key }} is running and enabled"
+    systemd:
+      name: "{{ current_elasticsearch_key }}"
+      enabled: yes
+      state: started
+    become: true
+  when: not current_elasticsearch_base_path_obj.stat.exists

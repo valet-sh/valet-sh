@@ -1,0 +1,21 @@
+---
+
+- name: check for magento2 project
+  stat:
+    path: "{{ link_path }}/pub/index.php"
+  register: m2_checker_obj
+
+- name: "provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
+  template:
+    src: "nginx/magento2.conf.j2"
+    dest: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | nginx | reloaded
+  when: m2_checker_obj.stat.exists
+  become: true
+
+- set_fact:
+    template_found: true
+  when: m2_checker_obj.stat.exists

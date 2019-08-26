@@ -1,0 +1,14 @@
+---
+
+- name: install | ensure rabbitmq-server is installed
+  apt:
+    name: rabbitmq-server
+    state: present
+  become: true
+
+- name: install | ensure rabbitmq-server is running and enabled
+  service:
+    name: rabbitmq-server
+    state: started
+    enabled: yes
+  become: true

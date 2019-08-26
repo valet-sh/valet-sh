@@ -1,0 +1,7 @@
+{% for php_fpm_setting in php_fpm_settings %}
+{{ php_fpm_setting.conf }}={{ php_fpm_setting.value }}
+{% endfor %}
+
+{% for php_fpm_setting_additional in php_fpm_settings_additional %}
+{{ php_fpm_setting_additional.conf }}={{ php_fpm_setting_additional.value }}
+{% endfor %}

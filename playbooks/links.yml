@@ -1,0 +1,17 @@
+---
+#
+# valet.sh | links
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @command: "links"
+# @description: "Show all currently linked sites"
+# @usage: "valet.sh links"
+
+- name: "links"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_action: links
+  roles:
+    - valet-link

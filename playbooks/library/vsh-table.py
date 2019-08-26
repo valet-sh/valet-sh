@@ -46,7 +46,7 @@ def main():
     
     for row in rows:
         if (len(row) != len(headers)):
-            module.fail_json(msg='row list count does not equal headers list count')        
+            module.fail_json(msg='row list count does not equal headers list count %s' % row)
         table.append_row(row)
     
     module.exit_json(changed=True, vsh_stdout=str(table))

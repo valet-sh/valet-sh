@@ -1,0 +1,15 @@
+---
+
+- include_tasks: "sub/read.yml"
+
+- set_fact:
+    valet_list: []
+
+- set_fact:
+    valet_list: "{{ valet_list + [[ item.name, item.path, item.ssl ]] }}"
+  with_items: "{{ valet_links_obj.valet_links.links }}"
+
+- vsh-table:
+    headers: ['Name', 'Path', 'SSL']
+    rows: "{{ valet_list }}"
+

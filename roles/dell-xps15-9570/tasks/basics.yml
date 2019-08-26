@@ -1,0 +1,10 @@
+---
+
+- name: uninstall useless packages
+  apt:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+      - ubuntu-web-launchers
+

@@ -1,0 +1,13 @@
+---
+
+mysql_root_password: root
+
+mysql_mysqld_settings:
+  - param: character-set-server
+    value: utf8mb4
+  - param: collation-server
+    value: utf8mb4_unicode_ci
+  - param: innodb_file_per_table
+    value: 1
+  - param: innodb_flush_log_at_trx_commit
+    value: 2

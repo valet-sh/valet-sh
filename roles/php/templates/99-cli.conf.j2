@@ -1,0 +1,8 @@
+{% for php_cli_setting in php_cli_settings %}
+{{ php_cli_setting.conf }}={{ php_cli_setting.value }}
+{% endfor %}
+
+{% for php_cli_setting_additional in php_cli_settings_additional %}
+{{ php_cli_setting_additional.conf }}={{ php_cli_setting_additional.value }}
+{% endfor %}
+

@@ -1,0 +1,52 @@
+---
+
+- name: check if link_name variable is set
+  fail:
+    msg: "link_name variable is not set"
+  when: link_name is not defined
+
+- name: check if link_path variable is set
+  fail:
+    msg: "link_path variable is not set"
+  when: link_path is not defined
+
+- name: "fail when name is blacklisted"
+  fail:
+    msg: "{{ link_name }} is not allowed!"
+  when: "link_name in valet_link_blacklist"
+
+- include_tasks: "sub/read.yml"
+
+- name: "fail when name already linked"
+  fail:
+    msg: "{{ link_name }} already linked!"
+  when: "link_name in valet_links_obj.valet_links.links_index"
+
+- name: "generate ssl-certificate for {{ link_name }}"
+  include_role:
+    name: certificate
+    public: true
+  vars:
+    cert_prefix: "{{ link_name }}"
+
+- block:
+    - include_tasks: templates/magento1.yml
+    - include_tasks: templates/magento2.yml
+    - include_tasks: templates/fallback.yml
+  when: template_found == False
+
+- name: create new valet_link variable
+  set_fact:
+    new_valet_link:
+      - name: "{{ link_name }}"
+        path: "{{ link_path }}"
+        ssl: true
+
+- name: assemble new valet_links_object
+  set_fact:
+    valet_links_obj:
+      valet_links:
+        links_index: "{{ valet_links_obj.valet_links.links_index + [link_name] }}"
+        links: "{{ valet_links_obj.valet_links.links + new_valet_link }}"
+
+- include_tasks: "sub/write.yml"

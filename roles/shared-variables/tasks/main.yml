@@ -1,0 +1,11 @@
+---
+
+- set_fact:
+    current_user: "{{ lookup('env','USER') }}"
+    current_group: "{{ lookup('env','USER') }}"
+    current_home: "{{ lookup('env','HOME') }}"
+
+- name: fail when running as root
+  fail:
+    msg: "Do not run this project as root!"
+  when: current_user == "root"

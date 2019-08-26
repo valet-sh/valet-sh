@@ -1,0 +1,19 @@
+---
+
+- name: systemd | mailhog | started
+  systemd:
+    daemon_reload: yes
+    name: mailhog
+    state: started
+
+- name: systemd | mailhog | stopped
+  systemd:
+    daemon_reload: yes
+    name: mailhog
+    state: stopped
+
+- name: systemd | mailhog | restarted
+  systemd:
+    daemon_reload: yes
+    name: mailhog
+    state: restarted

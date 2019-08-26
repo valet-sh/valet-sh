@@ -1,0 +1,38 @@
+---
+
+- name: "create valet base dirs"
+  file:
+    path: "{{ current_valet_base_dir }}"
+    state: directory
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: '0755'
+  become: true
+  with_items: "{{ valet_base_dirs }}"
+  loop_control:
+    loop_var: current_valet_base_dir
+
+- name: "get stat for {{ valet_config_links_file }}"
+  stat:
+    path: "{{ valet_config_links_file }}"
+  register: valet_config_links_file_obj
+
+- name: "transform object into nice yaml output"
+  set_fact:
+    valet_links_list_stub: "{{ valet_links_stub | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+  when: not valet_config_links_file_obj.stat.exists
+
+- name: "write new links.yml file"
+  copy:
+    content: "{{ valet_links_list_stub }}"
+    dest: "{{ valet_config_links_file }}"
+  when: not valet_config_links_file_obj.stat.exists
+
+- name: "ensure valet links file exists"
+  file:
+    dest:  "{{ valet_config_links_file }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    state: "{{ 'file' if  valet_config_links_file_obj.stat.exists else 'touch' }}"
+    mode: '0755'
+  become: true

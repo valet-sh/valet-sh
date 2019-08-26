@@ -1,0 +1,11 @@
+---
+
+- include_tasks: link.yml
+  when: valet_action == "link"
+
+- include_tasks: unlink.yml
+  when: valet_action == "unlink"
+
+- include_tasks: links.yml
+  when: valet_action == "links"
+

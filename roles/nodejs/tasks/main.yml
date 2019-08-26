@@ -1,0 +1,23 @@
+---
+
+- name: be sure nodejs is installed
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - nodejs
+      - npm
+  become: true
+
+- name: ensure "n" version manager is installed globally
+  npm:
+    name: n
+    global: yes
+  become: true
+
+- name: ensure gulp is installed globally
+  npm:
+    name: gulp
+    global: yes
+  become: true

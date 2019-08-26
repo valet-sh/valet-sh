@@ -1,0 +1,38 @@
+---
+
+- name: "install | ensure nginx is installed"
+  apt:
+    name: nginx
+    state: present
+  become: true
+
+- name: "install | ensure nginx is enabled"
+  systemd:
+    name: nginx
+    enabled: yes
+  become: true
+
+- name: Generate dhparams file
+  shell: "openssl dhparam -out {{ nginx_dhparams_file }} {{ nginx_dhparams_keysize }}"
+  args:
+    creates: "{{ nginx_dhparams_file }}"
+  become: true
+
+- name: Override default config
+  template:
+    src: "nginx.conf.j2"
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | nginx | reloaded
+  become: true
+
+- name: Create nginx conf.d dir
+  file:
+    path: /etc/nginx/conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true

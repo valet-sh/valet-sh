@@ -1,0 +1,52 @@
+---
+
+- name: ca | ensure base directories existing
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - "{{ certificate_base_path }}"
+    - "{{ certificate_ca_cert_path }}"
+    - "{{ certificate_server_cert_path }}"
+  become: true
+
+- name: ca | generate private ca key
+  shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
+  args:
+    creates: "{{ certificate_ca_key_file }}"
+  become: true
+
+- name: ca | generate CA Certificate
+  shell: "openssl req -subj '/CN=TechDivision Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
+  args:
+    creates: "{{ certificate_ca_cert_file }}"
+  become: true
+
+- name: ca | copy CA-Certificate file
+  copy:
+    src: "{{ certificate_ca_cert_file }}"
+    dest: "{{ trusted_root_ca_path }}/TechDivision_Development_CA.crt"
+    mode: '0644'
+  register: copy_ca_to_trusted_root_ca_path_obj
+  become: true
+
+- name: ca | update ca certificates keystore
+  shell: "update-ca-certificates"
+  become: true
+  when: copy_ca_to_trusted_root_ca_path_obj is changed
+
+- name: search for cert9.db files in users's home directory
+  find:
+    paths: "{{ current_home }}"
+    recurse: yes
+    patterns: 'cert9.db'
+  register: available_cert9_files_obj
+
+- name: run certutil for every cert9 file
+  shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ current_cert9_file_item.path | dirname }}'
+  with_items: "{{ available_cert9_files_obj.files }}"
+  loop_control:
+    loop_var: current_cert9_file_item

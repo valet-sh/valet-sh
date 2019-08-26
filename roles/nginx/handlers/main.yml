@@ -1,0 +1,29 @@
+---
+
+- name: systemd | nginx | started
+  systemd:
+    daemon_reload: yes
+    name: nginx
+    state: started
+  become: true
+
+- name: systemd | nginx | stopped
+  systemd:
+    daemon_reload: yes
+    name: nginx
+    state: stopped
+  become: true
+
+- name: systemd | nginx | restarted
+  systemd:
+    daemon_reload: yes
+    name: nginx
+    state: restarted
+  become: true
+
+- name: systemd | nginx | reloaded
+  systemd:
+    daemon_reload: yes
+    name: nginx
+    state: reloaded
+  become: true

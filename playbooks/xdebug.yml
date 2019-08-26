@@ -1,0 +1,18 @@
+---
+#
+# valet.sh | xdebug
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @command: "xdebug"
+# @description: "enables xdebug for given php version e.g 7.0 or 7.1 | Usage: xdebug on 7.1"
+# @usage: "valet.sh xdebug <state> <php-version>"
+
+- name: "xdebug"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_action: "{{ cli.args[0] }}"
+    php_version: "{{ cli.args[1] }}"
+  roles:
+    - valet-xdebug

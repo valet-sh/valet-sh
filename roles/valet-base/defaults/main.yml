@@ -1,0 +1,15 @@
+---
+
+valet_base_path: "/usr/share/valet-sh"
+valet_etc_path: "{{ valet_base_path }}/etc"
+valet_config_links_file: "{{ valet_etc_path }}/links.yml"
+
+valet_base_dirs:
+  - "{{ valet_base_path }}"
+  - "{{ valet_etc_path }}"
+
+
+valet_links_stub:
+  valet_links:
+    links_index: []
+    links: []

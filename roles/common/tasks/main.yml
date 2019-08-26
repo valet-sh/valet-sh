@@ -1,16 +1,18 @@
 ---
 
-# check if sudo password works
-- command: "true"
-  become: True
+- name: install common packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+  become: true
+  vars:
+    packages:
+     - git
 
-- shell: sw_vers -productVersion
-  register: sw_vers
+- name: set max_map_count on host to 262144
+  sysctl:
+    name: vm.max_map_count
+    value: "262144"
+    state: present
+  become: true
 
-# todo: remove hardcoded os_version when introducing distil package-manager
-- set_fact:
-    #os_version: "{{ sw_vers.stdout }}"
-     os_version: "10.13"
-
-#- include_role:
-#    name: gnutar

@@ -1,0 +1,16 @@
+---
+
+- name: create symlink for xdebug cli configuration
+  file:
+    src: "/etc/php/{{ php_version }}/mods-available/xdebug.ini"
+    dest: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
+    state: link
+  become: true
+
+- name: create symlink for xdebug fpm configuration
+  file:
+    src: "/etc/php/{{ php_version }}/mods-available/xdebug.ini"
+    dest: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
+    state: link
+  notify: "systemd | php{{ php_version }}-fpm | restarted"
+  become: true

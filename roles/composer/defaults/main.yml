@@ -1,0 +1,26 @@
+---
+
+use_composer: true
+
+composer_setup_tmp: /tmp/composer-setup.php
+composer_path: /usr/local/bin
+composer_bin: "{{ composer_path }}/composer"
+
+php_version: "7.1"
+php_version_string: "php{{ php_version }}"
+
+composer_php_modules:
+  - "{{ php_version_string }}-cli"
+  - "{{ php_version_string }}-curl"
+
+composer_aliases:
+  - alias: "composer_php5.6"
+    target: "/usr/bin/php5.6 {{ composer_bin }}"
+  - alias: "composer_php7.0"
+    target: "/usr/bin/php7.0 {{ composer_bin }}"
+  - alias: "composer_php7.1"
+    target: "/usr/bin/php7.1 {{ composer_bin }}"
+  - alias: "composer_php7.2"
+    target: "/usr/bin/php7.2 {{ composer_bin }}"
+  - alias: "composer_php7.3"
+    target: "/usr/bin/php7.3 {{ composer_bin }}"

@@ -1,0 +1,21 @@
+---
+
+- name: check for magento1 project
+  stat:
+    path: "{{ link_path }}/app/code/core/Mage"
+  register: m1_checker_obj
+
+- name: "provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
+  template:
+    src: "nginx/magento1.conf.j2"
+    dest: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | nginx | reloaded
+  when: m1_checker_obj.stat.exists
+  become: true
+
+- set_fact:
+    template_found: true
+  when: m1_checker_obj.stat.exists

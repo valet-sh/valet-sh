@@ -1,0 +1,12 @@
+---
+
+- name: install | ensure essential packages are installed
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - openssl
+      - ca-certificates
+      - libnss3-tools
+  become: true

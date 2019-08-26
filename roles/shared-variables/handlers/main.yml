@@ -1,0 +1,149 @@
+---
+
+- name: systemd | nginx | started
+  systemd:
+    daemon_reload: yes
+    name: nginx
+    state: started
+  become: true
+
+- name: systemd | nginx | stopped
+  systemd:
+    daemon_reload: yes
+    name: nginx
+    state: stopped
+  become: true
+
+- name: systemd | nginx | restarted
+  systemd:
+    daemon_reload: yes
+    name: nginx
+    state: restarted
+  become: true
+
+- name: systemd | nginx | reloaded
+  systemd:
+    daemon_reload: yes
+    name: nginx
+    state: reloaded
+  become: true
+
+- name: "systemd | php5.6-fpm | started"
+  systemd:
+    name: "php5.6-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php5.6-fpm | stopped"
+  systemd:
+    name: "php5.6-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php5.6-fpm | restarted"
+  systemd:
+    name: "php5.6-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php5.6-fpm | reloaded"
+  systemd:
+    name: "php5.6-fpm"
+    state: reloaded
+  become: true
+
+- name: "systemd | php7.0-fpm | started"
+  systemd:
+    name: "php7.0-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php7.0-fpm | stopped"
+  systemd:
+    name: "php7.0-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php7.0-fpm | restarted"
+  systemd:
+    name: "php7.0-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php7.0-fpm | reloaded"
+  systemd:
+    name: "php7.0-fpm"
+    state: reloaded
+  become: true
+
+- name: "systemd | php7.1-fpm | started"
+  systemd:
+    name: "php7.1-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php7.1-fpm | stopped"
+  systemd:
+    name: "php7.1-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php7.1-fpm | restarted"
+  systemd:
+    name: "php7.1-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php7.1-fpm | reloaded"
+  systemd:
+    name: "php7.1-fpm"
+    state: reloaded
+  become: true
+
+- name: "systemd | php7.2-fpm | started"
+  systemd:
+    name: "php7.2-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php7.2-fpm | stopped"
+  systemd:
+    name: "php7.2-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php7.2-fpm | restarted"
+  systemd:
+    name: "php7.2-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php7.2-fpm | reloaded"
+  systemd:
+    name: "php7.2-fpm"
+    state: reloaded
+  become: true
+
+- name: "systemd | php7.3-fpm | started"
+  systemd:
+    name: "php7.3-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php7.3-fpm | stopped"
+  systemd:
+    name: "php7.3-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php7.3-fpm | restarted"
+  systemd:
+    name: "php7.3-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php7.3-fpm | reloaded"
+  systemd:
+    name: "php7.3-fpm"
+    state: reloaded
+  become: true

@@ -1,0 +1,26 @@
+---
+
+development_tld: test
+
+certificate_server_key_size: 2048
+certificate_server_cert_lifetime: 1825
+certificate_server_key_filename: privkey.pem
+certificate_server_csr_filename: csr.pem
+certificate_server_cert_filename: cert.pem
+certificate_server_fullchain_filename: fullchain.pem
+certificate_server_cnf_filename: req.cnf
+
+certificate_server_domain_cert_path: "{{ certificate_server_cert_path }}/{{ cert_prefix }}.{{ development_tld }}"
+certificate_server_domain_key_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_key_filename }}"
+certificate_server_domain_csr_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_csr_filename }}"
+certificate_server_domain_cert_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_cert_filename }}"
+certificate_server_domain_fullchain_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_fullchain_filename }}"
+certificate_server_domain_cnf_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_cnf_filename }}"
+
+
+available_php_versions:
+  - "5.6"
+  - "7.0"
+  - "7.1"
+  - "7.2"
+  - "7.3"

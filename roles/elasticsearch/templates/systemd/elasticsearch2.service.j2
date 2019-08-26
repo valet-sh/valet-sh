@@ -1,0 +1,27 @@
+[Unit]
+Description=Elasticsearch 2
+Documentation=http://www.elastic.co
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+PermissionsStartOnly=true
+Environment=ES_HOME={{ current_elasticsearch_base_path }}
+Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+#Environment=ES_PATH_CONF=${path.conf}
+Environment=PID_DIR="{{ elasticsearch_pid_path }}"
+#Environment=ES_SD_NOTIFY=true
+#EnvironmentFile=-${path.env}
+WorkingDirectory={{ current_elasticsearch_base_path }}
+User={{ current_user }}
+Group={{ current_group }}
+ExecStartPre=/usr/bin/install -o {{ current_user }} -g {{ current_group }} -d {{ elasticsearch_pid_path }}
+ExecStart={{ current_elasticsearch_base_path }}/bin/elasticsearch -p ${PID_DIR}/{{ current_elasticsearch_key }}.pid
+StandardOutput=null
+StandardError=journal
+SuccessExitStatus=143
+LimitNOFILE=65535
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

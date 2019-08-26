@@ -1,0 +1,22 @@
+---
+
+- name: check if valet_action variable is set
+  fail:
+    msg: "valet_action variable is not set"
+  when: valet_action is not defined
+
+- name: check if php_version variable is set
+  fail:
+    msg: "php_version variable is not set"
+  when: php_version is not defined
+
+- name: "fail when php version is not available"
+  fail:
+    msg: "requested PHP version {{ php_version }} is not available!"
+  when: "not php_version in available_php_versions"
+
+- include_tasks: on.yml
+  when: valet_action == "on"
+
+- include_tasks: off.yml
+  when: valet_action == "off"

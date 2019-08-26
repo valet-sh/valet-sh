@@ -1,0 +1,12 @@
+[Unit]
+Description=MailHog Service
+
+[Service]
+Type=simple
+User={{ current_user }}
+ExecStart={{ mailhog_bin_target }}
+Restart=always
+WorkingDirectory=/
+
+[Install]
+WantedBy=multi-user.target

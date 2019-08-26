@@ -1,0 +1,148 @@
+---
+
+- name: set php_version variable
+  set_fact:
+    php_version: "{{ current_php.version }}"
+
+
+- name: set php_modules variable
+  set_fact:
+    php_modules: "{{ current_php.config.php_modules }}"
+  when: current_php.config.php_modules is defined
+
+- name: reset php_modules variable
+  set_fact:
+    php_modules: "{{ php_modules_default }}"
+  when: current_php.config.php_modules is not defined
+
+
+- name: set php_version_string variable
+  set_fact:
+    php_version_string: "{{ current_php.config.php_version_string }}"
+  when: current_php.config.php_version_string is defined
+
+- name: reset php_version_string variable
+  set_fact:
+    php_version_string: "{{ php_version_string_default }}"
+  when: current_php.config.php_version_string is not defined
+
+
+- name: set php_error_log_path variable
+  set_fact:
+    php_error_log_path: "{{ current_php.config.php_error_log_path }}"
+  when: current_php.config.php_error_log_path is defined
+
+- name: reset php_error_log_path variable
+  set_fact:
+    php_error_log_path: "{{ php_error_log_path_default }}"
+  when: current_php.config.php_error_log_path is not defined
+
+
+- name: set php_error_log_path variable
+  set_fact:
+    php_error_log_path: "{{ current_php.config.php_error_log_path }}"
+  when: current_php.config.php_error_log_path is defined
+
+- name: reset php_error_log_path variable
+  set_fact:
+    php_error_log_path: "{{ php_error_log_path_default }}"
+  when: current_php.config.php_error_log_path is not defined
+
+
+- name: set php_cli_conf_path variable
+  set_fact:
+    php_cli_conf_path: "{{ current_php.config.php_cli_conf_path }}"
+  when: current_php.config.php_cli_conf_path is defined
+
+- name: reset php_cli_conf_path variable
+  set_fact:
+    php_cli_conf_path: "{{ php_cli_conf_path_default }}"
+  when: current_php.config.php_cli_conf_path is not defined
+
+- name: set php_cli_settings variable
+  set_fact:
+    php_cli_settings: "{{ current_php.config.php_cli_settings }}"
+  when: current_php.config.php_cli_settings is defined
+
+- name: reset php_cli_settings variable
+  set_fact:
+    php_cli_settings: "{{ php_cli_settings_default }}"
+  when: current_php.config.php_cli_settings is not defined
+
+
+- name: set php_cli_settings_additional variable
+  set_fact:
+    php_cli_settings_additional: "{{ current_php.config.php_cli_settings_additional }}"
+  when: current_php.config.php_cli_settings_additional is defined
+
+- name: reset php_cli_settings_additional variable
+  set_fact:
+    php_cli_settings_additional: "{{ php_cli_settings_additional_default }}"
+  when: current_php.config.php_cli_settings_additional is not defined
+
+
+- name: set php_fpm_conf_path variable
+  set_fact:
+    php_fpm_conf_path: "{{ current_php.config.php_fpm_conf_path }}"
+  when: current_php.config.php_cli_conf_path is defined
+
+- name: reset php_fpm_conf_path variable
+  set_fact:
+    php_fpm_conf_path: "{{ php_fpm_conf_path_default }}"
+  when: current_php.config.php_fpm_conf_path is not defined
+
+
+- name: set php_fpm_pool_config variable
+  set_fact:
+    php_fpm_pool_config: "{{ current_php.config.php_fpm_pool_config }}"
+  when: current_php.config.php_fpm_pool_config is defined
+
+- name: reset php_fpm_pool_config variable
+  set_fact:
+    php_fpm_pool_config: "{{ php_fpm_pool_config_default }}"
+  when: current_php.config.php_fpm_pool_config is not defined
+
+
+- name: set php_fpm_pool_config variable
+  set_fact:
+    php_fpm_pool_config: "{{ current_php.config.php_fpm_pool_config }}"
+  when: current_php.config.php_fpm_pool_config is defined
+
+- name: reset php_fpm_pool_config variable
+  set_fact:
+    php_fpm_pool_config: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
+  when: current_php.config.php_fpm_pool_config is not defined
+
+
+- name: set php_fpm_pool_configuration variable
+  set_fact:
+    php_fpm_pool_configuration: "{{ current_php.config.php_fpm_pool_configuration }}"
+  when: current_php.config.php_fpm_pool_configuration is defined
+
+- name: reset php_fpm_pool_configuration variable
+  set_fact:
+    php_fpm_pool_configuration: "{{ php_fpm_pool_configuration_default }}"
+  when: current_php.config.php_fpm_pool_configuration is not defined
+
+
+- name: set php_fpm_settings variable
+  set_fact:
+    php_fpm_settings: "{{ current_php.config.php_fpm_settings }}"
+  when: current_php.config.php_fpm_settings is defined
+
+- name: reset php_fpm_settings variable
+  set_fact:
+    php_fpm_settings: "{{ php_fpm_settings_default }}"
+  when: current_php.config.php_fpm_settings is not defined
+
+
+- name: set php_fpm_settings_additional variable
+  set_fact:
+    php_fpm_settings_additional: "{{ current_php.config.php_fpm_settings_additional }}"
+  when: current_php.config.php_fpm_settings_additional is defined
+
+- name: reset php_fpm_settings_additional variable
+  set_fact:
+    php_fpm_settings_additional: "{{ php_fpm_settings_additional_default }}"
+  when: current_php.config.php_fpm_settings_additional is not defined
+

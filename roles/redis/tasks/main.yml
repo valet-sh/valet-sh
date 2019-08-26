@@ -1,0 +1,18 @@
+---
+
+- name: ensure redis packages are installed
+  apt:
+    name: "{{ packages }}"
+    state: present
+  become: true
+  vars:
+    packages:
+      - redis-server
+      - redis-tools
+
+- name: ensure redis-server is running and enabled
+  systemd:
+    name: redis-server
+    state: started
+    enabled: yes
+  become: true

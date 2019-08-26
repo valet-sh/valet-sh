@@ -1,0 +1,103 @@
+---
+
+- name: fail when php version is not set
+  fail:
+    msg: "version variable is not defined"
+  when: (current_php.version is not defined) or (current_php.version == "")
+
+- name: set php_version variable
+  set_fact:
+    php_version: "{{ current_php.version }}"
+
+- name: "override default configuration for current php"
+  include: override-config.yml
+
+- name: create specific php module list
+  set_fact:
+    php_specific_modules: "{{ php_modules | map('regex_replace', '(.*)', php_version_string + '-\\1') | list }}"
+
+- name: "install {{ php_version_string }} modules"
+  apt:
+    name: "{{ php_specific_modules }}"
+    state: present
+  notify: "systemd | {{ php_version_string }}-fpm | restarted"
+  become: true
+
+- name: get stat for xdebug cli configuration file
+  stat:
+    path: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
+  register: php_xdebug_cli_config_obj
+
+- name: get stat for xdebug fpm configuration file
+  stat:
+    path: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
+  register: php_xdebug_fpm_config_obj
+
+- name: delete xdebug cli configuration symlink if exists
+  file:
+    path: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
+    state: absent
+  when: php_xdebug_cli_config_obj.stat is defined and php_xdebug_cli_config_obj.stat.islnk is defined
+  become: true
+
+- name: delete xdebug fpm configuration symlink if exists
+  file:
+    path: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
+    state: absent
+  when: php_xdebug_fpm_config_obj.stat is defined and php_xdebug_fpm_config_obj.stat.islnk is defined
+  notify: "systemd | {{ php_version_string }}-fpm | restarted"
+  become: true
+
+- name: get stat for error.log file
+  stat:
+    path: "{{ php_error_log_path }}"
+  register: php_error_log_file_obj
+
+- name: create php_errors.log file
+  file:
+    dest:  "{{ php_error_log_path }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    state: "{{ 'file' if  php_error_log_file_obj.stat.exists else 'touch' }}"
+    mode: '0755'
+  become: true
+
+- name: set php cli configuration
+  template:
+    src: "{{ inside_item }}"
+    dest: "{{ php_cli_conf_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  with_first_found:
+  - "{{ playbook_dir }}/overrides/php/templates/99-cli.conf.j2"
+  - "99-cli.conf.j2"
+  loop_control:
+    loop_var: inside_item
+  become: true
+
+- name: set php fpm configuration
+  template:
+    src: "{{ inside_item }}"
+    dest: "{{ php_fpm_conf_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  with_first_found:
+  - "{{ playbook_dir }}/overrides/php/templates/99-fpm.conf.j2"
+  - "99-fpm.conf.j2"
+  notify: "systemd | {{ php_version_string }}-fpm | restarted"
+  loop_control:
+    loop_var: inside_item
+  become: true
+
+- name: set config setting in php pool configuration
+  lineinfile:
+    path: "{{ php_fpm_pool_config }}"
+    regexp: "^{{ inside_item.conf }}="
+    line: "{{ inside_item.conf }}={{ inside_item.value }}"
+  with_items: "{{ php_fpm_pool_configuration }}"
+  loop_control:
+    loop_var: inside_item
+  notify: "systemd | {{ php_version_string }}-fpm | restarted"
+  become: true

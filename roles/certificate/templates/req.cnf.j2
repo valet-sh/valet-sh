@@ -1,0 +1,18 @@
+[req]
+distinguished_name = req_distinguished_name
+req_extensions= v3_req
+prompt = no
+[req_distinguished_name]
+C = DE
+ST = Bavaria
+L = Kolbermoor
+O = TechDivision
+OU = RnD
+CN = {{ cert_prefix }}.{{ development_tld }}
+[v3_req]
+keyUsage = keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = *.{{ cert_prefix }}.{{ development_tld }}
+DNS.2 = {{ cert_prefix }}.{{ development_tld }}

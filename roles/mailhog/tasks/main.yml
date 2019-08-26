@@ -1,0 +1,47 @@
+---
+
+- name: install mailhog
+  get_url:
+    url: "{{ mailhog_release_url }}"
+    dest: "{{ mailhog_bin_target }}"
+    force: no
+    mode: 0755
+    owner: root
+    group: root
+  become: true
+
+
+- name: provide init script for mailhog
+  template:
+    src: "mailhog.service.j2"
+    dest: "/etc/systemd/system/mailhog.service"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | mailhog | started
+  become: true
+
+- name: "generate ssl-certificate for {{ cert_prefix }}"
+  include_role:
+    name: certificate
+    public: true
+  vars:
+    cert_prefix: mailhog
+
+- name: provide init script for mailhog
+  template:
+    src: "mailhog.conf.j2"
+    dest: "/etc/nginx/conf.d/mailhog.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | nginx | reloaded
+  become: true
+
+- name: ensure mailhog is enabled and started
+  systemd:
+    daemon_reload: yes
+    name: mailhog
+    enabled: true
+    state: started
+  become: true
