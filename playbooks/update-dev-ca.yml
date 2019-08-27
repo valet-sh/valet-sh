@@ -1,0 +1,15 @@
+---
+#
+# valet.sh | update-dev-ca
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @command: "update-dev-ca"
+# @description: "adds the local development CA to Firefox/Chrome as trusted certificate"
+# @usage: "valet.sh update-dev-ca"
+
+- name: "update-dev-ca"
+  hosts: local
+  gather_facts: True
+  roles:
+    - certificate
