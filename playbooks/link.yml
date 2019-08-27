@@ -5,8 +5,8 @@
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
 # @command: "link"
-# @description: "Link current directory with given name"
-# @usage: "valet.sh link <name>"
+# @description: "Link current directory with given name | Usage: valet.sh link projectx php72"
+# @usage: "valet.sh link <name> <php-version>"
 
 - name: "link"
   hosts: local
@@ -15,5 +15,6 @@
     valet_action: link
     link_name: "{{ cli.args[0] }}"
     link_path: "{{ lookup('env','OLDPWD') }}"
+    php_version: "{{ cli.args[1] }}"
   roles:
     - valet-link
