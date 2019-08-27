@@ -65,5 +65,6 @@
       name: "{{ current_elasticsearch_key }}"
       enabled: yes
       state: started
+      daemon_reload: yes
     become: true
   when: not current_elasticsearch_base_path_obj.stat.exists
