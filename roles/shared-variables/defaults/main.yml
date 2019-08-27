@@ -1,5 +1,9 @@
 ---
 
+valet_base_path: "/usr/local/valet-sh"
+valet_etc_path: "{{ valet_base_path }}/etc"
+valet_packages_path: "{{ valet_base_path }}/packages"
+
 development_tld: test
 
 certificate_server_key_size: 2048

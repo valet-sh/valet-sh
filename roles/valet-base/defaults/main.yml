@@ -1,8 +1,6 @@
 ---
 
-valet_base_path: "/usr/local/valet-sh"
-valet_etc_path: "{{ valet_base_path }}/etc"
-valet_packages_path: "{{ valet_base_path }}/packages"
+
 valet_config_links_file: "{{ valet_etc_path }}/links.yml"
 
 valet_base_dirs:
