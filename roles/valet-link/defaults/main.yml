@@ -5,3 +5,4 @@ template_found: False
 
 valet_link_blacklist:
   - mailhog
+  - rabbitmq

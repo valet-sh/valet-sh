@@ -1,14 +1,37 @@
 ---
 
-- name: install | ensure rabbitmq-server is installed
+- name: ensure rabbitmq-server is installed
   apt:
     name: rabbitmq-server
     state: present
   become: true
 
-- name: install | ensure rabbitmq-server is running and enabled
+- name: ensure rabbitmq-server is running and enabled
   service:
     name: rabbitmq-server
     state: started
     enabled: yes
+  become: true
+
+- name: Ensure the rabbitmq_management plugin is enabled
+  rabbitmq_plugin:
+    names: rabbitmq_management
+    state: enabled
+  become: true
+
+- name: "generate ssl-certificate for rabbitmq.{{ development_tld }}"
+  include_role:
+    name: certificate
+    public: true
+  vars:
+    cert_prefix: rabbitmq
+
+- name: provide nginx vhost configuration for rabbitmq management plugin
+  template:
+    src: "rabbitmq.conf.j2"
+    dest: "/etc/nginx/conf.d/rabbitmq.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | nginx | reloaded
   become: true
