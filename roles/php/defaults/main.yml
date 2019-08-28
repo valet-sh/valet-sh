@@ -25,6 +25,7 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "xdebug"
+        - "sqlite3"
   - version: "7.3"
     config:
       php_modules:
@@ -45,6 +46,7 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "xdebug"
+        - "sqlite3"
 
 php_multi_available_version:
   - 5.6
@@ -72,6 +74,7 @@ php_modules:
   - "ldap"
   - "mcrypt"
   - "xdebug"
+  - "sqlite3"
 
 php_version_string_default: "php{{ php_version }}"
 php_error_log_path_default: "/tmp/php_errors.log"
