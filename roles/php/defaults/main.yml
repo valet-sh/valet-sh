@@ -161,21 +161,4 @@ php_fpm_settings_default:
 
 php_fpm_settings_additional_default: []
 
-php_modules_default:
-  - "xmlrpc"
-  - "xml"
-  - "readline"
-  - "opcache"
-  - "mysql"
-  - "mcrypt"
-  - "json"
-  - "intl"
-  - "gd"
-  - "fpm"
-  - "curl"
-  - "cli"
-  - "soap"
-  - "mbstring"
-  - "zip"
-  - "bcmath"
-  - "ldap"
+php_modules_default: "{{ php_modules }}"
