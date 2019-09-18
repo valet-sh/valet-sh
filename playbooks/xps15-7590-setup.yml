@@ -4,6 +4,7 @@
 #
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
+# @author: "Florian Schmid"
 # @description: "Configure a Dell XPS 15 7590 Notebook"
 # @usage: "valet.sh xps15-7590-setup"
 

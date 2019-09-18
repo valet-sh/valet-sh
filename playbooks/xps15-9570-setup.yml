@@ -4,6 +4,7 @@
 #
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
+# @author: "Florian Schmid"
 # @description: "Configure a Dell XPS 15 9570 Notebook"
 # @usage: "valet.sh xps15-9570-setup"
 
