@@ -73,7 +73,7 @@
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: yes
 
-- name: install video codec packages
+- name: install bluetooth sound codec packages
   apt:
     name: "{{ packages }}"
   vars:
@@ -90,6 +90,8 @@
       - intel-microcode
 
 # TODO: Install ukuu and update to 5.1.x kernel
+
+# Todo: handle lvremove of swap partition and create 8gb swapsize
 
 #- name: Download ath10k board.bin
 #  get_url:
