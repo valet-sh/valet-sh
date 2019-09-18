@@ -1,14 +1,13 @@
 ---
 #
-# valet.sh | xps15-setup
+# valet.sh | xps15-9570-setup
 #
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
-# @command: "xps15-setup"
 # @description: "Configure a Dell XPS 15 9570 Notebook"
-# @usage: "valet.sh xps15-setup"
+# @usage: "valet.sh xps15-9570-setup"
 
-- name: "xps15-setup"
+- name: "xps15-9570-setup"
   hosts: local
   gather_facts: True
   roles:

@@ -1,0 +1,37 @@
+##
+# Copyright (c) 2019 TechDivision GmbH
+# All rights reserved
+#
+# This product includes proprietary software developed at TechDivision GmbH, Germany
+# For more information see http://www.techdivision.com/
+#
+# To obtain a valid license for using this software please contact us at
+# license@techdivision.com
+##
+---
+
+- name: uninstall useless packages
+  apt:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+      - ubuntu-web-launchers
+
+- name: add chrome repository
+  apt_repository:
+    repo: "http://dl.google.com/linux/chrome/deb/ stable main"
+    update_cache: yes
+
+- name: add chrome repository signin key
+  apt_key:
+    url: https://dl.google.com/linux/linux_signing_key.pub
+    state: present
+
+- name: install google chrome stable
+  apt:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+      - google-chrome-stable
