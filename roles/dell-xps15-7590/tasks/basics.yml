@@ -7,3 +7,6 @@
   vars:
     packages:
       - ubuntu-web-launchers
+  become: true
+
+# Add powertop, lm-sensors, vim + common packerl
