@@ -73,7 +73,7 @@
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: yes
 
-- name: install video codec packages
+- name: install bluetooth sound codec packages
   apt:
     name: "{{ packages }}"
   vars:
@@ -106,6 +106,7 @@
     url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/firmware-4.bin_WLAN.RM.2.0-00180-QCARMSWPZ-1?raw=true
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/firmware-4.bin
     force: yes
+  # Todo: Recheck-if needed
 
 - name: Enable power saving tweaks for Intel chip
   lineinfile:

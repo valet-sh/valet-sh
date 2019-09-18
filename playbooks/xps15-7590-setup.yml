@@ -6,6 +6,7 @@
 #
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
+# @author: "Florian Schmid"
 # @usage: "valet.sh xps15-7590-setup"
 
 - name: "xps15-7590-setup"
