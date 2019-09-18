@@ -12,11 +12,13 @@
 
 - name: ensure universe repository is enabled
   shell: "add-apt-repository -y universe"
+  become: true
 
 - name: Update all packages to the latest version
   apt:
     update_cache: yes
     upgrade: dist
+  become: true
 
 #- apt_repository:
 #    repo: ppa:linrunner/tlp
@@ -53,9 +55,11 @@
   apt_repository:
     repo: ppa:graphics-drivers/ppa
     update_cache: yes
+  become: true
 
 - name: "run ubuntu-drivers autoinstall"
   shell: "ubuntu-drivers autoinstall"
+  become: true
 
 - name: install video codec packages
   apt:
@@ -68,10 +72,12 @@
       - libva2
       - gstreamer1.0-libav
       - gstreamer1.0-vaapi
+  become: true
 
 - apt_repository:
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: yes
+  become: true
 
 - name: install bluetooth sound codec packages
   apt:
@@ -81,6 +87,7 @@
       - libavcodec58
       - libldac
       - pulseaudio-modules-bt
+  become: true
 
 - name: install intel microcode updates
   apt:
@@ -88,6 +95,7 @@
   vars:
     packages:
       - intel-microcode
+  become: true
 
 # TODO: Install ukuu and update to 5.1.x kernel
 
@@ -130,10 +138,12 @@
 
 - name: "run update-initramfs -u"
   shell: "update-initramfs -u"
+  become: true
 
 - name: "switch to intel gpu"
   shell: "prime-select intel"
   # Todo: Check for nvidia driver
+  become: true
 
 - name: update grub config
   lineinfile:
@@ -141,9 +151,11 @@
     regexp: '^GRUB_OPTIONS="'
     #line: 'GRUB_OPTIONS="quiet splash acpi_rev_override=1 acpi_osi=Linux nouveau.modeset=0 pcie_aspm=force drm.vblankoffdelay=1 scsi_mod.use_blk_mq=1 nouveau.runpm=0 mem_sleep_default=deep"'
     line: 'GRUB_OPTIONS="quiet splash acpi_rev_override=1 nouveau.modeset=0 pcie_aspm=force mem_sleep_default=deep"'
+  become: true
 
 - name: "run update-grub"
   shell: "update-grub"
+  become: true
 
 - name: disable gnome tracker apps
   systemd:
@@ -154,6 +166,7 @@
     - tracker-miner-apps.desktop
     - tracker-miner-fs.desktop
     - tracker-store.desktop
+  become: true
 
 #- name: disable fingerprint reader
 #  lineinfile:

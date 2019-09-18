@@ -7,4 +7,5 @@
   vars:
     packages:
       - ubuntu-web-launchers
+  become: true
 
