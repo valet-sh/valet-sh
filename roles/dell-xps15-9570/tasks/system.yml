@@ -144,12 +144,3 @@
     path: /etc/udev/rules.d/fingerprint.rules
     line: 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"27c6\", ATTRS{idProduct}==\"5395\", ATTR{authorized}=\"0\"'
     create: true
-
-- name: uninstall useless packages
-  apt:
-    name: "{{ packages }}"
-    state: absent
-  vars:
-    packages:
-      - ubuntu-web-launchers
-
