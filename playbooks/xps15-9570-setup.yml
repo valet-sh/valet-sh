@@ -2,9 +2,10 @@
 #
 # valet.sh | xps15-9570-setup
 #
+# Configure a Dell XPS 15 9570 Notebook
+#
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
-# @description: "Configure a Dell XPS 15 9570 Notebook"
 # @usage: "valet.sh xps15-9570-setup"
 
 - name: "xps15-9570-setup"
