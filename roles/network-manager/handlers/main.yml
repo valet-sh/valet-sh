@@ -18,7 +18,7 @@
   systemd:
     daemon_reload: yes
     name: network-manager
-    state: reload
+    state: reloaded
   become: true
 
 - name: systemd | network-manager | restarted
