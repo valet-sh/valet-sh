@@ -12,7 +12,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: systemd | nginx | reloaded
+  notify: systemd | nginx | restarted
   when: m2_checker_obj.stat.exists
   become: true
 
