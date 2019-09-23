@@ -27,17 +27,21 @@ class CallbackModule(CallbackModule_debug):
         self._last_task = None
         self._last_task_name = None
         self._inprogress_file_path = os.environ.get('APPLICATION_INPROGRESS_FILE_PATH')
-        # create .inprogress flag file for valet.sh cli spinner to start
-        open(self._inprogress_file_path, 'a').close()
         super(CallbackModule, self).__init__()
 
 
+    def _create_inprogress_file(self):
+        open(self._inprogress_file_path, 'a').close()
+
+
     def _debug_enabled(self):
-        return os.environ.get('APPLICATION_DEBUG_INFO_ENABLED')=='1'
+        return os.environ.get('APPLICATION_DEBUG_INFO_ENABLED') == '1'
 
 
     def v2_playbook_on_play_start(self, play):
         self._play = play
+        # set inprogress state
+        self._create_inprogress_file()
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_playbook_on_play_start(play)
