@@ -10,6 +10,7 @@
   apt_repository:
     repo: "deb http://dl.google.com/linux/chrome/deb/ stable main"
   become: true
+# Todo: Check if this repo does not exist, file is dropped by installer /etc/apt/sources.list.d/google-chrome.list
 
 - name: install google chrome stable
   apt:

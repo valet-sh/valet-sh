@@ -36,3 +36,5 @@
     group: root
     mode: '0755'
   become: true
+
+# Todo: Create ssl server block, otherwise nginx restart would be needed, if first https site has to be served

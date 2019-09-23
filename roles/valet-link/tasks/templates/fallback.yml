@@ -7,5 +7,5 @@
     owner: root
     group: root
     mode: '0644'
-  notify: systemd | nginx | reloaded
+  notify: systemd | nginx | restarted
   become: true
