@@ -1,0 +1,16 @@
+---
+#
+# valet.sh | xps-setup
+#
+# Configure a Dell XPS Notebook according to model/family
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @author: "Florian Schmid"
+# @usage: "valet.sh xps-setup"
+
+- name: "xps-setup"
+  hosts: local
+  gather_facts: True
+  roles:
+    - dell-xps

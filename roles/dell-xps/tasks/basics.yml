@@ -10,9 +10,14 @@
 ##
 ---
 
-- include_tasks: system.yml
+- name: Uninstall useless packages
+  apt:
+    name: "{{ absent_packages }}"
+    state: absent
+  become: true
 
-- include_tasks: basics.yml
-
-
-
+- name: Install common basic_packages
+  apt:
+    name: "{{ basic_packages }}"
+    state: present
+  become: true
