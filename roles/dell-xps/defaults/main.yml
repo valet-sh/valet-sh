@@ -39,10 +39,14 @@ basic_packages:
   - apt-transport-https
   - screen
   - hdparm
-  - smartmon-tools
+  - smartmontools
   - net-tools
-  - ifconfig
   - traceroute
+  - network-manager-openvpn
+  - network-manager-openvpn-gnome
+
+additional_packages:
+  - ukuu
 
 absent_packages:
   - ubuntu-web-launchers

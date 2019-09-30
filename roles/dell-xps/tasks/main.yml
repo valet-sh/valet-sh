@@ -17,6 +17,7 @@
   register: xps_model_result
   when: (xps_model is not defined) or
     (xps_model == "")
+  changed_when: false
 
 - name: Set current XPS model
   set_fact:
@@ -37,5 +38,5 @@
 - include_tasks: basics.yml
 
 #- include_tasks: system.yml
-- include_tasks: "{{ xps_model |replace(' ', '-') }}.yaml"
+- include_tasks: "{{ xps_model |replace(' ', '-') }}.yml"
 

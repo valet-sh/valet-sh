@@ -91,33 +91,33 @@
       - intel-microcode
   become: true
 
-# TODO: Install ukuu and update to 5.1.x kernel
-
-# Todo: handle lvremove of swap partition and create 8gb swapsize
-
 - name: Download ath10k board.bin
   get_url:
     url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/board.bin?raw=true
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/board.bin
     force: yes
-#
+  become: true
+
 - name: Download ath10k board-2.bin
   get_url:
     url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/board-2.bin?raw=true
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/board-2.bin
     force: yes
+  become: true
 
 - name: Download ath10k firmware-4.bin
   get_url:
     url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/firmware-4.bin_WLAN.RM.2.0-00180-QCARMSWPZ-1?raw=true
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/firmware-4.bin
     force: yes
+  become: true
 
 - name: Enable power saving tweaks for Intel chip
   lineinfile:
     path: /etc/modprobe.d/i915.conf
     line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1'
     create: true
+  become: true
 
 #- name: enable fan speed with lm-sensors
 #  lineinfile:
@@ -138,7 +138,7 @@
   lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT=quiet splash acpi_rev_override=1 mem_sleep_default=deep"'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 mem_sleep_default=deep"'
   become: true
 
 - name: "run update-grub"

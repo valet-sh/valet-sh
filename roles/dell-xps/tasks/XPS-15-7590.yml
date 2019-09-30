@@ -149,7 +149,7 @@
   lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT=quiet splash acpi_rev_override=1 nouveau.modeset=0 pcie_aspm=force mem_sleep_default=deep"'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 nouveau.modeset=0 pcie_aspm=force mem_sleep_default=deep"'
   become: true
 
 - name: "run update-grub"

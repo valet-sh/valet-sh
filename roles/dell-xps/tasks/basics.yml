@@ -21,3 +21,19 @@
     name: "{{ basic_packages }}"
     state: present
   become: true
+
+- name: Add ukuu apt repository
+  apt_repository:
+    repo: ppa:teejee2008/ppa
+    update_cache: yes
+  become: true
+
+- name: Install additional packages
+  apt:
+    name: "{{ additional_packages }}"
+    state: present
+  become: true
+
+# TODO: Install ukuu and update to 5.1.x kernel
+
+# Todo: handle lvremove of swap partition and create 8gb swapsize
