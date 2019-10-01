@@ -1,0 +1,29 @@
+##
+# Copyright (c) 2019 TechDivision GmbH
+# All rights reserved
+#
+# This product includes proprietary software developed at TechDivision GmbH, Germany
+# For more information see http://www.techdivision.com/
+#
+# To obtain a valid license for using this software please contact us at
+# license@techdivision.com
+##
+---
+
+- name: Check for Qualcom Atheros WIFI Device
+  shell: |
+    lspci | grep "{{ atheros_wifi }}"
+  register: atheros_wifi_device
+  changed_when: false
+
+# Todo: Check if firmware files are already deployed
+
+- name: Download ath10k firmware files
+  get_url:
+    url: "{{ item.value.url }}"
+    dest: "{{ item.value.dest }}"
+    force: yes
+  become: true
+  with_dict: "{{ atheros_firmware }}"
+  when:
+    - atheros_wifi in atheros_wifi_device.stdout
