@@ -1,3 +1,13 @@
+##
+# Copyright (c) 2019 TechDivision GmbH
+# All rights reserved
+#
+# This product includes proprietary software developed at TechDivision GmbH, Germany
+# For more information see http://www.techdivision.com/
+#
+# To obtain a valid license for using this software please contact us at
+# license@techdivision.com
+##
 ---
 
 - name: add chrome repository signin key
@@ -8,9 +18,9 @@
 
 - name: add chrome repository
   apt_repository:
+    filename: "google-chrome"
     repo: "deb http://dl.google.com/linux/chrome/deb/ stable main"
   become: true
-# Todo: Check if this repo does not exist, file is dropped by installer /etc/apt/sources.list.d/google-chrome.list
 
 - name: install google chrome stable
   apt:
