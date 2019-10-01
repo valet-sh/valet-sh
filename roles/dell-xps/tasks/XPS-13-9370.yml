@@ -10,7 +10,7 @@
 ##
 ---
 
-- name: ensure universe repository is enabled
+- name: Ensure universe repository is enabled
   shell: "add-apt-repository -y universe"
   become: true
 
@@ -89,27 +89,6 @@
   vars:
     packages:
       - intel-microcode
-  become: true
-
-- name: Download ath10k board.bin
-  get_url:
-    url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/board.bin?raw=true
-    dest: /lib/firmware/ath10k/QCA6174/hw3.0/board.bin
-    force: yes
-  become: true
-
-- name: Download ath10k board-2.bin
-  get_url:
-    url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/board-2.bin?raw=true
-    dest: /lib/firmware/ath10k/QCA6174/hw3.0/board-2.bin
-    force: yes
-  become: true
-
-- name: Download ath10k firmware-4.bin
-  get_url:
-    url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/firmware-4.bin_WLAN.RM.2.0-00180-QCARMSWPZ-1?raw=true
-    dest: /lib/firmware/ath10k/QCA6174/hw3.0/firmware-4.bin
-    force: yes
   become: true
 
 - name: Enable power saving tweaks for Intel chip

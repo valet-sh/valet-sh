@@ -32,11 +32,10 @@
     (xps_model == "") or
     (xps_model not in supported_models)
 
-#-  debug:
-#    var: xps_model
+-  name: Running currently on XPS model
+   debug:
+     var: xps_model
 
 - include_tasks: basics.yml
 
-#- include_tasks: system.yml
 - include_tasks: "{{ xps_model |replace(' ', '-') }}.yml"
-
