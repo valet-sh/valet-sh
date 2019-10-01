@@ -1,0 +1,55 @@
+##
+# Copyright (c) 2019 TechDivision GmbH
+# All rights reserved
+#
+# This product includes proprietary software developed at TechDivision GmbH, Germany
+# For more information see http://www.techdivision.com/
+#
+# To obtain a valid license for using this software please contact us at
+# license@techdivision.com
+##
+---
+
+- name: Uninstall useless packages
+  apt:
+    name: "{{ absent_packages }}"
+    state: absent
+  become: true
+
+- name: Install common basic_packages
+  apt:
+    name: "{{ basic_packages }}"
+    state: present
+  become: true
+
+- name: Add ukuu apt repository
+  apt_repository:
+    repo: ppa:teejee2008/ppa
+    update_cache: yes
+  become: true
+
+- name: Install additional packages
+  apt:
+    name: "{{ additional_packages }}"
+    state: present
+  become: true
+
+- name: Get user home directory
+  set_fact:
+    home_dir: "{{ lookup('env', 'HOME') }}"
+
+- name: Deploy ukuu Config file
+  template:
+    src: ukuu_config.j2
+    dest: "{{ home_dir }}/.config/ukuu.json"
+
+# TODO: update to 5.1.x kernel
+- name: Print current Linux Kernel
+  debug:
+    var: ansible_kernel
+
+- name: Setup swapfile
+  include_tasks: config-related/setup_swap.yml
+
+- name: Setup Atheros/Qualcom Wifi firmware, if needed
+  include_tasks: hardware-related/atheros-firmware.yml

@@ -1,0 +1,60 @@
+##
+# Copyright (c) 2019 TechDivision GmbH
+# All rights reserved
+#
+# This product includes proprietary software developed at TechDivision GmbH, Germany
+# For more information see http://www.techdivision.com/
+#
+# To obtain a valid license for using this software please contact us at
+# license@techdivision.com
+##
+---
+
+- name: Check for existing swap-partition
+  shell: |
+    lvdisplay | grep -i 'LV Path' | grep -i 'swap' | awk -F '/dev/' '{print $2}'
+  become: true
+  register: swap_lvm
+  changed_when: false
+
+# Todo: Note, removed /dev/ here
+
+# Todo: handle lvremove of swap partition
+#  when:
+#    - not '"swap" in swap_lvm.stdout'
+
+- name: Check for swapfile
+  stat:
+    path: "{{ swapfile_path }}"
+  register: swapfile_exists
+
+- name: Create swapfile
+  command: fallocate -l {{ swapsize }} {{ swapfile_path }}
+  become: true
+  when: not swapfile_exists.stat.exists
+
+- name: Set permissions on swapfile
+  file:
+    path: "{{ swapfile_path }}"
+    mode: 0600
+  become: true
+  when: not swapfile_exists.stat.exists
+
+- name: Format swapfile
+  command: mkswap {{ swapfile_path }}
+  become: true
+  when: not swapfile_exists.stat.exists
+
+- name: Add swapfile to fstab
+  lineinfile:
+    dest: /etc/fstab
+    regexp: "{{ swapfile_path }}"
+    line: "{{ swapfile_path }} none swap sw 0 0"
+  become: true
+  when: not swapfile_exists.stat.exists
+
+- name: Turnon all swapfiles
+  command: swapon -a
+  become: true
+  changed_when: false
+  when: not swapfile_exists.stat.exists

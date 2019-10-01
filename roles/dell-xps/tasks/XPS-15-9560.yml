@@ -1,0 +1,167 @@
+##
+# Copyright (c) 2019 TechDivision GmbH
+# All rights reserved
+#
+# This product includes proprietary software developed at TechDivision GmbH, Germany
+# For more information see http://www.techdivision.com/
+#
+# To obtain a valid license for using this software please contact us at
+# license@techdivision.com
+##
+---
+
+- name: ensure universe repository is enabled
+  shell: "add-apt-repository -y universe"
+  become: true
+
+- name: Update all packages to the latest version
+  apt:
+    update_cache: yes
+    upgrade: dist
+  become: true
+
+- apt_repository:
+    repo: ppa:linrunner/tlp
+    update_cache: yes
+  become: true
+
+- name: install tlp packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - thermald
+      - tlp
+      - tlp-rdw
+      - powertop
+  become: true
+
+- name: Fix Sleep/Wake Bluetooth Bug
+  lineinfile:
+    path: /etc/default/tlp
+    regexp: '^RESTORE_DEVICE_STATE_ON_STARTUP'
+    line: 'RESTORE_DEVICE_STATE_ON_STARTUP=1'
+  become: true
+
+- name: Fix Audio Feedback/White Noise from Headphones on Battery Bug
+  lineinfile:
+    path: /etc/default/tlp
+    regexp: '^SOUND_POWER_SAVE_ON_BAT'
+    line: 'SOUND_POWER_SAVE_ON_BAT=0'
+  become: true
+
+- name: ensure tlp service is restarted
+  systemd:
+    state: restarted
+    name: tlp
+  become: true
+
+- name: "enable graphic drivers ppa"
+  apt_repository:
+    repo: ppa:graphics-drivers/ppa
+    update_cache: yes
+  become: true
+
+- name: "run ubuntu-drivers autoinstall"
+  shell: "ubuntu-drivers autoinstall"
+  become: true
+
+- name: install video codec packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - ubuntu-restricted-extras
+      - va-driver-all
+      - vainfo
+      - libva2
+      - gstreamer1.0-libav
+      - gstreamer1.0-vaapi
+  become: true
+
+- apt_repository:
+    repo: ppa:eh5/pulseaudio-a2dp
+    update_cache: yes
+  become: true
+
+- name: install bluetooth sound codec packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - libavcodec58
+      - libldac
+      - pulseaudio-modules-bt
+  become: true
+
+- name: install intel microcode updates
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - intel-microcode
+  become: true
+
+- name: Enable power saving tweaks for Intel chip
+  lineinfile:
+    path: /etc/modprobe.d/i915.conf
+    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1'
+    create: true
+  become: true
+
+- name: enable fan speed with lm-sensors
+  lineinfile:
+    path: /etc/modprobe.d/dell-smm-hwmon.conf
+    line: 'options dell-smm-hwmon restricted=0 force=1'
+    create: true
+  become: true
+
+- name: enable dell specific module
+  lineinfile:
+    path: /etc/modules
+    line: 'dell-smm-hwmon'
+  become: true
+
+- name: "run update-initramfs -u"
+  shell: "update-initramfs -u"
+  become: true
+
+- name: "switch to intel gpu"
+  shell: "prime-select intel"
+  become: true
+
+- name: update grub config
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 acpi_osi=Linux nouveau.modeset=0 pcie_aspm=force drm.vblankoffdelay=1 scsi_mod.use_blk_mq=1 nouveau.runpm=0 mem_sleep_default=deep"'
+  become: true
+
+ - name: tidyup intermittent grub config
+   lineinfile:
+     path: /etc/default/grub
+     regexp: '^GRUB_OPTIONS="'
+     line: '#GRUB_OPTIONS'
+   become: true
+
+- name: "run update-grub"
+  shell: "update-grub"
+  become: true
+
+- name: disable gnome tracker apps
+  systemd:
+    masked: yes
+    name: "{{ item }}"
+  with_items:
+    - tracker-extract.desktop
+    - tracker-miner-apps.desktop
+    - tracker-miner-fs.desktop
+    - tracker-store.desktop
+  become: true
+
+- name: disable fingerprint reader
+  lineinfile:
+    path: /etc/udev/rules.d/fingerprint.rules
+    line: 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"27c6\", ATTRS{idProduct}==\"5395\", ATTR{authorized}=\"0\"'
+    create: true
+  become: true
