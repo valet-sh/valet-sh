@@ -2,6 +2,7 @@
 
 template_found: False
 
+php_default_version_string: "php71"
 
 valet_link_blacklist:
   - mailhog

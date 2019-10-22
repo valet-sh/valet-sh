@@ -22,12 +22,23 @@
     msg: "{{ link_name }} already linked!"
   when: "link_name in valet_links_obj.valet_links.links_index"
 
+- name: check selected php version
+  set_fact:
+    current_php_version: "{{ php_version }}"
+  when: (php_version is defined) and (php_version != "")
+
+- name: set default php version
+  set_fact:
+    current_php_version: "{{ php_default_version_string }}"
+  when: (php_version is undefined) or (php_version == "")
+
 - name: "generate ssl-certificate for {{ link_name }}"
   include_role:
     name: certificate
     public: true
   vars:
     cert_prefix: "{{ link_name }}"
+
 
 - block:
     - include_tasks: templates/magento1.yml
