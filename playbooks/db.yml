@@ -1,0 +1,20 @@
+---
+#
+# valet.sh | db
+#
+# @author: "Philipp Dittert"
+# @command: "db"
+# @description: "list, create, drop, reset, import, export a mysql database  | Usage: valet.sh db <action>"
+# @usage: "valet.sh db
+
+- name: "db"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_action: "{{ cli.args[0] | default() }}"
+    valet_current_path: "{{ lookup('env','OLDPWD') }}"
+    valet_arg1: "{{ cli.args[1] | default() }}"
+    valet_arg2: "{{ cli.args[2] | default() }}"
+    valet_arg3: "{{ cli.args[3] | default() }}"
+  roles:
+    - valet-db

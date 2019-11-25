@@ -1,0 +1,7 @@
+---
+
+- name: "@vsh restore "
+  mysql_db:
+    name: my_db
+    state: import
+    target:

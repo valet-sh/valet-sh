@@ -1,0 +1,40 @@
+---
+
+- name: set working dir name
+  set_fact:
+    valet_working_dir: "{{ valet_current_path | basename }}"
+
+- name: fail when no database name was given
+  fail:
+    msg: "no database name was given"
+  when: valet_arg1 | length == 0
+
+- debug:
+    msg: "{{ valet_current_path }}"
+
+- name: Dump multiple databases
+  mysql_db:
+    state: dump
+    name: "{{ valet_arg1 }}"
+    target: "{{ valet_current_path }}/asd.sql"
+
+
+
+
+
+- name: set working dir name
+  set_fact:
+    valet_working_dir: "{{ valet_current_path | basename }}"
+
+- name: set default db_name var with value of valet_working_dir
+  set_fact:
+    db_name: "{{ valet_working_dir }}"
+
+- name: override working dir var if separate db name was given
+  set_fact:
+    db_name: "{{ valet_arg2 }}"
+  when: valet_arg2 | length > 0
+
+- name: set default db_filename var with value of valet_working_dir
+  set_fact:
+    db_filename: "{{ valet_working_dir }}"
