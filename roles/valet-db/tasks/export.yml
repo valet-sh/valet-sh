@@ -28,7 +28,7 @@
     valet_db_name: "{{ valet_working_dir }}"
   when: valet_db_name is not defined
 
-- name: "Dump database {{ valet_db_name }} into {{ valet_current_path }}/{{ valet_db_filename }}"
+- name: "@vsh Dump database {{ valet_db_name }} into {{ valet_current_path }}/{{ valet_db_filename }}"
   mysql_db:
     state: dump
     name: "{{ valet_db_name }}"

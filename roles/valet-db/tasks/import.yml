@@ -31,7 +31,7 @@
     valet_db_file: "{{ valet_current_path }}/{{ valet_db_filename }}"
   when: valet_db_file is not defined
 
-- name: "Dump database {{ valet_db_name }} into {{ valet_current_path }}/{{ valet_db_filename }}"
+- name: "@vsh Import database {{ valet_db_file }} into database '{{ valet_db_name }}'"
   mysql_db:
     state: import
     name: "{{ valet_db_name }}"
