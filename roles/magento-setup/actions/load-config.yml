@@ -1,0 +1,20 @@
+- name: "@vsh Load manifest.yml"
+  include_vars:
+    name: manifest
+    dir: "{{ project_dir }}src/"
+    files_matching: "{{ release_manifest_filename }}"
+
+- name: "@vsh Check for magento"
+  fail:
+    msg: "no magento instance found"
+  when: (manifest is undefined) or (manifest.magento_version is undefined)
+
+- name: "@vsh Load project vars"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ project_dir }}dev/{{ config_file }}"
+    - "{{ project_dir }}bin/{{ config_file }}"
+
+- set_fact:
+    instance_name: "{{ cli.args[0] }}"
+  when: cli.args[0] is defined

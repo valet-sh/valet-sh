@@ -1,0 +1,8 @@
+- include_tasks: "actions/change-php.yml"
+  when: action == "change-php"
+
+- include_tasks: "actions/reset-db.yml"
+  when: action == "reset-db"
+
+- include_tasks: "actions/import-db.yml"
+  when: action == "import-db"

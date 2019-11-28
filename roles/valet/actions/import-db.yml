@@ -1,0 +1,4 @@
+- name: Reimport database
+  shell: "valet db import {{ database_file_path }} {{ instance_name }} -y"
+  become: true
+  when: reset_database.user_input == "y" or reset_database.user_input == "yes"

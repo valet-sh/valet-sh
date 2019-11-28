@@ -1,0 +1,58 @@
+# load-config:
+release_manifest_filename: "manifest.yml"
+release_manifest_path: "{{ project_dir }}{{ release_manifest_filename }}"
+
+config_file: "setup-config.yml"
+project_url: "{{ instance_name }}.test/"
+
+# donwload-db
+database_source_method: "git"
+database_source: "<Database resource path>"
+database_download_target: "{{ project_dir }}tmp/ressources"
+database_download_action_path: "{{ database_source }} {{ database_download_target }}"
+database_filename: "dump.sql.gz"
+
+database_file_path: "{{ database_download_target }}{{ database_filename }}"
+
+sftp_port: "10122"
+
+# permision-role
+magento_special_permission:
+  - "bin/magento"
+  - "src/bin/magento"
+  - "bin/phinx"
+  - "bin/gulp"
+
+magento_changed_permission: "a+x"
+
+# rabbit-mq-setup
+rabbitmq_bin: "rabbitmqctl"
+rabbitmq_user: "admin"
+rabbitmq_password: "admin"
+rabbitmq_permissions: "\".*\" \".*\" \".*\""
+
+rabbitmq_tasks:
+  - "start_app"
+  - "delete_vhost {{ instance_name }}"
+  - "add_user {{ rabbitmq_user }} {{ rabbitmq_password }}"
+  - "set_user_tags {{ rabbitmq_user }} administrator"
+  - "add_vhost {{ instance_name }}"
+  - "set_permissions -p {{ instance_name }} {{ rabbitmq_user }} {{ rabbitmq_permissions }}"
+
+#magento-init
+migration_rdir: migration
+
+migration_dir: "{{ project_dir }}src/{{ migration_rdir }}"
+
+magento_config_file: "env.php"
+magento_config_templete_file: "env.valet.php"
+
+##magento-bin-config
+magento_bin: "bin/magento"
+
+magento_config:
+  - "config:set web/unsecure/base_url http://{{ project_url }}"
+  - "config:set web/secure/base_url https://{{ project_url }}"
+  - "config:set smile_elasticsuite_core_base_settings/indices_settings/alias {{ instance_name }}"
+  - "app:config:import"
+  - "setup:upgrade"

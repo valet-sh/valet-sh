@@ -1,0 +1,12 @@
+- name: Clean up media directory
+  shell: "rm -rf {{ project_dir }}{{ pub_media }}"
+
+- name: Git Media
+  git:
+    repo: "{{ media_source }}"
+    dest: "{{ project_dir }}{{ pub_media }}"
+  when: media_source_method == "git"
+
+- name: Sftp Media
+  shell: "mkdir -p {{ project_dir }}{{ pub_media }} && sftp -P {{ sftp_port }} {{ media_download_action_path }}"
+  when: database_source_method == "sftp"

@@ -1,0 +1,5 @@
+media_source_method: "git"
+media_source: "<media_source>"
+
+media_download_action_path: "{{ media_source }} {{ project_dir }}{{ pub_media }}"
+pub_media: "src/pub/media"

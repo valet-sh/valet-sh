@@ -1,0 +1,49 @@
+---
+#
+# valet.sh | setup
+#
+# @author: "Harald Deiser"
+# @author: "Philipp Steinkopff"
+# @author: "Lukas Kiederle"
+# @command: "setup"
+# @description: "Setup a magento instance. Execute this command in a magento folder. For Setup a configuration file is required.
+# @help
+# 1. (required) instance_name also -e instance_name='...' possible
+# 2. (optional) project_php_version (default: 7.2)
+# 3. (optional) database_source_method: (git|sftp) (default: git)
+# 3.1 (optional) sftp_port
+# 4. (required) database_source
+# 4.1 (optional) database_download_target default project_dir/tmp/ressources"
+# 5. (optional) media_source_method: (git|sftp) (default: git)
+# 6. (required) media_source
+# 7. (optional) rabbitmq_user (default: admin)
+# 8. (optional) rabbitmq_password (default: admin)
+# 9. (optional) magento_config_template_file (default: env.valet.php)
+# 10. (optional) magento_config_extend (replacement possible with magento_config)
+#
+# Optional:
+# 1. magento_bin default bin/magento
+# 2. release_manifest_filename
+# 3. magento_config_file
+# 4. rabbitmq_tasks (this point will be replaced)
+# @usage: "valet.sh setup <instance_name>"
+
+- name: "@vsh setup"
+  hosts: local
+  gather_facts: True
+
+  vars:
+    project_dir: "{{ lookup('env','OLDPWD') }}/"
+    os: "{{ ansible_os_family }}"
+
+  roles:
+    - { role: magento-setup, action: load-config }
+    - { role: valet, action: change-php }
+    - { role: magento-setup, action: download-db }
+    - { role: valet, action: reset-db }
+    - { role: valet, action: import-db }
+    - { role: media-handler, action: clean-install-media }
+    - { role: magento-setup, action: set-permissions }
+    - { role: magento-setup, action: rabbit-mq-setup }
+    - { role: magento-setup, action: magento-init }
+    - { role: magento-setup, action: magento-bin-config }
