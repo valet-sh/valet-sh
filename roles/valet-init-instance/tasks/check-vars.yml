@@ -1,0 +1,6 @@
+---
+
+- name: fail when valet_current_path is not defined
+  fail:
+    msg: "valet_current_path is not defined"
+  when: valet_current_path is not defined
