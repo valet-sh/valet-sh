@@ -1,3 +1,7 @@
 ---
 
 - include_tasks: check-vars.yml
+
+- include_tasks: load-valet-sh-file.yml
+
+- include_tasks: load-project-workflow.yml
