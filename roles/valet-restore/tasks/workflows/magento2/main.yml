@@ -1,0 +1,19 @@
+---
+
+- set_fact:
+    current_tmp_dir: "{{ valet_current_path }}/tmp"
+
+- name: "ensure tmp directory exists"
+  file:
+    path: "{{ current_tmp_dir }}"
+
+- name: "synchronize db dump {{ valet_instance_identifier }}/full-latest.sql.gz "
+  shell: "rsync -aL -e 'ssh -p {{ valet_sh_project_vars.hub.port }}' {{ valet_sh_hub_read_user }}@{{ valet_sh_project_vars.hub.host }}:{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instance_identifier }}/latest.sql.gz {{ current_tmp_dir }}"
+
+#- name: Synchronization using rsync protocol (pull)
+#  synchronize:
+#    mode: pull
+#    src: "rsync://read@{{ valet_sh_project_vars.hub.host }}{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instance_identifier }}/full-latest.sql.gz"
+#    dest: /tmp/
+#    rsync_opts:
+#      - "-e 'ssh -p 10122'"

@@ -1,0 +1,17 @@
+---
+
+- name: "fail when project_type was not found"
+  fail:
+    msg: "could not find project_type"
+  when: valet_sh_project_vars.instance.type is not defined
+
+- include_tasks: "workflows/magento1/main.yml"
+  when: valet_sh_project_vars.instance.type == "magento1"
+
+- include_tasks: "workflows/magento2/main.yml"
+  when: valet_sh_project_vars.instance.type == "magento2"
+
+- include_tasks: "workflows/neos/main.yml"
+  when: valet_sh_project_vars.instance.type == "neos"
+
+# @TODO: fail when no project workflow was included

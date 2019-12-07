@@ -1,0 +1,7 @@
+---
+
+- include_tasks: partials/check-vars.yml
+
+- include_tasks: partials/load-valet-sh-file.yml
+
+- include_tasks: partials/load-project-workflow.yml
