@@ -1,0 +1,128 @@
+---
+
+- name: "magento2 | set value for valet_project_src_dir"
+  set_fact:
+    valet_project_src_dir: "{{ valet_sh_project_vars.instance.path }}"
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.path is defined
+
+- name: "magento2 | set fallback value for valet_project_src_dir"
+  set_fact:
+    valet_project_src_dir: "{{ valet_project_default_src_dir }}"
+  when: not valet_project_src_dir
+
+- name: "magento2 | set default value for valet_restore_db_identifier if not set"
+  set_fact:
+    valet_restore_db_identifier: "{{ valet_restore_default_db_identifier }}"
+  when: not valet_restore_db_identifier
+
+- name: "magento2 | ensure valet_restore_db_identifier has allowed value"
+  fail:
+    msg: "not allowed value {{ valet_restore_db_identifier }} for var 'valet_restore_db_identifier'"
+  when: (valet_restore_db_identifier != "latest") and (valet_restore_db_identifier != "previous")
+
+- name: set filename for instance db
+  set_fact:
+    valet_sh_instance_db_filename: "{{ valet_restore_db_identifier }}.sql.gz"
+
+- name: "magento2 | set current tmp directory var"
+  set_fact:
+    current_tmp_dir: "{{ valet_current_path }}/tmp"
+
+- name: "magento2 | ensure tmp directory exists"
+  file:
+    path: "{{ current_tmp_dir }}"
+
+- name: "magento2 | default database name based on current working dir"
+  set_fact:
+    valet_sh_project_database_name: "{{ valet_working_dir }}"
+
+- name: "magento2 | override database name when defined in valet-sh.yml file"
+  set_fact:
+    valet_sh_project_database_name: "{{ valet_sh_project_vars.services.mysql.database | trim  }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mysql is defined
+    - valet_sh_project_vars.services.mysql.database is defined
+
+- name: "magento2 | set hub port"
+  set_fact:
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+  when: valet_sh_project_vars.hub.port is defined
+
+- name: "magento2 | set hub host"
+  set_fact:
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+  when: valet_sh_project_vars.hub.host is defined
+
+- name: "magento2 | set hub user"
+  set_fact:
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+  when: valet_sh_project_vars.hub.user is defined
+
+- name: "magento2 | set hub data path"
+  set_fact:
+    valet_sh_hub_path: "{{ valet_sh_project_vars.hub.path | trim }}"
+  when: valet_sh_project_vars.hub.path is defined
+
+- name: "magento2 | set current tmp directory var"
+  set_fact:
+    current_tmp_dir: "{{ valet_current_path }}/tmp"
+
+- name: "magento2 | ensure tmp directory exists"
+  file:
+    path: "{{ current_tmp_dir }}"
+
+- name: "magento2 | set hub port"
+  set_fact:
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+  when: valet_sh_project_vars.hub.port is defined
+
+- name: "magento2 | set hub host"
+  set_fact:
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+  when: valet_sh_project_vars.hub.host is defined
+
+- name: "magento2 | set hub user"
+  set_fact:
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+  when: valet_sh_project_vars.hub.user is defined
+
+- name: "magento2 | set valet_instancebackup_identifier when defined"
+  set_fact:
+    valet_instancebackup_identifier: "{{ valet_sh_project_vars.hub.instance.sync.identifier | trim  }}"
+  when:
+    - not valet_instancebackup_identifier
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.sync is defined
+    - valet_sh_project_vars.instance.sync.identifier is defined
+
+- name: "magento2 | ensure valet_instancebackup_identifier has a value"
+  fail:
+    msg: "you need to set a valid 'instancebackup-identifier' ether in your .valet-sh.yml file or as an argument"
+  when: not valet_instancebackup_identifier
+
+- name: "magento2 | set default restore commands"
+  set_fact:
+    valet_restore_post_restore_commands: "{{ valet_restore_default_magento2_post_restore_commands  }}"
+
+- name: "magento2 | set restore commands from .valet-sh.yml file"
+  set_fact:
+    valet_restore_post_restore_commands: "{{ valet_restore_default_magento2_post_restore_commands  }}"
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.sync is defined
+    - valet_sh_project_vars.instance.sync.commands is defined
+
+- name: set default php cli bin
+  set_fact:
+    php_bin: "php"
+
+- name: "override php cli bin"
+  set_fact:
+    php_bin: "php{{ valet_sh_project_vars.instance.sync.version }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.instance.php is defined
+    - valet_sh_project_vars.instance.sync.version is defined

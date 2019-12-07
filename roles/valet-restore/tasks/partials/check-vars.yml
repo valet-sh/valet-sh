@@ -4,3 +4,7 @@
   fail:
     msg: "valet_current_path is not defined"
   when: valet_current_path is not defined
+
+- name: set working dir name
+  set_fact:
+    valet_working_dir: "{{ valet_current_path | basename }}"
