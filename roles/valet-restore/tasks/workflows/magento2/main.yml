@@ -28,6 +28,6 @@
 
 - name: "magento2 | run post restore commands"
   shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_post_command }}"
-  with_items: "{{ valet_restore_magento2_post_restore_commands }}"
+  with_items: "{{ valet_restore_post_restore_commands }}"
   loop_control:
     loop_var: valet_sh_restore_current_post_command
