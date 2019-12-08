@@ -3,9 +3,9 @@
 # only "latest" ar "previous" are allowed values
 valet_restore_default_db_identifier: "latest"
 valet_project_default_src_dir: "src"
+valet_sh_hub_user: "read"
 
-
-valet_restore_default_magento2_post_restore_commands:
+valet_restore_magento2_post_restore_commands:
   - "bin/magento cache:flush"
   - "bin/magento app:config:import"
   - "bin/magento setup:upgrade"

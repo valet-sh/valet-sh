@@ -12,8 +12,8 @@
   hosts: local
   gather_facts: True
   vars:
-    valet_instancebackup_identifier: "{{ cli.args[0] | default() }}"
-    valet_restore_db_identifier: "{{ cli.args[0] | default() }}"
+    valet_instancebackup_identifier: "{{ cli.args[1] | default() }}"
+    valet_restore_db_identifier: "{{ cli.args[2] | default() }}"
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
   roles:
     - valet-restore

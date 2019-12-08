@@ -33,6 +33,7 @@
 - name: "magento2 | ensure tmp directory exists"
   file:
     path: "{{ current_tmp_dir }}"
+    state: directory
 
 - name: "magento2 | default database name based on current working dir"
   set_fact:
@@ -91,7 +92,7 @@
 
 - name: "magento2 | set valet_instancebackup_identifier when defined"
   set_fact:
-    valet_instancebackup_identifier: "{{ valet_sh_project_vars.hub.instance.sync.identifier | trim  }}"
+    valet_instancebackup_identifier: "{{ valet_sh_project_vars.instance.sync.identifier | trim  }}"
   when:
     - not valet_instancebackup_identifier
     - valet_sh_project_vars.instance is defined
