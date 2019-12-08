@@ -2,7 +2,7 @@
 
 - include_tasks: "check-vars.yml"
 
-- name: "magento2 | synchronize db dump {{ valet_instance_identifier }}/{{ valet_sh_instance_db_filename }}"
+- name: "magento2 | synchronize db dump {{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
   shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }} {{ current_tmp_dir }}"
 
 - name: "magento2 | drop database {{ valet_sh_project_database_name }}"
@@ -10,25 +10,19 @@
     name: "{{ valet_sh_project_database_name }}"
     state: absent
 
-- name: "magento2 | import db dump '{{ valet_db_file }}' into database '{{ valet_sh_project_database_name }}'"
+- name: "magento2 | import db dump '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
   mysql_db:
     state: import
     name: "{{ valet_sh_project_database_name }}"
     target: "{{ current_tmp_dir }}/{{ valet_sh_instance_db_filename }}"
 
-- name: "magento2 | synchronize db dump {{ valet_instance_identifier }}/{{ valet_sh_instance_db_filename }}"
+- name: "magento2 | synchronize filesystem {{ valet_sh_restore_current_fs }}"
   shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/"
   with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.sync is defined
     - valet_sh_project_vars.instance.sync.fs is defined
-  loop_control:
-    loop_var: valet_sh_restore_current_fs
-
-- name: "magento2 | synchronize db dump {{ valet_instance_identifier }}/{{ valet_sh_instance_db_filename }}"
-  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/"
-  with_items: "{{ valet_restore_magento2_post_restore_commands }}"
   loop_control:
     loop_var: valet_sh_restore_current_fs
 
