@@ -116,15 +116,6 @@
     - valet_sh_project_vars.instance.sync is defined
     - valet_sh_project_vars.instance.sync.commands is defined
 
-- name: "magento2 | override valet_restore_magento2_post_restore_commands when defined"
-  set_fact:
-    valet_restore_magento2_post_restore_commands: "{{ valet_sh_project_vars.instance.sync.commands }}"
-  when:
-    - not valet_instancebackup_identifier
-    - valet_sh_project_vars.instance is defined
-    - valet_sh_project_vars.instance.sync is defined
-    - valet_sh_project_vars.instance.sync.commands is defined
-
 - name: set default php cli bin
   set_fact:
     php_bin: "php"
