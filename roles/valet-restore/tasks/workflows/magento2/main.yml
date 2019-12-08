@@ -16,7 +16,7 @@
     name: "{{ valet_sh_project_database_name }}"
     target: "{{ current_tmp_dir }}/{{ valet_sh_instance_db_filename }}"
 
-- name: "magento2 | synchronize filesystem {{ valet_sh_restore_current_fs }}"
+- name: "magento2 | synchronize filesystem"
   shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/"
   with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
   when:
