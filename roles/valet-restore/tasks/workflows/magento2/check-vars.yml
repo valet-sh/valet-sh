@@ -15,7 +15,7 @@
 - name: "magento2 | set default value for valet_restore_db_identifier if not set"
   set_fact:
     valet_restore_db_identifier: "{{ valet_restore_default_db_identifier }}"
-  when: not valet_restore_db_identifier
+  when: (valet_restore_db_identifier is not defined) or (valet_restore_db_identifier|length == 0)
 
 - name: "magento2 | ensure valet_restore_db_identifier has allowed value"
   fail:
