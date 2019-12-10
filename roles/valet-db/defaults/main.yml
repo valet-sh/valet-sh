@@ -1,0 +1,7 @@
+---
+
+valet_mysql_db_blacklist:
+  - information_schema
+  - mysql
+  - performance_schema
+  - sys
