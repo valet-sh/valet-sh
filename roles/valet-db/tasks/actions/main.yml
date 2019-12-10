@@ -1,0 +1,20 @@
+---
+
+- include_tasks: ls.yml
+  when: valet_action == "ls"
+
+- include_tasks: create.yml
+  when: valet_action == "create"
+
+- include_tasks: reset.yml
+  when: valet_action == "reset"
+
+- include_tasks: drop.yml
+  when: valet_action == "drop"
+
+- include_tasks: import.yml
+  when: valet_action == "import"
+
+- include_tasks: export.yml
+  when: valet_action == "export"
+

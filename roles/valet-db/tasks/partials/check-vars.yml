@@ -1,0 +1,15 @@
+---
+
+- name: fail when valet_current_path is not defined
+  fail:
+    msg: "valet_current_path is not defined"
+  when: valet_current_path is not defined
+
+- name: set working dir name
+  set_fact:
+    valet_working_dir: "{{ valet_current_path | basename }}"
+
+- name: fail when valet_action variable is empty
+  fail:
+    msg: "no action defined"
+  when: valet_action | length == 0

@@ -1,0 +1,13 @@
+---
+
+- name: "set default database name based on current working dir"
+  set_fact:
+    valet_db_name: "{{ valet_working_dir }}"
+
+- name: "override database name when defined in valet-sh.yml file"
+  set_fact:
+    valet_db_name: "{{ valet_sh_project_vars.services.mysql.database | trim }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mysql is defined
+    - valet_sh_project_vars.services.mysql.database is defined
