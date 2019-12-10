@@ -1,0 +1,20 @@
+---
+#
+# valet.sh | restore
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @command: "restore"
+# @description: "restore persistent instance resources (eg. db, media-files)"
+# @usage: "valet.sh restore <(optional) instancebackup-identifier> <(optional) valet_restore_db_identifier>"
+# @help: "valet.sh -h restore"
+
+- name: "restore"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_instancebackup_identifier: "{{ cli.args[0] | default() }}"
+    valet_restore_db_identifier: "{{ cli.args[1] | default() }}"
+    valet_current_path: "{{ lookup('env','OLDPWD') }}"
+  roles:
+    - valet-restore
