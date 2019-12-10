@@ -2,6 +2,35 @@
 
 - include_tasks: "check-vars.yml"
 
+- add_host:
+    hostname: hub
+    ansible_host: "{{ valet_sh_hub_host }}"
+    ansible_port: "{{ valet_sh_hub_port }}"
+    ansible_user: "{{ valet_sh_hub_user }}"
+    ansible_ssh_pipelining: 1
+
+- name: "check if instancebackup idenfifier '{{ valet_instancebackup_identifier }}'"
+  stat:
+    path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}"
+  register: instancebackup_identifier_target_obj
+  delegate_to: hub
+
+- name: fail when instance identifier does not exist
+  fail:
+    msg: "Instance-Backup identifier '{{ valet_instancebackup_identifier }}' does not exist!"
+  when: not instancebackup_identifier_target_obj.stat.exists
+
+- name: "check if instancebackup idenfifier '{{ valet_sh_instance_db_filename }}'"
+  stat:
+    path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
+  register: instancebackup_target_db_file_obj
+  delegate_to: hub
+
+- name: "fail when db dump '{{ valet_sh_instance_db_filename }}' does not exist"
+  fail:
+    msg: "file '{{ valet_sh_instance_db_filename }}' does not exist!"
+  when: not instancebackup_target_db_file_obj.stat.exists
+
 - name: "@vsh downloading '{{ valet_sh_instance_db_filename }}'..."
   debug:
 
