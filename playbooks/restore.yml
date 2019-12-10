@@ -5,8 +5,9 @@
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
 # @command: "restore"
-# @description: "restore persistent instance resources (eg. db, media-files) | Usage: valet.sh restore test <previous|latest>"
-# @usage: "valet.sh restore <instancebackup-identifier> <valet_restore_db_identifier>
+# @description: "restore persistent instance resources (eg. db, media-files)"
+# @usage: "valet.sh restore <(optional) instancebackup-identifier> <(optional) valet_restore_db_identifier>"
+# @help: "valet.sh -h restore"
 
 - name: "restore"
   hosts: local
