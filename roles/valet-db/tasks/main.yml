@@ -1,6 +1,5 @@
 ---
 
-
 - name: fail when valet_action variable is empty
   fail:
     msg: "no action defined"

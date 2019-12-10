@@ -4,8 +4,9 @@
 #
 # @author: "Philipp Dittert"
 # @command: "db"
-# @description: "list, create, drop, reset, import, export a mysql database  | Usage: valet.sh db <action>"
-# @usage: "valet.sh db
+# @description: "list, create, drop, reset, import, export a mysql database"
+# @usage: "valet.sh db <action>"
+# @help: "valet.sh -h db"
 
 - name: "db"
   hosts: local
