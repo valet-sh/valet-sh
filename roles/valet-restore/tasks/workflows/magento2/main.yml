@@ -1,0 +1,80 @@
+---
+
+- include_tasks: "check-vars.yml"
+
+- add_host:
+    hostname: hub
+    ansible_host: "{{ valet_sh_hub_host }}"
+    ansible_port: "{{ valet_sh_hub_port }}"
+    ansible_user: "{{ valet_sh_hub_user }}"
+    ansible_ssh_pipelining: 1
+
+- name: "check if instancebackup idenfifier '{{ valet_instancebackup_identifier }}'"
+  stat:
+    path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}"
+  register: instancebackup_identifier_target_obj
+  delegate_to: hub
+
+- name: fail when instance identifier does not exist
+  fail:
+    msg: "Instance-Backup identifier '{{ valet_instancebackup_identifier }}' does not exist!"
+  when: not instancebackup_identifier_target_obj.stat.exists
+
+- name: "check if instancebackup idenfifier '{{ valet_sh_instance_db_filename }}'"
+  stat:
+    path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
+  register: instancebackup_target_db_file_obj
+  delegate_to: hub
+
+- name: "fail when db dump '{{ valet_sh_instance_db_filename }}' does not exist"
+  fail:
+    msg: "file '{{ valet_sh_instance_db_filename }}' does not exist!"
+  when: not instancebackup_target_db_file_obj.stat.exists
+
+- name: "@vsh downloading '{{ valet_sh_instance_db_filename }}'..."
+  debug:
+
+- name: "magento2 | synchronize db dump {{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
+  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }} {{ current_tmp_dir }}"
+
+- name: "magento2 | drop database {{ valet_sh_project_database_name }}"
+  mysql_db:
+    name: "{{ valet_sh_project_database_name }}"
+    state: absent
+
+- name: "@vsh importing '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
+  debug:
+
+- name: "magento2 | import db dump '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
+  mysql_db:
+    state: import
+    name: "{{ valet_sh_project_database_name }}"
+    target: "{{ current_tmp_dir }}/{{ valet_sh_instance_db_filename }}"
+
+- name: "@vsh import of '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}' successfully finished"
+  debug:
+
+- name: "@vsh synchronizing filesystem..."
+  debug:
+
+- name: "magento2 | synchronize filesystem"
+  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/"
+  with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.sync is defined
+    - valet_sh_project_vars.instance.sync.fs is defined
+  loop_control:
+    loop_var: valet_sh_restore_current_fs
+
+- name: "@vsh synchronizing filesystem finished..."
+  debug:
+
+- name: "@vsh run post restore commands"
+  debug:
+
+- name: "magento2 | run post restore commands"
+  shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_post_command }}"
+  with_items: "{{ valet_restore_post_restore_commands }}"
+  loop_control:
+    loop_var: valet_sh_restore_current_post_command
