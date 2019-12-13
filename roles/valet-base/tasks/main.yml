@@ -36,3 +36,22 @@
     state: "{{ 'file' if  valet_config_links_file_obj.stat.exists else 'touch' }}"
     mode: '0755'
   become: true
+
+- name: "get stat for '{{ valet_config_defaults_file }}'"
+  stat:
+    path: "{{ valet_config_defaults_file }}"
+  register: valet_config_defaults_file_obj
+
+- name: "ensure valet config defaults file exists"
+  file:
+    dest:  "{{ valet_config_defaults_file }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    state: "{{ 'file' if  valet_config_defaults_file_obj.stat.exists else 'touch' }}"
+    mode: '0755'
+  become: true
+
+- name: include valet defaults configuration file
+  include_vars:
+    file: "{{ valet_config_defaults_file }}"
+    name: valet_sh_defaults
