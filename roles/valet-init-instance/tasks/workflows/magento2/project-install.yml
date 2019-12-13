@@ -1,0 +1,42 @@
+---
+
+## composer
+
+- name: run composer install in current dir
+  shell: "{{ php_bin }} {{ composer_bin_obj.stdout }} install"
+  args:
+    chdir: "{{ valet_current_path }}"
+    removes: "composer.json"
+
+- name: run composer install in project source path when defined in .valet-sh.yml
+  shell: "{{ php_bin }} {{ composer_bin_obj.stdout }} install"
+  args:
+    chdir: "{{ valet_sh_project_src_path }}"
+    removes: "composer.json"
+  when: valet_current_path != valet_sh_project_src_path
+
+- name: "switch node version to '{{ valet_sh_node_version }}'"
+  shell: "n {{ valet_sh_node_version }}"
+  args:
+    chdir: "{{ valet_current_path }}"
+  become: true
+
+## node
+- name: run npm install in current dir
+  shell: "npm install"
+  args:
+    chdir: "{{ valet_current_path }}"
+    removes: "packages.json"
+  with_first_found:
+    - /usr/local/bin/npm
+    - /usr/bin/npm
+
+- name: run npm install in project source path when defined in .valet-sh.yml
+  shell: "npm install"
+  args:
+    chdir: "{{ valet_sh_project_src_path }}"
+    removes: "packages.json"
+  when: valet_current_path != valet_sh_project_src_path
+  with_first_found:
+    - /usr/local/bin/npm
+    - /usr/bin/npm

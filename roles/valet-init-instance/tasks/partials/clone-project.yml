@@ -1,0 +1,37 @@
+---
+
+- set_fact:
+    project_already_cloned: true
+  when: '"{{ valet_project_name }}/{{ valet_sh_default_project_name }}" in valet_current_path'
+
+- name: "get stat for '{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}'"
+  stat:
+    path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
+  register: valet_sh_project_folder_obj
+
+- block:
+  - name: "check if project directories already existing"
+    set_fact:
+      project_already_cloned: true
+  - name: "change current path to new cloned project"
+    set_fact:
+      valet_current_path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
+  when: valet_sh_project_folder_obj.stat.exists
+
+- block:
+  - fail:
+      msg: "required default vars are not defined"
+    when: valet_sh_defaults.hub_domain is not defined or valet_sh_defaults.hub_project is not defined or valet_sh_defaults.hub_gitlab_ssh_port is not defined
+
+  - name: create project folder
+    file:
+      path: "{{ valet_current_path }}/{{ valet_project_name }}"
+      state: directory
+  - name: "clone {{ valet_sh_default_project_git_clone_command }}"
+    git:
+      repo: '{{ valet_sh_default_project_git_clone_command }}'
+      dest: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
+  - name: "change current path to new cloned project"
+    set_fact:
+      valet_current_path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
+  when: project_already_cloned is not defined

@@ -1,0 +1,18 @@
+---
+
+- set_fact:
+    valet_sh_magento2_db_name: "{{ valet_sh_project_vars.services.mysql.database }}"
+    valet_sh_magento2_crypt_key: "{{ valet_sh_project_vars.instance.crypt_key }}"
+    vsh_m2_env_config: "{{ valet_sh_project_vars.instance.config.system.default }}"
+
+- set_fact:
+    valet_sh_magento2_rabbitmq_virtualhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.rabbitmq is defined
+    - valet_sh_project_vars.services.rabbitmq.vhost is defined
+
+- name: provide env.php for project
+  template:
+    src: "templates/env.php.j2"
+    dest: "{{ valet_sh_project_src_path }}/app/etc/env.php"

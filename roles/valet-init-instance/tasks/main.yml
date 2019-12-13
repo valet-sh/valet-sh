@@ -1,7 +1,10 @@
 ---
 
-- include_tasks: check-vars.yml
+- include_tasks: partials/check-vars.yml
 
-- include_tasks: load-valet-sh-file.yml
+- include_tasks: partials/clone-project.yml
+  when: valet_project_name | length > 0
 
-- include_tasks: load-project-workflow.yml
+- include_tasks: partials/load-valet-sh-file.yml
+
+- include_tasks: partials/load-project-workflow.yml

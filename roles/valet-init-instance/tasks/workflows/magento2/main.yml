@@ -1,7 +1,12 @@
 ---
 
+- include_tasks: check-vars.yml
+
 #### execute service section in valet-sh file
 
-#### execute instance section in valet-sh file (composer install, npm gackus)
+#### manage project installation (resolve dependencies)
+- include_tasks: project-install.yml
 
-#### execute 
+- include_tasks: project-env.yml
+
+

@@ -12,5 +12,6 @@
   gather_facts: True
   vars:
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
+    valet_project_name: "{{ cli.args[0] | default() }}"
   roles:
     - valet-init-instance
