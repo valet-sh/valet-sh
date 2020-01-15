@@ -1,0 +1,11 @@
+- name: Merge lists
+  set_fact:
+    magento_config: "{{ magento_config + magento_config_extend }}"
+  when: magento_config_extend is defined
+
+- name: "@vsh Execute bin/magento commands"
+  command: "{{ magento_bin }} {{ item }}"
+  args:
+    chdir: "{{ project_dir }}"
+  with_items:
+    - "{{ magento_config }}"

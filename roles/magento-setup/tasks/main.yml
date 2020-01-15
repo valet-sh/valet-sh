@@ -1,0 +1,21 @@
+- include_tasks: "actions/load-config.yml"
+  when: action == "load-config"
+
+- include_tasks: "actions/download-db.yml"
+  when: action == "download-db"
+
+- include_tasks: "actions/import-db.yml"
+  when: action == "import-db"
+
+- include_tasks: "actions/set-permissions.yml"
+  when: action == "set-permissions"
+
+- include_tasks: "actions/rabbit-mq-setup.yml"
+  when: action == "rabbit-mq-setup"
+
+- include_tasks: "actions/magento-bin-config.yml"
+  when: action == "magento-bin-config"
+
+- include_tasks: "actions/magento-init.yml"
+  when: action == "magento-init"
+

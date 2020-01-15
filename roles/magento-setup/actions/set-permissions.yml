@@ -1,0 +1,14 @@
+- name: Get file stati to change.
+  stat: path="{{ project_dir }}src/{{ item }}"
+  with_items: "{{ magento_special_permission }}"
+  register: permission_result
+
+- name: "@vsh Change permissions"
+  file:
+    path: "{{ item.stat.path }}"
+    state: file
+    mode: "{{ magento_changed_permission }}"
+  with_items: "{{ permission_result.results }}"
+  when:
+    - item.stat is defined
+    - item.stat.exists == true

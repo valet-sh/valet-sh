@@ -1,0 +1,6 @@
+- name: "@vsh Setup Rabbit Mq"
+  command: "{{ rabbitmq_bin }} {{ item }}"
+  args:
+    chdir: "{{ project_dir }}"
+  with_items: "{{ rabbitmq_tasks }}"
+  ignore_errors: yes

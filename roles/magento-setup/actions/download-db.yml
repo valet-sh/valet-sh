@@ -1,0 +1,17 @@
+- name: Request Database Reset
+  pause:
+    prompt: "Reset Database? [y/n]"
+  register: reset_database
+
+- name: Clean up database download directory
+  shell: "rm -rf {{ database_download_target }}"
+
+- name: "@vsh Download Database (git)"
+  git:
+    repo: "{{ database_source }}"
+    dest: "{{ database_download_target }}"
+  when: database_source_method == "git" and reset_database.user_input == "y" or reset_database.user_input == "yes"
+
+- name: "@vsh Download Database (sftp)"
+  shell: "mkdir -p {{ database_download_target }} && sftp -P {{ sftp_port }} {{ database_download_action_path }}"
+  when: database_source_method == "sftp" and reset_database.user_input == "y" or reset_database.user_input == "yes"

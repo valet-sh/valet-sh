@@ -1,0 +1,12 @@
+- name: "@vsh Clean up media directory"
+  shell: "rm -rf {{ project_dir }}{{ pub_media }}"
+
+- name: "@vsh Download Media (git)"
+  git:
+    repo: "{{ media_source }}"
+    dest: "{{ project_dir }}{{ pub_media }}"
+  when: media_source_method == "git"
+
+- name: "@vsh Download Media (sftp)"
+  shell: "mkdir -p {{ project_dir }}{{ pub_media }} && sftp -P {{ sftp_port }} {{ media_download_action_path }}"
+  when: database_source_method == "sftp"

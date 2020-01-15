@@ -1,0 +1,3 @@
+- name: "@vsh Set php Version"
+  shell: "valet use {{ project_php_version }}"
+  become: true

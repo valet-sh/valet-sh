@@ -1,0 +1,21 @@
+- name: "@vsh install magento deps via composer"
+  command: "composer install"
+  args:
+    chdir: "{{ project_dir }}src/"
+
+- name: "@vsh change env php"
+  copy:
+    src: "{{ project_dir }}src/app/etc/{{ magento_config_templete_file }}"
+    dest: "{{ project_dir }}src/app/etc/{{ magento_config_file }}"
+
+- name: install migration deps via composer
+  command: "composer install"
+  args:
+    chdir: "{{ migration_dir }}"
+  when: manifest.use_phinx_migrations is defined and manifest.use_phinx_migrations|bool
+
+- name: install npm dependencies
+  command: "npm install"
+  args:
+    chdir: "{{ project_dir }}src/vendor/snowdog/frontools"
+  when: (manifest.frontend_adapter is defined) and (manifest.frontend_adapter == "snowdog")

@@ -1,0 +1,2 @@
+- include_tasks: "actions/clean-install-media.yml"
+  when: action == "clean-install-media"
