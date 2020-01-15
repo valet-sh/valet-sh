@@ -1,9 +1,9 @@
-- name: install magento deps via composer
+- name: "@vsh install magento deps via composer"
   command: "composer install"
   args:
     chdir: "{{ project_dir }}src/"
 
-- name: change env php
+- name: "@vsh change env php"
   copy:
     src: "{{ project_dir }}src/app/etc/{{ magento_config_templete_file }}"
     dest: "{{ project_dir }}src/app/etc/{{ magento_config_file }}"

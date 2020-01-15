@@ -1,4 +1,4 @@
-- name: Create database (skipped if db is in place)
+- name: "@vsh Create database (skipped if db is in place)"
   shell: "valet db reset {{ instance_name }} -y"
   become: true
   when: reset_database.user_input == "y" or reset_database.user_input == "yes"

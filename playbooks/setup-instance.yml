@@ -1,14 +1,15 @@
 ---
 #
-# valet.sh | setup
+# valet.sh | setup-instance
 #
 # @author: "Harald Deiser"
 # @author: "Philipp Steinkopff"
 # @author: "Lukas Kiederle"
-# @command: "setup"
+# @command: "setup-instance"
 # @description: "Setup a magento instance. Execute this command in a magento folder. For Setup a configuration file is required.
 # @help
-# 1. (required) instance_name also -e instance_name='...' possible
+# Location of config file is dev/setup-config.yml or bin/setup-config.yml
+# 1. (required) instance_name
 # 2. (optional) project_php_version (default: 7.2)
 # 3. (optional) database_source_method: (git|sftp) (default: git)
 # 3.1 (optional) sftp_port
@@ -26,9 +27,9 @@
 # 2. release_manifest_filename
 # 3. magento_config_file
 # 4. rabbitmq_tasks (this point will be replaced)
-# @usage: "valet.sh setup <instance_name>"
+# @usage: "valet.sh setup-instance"
 
-- name: "@vsh setup"
+- name: "@vsh setup instance"
   hosts: local
   gather_facts: True
 
@@ -38,11 +39,11 @@
 
   roles:
     - { role: magento-setup, action: load-config }
-    - { role: valet, action: change-php }
+    - { role: valet-plus, action: change-php }
     - { role: magento-setup, action: download-db }
-    - { role: valet, action: reset-db }
-    - { role: valet, action: import-db }
-    - { role: media-handler, action: clean-install-media }
+    - { role: valet-plus, action: reset-db }
+    - { role: valet-plus, action: import-db }
+    - { role: magento-media-handler, action: clean-install-media }
     - { role: magento-setup, action: set-permissions }
     - { role: magento-setup, action: rabbit-mq-setup }
     - { role: magento-setup, action: magento-init }

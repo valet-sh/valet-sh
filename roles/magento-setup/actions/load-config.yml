@@ -1,3 +1,6 @@
+- set_fact:
+    database_download_target: "{{ project_dir }}{{ database_download_target }}"
+
 - name: "@vsh Load manifest.yml"
   include_vars:
     name: manifest

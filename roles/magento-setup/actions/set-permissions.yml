@@ -3,7 +3,7 @@
   with_items: "{{ magento_special_permission }}"
   register: permission_result
 
-- name: Change permissions
+- name: "@vsh Change permissions"
   file:
     path: "{{ item.stat.path }}"
     state: file

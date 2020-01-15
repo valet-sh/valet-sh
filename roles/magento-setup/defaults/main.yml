@@ -8,7 +8,7 @@ project_url: "{{ instance_name }}.test/"
 # donwload-db
 database_source_method: "git"
 database_source: "<Database resource path>"
-database_download_target: "{{ project_dir }}tmp/ressources"
+database_download_target: "tmp/ressources"
 database_download_action_path: "{{ database_source }} {{ database_download_target }}"
 database_filename: "dump.sql.gz"
 

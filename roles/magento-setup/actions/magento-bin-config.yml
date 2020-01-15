@@ -3,7 +3,7 @@
     magento_config: "{{ magento_config + magento_config_extend }}"
   when: magento_config_extend is defined
 
-- name: Execut bin/magento commands
+- name: "@vsh Execute bin/magento commands"
   command: "{{ magento_bin }} {{ item }}"
   args:
     chdir: "{{ project_dir }}"
