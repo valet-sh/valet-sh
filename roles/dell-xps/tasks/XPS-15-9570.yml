@@ -157,3 +157,16 @@
     line: 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"27c6\", ATTRS{idProduct}==\"5395\", ATTR{authorized}=\"0\"'
     create: true
   become: true
+
+- set_fact:
+    systemd_sleep_modulename: "i2c_hid"
+
+- name: provide systemd sleep configuration for touchpad
+  template:
+    src: systemd-sleep-module.j2
+    dest: "/lib/systemd/system-sleep/touchpad"
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
