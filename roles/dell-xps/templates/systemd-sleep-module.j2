@@ -1,0 +1,10 @@
+#!/bin/bash
+
+case $1 in
+    pre)
+	modprobe -r {{ systemd_sleep_modulename }}
+    ;;
+    post)
+	modprobe {{ systemd_sleep_modulename }}
+    ;;
+esac
