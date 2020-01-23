@@ -2,9 +2,8 @@
 
 - include_tasks: check-vars.yml
 
-#### execute service section in valet-sh file
+- include_tasks: service-install.yml
 
-#### manage project installation (resolve dependencies)
 - include_tasks: project-install.yml
 
 - include_tasks: project-env.yml
