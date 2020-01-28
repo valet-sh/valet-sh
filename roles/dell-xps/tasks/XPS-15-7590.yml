@@ -23,6 +23,7 @@
 - apt_repository:
     repo: ppa:linrunner/tlp
     update_cache: yes
+  become: true
 
 - name: install tlp packages
   apt:
@@ -33,23 +34,27 @@
       - tlp
       - tlp-rdw
       - powertop
+  become: true
 
 - name: Fix Sleep/Wake Bluetooth Bug
   lineinfile:
     path: /etc/default/tlp
     regexp: '^RESTORE_DEVICE_STATE_ON_STARTUP'
     line: 'RESTORE_DEVICE_STATE_ON_STARTUP=1'
+  become: true
 
 - name: Fix Audio Feedback/White Noise from Headphones on Battery Bug
   lineinfile:
     path: /etc/default/tlp
     regexp: '^SOUND_POWER_SAVE_ON_BAT'
     line: 'SOUND_POWER_SAVE_ON_BAT=0'
+  become: true
 
 - name: ensure tlp service is restarted
   systemd:
     state: restarted
     name: tlp
+  become: true
 
 - name: "enable graphic drivers ppa"
   apt_repository:
@@ -102,17 +107,20 @@
     path: /etc/modprobe.d/i915.conf
     line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1'
     create: true
+  become: true
 
 - name: enable fan speed with lm-sensors
   lineinfile:
     path: /etc/modprobe.d/dell-smm-hwmon.conf
     line: 'options dell-smm-hwmon restricted=0 force=1'
     create: true
+  become: true
 
 - name: enable dell specific module
   lineinfile:
     path: /etc/modules
     line: 'dell-smm-hwmon'
+  become: true
 
 - name: "run update-initramfs -u"
   shell: "update-initramfs -u"
@@ -150,6 +158,7 @@
     path: /etc/udev/rules.d/fingerprint.rules
     line: 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"27c6\", ATTRS{idProduct}==\"5395\", ATTR{authorized}=\"0\"'
     create: true
+  become: true
 
 - set_fact:
     systemd_sleep_modulename: "i2c_hid"
