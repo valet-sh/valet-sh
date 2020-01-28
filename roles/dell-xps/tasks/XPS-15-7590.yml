@@ -20,36 +20,36 @@
     upgrade: dist
   become: true
 
-#- apt_repository:
-#    repo: ppa:linrunner/tlp
-#    update_cache: yes
-#
-#- name: install tlp packages
-#  apt:
-#    name: "{{ packages }}"
-#  vars:
-#    packages:
-#      - thermald
-#      - tlp
-#      - tlp-rdw
-#      - powertop
-#
-#- name: Fix Sleep/Wake Bluetooth Bug
-#  lineinfile:
-#    path: /etc/default/tlp
-#    regexp: '^RESTORE_DEVICE_STATE_ON_STARTUP'
-#    line: 'RESTORE_DEVICE_STATE_ON_STARTUP=1'
-#
-#- name: Fix Audio Feedback/White Noise from Headphones on Battery Bug
-#  lineinfile:
-#    path: /etc/default/tlp
-#    regexp: '^SOUND_POWER_SAVE_ON_BAT'
-#    line: 'SOUND_POWER_SAVE_ON_BAT=0'
-#
-#- name: ensure tlp service is restarted
-#  systemd:
-#    state: restarted
-#    name: tlp
+- apt_repository:
+    repo: ppa:linrunner/tlp
+    update_cache: yes
+
+- name: install tlp packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - thermald
+      - tlp
+      - tlp-rdw
+      - powertop
+
+- name: Fix Sleep/Wake Bluetooth Bug
+  lineinfile:
+    path: /etc/default/tlp
+    regexp: '^RESTORE_DEVICE_STATE_ON_STARTUP'
+    line: 'RESTORE_DEVICE_STATE_ON_STARTUP=1'
+
+- name: Fix Audio Feedback/White Noise from Headphones on Battery Bug
+  lineinfile:
+    path: /etc/default/tlp
+    regexp: '^SOUND_POWER_SAVE_ON_BAT'
+    line: 'SOUND_POWER_SAVE_ON_BAT=0'
+
+- name: ensure tlp service is restarted
+  systemd:
+    state: restarted
+    name: tlp
 
 - name: "enable graphic drivers ppa"
   apt_repository:
@@ -97,22 +97,22 @@
       - intel-microcode
   become: true
 
-#- name: Enable power saving tweaks for Intel chip
-#  lineinfile:
-#    path: /etc/modprobe.d/i915.conf
-#    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1'
-#    create: true
-#
-#- name: enable fan speed with lm-sensors
-#  lineinfile:
-#    path: /etc/modprobe.d/dell-smm-hwmon.conf
-#    line: 'options dell-smm-hwmon restricted=0 force=1'
-#    create: true
-#
-#- name: enable dell specific module
-#  lineinfile:
-#    path: /etc/modules
-#    line: 'dell-smm-hwmon'
+- name: Enable power saving tweaks for Intel chip
+  lineinfile:
+    path: /etc/modprobe.d/i915.conf
+    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1'
+    create: true
+
+- name: enable fan speed with lm-sensors
+  lineinfile:
+    path: /etc/modprobe.d/dell-smm-hwmon.conf
+    line: 'options dell-smm-hwmon restricted=0 force=1'
+    create: true
+
+- name: enable dell specific module
+  lineinfile:
+    path: /etc/modules
+    line: 'dell-smm-hwmon'
 
 - name: "run update-initramfs -u"
   shell: "update-initramfs -u"
@@ -127,7 +127,7 @@
   lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 nouveau.modeset=0 pcie_aspm=force mem_sleep_default=deep"'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 nouveau.modeset=0 drm.vblankoffdelay=1 pcie_aspm=force mem_sleep_default=deep"'
   become: true
 
 - name: "run update-grub"
@@ -145,8 +145,20 @@
     - tracker-store.desktop
   become: true
 
-#- name: disable fingerprint reader
-#  lineinfile:
-#    path: /etc/udev/rules.d/fingerprint.rules
-#    line: 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"27c6\", ATTRS{idProduct}==\"5395\", ATTR{authorized}=\"0\"'
-#    create: true
+- name: disable fingerprint reader
+  lineinfile:
+    path: /etc/udev/rules.d/fingerprint.rules
+    line: 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"27c6\", ATTRS{idProduct}==\"5395\", ATTR{authorized}=\"0\"'
+    create: true
+
+- set_fact:
+    systemd_sleep_modulename: "i2c_hid"
+
+- name: provide systemd sleep configuration for touchpad
+  template:
+    src: systemd-sleep-module.j2
+    dest: "/lib/systemd/system-sleep/touchpad"
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
