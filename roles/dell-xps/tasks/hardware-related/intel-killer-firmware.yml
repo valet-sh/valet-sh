@@ -1,0 +1,19 @@
+- name: "check for Intel killer Wifi Device AX200/AX1650"
+  shell: |
+    lspci | grep "Device 2723"
+  register: intel_killer_wifi_device
+  ignore_errors: yes
+  changed_when: false
+
+- block:
+    - name: "enable graphic drivers ppa"
+      apt_repository:
+        repo: ppa:canonical-hwe-team/backport-iwlwifi
+        update_cache: yes
+      become: true
+
+    - name: "install 'backport-iwlwifi-dkms' package"
+      apt:
+        name: "backport-iwlwifi-dkms"
+      become: true
+  when: 'Device 2723' in intel_killer_wifi_device.stdout

@@ -53,3 +53,6 @@
 
 - name: Setup Atheros/Qualcom Wifi firmware, if needed
   include_tasks: hardware-related/atheros-firmware.yml
+
+- name: Setup Intel/Killer Wifi firmware, if needed
+  include_tasks: hardware-related/intel-killer-firmware.yml

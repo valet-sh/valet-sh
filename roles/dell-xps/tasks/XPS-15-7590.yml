@@ -126,9 +126,9 @@
   shell: "update-initramfs -u"
   become: true
 
+# Todo: Check for nvidia driver
 - name: "switch to intel gpu"
   shell: "prime-select intel"
-  # Todo: Check for nvidia driver
   become: true
 
 - name: update grub config
@@ -170,4 +170,10 @@
     owner: root
     group: root
     mode: '0755'
+  become: true
+
+- name: install latest linux kernel packages
+  apt:
+    name: "{{ linux_kernel_packages }}"
+    state: present
   become: true

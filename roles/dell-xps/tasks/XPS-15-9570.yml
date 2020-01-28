@@ -170,3 +170,8 @@
     mode: '0755'
   become: true
 
+- name: install latest linux kernel packages
+  apt:
+    name: "{{ linux_kernel_packages }}"
+    state: present
+  become: true
