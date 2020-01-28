@@ -68,8 +68,8 @@ atheros_firmware:
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/firmware-4.bin
 
 linux_kernel_packages:
-  - linux-headers-5.3.0-26
-  - linux-headers-5.3.0-26-generic
-  - linux-image-5.3.0-26-generic
-  - linux-modules-5.3.0-26-generic
-  - linux-modules-extra-5.3.0-26-generic
+  - linux-headers-5.3.0-28
+  - linux-headers-5.3.0-28-generic
+  - linux-image-5.3.0-28-generic
+  - linux-modules-5.3.0-28-generic
+  - linux-modules-extra-5.3.0-28-generic
