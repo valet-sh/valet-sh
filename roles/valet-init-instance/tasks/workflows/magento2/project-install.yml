@@ -16,26 +16,26 @@
 ---
 
 - name: "workflows|magento2|project-install| run composer install in current dir"
-  shell: "{{ php_bin }} {{ composer_bin_obj.stdout }} install"
+  command: "{{ php_bin }} {{ composer_bin_obj.stdout }} install"
   args:
     chdir: "{{ valet_current_path }}"
     removes: "composer.json"
 
 - name: "workflows|magento2|project-install| run composer install in project source path when defined in .valet-sh.yml"
-  shell: "{{ php_bin }} {{ composer_bin_obj.stdout }} install"
+  command: "{{ php_bin }} {{ composer_bin_obj.stdout }} install"
   args:
     chdir: "{{ valet_sh_project_src_path }}"
     removes: "composer.json"
   when: valet_current_path != valet_sh_project_src_path
 
 - name: "workflows|magento2|project-install| switch node version to '{{ valet_sh_node_version }}'"
-  shell: "n {{ valet_sh_node_version }}"
+  command: "n {{ valet_sh_node_version }}" # noqa 301
   args:
     chdir: "{{ valet_current_path }}"
   become: true
 
 - name: "workflows|magento2|project-install| run npm install in current dir"
-  shell: "npm install"
+  command: "npm install"
   args:
     chdir: "{{ valet_current_path }}"
     removes: "packages.json"
@@ -44,7 +44,7 @@
     - /usr/bin/npm
 
 - name: "workflows|magento2|project-install| run npm install in project source path when defined in .valet-sh.yml"
-  shell: "npm install"
+  command: "npm install"
   args:
     chdir: "{{ valet_sh_project_src_path }}"
     removes: "packages.json"

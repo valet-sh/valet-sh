@@ -18,7 +18,7 @@
 - name: "partials|clone-project| set 'project_already_cloned' var"
   set_fact:
     project_already_cloned: true
-  when: '"{{ valet_project_name }}/{{ valet_sh_default_project_name }}" in valet_current_path'
+  when: "valet_project_name/valet_sh_default_project_name in valet_current_path"
 
 - name: "partials|clone-project| get stat for '{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}'"
   stat:
@@ -46,10 +46,14 @@
       file:
         path: "{{ valet_current_path }}/{{ valet_project_name }}"
         state: directory
+
     - name: "partials|clone-project| clone {{ valet_sh_default_project_git_clone_command }}"
       git:
         repo: '{{ valet_sh_default_project_git_clone_command }}'
         dest: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
+      tags:
+        - skip_ansible_lint
+
     - name: "partials|clone-project| change current path to new cloned project"
       set_fact:
         valet_current_path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"

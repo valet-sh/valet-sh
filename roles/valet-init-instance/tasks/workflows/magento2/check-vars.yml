@@ -16,7 +16,7 @@
 ---
 
 - name: "workflows|magento2|check-vars| get path of composer binary"
-  shell: "which composer"
+  shell: "which composer"  # noqa 305 301
   register: composer_bin_obj
 
 - name: "workflows|magento2|check-vars| set composer_bin variable"
@@ -36,7 +36,7 @@
     - valet_sh_project_vars.services.php.version is defined
 
 - name: "workflows|magento2|check-vars| get path of php binary"
-  shell: "which {{ php_bin_name }}"
+  shell: "which {{ php_bin_name }}"  # noqa 305 301
   register: php_bin_obj
 
 - name: "workflows|magento2|check-vars| fail when no php binary could be found"
