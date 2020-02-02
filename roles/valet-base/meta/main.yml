@@ -19,3 +19,14 @@ allow_duplicates: false
 
 dependencies:
   - role: shared-variables
+
+galaxy_info:
+  author: dittertp
+  description: helper role for valet.sh command roles
+  company: "TechDivision GmbH"
+  license: "Apache-2.0"
+  min_ansible_version: 2.8
+  platforms:
+    - name: Ubuntu
+      versions:
+        - 18.04
