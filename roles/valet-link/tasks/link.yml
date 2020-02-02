@@ -15,60 +15,60 @@
 ##
 ---
 
-- name: "link| check if link_name variable is set"
+- name: "link | check if link_name variable is set"
   fail:
     msg: "link_name variable is not set"
   when: link_name is not defined
 
-- name: "link| check if link_path variable is set"
+- name: "link | check if link_path variable is set"
   fail:
     msg: "link_path variable is not set"
   when: link_path is not defined
 
-- name: "link| fail when name is blacklisted"
+- name: "link | fail when name is blacklisted"
   fail:
     msg: "{{ link_name }} is not allowed!"
   when: "link_name in valet_link_blacklist"
 
 - include_tasks: "sub/read.yml"
 
-- name: "link| fail when name already linked"
+- name: "link | fail when name already linked"
   fail:
     msg: "{{ link_name }} already linked!"
   when: "link_name in valet_links_obj.valet_links.links_index"
 
-- name: "link| check selected php version"
+- name: "link | check selected php version"
   set_fact:
     current_php_version: "{{ php_version }}"
   when: (php_version is defined) and (php_version | length > 0)
 
-- name: "link| set default php version"
+- name: "link | set default php version"
   set_fact:
     current_php_version: "{{ php_default_version_string }}"
   when: (php_version is undefined) or (php_version | length == 0)
 
-- name: "link| generate ssl-certificate for {{ link_name }}"
+- name: "link | generate ssl-certificate for {{ link_name }}"
   include_role:
     name: certificate
     public: true
   vars:
     cert_prefix: "{{ link_name }}"
 
-- name: "link| find a matching application template"
+- name: "link | find a matching application template"
   block:
     - include_tasks: templates/magento1.yml
     - include_tasks: templates/magento2.yml
     - include_tasks: templates/fallback.yml
   when: not template_found
 
-- name: "link| create new valet_link variable"
+- name: "link | create new valet_link variable"
   set_fact:
     new_valet_link:
       - name: "{{ link_name }}"
         path: "{{ link_path }}"
         ssl: true
 
-- name: "link| assemble new valet_links_object"
+- name: "link | assemble new valet_links_object"
   set_fact:
     valet_links_obj:
       valet_links:

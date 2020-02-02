@@ -1,11 +1,11 @@
 ---
 
-- name: "templates|magento1| check for magento1 project"
+- name: "templates » magento1 | check for magento1 project"
   stat:
     path: "{{ link_path }}/app/code/core/Mage"
   register: m1_checker_obj
 
-- name: "templates|magento1| provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
+- name: "templates » magento1 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
   template:
     src: "nginx/magento1.conf.j2"
     dest: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
@@ -16,7 +16,7 @@
   when: m1_checker_obj.stat.exists
   become: true
 
-- name: "templates|magento1| set var 'template_found' when m1 instance was found"
+- name: "templates » magento1 | set var 'template_found' when m1 instance was found"
   set_fact:
     template_found: true
   when: m1_checker_obj.stat.exists

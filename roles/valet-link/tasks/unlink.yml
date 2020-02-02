@@ -15,41 +15,41 @@
 ##
 ---
 
-- name: "unlink| check if link_name variable is set"
+- name: "unlink | check if link_name variable is set"
   fail:
     msg: "link_name variable is not set"
   when: link_name is not defined
 
-- name: "unlink| fail when name is blacklisted"
+- name: "unlink | fail when name is blacklisted"
   fail:
     msg: "{{ link_name }} is not allowed!"
   when: "link_name in valet_link_blacklist"
 
 - include_tasks: "sub/read.yml"
 
-- name: "unlink| fail when name is not linked"
+- name: "unlink | fail when name is not linked"
   fail:
     msg: "{{ link_name }} is not linked!"
   when: "not link_name in valet_links_obj.valet_links.links_index"
 
-- name: "unlink| delete vhost configuration for {{ link_name }}.{{ development_tld }}"
+- name: "unlink | delete vhost configuration for {{ link_name }}.{{ development_tld }}"
   file:
     path: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
     state: absent
   notify: systemd | nginx | reloaded
   become: true
 
-- name: "unlink| set empty array 'new_valet_links'"
+- name: "unlink | set empty array 'new_valet_links'"
   set_fact:
     new_valet_links: []
 
-- name: "unlink| add existing links to 'new_valet_links' array"
+- name: "unlink | add existing links to 'new_valet_links' array"
   set_fact:
     new_valet_links: "{{ new_valet_links + [item] }}"
   when: "item.name != link_name"
   with_items: "{{ valet_links_obj.valet_links.links }}"
 
-- name: "unlink| assemble new valet_links_object"
+- name: "unlink | assemble new valet_links_object"
   set_fact:
     valet_links_obj:
       valet_links:

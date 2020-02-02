@@ -17,16 +17,16 @@
 
 - include_tasks: "sub/read.yml"
 
-- name: "links| set empty array 'valet_list'"
+- name: "links | set empty array 'valet_list'"
   set_fact:
     valet_list: []
 
-- name: "links| add available links to array"
+- name: "links | add available links to array"
   set_fact:
     valet_list: "{{ valet_list + [[ item.name, item.path, item.ssl ]] }}"
   with_items: "{{ valet_links_obj.valet_links.links }}"
 
-- name: "links| print table based on 'valet_list' array"
+- name: "links | print table based on 'valet_list' array"
   vsh-table:
     headers: ['Name', 'Path', 'SSL']
     rows: "{{ valet_list }}"
