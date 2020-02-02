@@ -1,6 +1,7 @@
 ---
 
-- set_fact:
+- name: "set vars 'current_user', 'current_group' and 'current_home'"
+  set_fact:
     current_user: "{{ lookup('env','USER') }}"
     current_group: "{{ lookup('env','USER') }}"
     current_home: "{{ lookup('env','HOME') }}"
