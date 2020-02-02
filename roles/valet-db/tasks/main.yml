@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: fail when valet_action variable is empty
+- name: "fail when valet_action variable is empty"
   fail:
     msg: "no action defined"
   when: valet_action | length == 0

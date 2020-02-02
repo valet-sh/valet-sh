@@ -15,20 +15,26 @@
 ##
 ---
 
-- name: get list of mysql databases
-  shell: "mysql -B --disable-column-names --execute 'show databases'"
+- name: "ls | get list of mysql databases"
+  shell: "mysql -B --disable-column-names --execute 'show databases'" # noqa 305 301
   register: mysql_query_show_databases_obj
 
-- set_fact:
+- name: "ls | read current databases from command output"
+  set_fact:
     valet_current_databases: "{{ mysql_query_show_databases_obj.stdout_lines | difference(valet_mysql_db_blacklist) }}"
 
-- set_fact:
+- name: "ls | create empty array 'valet_list'"
+  set_fact:
     valet_list: []
 
-- set_fact:
+- name: "ls | add existing databases to array 'valet_list'"
+  set_fact:
     valet_list: "{{ valet_list + [[ item ]] }}"
   with_items: "{{ valet_current_databases }}"
 
-- vsh-table:
+- name: "ls | show existing databases"
+  vsh-table:
     headers: ['Datebase name']
     rows: "{{ valet_list }}"
+  tags:
+  - skip_ansible_lint

@@ -15,34 +15,36 @@
 ##
 ---
 
-- name: set working dir name
+- name: "import | set working dir name"
   set_fact:
     valet_working_dir: "{{ valet_current_path | basename }}"
 
-- name: fail when no filename was given
+- name: "import | fail when no filename was given"
   fail:
     msg: "no filename was given"
   when: valet_arg1 | length == 0
 
-- name: set filename from args
+- name: "import | set filename from args"
   set_fact:
     valet_db_filename: "{{ valet_arg1 }}"
 
-- name: set db_name when arguement is not empty
+- name: "import | set db_name when arguement is not empty"
   set_fact:
     valet_db_name: "{{ valet_arg2 }}"
   when: valet_arg2 | length > 0
 
-- name: build valet_db_name var
+- name: "import | build valet_db_name var"
   set_fact:
     valet_db_name: "{{ valet_working_dir }}"
   when: valet_db_name is not defined
 
-- set_fact:
+- name: "import | set db target file"
+  set_fact:
     valet_db_file: "{{ valet_db_filename }}"
   when: valet_db_filename[0]  == "/"
 
-- set_fact:
+- name: "import | add path to target db filename if is not absolute"
+  set_fact:
     valet_db_file: "{{ valet_current_path }}/{{ valet_db_filename }}"
   when: valet_db_file is not defined
 

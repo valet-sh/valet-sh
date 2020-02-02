@@ -15,20 +15,20 @@
 ##
 ---
 
-- name: set working dir name
+- name: "create | set working dir name"
   set_fact:
     valet_working_dir: "{{ valet_current_path | basename }}"
 
-- name: set default db_name var with value of valet_working_dir
+- name: "create | set default db_name var with value of valet_working_dir"
   set_fact:
     db_name: "{{ valet_working_dir }}"
 
-- name: override working dir var if separate db name was given
+- name: "create | override working dir var if separate db name was given"
   set_fact:
     db_name: "{{ valet_arg1 }}"
   when: valet_arg1 | length > 0
 
-- name: "create database {{ valet_arg1 }}"
+- name: "create | create database {{ valet_arg1 }}"
   mysql_db:
     name: "{{ db_name }}"
     encoding: "utf8"
