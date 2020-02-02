@@ -15,16 +15,22 @@
 ##
 ---
 
-dependencies:
-  - role: valet-base
+- name: "check for Intel killer Wifi Device AX200/AX1650"
+  shell: |
+    lspci | grep "Device 2723"
+  register: intel_killer_wifi_device
+  ignore_errors: yes
+  changed_when: false
 
-galaxy_info:
-  author: dittertp
-  description: valet.sh db command
-  company: "TechDivision GmbH"
-  license: "Apache-2.0"
-  min_ansible_version: 2.8
-  platforms:
-    - name: Ubuntu
-      versions:
-        - 18.04
+- block:
+    - name: "enable graphic drivers ppa"
+      apt_repository:
+        repo: ppa:canonical-hwe-team/backport-iwlwifi
+        update_cache: yes
+      become: true
+
+    - name: "install 'backport-iwlwifi-dkms' package"
+      apt:
+        name: "backport-iwlwifi-dkms"
+      become: true
+  when: "'Device 2723' in intel_killer_wifi_device.stdout"

@@ -1,6 +1,6 @@
 ---
 
-- name: "provide nginx fallback vhost for {{ link_name }}.{{ development_tld }}"
+- name: "templates » fallback | provide nginx fallback vhost for {{ link_name }}.{{ development_tld }}"
   template:
     src: "nginx/fallback.conf.j2"
     dest: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"

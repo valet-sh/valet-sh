@@ -1,10 +1,25 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
 ---
 
-- name: "set default database name based on current working dir"
+- name: "actions » partials » check-db-name-var | set default database name based on current working dir"
   set_fact:
     valet_db_name: "{{ valet_working_dir }}"
 
-- name: "override database name when defined in valet-sh.yml file"
+- name: "actions » partials » check-db-name-var | override database name when defined in valet-sh.yml file"
   set_fact:
     valet_db_name: "{{ valet_sh_project_vars.services.mysql.database | trim }}"
   when:

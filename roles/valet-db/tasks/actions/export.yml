@@ -1,22 +1,38 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
 ---
 
 - include_tasks: partials/check-db-name-var.yml
 
-- name: "override 'valet_db_name' variable if db name argument was given"
+- name: "actions » export | override 'valet_db_name' variable if db name argument was given"
   set_fact:
     valet_db_name: "{{ valet_arg2 }}"
   when: valet_arg2 | length > 0
 
-- name: set filename when arguement is not empty
+- name: "actions » export | set filename when arguement is not empty"
   set_fact:
     valet_db_filename: "{{ valet_arg1 }}.sql.gz"
   when: valet_arg1 | length > 0
 
 - block:
-  - name: get current datetime
+  - name: "actions » export | get current datetime"
     set_fact:
-      current_datetime: "{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}"
-  - name: build valet_db_filename var
+      current_datetime: "{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}" # noqa 204
+
+  - name: "actions » export | build valet_db_filename var"
     set_fact:
       valet_db_filename: "{{ valet_db_name }}-{{ current_datetime }}.sql.gz"
   when: valet_db_filename is not defined
@@ -24,7 +40,7 @@
 - name: "@vsh starting export of '{{ valet_db_name }}' into {{ valet_current_path }}/{{ valet_db_filename }}"
   debug:
 
-- name: "create db {{ valet_db_name }} into {{ valet_current_path }}/{{ valet_db_filename }}"
+- name: "actions » export | create db {{ valet_db_name }} into {{ valet_current_path }}/{{ valet_db_filename }}"
   mysql_db:
     state: dump
     name: "{{ valet_db_name }}"
