@@ -1,18 +1,35 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
 ---
 
-- set_fact:
+- name: "workflows|magento2|project-env| set magento2 related variables"
+  set_fact:
     valet_sh_magento2_db_name: "{{ valet_sh_project_vars.services.mysql.database }}"
     valet_sh_magento2_crypt_key: "{{ valet_sh_project_vars.instance.crypt_key }}"
     vsh_m2_env_config: "{{ valet_sh_project_vars.instance.config.system.default }}"
 
-- set_fact:
+- name: "workflows|magento2|project-env| set 'valet_sh_magento2_rabbitmq_virtualhost' var"
+  set_fact:
     valet_sh_magento2_rabbitmq_virtualhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
   when:
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.rabbitmq is defined
     - valet_sh_project_vars.services.rabbitmq.vhost is defined
 
-- name: provide env.php for project
+- name: "workflows|magento2|project-env| provide env.php for project"
   template:
     src: "templates/env.php.j2"
     dest: "{{ valet_sh_project_src_path }}/app/etc/env.php"

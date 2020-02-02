@@ -1,21 +1,33 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
 ---
 
-#####################
-- name: get path of composer binary
+- name: "workflows|magento2|check-vars| get path of composer binary"
   shell: "which composer"
   register: composer_bin_obj
 
-- name: set composer_bin variable
+- name: "workflows|magento2|check-vars| set composer_bin variable"
   set_fact:
     composer_bin: "{{ composer_bin_obj.stdout }}"
 
-
-############################
-- name: "set default php binary name"
+- name: "workflows|magento2|check-vars| set default php binary name"
   set_fact:
     php_bin_name: "php"
 
-- name: add suffix to php binary when configured in valet-sh.yml
+- name: "workflows|magento2|check-vars| add suffix to php binary when configured in valet-sh.yml"
   set_fact:
     php_bin_name: "php{{ valet_sh_project_vars.services.php.version }}"
   when:
@@ -23,39 +35,35 @@
     - valet_sh_project_vars.services.php is defined
     - valet_sh_project_vars.services.php.version is defined
 
-- name: get path of php binary
+- name: "workflows|magento2|check-vars| get path of php binary"
   shell: "which {{ php_bin_name }}"
   register: php_bin_obj
 
-- fail:
+- name: "workflows|magento2|check-vars| fail when no php binary could be found"
+  fail:
     msg: "could not find php binary '{{ php_bin_name }}'"
   when: php_bin_obj.stdout | length == 0
 
-- name: set php_bin variable
+- name: "workflows|magento2|check-vars| set php_bin variable"
   set_fact:
     php_bin: "{{ php_bin_obj.stdout }}"
 
-
-######################
-- name: set default path to project source
+- name: "workflows|magento2|check-vars| set default path to project source"
   set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}"
 
-- name: set path to project source
+- name: "workflows|magento2|check-vars| set path to project source"
   set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.path }}"
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.path is defined
 
-
-######################
-
-- name: set default node version
+- name: "workflows|magento2|check-vars| set default node version"
   set_fact:
     valet_sh_node_version: "{{ valet_sh_default_node_version }}"
 
-- name: override node version based on .valet-sh.yml
+- name: "workflows|magento2|check-vars| override node version based on .valet-sh.yml"
   set_fact:
     valet_sh_node_version: "{{ valet_sh_project_vars.services.node.version }}"
   when:
