@@ -15,46 +15,44 @@
 ##
 ---
 
-- name: "partials|clone-project| set 'project_already_cloned' var"
+- name: "partials » clone-project | set 'project_already_cloned' var"
   set_fact:
     project_already_cloned: true
   when: "valet_project_name/valet_sh_default_project_name in valet_current_path"
 
-- name: "partials|clone-project| get stat for '{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}'"
+- name: "partials » clone-project | get stat for '{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}'"
   stat:
     path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
   register: valet_sh_project_folder_obj
 
-- name: "partials|clone-project| change 'valet_current_path' var"
-  block:
-  - name: "partials|clone-project| check if project directories already existing"
+- block:
+  - name: "partials » clone-project | check if project directories already existing"
     set_fact:
       project_already_cloned: true
-  - name: "partials|clone-project| change current path to new cloned project"
+  - name: "partials » clone-project | change current path to new cloned project"
     set_fact:
       valet_current_path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
   when: valet_sh_project_folder_obj.stat.exists
 
-- name: "partials|clone-project| clone git project"
-  block:
-    - name: "partials|clone-project| fail when required vars are not defined"
+- block:
+    - name: "partials » clone-project | fail when required vars are not defined"
       fail:
         msg: "required default vars are not defined"
       when: valet_sh_defaults.hub_domain is not defined or valet_sh_defaults.hub_project is not defined or valet_sh_defaults.hub_gitlab_ssh_port is not defined
 
-    - name: "partials|clone-project| create project folder"
+    - name: "partials » clone-project | create project folder"
       file:
         path: "{{ valet_current_path }}/{{ valet_project_name }}"
         state: directory
 
-    - name: "partials|clone-project| clone {{ valet_sh_default_project_git_clone_command }}"
+    - name: "partials » clone-project | clone {{ valet_sh_default_project_git_clone_command }}"
       git:
         repo: '{{ valet_sh_default_project_git_clone_command }}'
         dest: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
       tags:
         - skip_ansible_lint
 
-    - name: "partials|clone-project| change current path to new cloned project"
+    - name: "partials » clone-project | change current path to new cloned project"
       set_fact:
         valet_current_path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
   when: project_already_cloned is not defined
