@@ -116,7 +116,7 @@
 - name: Enable power saving tweaks for Intel chip
   lineinfile:
     path: /etc/modprobe.d/i915.conf
-    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1'
+    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1 enable_psr=0'
     create: true
   become: true
 
@@ -146,7 +146,7 @@
   lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 nouveau.modeset=0 drm.vblankoffdelay=1 pcie_aspm=force mem_sleep_default=deep"'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 nouveau.modeset=0 pcie_aspm=force mem_sleep_default=deep"'
   become: true
 
 - name: "run update-grub"
