@@ -182,8 +182,9 @@
     mode: '0755'
   become: true
 
-- name: install latest linux kernel packages
+- name: install Ubuntu Hardware Enablement Stack
   apt:
-    name: "{{ linux_kernel_packages }}"
+    name: "{{ ubuntu_hwe_packages }}"
     state: present
+    install_recommends: true
   become: true
