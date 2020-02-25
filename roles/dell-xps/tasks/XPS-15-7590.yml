@@ -188,3 +188,5 @@
     state: present
     install_recommends: true
   become: true
+
+- include_tasks: "partials/power-saving-settings.yml.yml"

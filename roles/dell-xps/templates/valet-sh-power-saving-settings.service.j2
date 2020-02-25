@@ -1,0 +1,11 @@
+[Unit]
+Description=TD power saving service
+
+[Service]
+Type=oneshot
+ExecStart=/lib/systemd/system-sleep/valet-sh-power-saving-settings
+RemainAfterExit=true
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
