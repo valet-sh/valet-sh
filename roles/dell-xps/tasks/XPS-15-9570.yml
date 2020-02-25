@@ -108,7 +108,7 @@
 - name: Enable power saving tweaks for Intel chip
   lineinfile:
     path: /etc/modprobe.d/i915.conf
-    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1'
+    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1 enable_psr=0'
     create: true
   become: true
 
