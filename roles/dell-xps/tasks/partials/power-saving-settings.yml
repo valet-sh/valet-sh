@@ -24,7 +24,6 @@
     mode: '0755'
   become: true
 
-
 - name: provide power saving settings - systemd sleep file
   template:
     src: valet-sh-power-saving-settings.j2
@@ -37,9 +36,11 @@
 - name: trigger systemd to reread configs
   systemd:
     daemon_reload: yes
+  become: true
 
 - name: enable power saving settings service
   systemd:
     name: valet-sh-power-saving-settings.service
     state: started
     enabled: yes
+  become: true
