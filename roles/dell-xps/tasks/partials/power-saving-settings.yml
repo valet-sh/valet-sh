@@ -18,7 +18,7 @@
 - name: provide power saving settings - systemd service file
   template:
     src: valet-sh-power-saving-settings.service.j2
-    dest: "/etc/systemd/system/ansible-power-saving-settings.service"
+    dest: "/etc/systemd/system/valet-sh-power-saving-settings.service"
     owner: root
     group: root
     mode: '0755'
@@ -28,7 +28,7 @@
 - name: provide power saving settings - systemd sleep file
   template:
     src: valet-sh-power-saving-settings.j2
-    dest: "/lib/systemd/system-sleep/ansible-power-saving-settings"
+    dest: "/lib/systemd/system-sleep/valet-sh-power-saving-settings"
     owner: root
     group: root
     mode: '0755'
