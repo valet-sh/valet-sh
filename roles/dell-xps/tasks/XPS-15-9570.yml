@@ -52,6 +52,7 @@
   with_items:
     - /etc/tlp.conf
     - /etc/default/tlp
+    - /etc/tlp.d
 
 - name: "enable graphic drivers ppa"
   apt_repository:
@@ -91,11 +92,18 @@
       - pulseaudio-modules-bt
   become: true
 
+- name: install intel microcode updates
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - intel-microcode
+  become: true
+
 - name: Enable power saving tweaks for Intel chip
-  lineinfile:
-    path: /etc/modprobe.d/i915.conf
-    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1 enable_psr=0'
-    create: true
+  copy:
+    content: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1 enable_psr=0'
+    dest: "/etc/modprobe.d/i915.conf"
   become: true
 
 - name: enable fan speed with lm-sensors
@@ -123,14 +131,7 @@
   lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 acpi_osi=Linux nouveau.modeset=0 pcie_aspm=force drm.vblankoffdelay=1 scsi_mod.use_blk_mq=1 nouveau.runpm=0 mem_sleep_default=deep"'
-  become: true
-
-- name: tidyup intermittent grub config
-  lineinfile:
-    path: /etc/default/grub
-    regexp: '^GRUB_OPTIONS="'
-    line: '#GRUB_OPTIONS'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 nouveau.modeset=0 pcie_aspm=force mem_sleep_default=deep"'
   become: true
 
 - name: "run update-grub"
