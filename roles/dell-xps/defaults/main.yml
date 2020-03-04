@@ -72,9 +72,6 @@ atheros_firmware:
     url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/firmware-4.bin_WLAN.RM.2.0-00180-QCARMSWPZ-1?raw=true
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/firmware-4.bin
 
-linux_kernel_packages:
-  - linux-headers-5.3.0-28
-  - linux-headers-5.3.0-28-generic
-  - linux-image-5.3.0-28-generic
-  - linux-modules-5.3.0-28-generic
-  - linux-modules-extra-5.3.0-28-generic
+ubuntu_hwe_packages:
+  - "linux-generic-hwe-18.04"
+  - "xserver-xorg-hwe-18.04"

@@ -1,5 +1,5 @@
 setuptools
-ansible==2.8.4
+ansible==2.8.8
 beautifultable==0.5.3
 PyMySQL
 git+https://github.com/valet-sh/cli
