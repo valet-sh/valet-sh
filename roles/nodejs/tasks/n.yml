@@ -1,0 +1,48 @@
+---
+
+- name: check if .zshrc exists in home directory
+  stat:
+    path: "{{ current_home }}/.zshrc"
+  register: zsh_rc_file_obj
+
+- name: ensure nvm will be loaded with zsh
+  blockinfile:
+    path: "{{ current_home }}/.zshrc"
+    state: absent
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  when: zsh_rc_file_obj.stat.exists
+
+- name: ensure nvm will be loaded with zsh
+  blockinfile:
+    path: "{{ current_home }}/.bashrc"
+    state: absent
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  when: zsh_rc_file_obj.stat.exists
+
+- name: be sure nodejs is installed
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - nodejs
+      - npm
+  become: true
+
+- name: ensure "n" version manager is installed globally
+  npm:
+    name: n
+    global: yes
+  become: true
+
+- name: ensure gulp is installed globally
+  npm:
+    name: gulp
+    global: yes
+  become: true
