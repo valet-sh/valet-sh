@@ -47,6 +47,27 @@ php_multi:
         - "ldap"
         - "xdebug"
         - "sqlite3"
+  - version: "7.4"
+    config:
+      php_modules:
+        - "xmlrpc"
+        - "xml"
+        - "readline"
+        - "opcache"
+        - "mysql"
+        - "json"
+        - "intl"
+        - "gd"
+        - "fpm"
+        - "curl"
+        - "cli"
+        - "soap"
+        - "mbstring"
+        - "zip"
+        - "bcmath"
+        - "ldap"
+        - "xdebug"
+        - "sqlite3"
 
 php_multi_available_version:
   - 5.6

@@ -119,3 +119,28 @@
     name: "php7.3-fpm"
     state: reloaded
   become: true
+
+
+- name: "systemd | php7.4-fpm | started"
+  systemd:
+    name: "php7.4-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php7.4-fpm | stopped"
+  systemd:
+    name: "php7.4-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php7.4-fpm | restarted"
+  systemd:
+    name: "php7.4-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php7.4-fpm | reloaded"
+  systemd:
+    name: "php7.4-fpm"
+    state: reloaded
+  become: true

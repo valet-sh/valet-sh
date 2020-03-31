@@ -70,6 +70,9 @@ http {
     upstream php73 {
         server unix:/var/run/php/php7.3-fpm.sock;
     }
+    upstream php74 {
+        server unix:/var/run/php/php7.4-fpm.sock;
+    }
 
     include /etc/nginx/conf.d/*.conf;
 }
