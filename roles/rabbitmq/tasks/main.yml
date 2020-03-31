@@ -26,6 +26,25 @@
   vars:
     cert_prefix: rabbitmq
 
+- name: "ensure systemd rabbitmq-server config directory exists"
+  file:
+    path: "/etc/systemd/system/rabbitmq-server.service.d/"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+- name: ensure rabbitmq-server.service override.conf is up2date
+  template:
+    src: "rabbitmq-server.service.j2"
+    dest: "/etc/systemd/system/rabbitmq-server.service.d/override.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | rabbitmq-server | full-restart
+  become: true
+
 - name: provide nginx vhost configuration for rabbitmq management plugin
   template:
     src: "rabbitmq.conf.j2"
@@ -35,3 +54,4 @@
     mode: '0644'
   notify: systemd | nginx | reloaded
   become: true
+
