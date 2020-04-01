@@ -15,11 +15,16 @@
 ##
 ---
 
-- name: "sub » write | transform object into nice yaml output"
-  set_fact:
-    valet_links_list: "{{ valet_links_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+dependencies:
+  - role: valet-base
 
-- name: "sub » write | write new links.yml file"
-  copy:
-    content: "{{ valet_links_list }}"
-    dest: "{{ valet_etc_links_file }}"
+galaxy_info:
+  author: dittertp
+  description: valet.sh config command
+  company: "TechDivision GmbH"
+  license: "Apache-2.0"
+  min_ansible_version: 2.8
+  platforms:
+    - name: Ubuntu
+      versions:
+        - 18.04

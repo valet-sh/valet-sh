@@ -17,5 +17,5 @@
 
 - name: "sub » read | include valet links configuration"
   include_vars:
-    file: "{{ valet_config_links_file }}"
+    file: "{{ valet_etc_links_file }}"
     name: valet_links_obj
