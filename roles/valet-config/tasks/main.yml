@@ -15,11 +15,19 @@
 ##
 ---
 
-- name: "sub » write | transform object into nice yaml output"
-  set_fact:
-    valet_links_list: "{{ valet_links_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+- include_tasks: "commands/list.yml"
+  when: valet_config_action == "list"
 
-- name: "sub » write | write new links.yml file"
-  copy:
-    content: "{{ valet_links_list }}"
-    dest: "{{ valet_etc_links_file }}"
+- include_tasks: "commands/get.yml"
+  when: valet_config_action == "get"
+
+- include_tasks: "commands/set.yml"
+  when: valet_config_action == "set"
+
+- include_tasks: "commands/remove.yml"
+  when: valet_config_action == "remove"
+
+- name: "fail when no command action '{{ valet_config_action }}' was found"
+  fail:
+    msg: "invalid action '{{ valet_config_action }}'"
+  when: not valet_config_in_command

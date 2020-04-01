@@ -15,11 +15,4 @@
 ##
 ---
 
-- name: "sub » write | transform object into nice yaml output"
-  set_fact:
-    valet_links_list: "{{ valet_links_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
-
-- name: "sub » write | write new links.yml file"
-  copy:
-    content: "{{ valet_links_list }}"
-    dest: "{{ valet_etc_links_file }}"
+valet_config_in_command: false
