@@ -1,23 +1,7 @@
 ---
 
-- name: be sure nodejs is installed
-  apt:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-      - nodejs
-      - npm
-  become: true
+- include_tasks: "n.yml"
+  when: node_use_n
 
-- name: ensure "n" version manager is installed globally
-  npm:
-    name: n
-    global: yes
-  become: true
-
-- name: ensure gulp is installed globally
-  npm:
-    name: gulp
-    global: yes
-  become: true
+- include_tasks: "nvm.yml"
+  when: not node_use_n
