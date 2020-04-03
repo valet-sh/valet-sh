@@ -15,22 +15,16 @@
 ##
 ---
 
-valet_etc_links_file: "{{ valet_etc_path }}/links.yml"
-valet_etc_config_file: "{{ valet_etc_path }}/config.yml"
-valet_config_defaults_file: "{{ valet_etc_path }}/defaults.yml"
+dependencies:
+  - role: valet-base
 
-
-valet_sh_filename: ".valet-sh.yml"
-valet_sh_hub_read_user: "read"
-
-valet_base_dirs:
-  - "{{ valet_base_path }}"
-  - "{{ valet_etc_path }}"
-  - "{{ valet_packages_path }}"
-
-valet_links_stub:
-  valet_links:
-    links_index: []
-    links: []
-
-valet_sh_default_node_version: 10
+galaxy_info:
+  author: dittertp
+  description: valet.sh install command
+  company: "TechDivision GmbH"
+  license: "Apache-2.0"
+  min_ansible_version: 2.8
+  platforms:
+    - name: Ubuntu
+      versions:
+        - 18.04

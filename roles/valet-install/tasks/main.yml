@@ -15,22 +15,8 @@
 ##
 ---
 
-valet_etc_links_file: "{{ valet_etc_path }}/links.yml"
-valet_etc_config_file: "{{ valet_etc_path }}/config.yml"
-valet_config_defaults_file: "{{ valet_etc_path }}/defaults.yml"
-
-
-valet_sh_filename: ".valet-sh.yml"
-valet_sh_hub_read_user: "read"
-
-valet_base_dirs:
-  - "{{ valet_base_path }}"
-  - "{{ valet_etc_path }}"
-  - "{{ valet_packages_path }}"
-
-valet_links_stub:
-  valet_links:
-    links_index: []
-    links: []
-
-valet_sh_default_node_version: 10
+- name: "include role"
+  include_role:
+    name: "{{ item }}"
+    public: true
+  with_items: "{{ valet_install_default_roles }}"

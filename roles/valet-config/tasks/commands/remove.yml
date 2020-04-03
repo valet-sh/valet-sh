@@ -1,0 +1,51 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "commands » remove | fail when no 'valet_config_key' is set"
+  fail:
+    msg: "no config key was given"
+  when: (valet_config_key is not defined) or (valet_config_key | length == 0)
+
+- name: "commands » remove | set runtime flag"
+  set_fact:
+    valet_config_in_command: true
+
+- name: "commands » remove | include valet etc config file"
+  include_vars:
+    file: "{{ valet_etc_config_file }}"
+    name: valet_etc_config_obj
+
+- name: "commands » remove | set empty array 'new_valet_etc_config_obj'"
+  set_fact:
+    new_valet_etc_config_obj: []
+
+- name: "commands » remove | remove given config '{{ valet_config_key }}' from configuration"
+  set_fact:
+    new_valet_etc_config_obj: "{{ new_valet_etc_config_obj | combine(tmp_item) }}"
+  vars:
+    tmp_item: "{ '{{ item.key }}': '{{ item.value }}' }"
+  when: "item.key != valet_config_key"
+  with_dict: "{{ valet_etc_config_obj }}"
+
+- name: "commands » remove | transform object into nice yaml output"
+  set_fact:
+    valet_etc_config_list: "{{ new_valet_etc_config_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+- name: "commands » remove | write new config.yml file"
+  copy:
+    content: "{{ valet_etc_config_list }}"
+    dest: "{{ valet_etc_config_file }}"

@@ -1,4 +1,3 @@
----
 #
 # valet.sh | install
 #
@@ -8,24 +7,10 @@
 # @description: "Install and configure the default development stack "
 # @usage: "valet.sh install"
 
+---
+
 - name: "install"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   roles:
-    - shared-variables
-    - common
-    - certificate
-    - network-manager
-    - elasticsearch
-    - zsh
-    - nginx
-    - redis
-    - php
-    - nodejs
-    - mailhog
-    - mysql-server
-    - magerun1
-    - magerun2
-    - rabbitmq
-    - composer
-    - google-chrome
+    - valet-install

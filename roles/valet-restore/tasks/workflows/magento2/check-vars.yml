@@ -136,8 +136,8 @@
 
 - name: "workflows » magento2 » check-vars | override php cli bin"
   set_fact:
-    php_bin: "php{{ valet_sh_project_vars.instance.sync.version }}"
+    php_bin: "php{{ valet_sh_project_vars.services.php.version }}"
   when:
     - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.instance.php is defined
-    - valet_sh_project_vars.instance.sync.version is defined
+    - valet_sh_project_vars.services.php is defined
+    - valet_sh_project_vars.services.php.version is defined

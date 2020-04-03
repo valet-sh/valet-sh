@@ -22,4 +22,4 @@
 - name: "sub » write | write new links.yml file"
   copy:
     content: "{{ valet_links_list }}"
-    dest: "{{ valet_config_links_file }}"
+    dest: "{{ valet_etc_links_file }}"

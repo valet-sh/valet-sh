@@ -15,22 +15,19 @@
 ##
 ---
 
-valet_etc_links_file: "{{ valet_etc_path }}/links.yml"
-valet_etc_config_file: "{{ valet_etc_path }}/config.yml"
-valet_config_defaults_file: "{{ valet_etc_path }}/defaults.yml"
+- include_tasks: "commands/list.yml"
+  when: valet_config_action == "list"
 
+- include_tasks: "commands/get.yml"
+  when: valet_config_action == "get"
 
-valet_sh_filename: ".valet-sh.yml"
-valet_sh_hub_read_user: "read"
+- include_tasks: "commands/set.yml"
+  when: valet_config_action == "set"
 
-valet_base_dirs:
-  - "{{ valet_base_path }}"
-  - "{{ valet_etc_path }}"
-  - "{{ valet_packages_path }}"
+- include_tasks: "commands/remove.yml"
+  when: valet_config_action == "remove"
 
-valet_links_stub:
-  valet_links:
-    links_index: []
-    links: []
-
-valet_sh_default_node_version: 10
+- name: "fail when no command action '{{ valet_config_action }}' was found"
+  fail:
+    msg: "invalid action '{{ valet_config_action }}'"
+  when: not valet_config_in_command

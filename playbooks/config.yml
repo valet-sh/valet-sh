@@ -1,0 +1,18 @@
+---
+#
+# valet.sh | config
+#
+# @author: "Philipp Dittert"
+# @command: "config"
+# @description: "Manage config paramters | Usage: valet.sh config <command> <key> <value>"
+# @usage: "valet.sh config <command> <key> <value>"
+
+- name: "link"
+  hosts: local
+  gather_facts: true
+  vars:
+    valet_config_action: "{{ cli.args[0] }}"
+    valet_config_key: "{{ cli.args[1] | default() }}"
+    valet_config_value: "{{ cli.args[2] | default() }}"
+  roles:
+    - valet-config

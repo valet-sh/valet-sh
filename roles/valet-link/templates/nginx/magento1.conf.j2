@@ -13,7 +13,7 @@ server {
 
     server_name {{ link_name }}.{{ development_tld }} *.{{ link_name }}.{{ development_tld }};
     root {{ link_path }};
-    set $upstream "{{ php_version | default('php71') }}";
+    set $upstream "{{ current_php_version }}";
 
     ssl_certificate {{ certificate_server_domain_fullchain_file }};
     ssl_certificate_key {{ certificate_server_domain_key_file }};
