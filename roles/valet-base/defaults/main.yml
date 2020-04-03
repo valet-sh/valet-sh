@@ -17,8 +17,7 @@
 
 valet_etc_links_file: "{{ valet_etc_path }}/links.yml"
 valet_etc_config_file: "{{ valet_etc_path }}/config.yml"
-valet_config_defaults_file: "{{ valet_etc_path }}/defaults.yml"
-
+valet_etc_defaults_file: "{{ valet_etc_path }}/defaults.yml"
 
 valet_sh_filename: ".valet-sh.yml"
 valet_sh_hub_read_user: "read"
