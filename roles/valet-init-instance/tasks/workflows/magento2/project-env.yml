@@ -15,21 +15,35 @@
 ##
 ---
 
-- name: "workflows » magento2 » project-env | set magento2 related variables"
-  set_fact:
-    valet_sh_magento2_db_name: "{{ valet_sh_project_vars.services.mysql.database }}"
-    valet_sh_magento2_crypt_key: "{{ valet_sh_project_vars.instance.crypt_key }}"
-    vsh_m2_env_config: "{{ valet_sh_project_vars.instance.config.system.default }}"
+- name: "workflows » magento2 » project-env | check existence of env.php.dev file"
+  stat:
+    path: "{{ valet_sh_project_src_path }}/app/etc/env.php.dev"
+  register: magento2_env_php_obj
 
-- name: "workflows » magento2 » project-env | set 'valet_sh_magento2_rabbitmq_virtualhost' var"
-  set_fact:
-    valet_sh_magento2_rabbitmq_virtualhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
-  when:
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.rabbitmq is defined
-    - valet_sh_project_vars.services.rabbitmq.vhost is defined
-
-- name: "workflows » magento2 » project-env | provide env.php for project"
-  template:
-    src: "templates/env.php.j2"
+- name: "workflows » magento2 » project-env | copy env.php"
+  copy:
+    src: "{{ valet_sh_project_src_path }}/app/etc/env.php.dev"
     dest: "{{ valet_sh_project_src_path }}/app/etc/env.php"
+    remote_src: yes
+  when: magento2_env_php_obj.stat.exists|bool
+
+- block:
+  - name: "workflows » magento2 » project-env | set magento2 related variables"
+    set_fact:
+      valet_sh_magento2_db_name: "{{ valet_sh_project_vars.services.mysql.database }}"
+      valet_sh_magento2_crypt_key: "{{ valet_sh_project_vars.instance.crypt_key }}"
+      vsh_m2_env_config: "{{ valet_sh_project_vars.instance.config.system.default }}"
+
+  - name: "workflows » magento2 » project-env | set 'valet_sh_magento2_rabbitmq_virtualhost' var"
+    set_fact:
+      valet_sh_magento2_rabbitmq_virtualhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+    when:
+      - valet_sh_project_vars.services is defined
+      - valet_sh_project_vars.services.rabbitmq is defined
+      - valet_sh_project_vars.services.rabbitmq.vhost is defined
+
+  - name: "workflows » magento2 » project-env | provide env.php for project"
+    template:
+      src: "templates/env.php.j2"
+      dest: "{{ valet_sh_project_src_path }}/app/etc/env.php"
+  when: not magento2_env_php_obj.stat.exists|bool

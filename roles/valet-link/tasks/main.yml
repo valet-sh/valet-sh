@@ -21,6 +21,9 @@
 - include_tasks: unlink.yml
   when: valet_action == "unlink"
 
+- include_tasks: relink.yml
+  when: valet_action == "relink"
+
 - include_tasks: links.yml
   when: valet_action == "links"
 

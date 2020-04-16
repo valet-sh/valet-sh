@@ -13,5 +13,6 @@
   vars:
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
     valet_project_name: "{{ cli.args[0] | default() }}"
+    valet_git_project_name: "{{ cli.args[1] | default() }}"
   roles:
     - valet-init-instance

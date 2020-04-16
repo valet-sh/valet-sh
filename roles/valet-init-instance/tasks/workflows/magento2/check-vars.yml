@@ -27,13 +27,20 @@
   set_fact:
     php_bin_name: "php"
 
-- name: "workflows » magento2 » check-vars | add suffix to php binary when configured in valet-sh.yml"
+- name: "workflows » magento2 » check-vars | red configured php version in valet-sh.yml"
   set_fact:
-    php_bin_name: "php{{ valet_sh_project_vars.services.php.version }}"
+    php_version_number: "{{ valet_sh_project_vars.services.php.version }}"
   when:
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.php is defined
     - valet_sh_project_vars.services.php.version is defined
+
+- name: "workflows » magento2 » check-vars | add suffix to php binary when configured in valet-sh.yml"
+  set_fact:
+    php_bin_name: "php{{ php_version_number }}"
+  when:
+    - php_version_number is defined
+    - php_version_number|length > 0
 
 - name: "workflows » magento2 » check-vars | get path of php binary"
   shell: "which {{ php_bin_name }}"  # noqa 305 301

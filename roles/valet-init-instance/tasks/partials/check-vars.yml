@@ -19,3 +19,18 @@
   fail:
     msg: "valet_current_path is not defined"
   when: valet_current_path is not defined
+
+- name: "partials » check-vars | fail when hub_project is not defined"
+  fail:
+    msg: "hub_project var is not defined - please run setup for 'init-instance' first"
+  when: valet_sh_defaults.hub_project is not defined
+
+- name: "partials » check-vars | fail when hub_domain is not defined"
+  fail:
+    msg: "hub_domain var is not defined - please run setup for 'init-instance' first"
+  when: valet_sh_defaults.hub_domain is not defined
+
+- name: "partials » check-vars | fail when hub_gitlab_ssh_port is not defined"
+  fail:
+    msg: "hub_gitlab_ssh_port var is not defined - please run setup for 'init-instance' first"
+  when: valet_sh_defaults.hub_gitlab_ssh_port is not defined

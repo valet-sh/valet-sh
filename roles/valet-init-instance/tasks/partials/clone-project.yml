@@ -15,10 +15,14 @@
 ##
 ---
 
+- name: "partials » clone-project | concat var 'valet_project_name' and 'valet_sh_default_project_name'"
+  set_fact:
+    valet_project_name_path: "{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
+
 - name: "partials » clone-project | set 'project_already_cloned' var"
   set_fact:
     project_already_cloned: true
-  when: "valet_project_name/valet_sh_default_project_name in valet_current_path"
+  when: "valet_project_name_path in valet_current_path"
 
 - name: "partials » clone-project | get stat for '{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}'"
   stat:

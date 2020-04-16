@@ -29,26 +29,20 @@
   when: valet_current_path != valet_sh_project_src_path
 
 - name: "workflows » magento2 » project-install | switch node version to '{{ valet_sh_node_version }}'"
-  command: "n {{ valet_sh_node_version }}" # noqa 301
+  shell: "source {{ current_home }}/.bashrc nvm install {{ valet_sh_node_version }}" # noqa 301
   args:
     chdir: "{{ valet_current_path }}"
-  become: true
+    executable: /bin/bash
 
 - name: "workflows » magento2 » project-install | run npm install in current dir"
-  command: "npm install"
+  shell: "/usr/bin/env npm install"
   args:
     chdir: "{{ valet_current_path }}"
     removes: "packages.json"
-  with_first_found:
-    - /usr/local/bin/npm
-    - /usr/bin/npm
 
 - name: "workflows » magento2 » project-install | run npm install in project source path when defined in .valet-sh.yml"
-  command: "npm install"
+  command: "/usr/bin/env npm  install"
   args:
     chdir: "{{ valet_sh_project_src_path }}"
     removes: "packages.json"
   when: valet_current_path != valet_sh_project_src_path
-  with_first_found:
-    - /usr/local/bin/npm
-    - /usr/bin/npm

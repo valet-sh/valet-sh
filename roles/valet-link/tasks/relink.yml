@@ -15,23 +15,8 @@
 ##
 ---
 
-- name: systemd | mysql | started
-  systemd:
-    daemon_reload: yes
-    name: mysql
-    state: started
-  become: true
+- include_tasks: "unlink.yml"
+  vars:
+    valet_link_silent: true
 
-- name: systemd | mysql | stopped
-  systemd:
-    daemon_reload: yes
-    name: mysql
-    state: stopped
-  become: true
-
-- name: systemd | mysql | restarted
-  systemd:
-    daemon_reload: yes
-    name: mysql
-    state: restarted
-  become: true
+- include_tasks: "link.yml"

@@ -1,0 +1,14 @@
+---
+
+- name: "migrations | ensure old config files are deleted"
+  file:
+    dest:  "{{ item }}"
+    state: "absent"
+    mode: '0755'
+  become: true
+  with_items:
+    - "/etc/php/5.6/cli/conf.d/99-custom.ini"
+    - "/etc/php/7.0/cli/conf.d/99-custom.ini"
+    - "/etc/php/7.1/cli/conf.d/99-custom.ini"
+    - "/etc/php/7.2/cli/conf.d/99-custom.ini"
+    - "/etc/php/7.3/cli/conf.d/99-custom.ini"

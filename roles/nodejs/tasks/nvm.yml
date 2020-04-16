@@ -17,13 +17,15 @@
 
 - name: "ensure 'gulp' and 'n' is not installed globally"
   npm:
-    name: "{{ item }}"
+    name: "{{ nvm_uninstall_global_packages_item }}"
     global: yes
     state: absent
   become: true
   with_items:
     - "n"
     - "gulp"
+  loop_control:
+    loop_var: nvm_uninstall_global_packages_item
 
 - name: "ensure 'nvm' is installed"
   shell: >

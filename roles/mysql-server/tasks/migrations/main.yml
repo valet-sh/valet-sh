@@ -15,23 +15,23 @@
 ##
 ---
 
-- name: systemd | mysql | started
-  systemd:
-    daemon_reload: yes
-    name: mysql
-    state: started
+- name: "ensure old configuration values are deleted"
+  lineinfile:
+    path: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+    line: "{{ mysql_migration_task1_item.param }}='{{ mysql_migration_task1_item.value }}'"
+    state: absent
+  with_items:
+    - param: character-set-server
+      value: utf8mb4
+    - param: collation-server
+      value: utf8mb4_unicode_ci
+    - param: innodb_file_per_table
+      value: 1
+    - param: innodb_flush_log_at_trx_commit
+      value: 2
+    - param: default-time-zone
+      value: '+00:00'
+  notify: "systemd | mysql | restarted"
   become: true
-
-- name: systemd | mysql | stopped
-  systemd:
-    daemon_reload: yes
-    name: mysql
-    state: stopped
-  become: true
-
-- name: systemd | mysql | restarted
-  systemd:
-    daemon_reload: yes
-    name: mysql
-    state: restarted
-  become: true
+  loop_control:
+    loop_var: mysql_migration_task1_item

@@ -1,12 +1,12 @@
 ---
 
-- name: "install | ensure nginx is installed"
+- name: "ensure nginx is installed"
   apt:
     name: nginx
     state: present
   become: true
 
-- name: "install | ensure nginx is enabled"
+- name: "ensure nginx is enabled"
   systemd:
     name: nginx
     enabled: yes

@@ -30,30 +30,32 @@
 - name: "unlink | fail when name is not linked"
   fail:
     msg: "{{ link_name }} is not linked!"
-  when: "not link_name in valet_links_obj.valet_links.links_index"
+  when: "(not link_name in valet_links_obj.valet_links.links_index) and (not valet_link_silent|bool)"
 
-- name: "unlink | delete vhost configuration for {{ link_name }}.{{ development_tld }}"
-  file:
-    path: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
-    state: absent
-  notify: systemd | nginx | reloaded
-  become: true
+- block:
+    - name: "unlink | delete vhost configuration for {{ link_name }}.{{ development_tld }}"
+      file:
+        path: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
+        state: absent
+      notify: systemd | nginx | reloaded
+      become: true
 
-- name: "unlink | set empty array 'new_valet_links'"
-  set_fact:
-    new_valet_links: []
+    - name: "unlink | set empty array 'new_valet_links'"
+      set_fact:
+        new_valet_links: []
 
-- name: "unlink | add existing links to 'new_valet_links' array"
-  set_fact:
-    new_valet_links: "{{ new_valet_links + [item] }}"
-  when: "item.name != link_name"
-  with_items: "{{ valet_links_obj.valet_links.links }}"
+    - name: "unlink | add existing links to 'new_valet_links' array"
+      set_fact:
+        new_valet_links: "{{ new_valet_links + [item] }}"
+      when: "item.name != link_name"
+      with_items: "{{ valet_links_obj.valet_links.links }}"
 
-- name: "unlink | assemble new valet_links_object"
-  set_fact:
-    valet_links_obj:
-      valet_links:
-        links_index: "{{ valet_links_obj.valet_links.links_index | difference (link_name) }}"
-        links: "{{ new_valet_links }}"
+    - name: "unlink | assemble new valet_links_object"
+      set_fact:
+        valet_links_obj:
+          valet_links:
+            links_index: "{{ valet_links_obj.valet_links.links_index | difference (link_name) }}"
+            links: "{{ new_valet_links }}"
 
-- include_tasks: "sub/write.yml"
+    - include_tasks: "sub/write.yml"
+  when: "link_name in valet_links_obj.valet_links.links_index"

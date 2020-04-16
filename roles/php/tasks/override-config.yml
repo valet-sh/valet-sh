@@ -4,7 +4,6 @@
   set_fact:
     php_version: "{{ current_php.version }}"
 
-
 - name: set php_modules variable
   set_fact:
     php_modules: "{{ current_php.config.php_modules }}"
@@ -14,7 +13,6 @@
   set_fact:
     php_modules: "{{ php_modules_default }}"
   when: current_php.config.php_modules is not defined
-
 
 - name: set php_version_string variable
   set_fact:
@@ -26,7 +24,6 @@
     php_version_string: "{{ php_version_string_default }}"
   when: current_php.config.php_version_string is not defined
 
-
 - name: set php_error_log_path variable
   set_fact:
     php_error_log_path: "{{ current_php.config.php_error_log_path }}"
@@ -37,7 +34,6 @@
     php_error_log_path: "{{ php_error_log_path_default }}"
   when: current_php.config.php_error_log_path is not defined
 
-
 - name: set php_error_log_path variable
   set_fact:
     php_error_log_path: "{{ current_php.config.php_error_log_path }}"
@@ -47,7 +43,6 @@
   set_fact:
     php_error_log_path: "{{ php_error_log_path_default }}"
   when: current_php.config.php_error_log_path is not defined
-
 
 - name: set php_cli_conf_path variable
   set_fact:
@@ -68,7 +63,6 @@
   set_fact:
     php_cli_settings: "{{ php_cli_settings_default }}"
   when: current_php.config.php_cli_settings is not defined
-
 
 - name: set php_cli_settings_additional variable
   set_fact:

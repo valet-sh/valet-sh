@@ -17,4 +17,4 @@
 
 nvm_version: "v0.35.3"
 node_version: "11"
-node_use_n: true
+node_use_nvm: true
