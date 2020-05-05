@@ -16,7 +16,11 @@
 ---
 
 valet_sh_default_project_name: "{{ valet_sh_defaults.hub_project }}"
-valet_sh_default_project_branch: "master"
+#valet_sh_default_project_branch: "master"
 valet_sh_project_hub_fqdn: "gitlab.{{ valet_project_name }}.{{ valet_sh_defaults.hub_domain }}"
 
-valet_sh_default_project_git_clone_command: "ssh://git@{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_defaults.hub_gitlab_ssh_port }}/{{ valet_project_name }}/{{ valet_sh_git_project_name }}.git"
+valet_sh_default_project_git_clone_command: "ssh://git@{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_defaults.hub_gitlab_ssh_port }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}.git"
+
+
+valet_sh_service_rabbitmq_user: admin
+valet_sh_service_rabbitmq_password: admin

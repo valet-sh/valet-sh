@@ -1,0 +1,49 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- block:
+    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
+      systemd:
+        name: rabbitmq-server
+        state: restarted
+      become: true
+
+    - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
+      wait_for:
+        port: 5672
+        delay: 5
+
+    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
+      rabbitmq_vhost:
+        name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+        state: present
+      become: true
+
+    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
+      rabbitmq_user:
+        user: "{{ valet_sh_service_rabbitmq_user }}"
+        password: "{{ valet_sh_service_rabbitmq_password }}"
+        vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+        state: present
+      become: true
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.rabbitmq is defined
+    - valet_sh_project_vars.services.rabbitmq.vhost is defined

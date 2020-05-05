@@ -33,3 +33,10 @@ valet_links_stub:
     links: []
 
 valet_sh_default_node_version: 10
+
+
+valet_sh_elasticsearch_ports:
+  1: 9201
+  2: 9200
+  5: 9205
+  6: 9206

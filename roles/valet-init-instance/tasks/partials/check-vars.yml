@@ -20,17 +20,10 @@
     msg: "valet_current_path is not defined"
   when: valet_current_path is not defined
 
-- name: "partials » check-vars | fail when hub_project is not defined"
-  fail:
-    msg: "hub_project var is not defined - please run setup for 'init-instance' first"
-  when: valet_sh_defaults.hub_project is not defined
-
-- name: "partials » check-vars | fail when hub_domain is not defined"
-  fail:
-    msg: "hub_domain var is not defined - please run setup for 'init-instance' first"
-  when: valet_sh_defaults.hub_domain is not defined
-
-- name: "partials » check-vars | fail when hub_gitlab_ssh_port is not defined"
-  fail:
-    msg: "hub_gitlab_ssh_port var is not defined - please run setup for 'init-instance' first"
-  when: valet_sh_defaults.hub_gitlab_ssh_port is not defined
+- name: overrride default project name and branch
+  set_fact:
+    valet_sh_default_project_name: "{{  valet_git_project_name.split('@')[0] | lower }}"
+    valet_sh_default_project_branch: "{{  valet_git_project_name.split('@')[1] | lower | default() }}"
+  when:
+    - valet_git_project_name is defined
+    - valet_git_project_name|length > 0

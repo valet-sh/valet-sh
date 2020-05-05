@@ -65,15 +65,3 @@
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.path is defined
-
-- name: "workflows » magento2 » check-vars | set default node version"
-  set_fact:
-    valet_sh_node_version: "{{ valet_sh_default_node_version }}"
-
-- name: "workflows » magento2 » check-vars | override node version based on .valet-sh.yml"
-  set_fact:
-    valet_sh_node_version: "{{ valet_sh_project_vars.services.node.version }}"
-  when:
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.node is defined
-    - valet_sh_project_vars.services.node.version is defined

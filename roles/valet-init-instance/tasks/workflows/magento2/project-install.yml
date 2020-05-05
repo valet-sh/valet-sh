@@ -28,12 +28,6 @@
     removes: "composer.json"
   when: valet_current_path != valet_sh_project_src_path
 
-- name: "workflows » magento2 » project-install | switch node version to '{{ valet_sh_node_version }}'"
-  shell: "source {{ current_home }}/.bashrc nvm install {{ valet_sh_node_version }}" # noqa 301
-  args:
-    chdir: "{{ valet_current_path }}"
-    executable: /bin/bash
-
 - name: "workflows » magento2 » project-install | run npm install in current dir"
   shell: "/usr/bin/env npm install"
   args:

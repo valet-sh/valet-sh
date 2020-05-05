@@ -99,3 +99,21 @@
     loop_var: valet_sh_restore_current_post_command
   tags:
   - skip_ansible_lint
+
+- block:
+  - name: "workflows » magento2 | run full reindex when defined in .valet-sh.yml"
+    shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/bin/magento indexer:reindex"
+    when:
+      - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindexAll is defined
+      - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindexAll|bool
+
+  - name: "workflows » magento2 | run custom indexer commands defined in .valet-sh.yml"
+    shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/bin/magento indexer:reindex {{ valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex | join(' ') }}"
+    when:
+      - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex is defined
+      - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.sync is defined
+    - valet_sh_project_vars.instance.sync.post_restore_actions is defined
+    - valet_sh_project_vars.instance.sync.post_restore_actions.indexer is defined
