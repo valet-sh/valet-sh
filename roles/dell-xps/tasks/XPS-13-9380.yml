@@ -85,6 +85,7 @@
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: yes
   become: true
+  when: ansible_distribution_release == "bionic"
 
 - name: install bluetooth sound codec packages
   apt:
@@ -95,6 +96,7 @@
       - libldac
       - pulseaudio-modules-bt
   become: true
+  when: ansible_distribution_release == "bionic"
 
 - name: install intel microcode updates
   apt:
