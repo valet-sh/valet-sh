@@ -176,5 +176,6 @@
     state: present
     install_recommends: true
   become: true
+  when: ansible_distribution_release == "bionic"
 
 - include_tasks: "partials/power-saving-settings.yml"
