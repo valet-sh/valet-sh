@@ -27,12 +27,6 @@
     state: present
   become: true
 
-- name: Add ukuu apt repository
-  apt_repository:
-    repo: ppa:teejee2008/ppa
-    update_cache: yes
-  become: true
-
 - name: Install additional packages
   apt:
     name: "{{ additional_packages }}"
@@ -42,11 +36,6 @@
 - name: Get user home directory
   set_fact:
     home_dir: "{{ lookup('env', 'HOME') }}"
-
-- name: Deploy ukuu Config file
-  template:
-    src: ukuu_config.j2
-    dest: "{{ home_dir }}/.config/ukuu.json"
 
 # TODO: update to 5.1.x kernel
 - name: Print current Linux Kernel
