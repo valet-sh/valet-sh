@@ -73,5 +73,5 @@ atheros_firmware:
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/firmware-4.bin
 
 ubuntu_hwe_packages:
-  - "linux-generic-hwe-18.04"
-  - "xserver-xorg-hwe-18.04"
+  - "linux-generic-hwe-{{ ansible_distribution_version }}"
+  - "xserver-xorg-hwe-{{ ansible_distribution_version }}"
