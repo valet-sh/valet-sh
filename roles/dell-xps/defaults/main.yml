@@ -51,7 +51,6 @@ basic_packages:
   - network-manager-openvpn-gnome
 
 additional_packages:
-  - ukuu
   - intel-microcode
 
 absent_packages:
