@@ -57,7 +57,7 @@
     loop_control:
       loop_var: current_elasticsearch_plugin
 
-  - name: "be sure {{ current_elasticsearch_key }} is running and enabled"
+  - name: "ensure {{ current_elasticsearch_key }} is stopped and disabled"
     systemd:
       name: "{{ current_elasticsearch_key }}"
       enabled: no
