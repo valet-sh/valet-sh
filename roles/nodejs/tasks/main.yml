@@ -15,8 +15,8 @@
 ##
 ---
 
-- include_tasks: "n.yml"
-  when: node_use_n|bool
-
 - include_tasks: "nvm.yml"
-  when: not node_use_n|bool
+  when: node_use_nvm|bool
+
+- include_tasks: "n.yml"
+  when: not node_use_nvm|bool
