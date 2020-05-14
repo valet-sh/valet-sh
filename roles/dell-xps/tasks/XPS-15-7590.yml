@@ -130,7 +130,7 @@
   become: true
 
 - include_tasks: "hardware-related/bbswitch.yml"
-  when: ansible_distribution_release == "focial"
+  when: ansible_distribution_release == "focal"
 
 - name: "ensure backport-iwlwifi-dkms package is installed on bionic"
   apt:
@@ -139,12 +139,12 @@
   become: true
   when: ansible_distribution_release == "bionic"
 
-- name: "ensure backport-iwlwifi-dkms package is NOT installed on focial"
+- name: "ensure backport-iwlwifi-dkms package is NOT installed on focal"
   apt:
     name: "backport-iwlwifi-dkms"
     state: absent
   become: true
-  when: ansible_distribution_release == "focial"
+  when: ansible_distribution_release == "focal"
 
 - name: update grub config
   lineinfile:
