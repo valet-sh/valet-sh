@@ -129,6 +129,23 @@
   shell: "prime-select intel"
   become: true
 
+- include_tasks: "hardware-related/bbswitch.yml"
+  when: ansible_distribution_release == "focial"
+
+- name: "ensure backport-iwlwifi-dkms package is installed on bionic"
+  apt:
+    name: "backport-iwlwifi-dkms"
+    state: present
+  become: true
+  when: ansible_distribution_release == "bionic"
+
+- name: "ensure backport-iwlwifi-dkms package is NOT installed on focial"
+  apt:
+    name: "backport-iwlwifi-dkms"
+    state: absent
+  become: true
+  when: ansible_distribution_release == "focial"
+
 - name: update grub config
   lineinfile:
     path: /etc/default/grub
