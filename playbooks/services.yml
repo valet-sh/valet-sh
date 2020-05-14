@@ -1,0 +1,18 @@
+---
+#
+# valet.sh | services
+#
+# @author: "Philipp Dittert"
+# @author: "Johann Zelger"
+# @command: "services"
+# @description: "start/stop or enable/disable a service"
+# @usage: "valet.sh services <start|stop|restart|enable|disable> elasticsearch6"
+
+- name: "link"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_service_action: "{{ cli.args[0] }}"
+    valet_service_name: "{{ cli.args[1] }}"
+  roles:
+    - valet-services
