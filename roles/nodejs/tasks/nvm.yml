@@ -15,6 +15,11 @@
 ##
 ---
 
+- name: Check if npm is installed
+  shell: command -v nvm >/dev/null 2>&1
+  register: nvm_installed_obj
+  ignore_errors: yes
+
 - name: "ensure 'gulp' and 'n' is not installed globally"
   npm:
     name: "{{ item }}"
@@ -24,6 +29,7 @@
   with_items:
     - "n"
     - "gulp"
+  when: nvm_installed_obj.rc == 0
 
 - name: "ensure 'nvm' is installed"
   shell: >
