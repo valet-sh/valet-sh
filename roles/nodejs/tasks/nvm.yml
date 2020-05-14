@@ -55,7 +55,7 @@
   when: zsh_rc_file_obj.stat.exists
 
 - name: "install default node version"
-  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install nvm install {{ node_version }}"
+  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ node_version }}"
   args:
     executable: /bin/bash
   when: nvm_installation_obj.changed
