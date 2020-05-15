@@ -1,5 +1,5 @@
 ---
-install_elasticsearch_download_baseurl: 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-'
+install_elasticsearch_download_url: 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.3.tar.gz'
 install_elasticsearch_version: '1.7.3'
 install_elasticsearch_config_version: '1'
 install_elasticsearch_plugin_bin: 'plugin'

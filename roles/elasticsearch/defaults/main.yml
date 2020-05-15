@@ -6,3 +6,4 @@ install_elasticsearch_accepted_version:
   - "1"
   - "5"
   - "6"
+  - "7"

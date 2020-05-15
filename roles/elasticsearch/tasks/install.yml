@@ -16,7 +16,7 @@
 
 - name: Download Elasticsearch
   get_url:
-    url: "{{ install_elasticsearch_download_baseurl }}{{ install_elasticsearch_version }}.tar.gz"
+    url: "{{ install_elasticsearch_download_url }}"
     dest: "/tmp/elasticsearch-{{ install_elasticsearch_version }}.tar.gz"
   when: path_elasticsearch_obj.stat.exists == False
 

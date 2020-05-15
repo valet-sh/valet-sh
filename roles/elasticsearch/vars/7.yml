@@ -1,9 +1,9 @@
 ---
 install_java_filename: 'jdk-8u181-macosx-x64.dmg'
 install_java_mount: 'JDK 8 Update 181'
-install_elasticsearch_download_url: 'https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.12.tar.gz'
-install_elasticsearch_version: '5.6.12'
-install_elasticsearch_config_version: '5'
+install_elasticsearch_download_url: 'https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.7.0-darwin-x86_64.tar.gz'
+install_elasticsearch_version: '7.7.0'
+install_elasticsearch_config_version: '7'
 install_elasticsearch_plugin_bin: 'elasticsearch-plugin'
 install_elasticsearch_plugins:
   - "analysis-phonetic"
