@@ -2,8 +2,8 @@
 
 - name: set current elasticsearch base path
   set_fact:
-    current_elasticsearch_base_path: "{{ elasticsearch_base_path }}2"
-    current_elasticsearch_key: "elasticsearch2"
+    current_elasticsearch_base_path: "{{ elasticsearch_base_path }}7"
+    current_elasticsearch_key: "elasticsearch7"
 
 - name: "get stats for dir {{ current_elasticsearch_base_path }}"
   stat:
@@ -13,7 +13,7 @@
 - block:
   - name: Download ElasticSearch package
     get_url:
-      url: "{{ elasticsearch_version_2_download_url }}"
+      url: "{{ elasticsearch_version_7_download_url }}"
       dest: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
 
   - name: "create {{ current_elasticsearch_base_path }}"
@@ -52,7 +52,7 @@
     become: true
 
   - name: "install plugins"
-    shell: "{{ current_elasticsearch_base_path }}/bin/plugin install {{ current_elasticsearch_plugin }}"
+    shell: "{{ current_elasticsearch_base_path }}/bin/elasticsearch-plugin install {{ current_elasticsearch_plugin }}"
     with_items: "{{ elasticsearch_plugins }}"
     loop_control:
       loop_var: current_elasticsearch_plugin

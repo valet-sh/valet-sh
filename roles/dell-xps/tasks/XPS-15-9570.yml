@@ -81,6 +81,7 @@
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: yes
   become: true
+  when: ansible_distribution_release == "bionic"
 
 - name: install bluetooth sound codec packages
   apt:
@@ -91,6 +92,7 @@
       - libldac
       - pulseaudio-modules-bt
   become: true
+  when: ansible_distribution_release == "bionic"
 
 - name: install intel microcode updates
   apt:
@@ -126,6 +128,23 @@
 - name: "switch to intel gpu"
   shell: "prime-select intel"
   become: true
+
+- include_tasks: "hardware-related/bbswitch.yml"
+  when: ansible_distribution_release == "focal"
+
+- name: "ensure backport-iwlwifi-dkms package is installed on bionic"
+  apt:
+    name: "backport-iwlwifi-dkms"
+    state: present
+  become: true
+  when: ansible_distribution_release == "bionic"
+
+- name: "ensure backport-iwlwifi-dkms package is NOT installed on focal"
+  apt:
+    name: "backport-iwlwifi-dkms"
+    state: absent
+  become: true
+  when: ansible_distribution_release == "focal"
 
 - name: update grub config
   lineinfile:
@@ -174,5 +193,6 @@
     state: present
     install_recommends: true
   become: true
+  when: ansible_distribution_release == "bionic"
 
 - include_tasks: "partials/power-saving-settings.yml"

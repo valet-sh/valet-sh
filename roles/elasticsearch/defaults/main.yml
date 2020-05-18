@@ -7,8 +7,8 @@ elasticsearch_pid_path: "/var/run/elasticsearch"
 elasticsearch_version_1_download_url: https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.5.tar.gz
 elasticsearch_version_2_download_url: https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.6/elasticsearch-2.4.6.tar.gz
 elasticsearch_version_5_download_url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.16.tar.gz
-elasticsearch_version_6_download_url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.2.tar.gz
-elasticsearch_version_7_download_url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.3.0-linux-x86_64.tar.gz
+elasticsearch_version_6_download_url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.9.tar.gz
+elasticsearch_version_7_download_url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.7.0-linux-x86_64.tar.gz
 
 elasticsearch_use_plugins: true
 

@@ -15,8 +15,25 @@
 ##
 ---
 
-- include_tasks: "nvm.yml"
-  when: node_use_nvm|bool
+- name: "bbswitch | install bbswitch dkms module"
+  apt:
+    name: "bbswitch-dkms"
+    state: present
+  become: true
 
-- include_tasks: "n.yml"
-  when: not node_use_nvm|bool
+- name: "bbswitch | enable bbswitch module"
+  lineinfile:
+    path: /etc/modules
+    line: 'bbswitch'
+  become: true
+
+- name: "bbswitch | set module options"
+  lineinfile:
+    path: /etc/modprobe.d/bbswitch.conf
+    line: 'options bbswitch load_state=0'
+    create: true
+  become: true
+
+- name: "bbswitch | run update-initramfs -u"
+  shell: "update-initramfs -u"
+  become: true

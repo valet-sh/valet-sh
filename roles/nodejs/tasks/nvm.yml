@@ -15,17 +15,30 @@
 ##
 ---
 
+- name: check if nvm.sh already exists
+  stat:
+    path: "{{ current_home }}/.nvm/nvm.sh"
+  register: nodejs_nvm_sh_file_obj
+
+- name: Check if npm is installed
+  shell: "source {{ current_home }}/.nvm/nvm.sh && which npm"
+  args:
+    executable: /bin/bash
+  register: nodejs_nvm_executable_path_obj
+  when: nodejs_nvm_sh_file_obj.stat.exists
+
 - name: "ensure 'gulp' and 'n' is not installed globally"
   npm:
     name: "{{ nvm_uninstall_global_packages_item }}"
     global: yes
+    executable: "{{ nodejs_nvm_executable_path_obj.stdout }}"
     state: absent
-  become: true
   with_items:
     - "n"
     - "gulp"
   loop_control:
     loop_var: nvm_uninstall_global_packages_item
+  when: nodejs_nvm_sh_file_obj.stat.exists
 
 - name: "ensure 'nvm' is installed"
   shell: >
@@ -49,9 +62,13 @@
   when: zsh_rc_file_obj.stat.exists
 
 - name: "install default node version"
-  shell: "nvm install {{ node_version }}"
+  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ node_version }}"
+  args:
+    executable: /bin/bash
   when: nvm_installation_obj.changed
 
 - name: "install default node version"
-  shell: "nvm alias default {{ node_version }}"
+  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ node_version }}"
+  args:
+    executable: /bin/bash
   when: nvm_installation_obj.changed

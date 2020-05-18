@@ -14,7 +14,7 @@
 
 - name: create specific php module list
   set_fact:
-    php_specific_modules: "{{ php_modules | map('regex_replace', '(.*)', php_version_string + '-\\1') | list }}"
+    php_specific_modules: "{{ php_modules | map('regex_replace', '^(.*)$', php_version_string + '-\\1') | list }}"
 
 - name: "install {{ php_version_string }} modules"
   apt:
