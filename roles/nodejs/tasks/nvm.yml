@@ -15,6 +15,44 @@
 ##
 ---
 
+- name: "gather package facts"
+  package_facts:
+    manager: "auto"
+
+- name: "check if npm is installed from repo"
+  set_fact:
+    nodejs_npm_is_installed_from_repo: true
+  when: "'npm' in ansible_facts.packages"
+
+- name: "ensure 'gulp' and 'n' is not installed globally"
+  npm:
+    name: "{{ nvm_uninstall_global_packages_item }}"
+    global: yes
+    state: absent
+  with_items:
+    - "n"
+    - "gulp"
+  loop_control:
+    loop_var: nvm_uninstall_global_packages_item
+  when: nodejs_npm_is_installed_from_repo
+
+- name: ensure nodejs and npm is not installed
+  apt:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+      - nodejs
+      - npm
+  become: true
+
+
+
+
+
+
+
+
 - name: check if nvm.sh already exists
   stat:
     path: "{{ current_home }}/.nvm/nvm.sh"
@@ -25,19 +63,6 @@
   args:
     executable: /bin/bash
   register: nodejs_nvm_executable_path_obj
-  when: nodejs_nvm_sh_file_obj.stat.exists
-
-- name: "ensure 'gulp' and 'n' is not installed globally"
-  npm:
-    name: "{{ nvm_uninstall_global_packages_item }}"
-    global: yes
-    executable: "{{ nodejs_nvm_executable_path_obj.stdout }}"
-    state: absent
-  with_items:
-    - "n"
-    - "gulp"
-  loop_control:
-    loop_var: nvm_uninstall_global_packages_item
   when: nodejs_nvm_sh_file_obj.stat.exists
 
 - name: "ensure 'nvm' is installed"
@@ -72,3 +97,4 @@
   args:
     executable: /bin/bash
   when: nvm_installation_obj.changed
+

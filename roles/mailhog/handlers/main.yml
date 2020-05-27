@@ -5,15 +5,18 @@
     daemon_reload: yes
     name: mailhog
     state: started
+  become: true
 
 - name: systemd | mailhog | stopped
   systemd:
     daemon_reload: yes
     name: mailhog
     state: stopped
+  become: true
 
 - name: systemd | mailhog | restarted
   systemd:
     daemon_reload: yes
     name: mailhog
     state: restarted
+  become: true
