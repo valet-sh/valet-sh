@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: "workflows » magento2 » project-env | check existence of env.php.dev file"
+- name: "workflows » magento2 » project- env | check existence of env.php.dev file"
   stat:
     path: "{{ valet_sh_project_src_path }}/app/etc/env.php.dev"
   register: magento2_env_php_obj

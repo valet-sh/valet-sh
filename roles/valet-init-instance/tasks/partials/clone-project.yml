@@ -21,17 +21,17 @@
 - name: "partials » clone-project | fail when hub_project is not defined"
   fail:
     msg: "hub_project var is not defined - please run setup for 'init-instance' first"
-  when: valet_sh_defaults.hub_project is not defined
+  when: valet_sh_config.hub_project is not defined
 
 - name: "partials » clone-project | fail when hub_domain is not defined"
   fail:
     msg: "hub_domain var is not defined - please run setup for 'init-instance' first"
-  when: valet_sh_defaults.hub_domain is not defined
+  when: valet_sh_config.hub_domain is not defined
 
 - name: "partials » clone-project | fail when hub_gitlab_ssh_port is not defined"
   fail:
     msg: "hub_gitlab_ssh_port var is not defined - please run setup for 'init-instance' first"
-  when: valet_sh_defaults.hub_gitlab_ssh_port is not defined
+  when: valet_sh_config.hub_gitlab_ssh_port is not defined
 
 ### check if a .valet-sh.yml file already exists in current directory and fail
 
@@ -78,17 +78,17 @@
 #- debug:
 #    var: "valet_sh_default_project_branch"
 
-#- name: "partials » clone-project | ensure ssh-key for '{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_defaults.hub_gitlab_ssh_port }}' is in known_hosts"
+#- name: "partials » clone-project | ensure ssh-key for '{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_config.hub_gitlab_ssh_port }}' is in known_hosts"
 #  known_hosts:
-#    name: "{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_defaults.hub_gitlab_ssh_port }}"
-#    key: "{{ lookup('pipe', 'ssh-keyscan -p {{ valet_sh_defaults.hub_gitlab_ssh_port }} {{ valet_sh_project_hub_fqdn }},`dig +short {{ valet_sh_project_hub_fqdn }}`') }}"
+#    name: "{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_config.hub_gitlab_ssh_port }}"
+#    key: "{{ lookup('pipe', 'ssh-keyscan -p {{ valet_sh_config.hub_gitlab_ssh_port }} {{ valet_sh_project_hub_fqdn }},`dig +short {{ valet_sh_project_hub_fqdn }}`') }}"
 
-- name: "partials » clone-project | ensure ssh-key for '{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_defaults.hub_gitlab_ssh_port }}' is in known_hosts"
+- name: "partials » clone-project | ensure ssh-key for '{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_config.hub_gitlab_ssh_port }}' is in known_hosts"
   lineinfile:
     dest: ~/.ssh/known_hosts
     create: yes
     state: present
-    line: "{{ lookup('pipe', 'ssh-keyscan -trsa -p' + (valet_sh_defaults.hub_gitlab_ssh_port|string) + ' ' + valet_sh_project_hub_fqdn) }}"
+    line: "{{ lookup('pipe', 'ssh-keyscan -trsa -p' + (valet_sh_config.hub_gitlab_ssh_port|string) + ' ' + valet_sh_project_hub_fqdn) }}"
 
 - name: "partials » clone-project | clone {{ valet_sh_default_project_git_clone_command }}"
   git:

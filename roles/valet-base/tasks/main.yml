@@ -69,22 +69,4 @@
 - name: "include valet config file"
   include_vars:
     file: "{{ valet_etc_config_file }}"
-
-- name: "get stat for '{{ valet_etc_defaults_file }}'"
-  stat:
-    path: "{{ valet_etc_defaults_file }}"
-  register: valet_etc_defaults_file_obj
-
-- name: "ensure valet config defaults file exists"
-  file:
-    dest:  "{{ valet_etc_defaults_file }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    state: "{{ 'file' if  valet_etc_defaults_file_obj.stat.exists else 'touch' }}"
-    mode: '0755'
-  become: true
-
-- name: include valet defaults configuration file
-  include_vars:
-    file: "{{ valet_etc_defaults_file }}"
-    name: valet_sh_defaults
+    name: valet_sh_config
