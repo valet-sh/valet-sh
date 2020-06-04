@@ -14,7 +14,7 @@
   vars:
     valet_action: link
     link_name: "{{ cli.args[0] }}"
-    link_path: "{{ lookup('env','OLDPWD') }}"
+    valet_current_path: "{{ lookup('env','OLDPWD') }}"
     php_version: "{{ cli.args[1] | default() }}"
   roles:
     - valet-link

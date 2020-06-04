@@ -1,3 +1,15 @@
+{% if valet_sh_project_multidomain_config is defined %}
+map $host $storecode_{{ link_name }} {
+{% for key, value in valet_sh_project_multidomain_config.items() %}
+{% if value == "default" %}
+    {{ value }} {{ key }};
+{% else %}
+    ^{{ value }}.(.*)$ {{ key }};
+{% endif %}
+{% endfor %}
+}
+{% endif %}
+
 server {
     listen 127.0.0.1:80;
 
@@ -12,7 +24,7 @@ server {
     listen 127.0.0.1:443 ssl http2;
 
     server_name {{ link_name }}.{{ development_tld }} *.{{ link_name }}.{{ development_tld }};
-    set $MAGE_ROOT {{ link_path }};
+    set $MAGE_ROOT {{ valet_current_path }};
     set $upstream "{{ current_php_version }}";
 
     ssl_certificate {{ certificate_server_domain_fullchain_file }};
@@ -156,6 +168,10 @@ server {
         fastcgi_param  PHP_VALUE "memory_limit=756M \n max_execution_time=18000";
         fastcgi_read_timeout 600s;
         fastcgi_connect_timeout 600s;
+{% if valet_sh_project_multidomain_config is defined %}
+        fastcgi_param MAGE_RUN_CODE $storecode_{{ link_name }};
+        fastcgi_param MAGE_RUN_TYPE store;
+{% endif %}
         fastcgi_index  index.php;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
         include        fastcgi_params;

@@ -30,7 +30,6 @@
     name: valet-link
   vars:
     valet_action: relink
-    link_name: "erhardt-leimer"
-#    link_name: "{{ valet_sh_project_vars.instance.key }}"
-    link_path: "{{ valet_sh_project_src_path }}"
+    link_name: "{{ valet_sh_project_vars.instance.key }}"
+    valet_current_path: "{{ valet_sh_project_src_path }}"
     php_version: "{{ valet_link_php_target_version | default() }}"

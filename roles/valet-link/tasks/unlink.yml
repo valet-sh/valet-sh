@@ -56,6 +56,6 @@
           valet_links:
             links_index: "{{ valet_links_obj.valet_links.links_index | difference (link_name) }}"
             links: "{{ new_valet_links }}"
-
-    - include_tasks: "sub/write.yml"
   when: "link_name in valet_links_obj.valet_links.links_index"
+
+- include_tasks: "sub/write.yml"

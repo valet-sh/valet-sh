@@ -24,12 +24,23 @@
     ansible_user: "{{ valet_sh_hub_user }}"
     ansible_ssh_pipelining: 1
 
+- name: "workflows » magento2 | get ssh fingerprint for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}'"
+  shell: "ssh-keyscan -tecdsa -p {{ valet_sh_hub_port|string }} {{ valet_sh_hub_host }}"
+  register: valet_sh_hub_host_ssh_fingerprint_obj
+
 - name: "workflows » magento2 | ensure ssh-key for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}' is in known_hosts"
-  lineinfile:
-    dest: ~/.ssh/known_hosts
-    create: yes
+  known_hosts:
+    name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
+    key: "{{ valet_sh_hub_host_ssh_fingerprint_obj.stdout }}"
+    path: "~/.ssh/known_hosts"
     state: present
-    line: "{{ lookup('pipe', 'ssh-keyscan -trsa -p' + (valet_sh_hub_port|string) + ' ' + valet_sh_hub_host) }}"
+
+#- name: "workflows » magento2 | ensure ssh-key for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}' is in known_hosts"
+#  lineinfile:
+#    dest: ~/.ssh/known_hosts
+#    create: yes
+#    state: present
+#    line: "{{ lookup('pipe', 'ssh-keyscan -tecdsa -p' + (valet_sh_hub_port|string) + ' ' + valet_sh_hub_host) }}"
 
 - name: "workflows » magento2 | check if instancebackup idenfifier '{{ valet_instancebackup_identifier }}'"
   stat:

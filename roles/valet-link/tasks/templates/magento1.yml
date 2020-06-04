@@ -2,7 +2,7 @@
 
 - name: "templates » magento1 | check for magento1 project"
   stat:
-    path: "{{ link_path }}/app/code/core/Mage"
+    path: "{{ valet_current_path }}/app/code/core/Mage"
   register: m1_checker_obj
 
 - name: "templates » magento1 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
