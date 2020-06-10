@@ -23,6 +23,7 @@
   set_fact:
     valet_db_name: "{{ valet_sh_project_vars.services.mysql.database | trim }}"
   when:
+    - valet_sh_project_vars is defined
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.database is defined
