@@ -8,6 +8,7 @@
   vars:
     packages:
      - git
+     - curl
 
 - name: set max_map_count on host to 262144
   sysctl:

@@ -23,3 +23,4 @@ mysql_mysqld_settings: |
   innodb_file_per_table='1'
   innodb_flush_log_at_trx_commit='2'
   default-time-zone='+00:00'
+

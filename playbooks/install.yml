@@ -4,7 +4,7 @@
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
 # @command: "install"
-# @description: "Install and configure the default development stack "
+# @description: "Install and configure the default development stack ddd"
 # @usage: "valet.sh install"
 
 ---
@@ -12,9 +12,9 @@
 - name: "install"
   hosts: local
   gather_facts: true
-#  vars_prompt:
-#    - name: "ansible_become_pass"
-#      prompt: "[sudo] Password"
-#      private: yes
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "[sudo] Password"
+      private: yes
   roles:
     - valet-install

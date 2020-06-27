@@ -26,7 +26,7 @@ valet_install_default_roles:
   - php
   - nodejs
   - mailhog
-  - mysql-server
+  - mysql-community-server
   - magerun1
   - magerun2
   - rabbitmq

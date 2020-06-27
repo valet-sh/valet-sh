@@ -4,12 +4,16 @@
 #
 # @author: "Philipp Dittert"
 # @command: "config"
-# @description: "Manage config paramters | Usage: valet.sh config <command> <key> <value>"
+# @description: "Manage config parameters | Usage: valet.sh config <command> <key> <value>"
 # @usage: "valet.sh config <command> <key> <value>"
 
 - name: "link"
   hosts: local
   gather_facts: true
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "[sudo] Password"
+      private: yes
   vars:
     valet_config_action: "{{ cli.args[0] }}"
     valet_config_key: "{{ cli.args[1] | default() }}"

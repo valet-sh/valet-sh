@@ -12,6 +12,10 @@
 - name: "restore"
   hosts: local
   gather_facts: True
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "[sudo] Password"
+      private: yes
   vars:
     valet_instancebackup_identifier: "{{ cli.args[0] | default() }}"
     valet_restore_db_identifier: "{{ cli.args[1] | default() }}"
