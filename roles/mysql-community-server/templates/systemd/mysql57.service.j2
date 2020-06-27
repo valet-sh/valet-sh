@@ -1,0 +1,19 @@
+[Unit]
+Description=MySQL 5.7 Community Server
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=forking
+User=mysql
+Group=mysql
+PIDFile=/run/mysqld/{{ current_mysql_key }}.pid
+PermissionsStartOnly=true
+ExecStart={{ current_mysql_dist_path }}/bin/mysqld --defaults-file={{ current_mysql_etc_path }}/my.cnf --datadir={{ current_mysql_data_path }} --pid-file=/run/mysqld/{{ current_mysql_key }}.pid --daemonize
+TimeoutSec=600
+Restart=on-failure
+RuntimeDirectory=mysqld
+RuntimeDirectoryMode=755
+LimitNOFILE=5000

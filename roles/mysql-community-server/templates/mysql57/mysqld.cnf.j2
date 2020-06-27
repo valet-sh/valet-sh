@@ -1,0 +1,32 @@
+[mysqld_safe]
+socket		= /var/run/mysqld/mysqld57.sock
+nice		= 0
+
+[mysqld]
+user		= mysql
+pid-file	= /var/run/mysqld/{{ current_mysql_key }}.pid
+socket		= /var/run/mysqld/mysqld57.sock
+#socket =
+port		= 3307
+basedir		= {{ current_mysql_base_path }}}}
+datadir		= {{ current_mysql_data_path }}
+tmpdir		= /tmp
+lc-messages-dir	= {{ current_mysql_dist_path }}/share
+skip-external-locking
+
+bind-address		= 127.0.0.1
+key_buffer_size		= 16M
+max_allowed_packet	= 16M
+thread_stack		= 192K
+thread_cache_size       = 8
+myisam-recover-options  = BACKUP
+max_connections        = 200
+log_error = /var/log/mysql/{{ current_mysql_key }}-error.log
+max_binlog_size   = 100M
+
+character-set-server='utf8mb4'
+collation-server='utf8mb4_unicode_ci'
+innodb_file_per_table='1'
+innodb_flush_log_at_trx_commit='2'
+sql-mode=''
+default-time-zone = '+00:00'
