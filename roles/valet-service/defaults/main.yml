@@ -21,3 +21,36 @@ valet_sh_services_allowed_actions:
   - restart
   - start
   - stop
+  - default
+
+valet_sh_services_defaultable_services:
+  - elasticsearch1
+  - elasticsearch2
+  - elasticsearch5
+  - elasticsearch6
+  - elasticsearch7
+  - php56
+  - php70
+  - php71
+  - php72
+  - php73
+  - php74
+  - mysql57
+  - mysql80
+
+valet_sh_services_state_preset:
+  - elasticsearch1: false
+  - elasticsearch2: false
+  - elasticsearch5: false
+  - elasticsearch6: true
+  - elasticsearch7: false
+  - php56: true
+  - php70: true
+  - php71: true
+  - php72: true
+  - php73: true
+  - php74: true
+  - mysql57: true
+  - mysql80: false
+  - rabbitmq: false
+  - redis: true

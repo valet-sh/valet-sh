@@ -80,6 +80,16 @@ server {
         }
     }
 
+    location ~* ^/dev/tests/acceptance/utils($|/) {
+      root $MAGE_ROOT;
+      location ~ ^/dev/tests/acceptance/utils/command.php {
+          fastcgi_pass   $upstream;
+          fastcgi_index  index.php;
+          fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+          include        fastcgi_params;
+      }
+    }
+
     location / {
         try_files $uri $uri/ /index.php$is_args$args;
     }
