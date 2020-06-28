@@ -17,4 +17,8 @@
 
 - include_tasks: check-vars.yml
 
+- include_tasks: "internal-actions/{{ valet_service_action }}.yaml"
+  when: valet_sh_service_interal_action|bool
+
 - include_tasks: "actions/{{ valet_service_action }}.yaml"
+  when: not valet_sh_service_interal_action|bool

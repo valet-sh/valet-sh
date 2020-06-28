@@ -15,6 +15,10 @@
 ##
 ---
 
+
+- include_tasks: migrations/main.yml
+
+
 - include_tasks: base.yml
 
 - include_tasks: install-57.yml

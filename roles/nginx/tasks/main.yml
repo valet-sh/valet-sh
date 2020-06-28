@@ -37,4 +37,13 @@
     mode: '0755'
   become: true
 
+- name: Create nginx stream.d dir
+  file:
+    path: /etc/nginx/stream.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
 # Todo: Create ssl server block, otherwise nginx restart would be needed, if first https site has to be served

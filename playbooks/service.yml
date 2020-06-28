@@ -6,7 +6,7 @@
 # @author: "Johann Zelger"
 # @command: "services"
 # @description: "start/stop or enable/disable a service"
-# @usage: "valet.sh services <start|stop|restart|enable|disable> elasticsearch6"
+# @usage: "valet.sh service <start|stop|restart|enable|disable|default> elasticsearch6"
 
 - name: "link"
   hosts: local
@@ -19,4 +19,4 @@
     valet_service_action: "{{ cli.args[0] }}"
     valet_service_name: "{{ cli.args[1] }}"
   roles:
-    - valet-services
+    - valet-service

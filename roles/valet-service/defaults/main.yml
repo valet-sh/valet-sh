@@ -15,7 +15,9 @@
 ##
 ---
 
-valet_sh_services_allowed_actions:
+valet_sh_service_interal_action: false
+
+valet_sh_service_allowed_actions:
   - disable
   - enable
   - restart
@@ -23,20 +25,30 @@ valet_sh_services_allowed_actions:
   - stop
   - default
 
-valet_sh_services_defaultable_services:
-  - elasticsearch1
-  - elasticsearch2
-  - elasticsearch5
-  - elasticsearch6
-  - elasticsearch7
-  - php56
-  - php70
-  - php71
-  - php72
-  - php73
-  - php74
-  - mysql57
-  - mysql80
+valet_sh_service_defaultable_services:
+  - scope: elasticsearch
+    default: elasticsearch6
+    values:
+      - elasticsearch1
+      - elasticsearch2
+      - elasticsearch5
+      - elasticsearch6
+      - elasticsearch7
+  - scope: php
+    default: php73
+    values:
+      - php56
+      - php70
+      - php71
+      - php72
+      - php73
+      - php74
+  - scope: mysql
+    default: mysql57
+    values:
+      - mysql57
+      - mysql80
+
 
 valet_sh_services_state_preset:
   - elasticsearch1: false

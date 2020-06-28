@@ -15,30 +15,11 @@
 ##
 ---
 
-valet_etc_links_file: "{{ valet_etc_path }}/links.yml"
-valet_etc_config_file: "{{ valet_etc_path }}/config.yml"
-valet_etc_services_file: "{{ valet_etc_path }}/services.yml"
-
-valet_sh_filename: ".valet-sh.yml"
-valet_sh_hub_read_user: "read"
-
-valet_base_dirs:
-  - "{{ valet_base_path }}"
-  - "{{ valet_etc_path }}"
-  - "{{ valet_packages_path }}"
-
-valet_links_stub:
-  valet_links:
-    links_index: []
-    links: []
-
-valet_sh_default_node_version: 10
-
-
-valet_sh_elasticsearch_ports:
-  1: 9201
-  2: 9200
-  5: 9205
-  6: 9206
-  7: 9207
-  8: 9208
+- name: ensure mysql process is stopped and disabled
+  systemd:
+    name: mysql
+    state: stopped
+    enabled: no
+    masked: yes
+  become: true
+  ignore_errors: yes

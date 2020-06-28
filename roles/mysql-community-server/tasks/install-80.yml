@@ -224,12 +224,6 @@
     - name: "flush handlers"
       meta: flush_handlers
 
-    #- name: secure mysql installation
-    #  shell: "{{ current_mysql_key }} -e {{ current_mysql_security_query }}"
-    #  with_items: "{{ mysql_community_server.default_secure_queries }}"
-    #  loop_control:
-    #    loop_var: current_mysql_security_query
-
     - name: Deletes anonymous MySQL server user for ansible_fqdn
       mysql_user:
         login_host: 127.0.0.1

@@ -25,13 +25,6 @@ mysql_community_server:
   default_root_password: "root"
   default_user: mysql
   default_group: mysql
-  default_secure_queries:
-    - "DELETE FROM mysql.user WHERE User='';"
-    - "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-    - "DROP DATABASE IF EXISTS test;"
-    - "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
-    - "FLUSH PRIVILEGES;"
-    - "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_community_server_default_root_password }}';"
 
 mysql_community_server_default_root_password: "root"
 

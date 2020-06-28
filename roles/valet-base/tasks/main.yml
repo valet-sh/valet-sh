@@ -66,6 +66,15 @@
     mode: '0755'
   become: true
 
+- name: "ensure valet services file exists"
+  template:
+    src: "services.yml.j2"
+    dest:  "{{ valet_etc_services_file }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    force: false
+    mode: '0644'
+
 - name: "include valet config file"
   include_vars:
     file: "{{ valet_etc_config_file }}"

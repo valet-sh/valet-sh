@@ -18,6 +18,12 @@
     current_php="{{ item }}"
   with_items: "{{ php_multi }}"
 
+- name: "install php-imagick"
+  apt:
+    name: php-imagick
+    state: present
+  become: true
+
 - name: "set default php cli version"
   alternatives:
     name: php
