@@ -18,6 +18,7 @@
 - name: set current mysql base path
   set_fact:
     current_mysql_base_path: "{{ mysql_community_server.base_path }}80"
+    current_mysql_version_key: "8.0"
     current_mysql_key: "mysql80"
 
 - name: set curent dist path
@@ -103,7 +104,7 @@
 - name: "provide {{ current_mysql_key }} mysql client"
   template:
     src: "wrapper/mysql.j2"
-    dest: "/usr/local/bin/{{ current_mysql_key }}"
+    dest: "/usr/local/bin/mysql{{ current_mysql_version_key }}"
     owner: root
     group: root
     mode: '0755'
@@ -126,6 +127,8 @@
     group: root
     mode: '0755'
   become: true
+
+
 
 ###
 ### dist installation

@@ -52,9 +52,23 @@
   set_fact:
     new_default_service_element: "{ '{{ valet_service_name_scope }}': '{{ valet_service_name }}' }"
 
+#- name: "commands » set | prepare new config element"
+#  set_fact:
+#    new_default_service_element:
+#      php: "{{ valet_service_name }}"
+
+- debug:
+    msg: "{{ new_default_service_element }}"
+
 - name: "actions » default | update service object"
   set_fact:
-    valet_sh_services_obj: "{{ valet_sh_services_obj.defaults | combine(new_default_service_element) }}"
+    valet_sh_services_updates_defaults: "{{ valet_sh_services_obj.defaults | combine(new_default_service_element) }}"
+
+- name: "actions » default | merge objects"
+  set_fact:
+    valet_sh_services_obj:
+      defaults: "{{ valet_sh_services_updates_defaults }}"
+      states: "{{ valet_sh_services_obj.states }}"
 
 - name: "actions » default | transform object into nice yaml output"
   set_fact:
