@@ -37,11 +37,6 @@
   set_fact:
     home_dir: "{{ lookup('env', 'HOME') }}"
 
-# TODO: update to 5.1.x kernel
-- name: Print current Linux Kernel
-  debug:
-    var: ansible_kernel
-
 - name: Setup swapfile
   include_tasks: config-related/setup_swap.yml
 

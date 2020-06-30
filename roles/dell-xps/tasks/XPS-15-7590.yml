@@ -58,7 +58,17 @@
   apt_repository:
     repo: ppa:graphics-drivers/ppa
     update_cache: yes
+    state: present
   become: true
+  when: ansible_distribution_release == "bionic"
+
+- name: "disable graphic drivers ppa"
+  apt_repository:
+    repo: ppa:graphics-drivers/ppa
+    update_cache: yes
+    state: absent
+  become: true
+  when: ansible_distribution_release != "bionic"
 
 - name: "run ubuntu-drivers autoinstall"
   shell: "ubuntu-drivers autoinstall"
@@ -80,8 +90,16 @@
 - apt_repository:
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: yes
+    state: present
   become: true
   when: ansible_distribution_release == "bionic"
+
+- apt_repository:
+    repo: ppa:eh5/pulseaudio-a2dp
+    update_cache: yes
+    state: absent
+  become: true
+  when: ansible_distribution_release != "bionic"
 
 - name: install bluetooth sound codec packages
   apt:

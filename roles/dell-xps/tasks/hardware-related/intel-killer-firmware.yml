@@ -33,4 +33,12 @@
       apt:
         name: "backport-iwlwifi-dkms"
       become: true
-  when: "'Device 2723' in intel_killer_wifi_device.stdout"
+  when: "'Device 2723' in intel_killer_wifi_device.stdout and ansible_distribution_release == 'bionic'"
+
+- name: "enable graphic drivers ppa"
+  apt_repository:
+    repo: ppa:canonical-hwe-team/backport-iwlwifi
+    update_cache: yes
+    state: absent
+  become: true
+  when: ansible_distribution_release != "bionic"
