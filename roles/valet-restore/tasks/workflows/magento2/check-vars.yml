@@ -49,6 +49,18 @@
     path: "{{ current_tmp_dir }}"
     state: directory
 
+- name: "workflows » magento2 » check-vars | set default mysql client configuration"
+  set_fact:
+    valet_sh_project_mysql_client_configuration: "{{ current_home }}/.my.cnf"
+
+- name: "workflows » magento2 » check-vars | override mysql client configuration"
+  set_fact:
+    valet_sh_project_mysql_client_configuration: "{{ current_home }}/.my{{ valet_sh_project_vars.services.mysql.version }}.cnf"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mysql is defined
+    - valet_sh_project_vars.services.mysql.version is defined
+
 - name: "workflows » magento2 » check-vars | default database name based on current working dir"
   set_fact:
     valet_sh_project_database_name: "{{ valet_working_dir }}"

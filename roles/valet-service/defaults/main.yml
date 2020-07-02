@@ -56,9 +56,9 @@ valet_sh_services_state_preset:
   - elasticsearch5: false
   - elasticsearch6: true
   - elasticsearch7: false
-  - php56: true
-  - php70: true
-  - php71: true
+  - php56: false
+  - php70: false
+  - php71: false
   - php72: true
   - php73: true
   - php74: true

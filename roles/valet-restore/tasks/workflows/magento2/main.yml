@@ -75,6 +75,7 @@
 - name: "workflows » magento2 | drop database {{ valet_sh_project_database_name }}"
   mysql_db:
     name: "{{ valet_sh_project_database_name }}"
+    config_file: "{{ valet_sh_project_mysql_client_configuration }}"
     state: absent
 
 - name: "@vsh importing '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
@@ -82,9 +83,11 @@
 
 - name: "workflows » magento2 | import db dump '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
   mysql_db:
-    state: import
     name: "{{ valet_sh_project_database_name }}"
     target: "{{ current_tmp_dir }}/{{ valet_sh_instance_db_filename }}"
+    config_file: "{{ valet_sh_project_mysql_client_configuration }}"
+    encoding: "utf8"
+    state: import
 
 - name: "@vsh import of '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}' successfully finished"
   debug:

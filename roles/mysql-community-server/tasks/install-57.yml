@@ -223,6 +223,12 @@
   become: true
 
 - block:
+    - name: create dummy mysql-client configuration file
+      tempfile:
+        state: file
+        suffix: temp
+      register: mysql_client_dummy_config_file_obj
+
     - name: run mysql initialize command
       shell: "{{ current_mysql_dist_path }}/bin/mysqld --defaults-file={{ current_mysql_etc_path }}/my.cnf --datadir={{ current_mysql_data_path }} --pid-file=/run/mysqld/{{ current_mysql_key }}.pid --initialize-insecure"
       become: true
@@ -237,6 +243,7 @@
         login_port: "{{ mysql_community_server_57.port }}"
         login_user: root
         login_password: ""
+        config_file: "{{ mysql_client_dummy_config_file_obj.path }}"
         user: ""
         host: "{{ ansible_fqdn }}"
         state: "absent"
@@ -247,6 +254,7 @@
         login_port: "{{ mysql_community_server_57.port }}"
         login_user: root
         login_password: ""
+        config_file: "{{ mysql_client_dummy_config_file_obj.path }}"
         user: ""
         state: "absent"
 
@@ -256,6 +264,7 @@
         login_port: "{{ mysql_community_server_57.port }}"
         login_user: root
         login_password: ""
+        config_file: "{{ mysql_client_dummy_config_file_obj.path }}"
         db: test
         state: absent
 
@@ -265,7 +274,13 @@
         login_port: "{{ mysql_community_server_57.port }}"
         login_user: root
         login_password: ""
+        config_file: "{{ mysql_client_dummy_config_file_obj.path }}"
         user: "root"
         password: "root"
         state: present
+
+    - name: ensure dummy mysql-client configuration file is deleted
+      file:
+        path: "{{ mysql_client_dummy_config_file_obj.path }}"
+        state: absent
   when: current_mysql_data_dir_status_obj.matched == 0
