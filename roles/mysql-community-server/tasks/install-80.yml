@@ -53,6 +53,12 @@
     state: directory
   become: true
 
+- name: "provide .my.cnf configuration file"
+  template:
+    src: "mysql80/.my.cnf.j2"
+    dest: "{{ current_home }}/.my8.0.cnf"
+    mode: '0644'
+
 - name: "provide my.cnf configuration file"
   template:
     src: "mysql80/my.cnf.j2"

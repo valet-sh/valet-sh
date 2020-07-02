@@ -11,10 +11,6 @@
 - name: "db"
   hosts: local
   gather_facts: True
-  vars_prompt:
-    - name: "ansible_become_pass"
-      prompt: "[sudo] Password"
-      private: yes
   vars:
     valet_action: "{{ cli.args[0] | default() }}"
     valet_current_path: "{{ lookup('env','OLDPWD') }}"

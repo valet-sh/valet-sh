@@ -35,6 +35,13 @@
   loop_control:
     loop_var: current_mysql_default_linkname
 
+- name: "create .my.cnf symlink"
+  file:
+    src: "{{ current_home }}/.my{{ valet_service_name_version }}.cnf"
+    dest: "{{ current_home }}/.my.cnf"
+    state: link
+    force: true
+
 - name: "provide nginx stream configuration"
   template:
     src: "nginx/mysql.conf.j2"

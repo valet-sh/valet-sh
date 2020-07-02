@@ -23,9 +23,3 @@
     masked: yes
   become: true
   ignore_errors: yes
-
-- name: ensure .my.cnf user's home directory is deleted
-  file:
-    path: "{{ current_home }}/.my.cnf"
-    state: absent
-  become: true
