@@ -18,7 +18,7 @@
 - name: "actions » stop | stop {{ valet_service_name }} service"
   systemd:
     name: "{{ valet_service_name }}"
-    state: stop
+    state: stopped
   become: true
 
 

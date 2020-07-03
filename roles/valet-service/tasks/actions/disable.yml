@@ -15,8 +15,54 @@
 ##
 ---
 
+- name: "actions » disable | check for alias service name"
+  set_fact:
+    valet_service_name_alias: "{{ item.value }}"
+  when: item.key == valet_service_name
+  with_dict: "{{ valet_sh_service_alias_mapping }}"
+
 - name: "actions » disable | disable {{ valet_service_name }} service"
   systemd:
     name: "{{ valet_service_name }}"
     enabled: no
+    state: stopped
+  become: true
+  when: valet_service_name_alias|length == 0
+
+- name: "actions » disable | disable {{ valet_service_name }} service"
+  systemd:
+    name: "{{ valet_service_name_alias }}"
+    enabled: no
+    state: stopped
+  become: true
+  when: valet_service_name_alias|length > 0
+
+
+- name: "actions » disable | include valet services file"
+  include_vars:
+    file: "{{ valet_etc_services_file }}"
+    name: valet_sh_services_obj
+
+- name: "actions » disable | prepare new config element"
+  set_fact:
+    new_service_state_element: "{ '{{ valet_service_name }}': false }"
+
+- name: "actions » disable | update service object"
+  set_fact:
+    valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+- name: "actions » disable | merge objects"
+  set_fact:
+    valet_sh_services_obj:
+      states: "{{ valet_sh_services_updated_states }}"
+      defaults: "{{ valet_sh_services_obj.defaults }}"
+
+- name: "actions » disable | transform object into nice yaml output"
+  set_fact:
+    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+- name: "actions » disable | write new services.yml file"
+  copy:
+    content: "{{ valet_etc_services_list }}"
+    dest: "{{ valet_etc_services_file }}"
   become: true

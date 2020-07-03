@@ -20,3 +20,11 @@
     name: "{{ item }}"
     public: true
   with_items: "{{ valet_install_default_roles }}"
+
+- name: "include role"
+  include_role:
+    name: "valet-service"
+    public: true
+  vars:
+    valet_sh_service_internal_action: true
+    valet_service_action: "handle"

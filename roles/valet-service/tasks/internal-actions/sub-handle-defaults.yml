@@ -15,11 +15,11 @@
 ##
 ---
 
-- include_tasks: "internal-actions/{{ valet_service_action }}.yml"
-  when: valet_sh_service_internal_action|bool
+- name: "internal-actions » sub-handle-defaults | set new service default item"
+  set_fact:
+    valet_sh_service_new_service_default_item: "{ '{{ valet_sh_service_current_service_item.scope }}': '{{ valet_sh_service_current_service_item.default }}' }"
 
-- include_tasks: check-vars.yml
-  when: not valet_sh_service_internal_action|bool
+- name: "internal-actions » sub-handle-defaults | add defaults to dict 'valet_sh_service_default_services'"
+  set_fact:
+    valet_sh_service_default_services: "{{ valet_sh_service_default_services | combine(valet_sh_service_new_service_default_item) }}"
 
-- include_tasks: "actions/{{ valet_service_action }}.yml"
-  when: not valet_sh_service_internal_action|bool

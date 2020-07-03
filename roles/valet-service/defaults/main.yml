@@ -15,7 +15,8 @@
 ##
 ---
 
-valet_sh_service_interal_action: false
+valet_sh_service_internal_action: false
+valet_service_name_alias: ""
 
 valet_sh_service_allowed_actions:
   - disable
@@ -50,7 +51,7 @@ valet_sh_service_defaultable_services:
       - mysql80
 
 
-valet_sh_services_state_preset:
+valet_sh_service_state_preset:
   - elasticsearch1: false
   - elasticsearch2: false
   - elasticsearch5: false
@@ -66,3 +67,11 @@ valet_sh_services_state_preset:
   - mysql80: false
   - rabbitmq: false
   - redis: true
+
+valet_sh_service_alias_mapping:
+  php56: "php5.6-fpm"
+  php70: "php7.0-fpm"
+  php71: "php7.1-fpm"
+  php72: "php7.2-fpm"
+  php73: "php7.3-fpm"
+  php74: "php7.4-fpm"

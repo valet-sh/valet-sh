@@ -1,0 +1,58 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "internal-actions » sub-handle | reset valet_service_name_alias variable"
+  set_fact:
+    valet_service_name_alias: ""
+
+- name: "internal-actions » sub-handle | check for alias service name"
+  set_fact:
+    valet_service_name_alias: "{{ item.value }}"
+  when: item.key == valet_current_service_item.key
+  with_dict: "{{ valet_sh_service_alias_mapping }}"
+
+- name: "internal-actions » sub-handle | enable {{ valet_service_name }} service"
+  systemd:
+    name: "{{ valet_service_name }}"
+    enabled: yes
+    state: started
+  become: true
+  when: valet_service_name_alias|length == 0 and valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle | enable service '{{ valet_service_name }}' with alias '{{ valet_service_name_alias }}'"
+  systemd:
+    name: "{{ valet_service_name_alias }}"
+    enabled: yes
+    state: started
+  become: true
+  when: valet_service_name_alias|length > 0 and valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle | disable {{ valet_service_name }} service"
+  systemd:
+    name: "{{ valet_service_name }}"
+    enabled: no
+    state: stopped
+  become: true
+  when: valet_service_name_alias|length == 0 and not valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle | disable service '{{ valet_service_name }}' with alias '{{ valet_service_name_alias }}'"
+  systemd:
+    name: "{{ valet_service_name_alias }}"
+    enabled: no
+    state: stopped
+  become: true
+  when: valet_service_name_alias|length > 0 and not valet_current_service_item.value|bool
