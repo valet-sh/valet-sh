@@ -15,6 +15,11 @@
 ##
 ---
 
+- name: "actions » stop | fail when no service name was given"
+  fail:
+    msg: "no service name was given"
+  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
+
 - name: "actions » stop | stop {{ valet_service_name }} service"
   systemd:
     name: "{{ valet_service_name }}"

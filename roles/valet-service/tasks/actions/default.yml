@@ -15,6 +15,11 @@
 ##
 ---
 
+- name: "actions » default | fail when no service name was given"
+  fail:
+    msg: "no service name was given"
+  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
+
 - name: "actions » default | check if service is allowed"
   set_fact:
     valet_sh_service_service_is_allowed: true

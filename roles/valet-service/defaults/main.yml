@@ -25,6 +25,7 @@ valet_sh_service_allowed_actions:
   - start
   - stop
   - default
+  - list
 
 valet_sh_service_defaultable_services:
   - scope: elasticsearch
@@ -75,3 +76,5 @@ valet_sh_service_alias_mapping:
   php72: "php7.2-fpm"
   php73: "php7.3-fpm"
   php74: "php7.4-fpm"
+  rabbitmq: "rabbitmq-server"
+  redis: "redis-server"

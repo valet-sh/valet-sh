@@ -15,6 +15,11 @@
 ##
 ---
 
+- name: "actions » enable | fail when no service name was given"
+  fail:
+    msg: "no service name was given"
+  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
+
 - name: "actions » enable | check for alias service name"
   set_fact:
     valet_service_name_alias: "{{ item.value }}"

@@ -18,6 +18,9 @@
 ###########################
 ## start handle service states
 
+- name: "internal-actions » handle | flush handlers"
+  meta: flush_handlers
+
 - name: "internal-actions » handle | include valet services file"
   include_vars:
     file: "{{ valet_etc_services_file }}"

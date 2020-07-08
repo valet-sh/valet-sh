@@ -25,7 +25,3 @@
     msg: "action '{{ valet_service_action }}' is not allowed"
   when: valet_service_action not in valet_sh_service_allowed_actions
 
-- name: "check-vars | fail when no service name was given"
-  fail:
-    msg: "no service name was given"
-  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
