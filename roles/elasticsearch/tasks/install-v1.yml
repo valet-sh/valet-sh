@@ -36,32 +36,26 @@
       path: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
       state: absent
 
-  - name: "provide {{ current_elasticsearch_key }} configuration"
-    template:
-      src: "config/{{ current_elasticsearch_key }}.yml.j2"
-      dest: "{{ current_elasticsearch_base_path }}/config/elasticsearch.yml"
-      mode: '0644'
-
-  - name: "provide {{ current_elasticsearch_key }} systemd unit file"
-    template:
-      src: "systemd/{{ current_elasticsearch_key }}.service.j2"
-      dest: "/etc/systemd/system/{{ current_elasticsearch_key }}.service"
-      owner: root
-      group: root
-      mode: '0644'
-    become: true
-
   - name: "install plugins"
     shell: "{{ current_elasticsearch_base_path }}/bin/plugin install {{ current_elasticsearch_plugin }}"
     with_items: "{{ elasticsearch_legacy_plugins }}"
     loop_control:
       loop_var: current_elasticsearch_plugin
-
-  - name: "ensure {{ current_elasticsearch_key }} is stopped and disabled"
-    systemd:
-      name: "{{ current_elasticsearch_key }}"
-      enabled: no
-      state: stopped
-      daemon_reload: yes
-    become: true
   when: not current_elasticsearch_base_path_obj.stat.exists
+
+- name: "provide {{ current_elasticsearch_key }} configuration"
+  template:
+    src: "config/{{ current_elasticsearch_key }}.yml.j2"
+    dest: "{{ current_elasticsearch_base_path }}/config/elasticsearch.yml"
+    mode: '0644'
+  notify: "systemd | elasticsearch1 | restarted"
+
+- name: "provide {{ current_elasticsearch_key }} systemd unit file"
+  template:
+    src: "systemd/{{ current_elasticsearch_key }}.service.j2"
+    dest: "/etc/systemd/system/{{ current_elasticsearch_key }}.service"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: "systemd | elasticsearch1 | restarted"
