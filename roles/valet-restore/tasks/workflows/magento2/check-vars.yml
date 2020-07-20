@@ -61,6 +61,19 @@
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.version is defined
 
+- name: "workflows » magento2 » check-vars | set default mysql server port configuration"
+  set_fact:
+    valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mysql57 }}"
+
+- name: "workflows » magento2 » check-vars | override mysql server port configuration"
+  set_fact:
+    valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mysql80 }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mysql is defined
+    - valet_sh_project_vars.services.mysql.version is defined
+    - valet_sh_project_vars.services.mysql.version == 8.0
+
 - name: "workflows » magento2 » check-vars | default database name based on current working dir"
   set_fact:
     valet_sh_project_database_name: "{{ valet_working_dir }}"

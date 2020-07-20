@@ -32,7 +32,22 @@
     set_fact:
       valet_sh_magento2_db_name: "{{ valet_sh_project_vars.services.mysql.database }}"
       valet_sh_magento2_crypt_key: "{{ valet_sh_project_vars.instance.crypt_key }}"
-      vsh_m2_env_config: "{{ valet_sh_project_vars.instance.config.system.default }}"
+      vsh_m2_env_config_default: "{{ valet_sh_project_vars.instance.config.system.default | default([]) }}"
+      vsh_m2_env_config_stores: "{{ valet_sh_project_vars.instance.config.system.stores | default([]) }}"
+      vsh_m2_env_config_websites: "{{ valet_sh_project_vars.instance.config.system.websites | default([]) }}"
+
+  - name: "workflows » magento2 » project-env | set magento2 'valet_sh_magento2_db_host' var"
+    set_fact:
+      valet_sh_magento2_db_host: "{{ valet_sh_service_mysql_host_presets.mysql57 }}"
+
+  - name: "workflows » magento2 » project-env | override magento2 'valet_sh_magento2_db_host' var"
+    set_fact:
+      valet_sh_magento2_db_host: "{{ valet_sh_service_mysql_host_presets.mysql80 }}"
+    when:
+      - valet_sh_project_vars.services is defined
+      - valet_sh_project_vars.services.mysql is defined
+      - valet_sh_project_vars.services.mysql.version is defined
+      - valet_sh_project_vars.services.mysql.version == 8.0
 
   - name: "workflows » magento2 » project-env | set 'valet_sh_magento2_rabbitmq_virtualhost' var"
     set_fact:

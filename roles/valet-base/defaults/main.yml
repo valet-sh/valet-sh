@@ -42,3 +42,7 @@ valet_sh_elasticsearch_ports:
   6: 9206
   7: 9207
   8: 9208
+
+valet_sh_service_mysql_port_presets:
+  mysql57: "3307"
+  mysql80: "3308"
