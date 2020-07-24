@@ -40,15 +40,15 @@
 
 ## @TODO refactor to increase performance
 
-#- name: search for cert9.db files in users's home directory
-#  find:
-#    paths: "{{ current_home }}"
-#    recurse: yes
-#    patterns: 'cert9.db'
-#  register: available_cert9_files_obj
+- name: search for cert9.db files in users's home directory
+  find:
+    paths: "{{ current_home }}"
+    recurse: yes
+    patterns: 'cert9.db'
+  register: available_cert9_files_obj
 
-#- name: run certutil for every cert9 file
-#  shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ current_cert9_file_item.path | dirname }}'
-#  with_items: "{{ available_cert9_files_obj.files }}"
-#  loop_control:
-#    loop_var: current_cert9_file_item
+- name: run certutil for every cert9 file
+  shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ current_cert9_file_item.path | dirname }}'
+  with_items: "{{ available_cert9_files_obj.files }}"
+  loop_control:
+    loop_var: current_cert9_file_item
