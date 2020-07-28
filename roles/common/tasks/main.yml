@@ -10,10 +10,16 @@
      - git
      - curl
 
-- name: set max_map_count on host to 262144
+- name: set max_map_count to 262144
   sysctl:
     name: vm.max_map_count
     value: "262144"
     state: present
   become: true
 
+- name: set fs.inotify.max_user_watches to 524288
+  sysctl:
+    name: fs.inotify.max_user_watches
+    value: "524288"
+    state: present
+  become: true
