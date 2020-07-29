@@ -1,0 +1,22 @@
+---
+
+- name: set max_map_count to 262144
+  sysctl:
+    name: vm.max_map_count
+    value: "262144"
+    state: present
+    reload: no
+  become: true
+
+- name: set fs.inotify.max_user_watches to 524288
+  sysctl:
+    name: fs.inotify.max_user_watches
+    value: "524288"
+    state: present
+    reload: no
+  become: true
+
+- name: ensure homebrew is installed
+  shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
+  args:
+    creates: "/usr/local/bin/brew"

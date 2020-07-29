@@ -18,17 +18,17 @@
 valet_install_default_roles:
   - common
   - certificate
-  - network-manager
-  - elasticsearch
-  - zsh
-  - nginx
-  - redis
-  - php
-  - nodejs
-  - mailhog
-  - mysql-community-server
-  - magerun1
-  - magerun2
-  - rabbitmq
-  - composer
-  - google-chrome
+#  - network-manager
+#  - elasticsearch
+#  - zsh
+#  - nginx
+#  - redis
+#  - php
+#  - nodejs
+#  - mailhog
+#  - mysql-community-server
+#  - magerun1
+#  - magerun2
+#  - rabbitmq
+#  - composer
+#  - google-chrome

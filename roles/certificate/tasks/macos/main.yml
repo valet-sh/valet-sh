@@ -1,9 +1,9 @@
 ---
 
-- include_tasks: install.yml
+- include_tasks: macos/install.yml
 
-- include_tasks: ca.yml
+- include_tasks: macos/ca.yml
   when: cert_prefix is not defined
 
-- include_tasks: server.yml
+- include_tasks: macos/server.yml
   when: cert_prefix is defined
