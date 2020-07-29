@@ -1,0 +1,32 @@
+---
+
+- name: ca | ensure base directories existing
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - "{{ certificate_base_path }}"
+    - "{{ certificate_ca_cert_path }}"
+    - "{{ certificate_server_cert_path }}"
+  become: true
+
+- name: ca | generate private ca key
+  shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
+  args:
+    creates: "{{ certificate_ca_key_file }}"
+  become: true
+
+- name: ca | generate CA Certificate
+  shell: "openssl req -subj '/CN=TechDivision Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
+  args:
+    creates: "{{ certificate_ca_cert_file }}"
+  become: true
+  register: generate_trusted_root_ca_obj
+
+- name: "ca | add ca certificate to keystore"
+  shell: "security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ certificate_ca_cert_file }}"
+  become: true
+  when: generate_trusted_root_ca_obj is changed

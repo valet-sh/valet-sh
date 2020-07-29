@@ -7,7 +7,6 @@ cert_action: ca
 
 
 ### internal vars
-certificate_base_path: "/etc/ssl-self-signed"
 certificate_server_cert_path: "{{ certificate_base_path }}/server"
 
 certificate_ca_cert_path: "{{ certificate_base_path }}/ca"

@@ -1,0 +1,7 @@
+---
+
+- name: "install | ensure openssl is installed"
+  homebrew:
+    name: openssl
+    state: present
+

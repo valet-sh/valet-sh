@@ -6,7 +6,26 @@
     current_group: "{{ lookup('env','USER') }}"
     current_home: "{{ lookup('env','HOME') }}"
 
+- name: "set 'current_os' var"
+  set_fact:
+    current_os: "ubuntu"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: "set 'current_os' var"
+  set_fact:
+    current_os: "mac"
+  when: ansible_distribution == 'MacOSX'
+
+- name: fail when no supported operating system was found
+  fail:
+    msg: "no supported operating system"
+  when: current_os is not defined of current_os|length == 0
+
 - name: fail when running as root
   fail:
     msg: "Do not run this project as root!"
   when: current_user == "root"
+
+- name: include os specific vars
+  include_vars:
+    file: "vars/{{ current_os }}.yml"

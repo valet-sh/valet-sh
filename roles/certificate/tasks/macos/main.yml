@@ -1,0 +1,9 @@
+---
+
+- include_tasks: install.yml
+
+- include_tasks: ca.yml
+  when: cert_prefix is not defined
+
+- include_tasks: server.yml
+  when: cert_prefix is defined
