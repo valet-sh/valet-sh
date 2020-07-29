@@ -1,4 +1,4 @@
 ---
 
-nginx_dhparams_file: /etc/nginx/dhparam.pem
+nginx_dhparams_file: "{{ valet_sh_prefix }}/etc/nginx/dhparam.pem"
 nginx_dhparams_keysize: 2048

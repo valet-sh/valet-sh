@@ -6,6 +6,8 @@ certificate_tld: "{{ development_tld }}"
 cert_action: ca
 
 
+certificate_base_path: "{{ valet_sh_prefix }}/etc/ssl-self-signed"
+
 ### internal vars
 certificate_server_cert_path: "{{ certificate_base_path }}/server"
 

@@ -21,7 +21,7 @@ valet_install_default_roles:
   - network-manager
   - elasticsearch
   - zsh
-#  - nginx
+  - nginx
 #  - redis
 #  - php
 #  - nodejs

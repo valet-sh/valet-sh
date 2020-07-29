@@ -1,0 +1,30 @@
+---
+
+- name: "ensure nginx is installed"
+  homebrew:
+    name: nginx
+    state: present
+
+- name: Generate dhparams file
+  shell: "openssl dhparam -out {{ nginx_dhparams_file }} {{ nginx_dhparams_keysize }}"
+  args:
+    creates: "{{ nginx_dhparams_file }}"
+
+- name: Override default config
+  template:
+    src: "nginx.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/nginx.conf"
+    mode: '0644'
+  notify: brew | nginx | restarted
+
+- name: Create nginx conf.d dir
+  file:
+    path: "{{ valet_sh_prefix }}/etc/nginx/conf.d"
+    state: directory
+    mode: '0755'
+
+- name: Create nginx stream.d dir
+  file:
+    path: "{{ valet_sh_prefix }}/etc/nginx/stream.d"
+    state: directory
+    mode: '0755'

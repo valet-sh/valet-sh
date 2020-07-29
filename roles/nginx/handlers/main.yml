@@ -27,3 +27,15 @@
     name: nginx
     state: reloaded
   become: true
+
+- name: brew | nginx | restarted
+  shell: brew services restart nginx
+  become: true
+
+- name: brew | nginx | stopped
+  shell: brew services stop nginx
+  become: true
+
+- name: brew | nginx | started
+  shell: brew services start nginx
+  become: true

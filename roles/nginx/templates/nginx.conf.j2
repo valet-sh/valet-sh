@@ -1,7 +1,7 @@
-user {{ current_user }};
+user {{ current_user }} {{ current_group }};
 worker_processes auto;
-pid /run/nginx.pid;
-include /etc/nginx/modules-enabled/*.conf;
+pid {{ valet_sh_prefix }}/var/run/nginx.pid;
+include {{ valet_sh_prefix }}/etc/nginx/modules-enabled/*.conf;
 
 events {
     worker_connections 768;
@@ -19,7 +19,7 @@ http {
 
     client_max_body_size 128M;
 
-    include /etc/nginx/mime.types;
+    include {{ valet_sh_prefix }}/etc/nginx/mime.types;
     default_type application/octet-stream;
 
     ssl_session_cache  shared:SSL:10m;
@@ -32,8 +32,8 @@ http {
     ssl_prefer_server_ciphers on;
     ssl_dhparam {{ nginx_dhparams_file }};
 
-    access_log /var/log/nginx/access.log;
-    error_log /var/log/nginx/error.log;
+    access_log {{ valet_sh_prefix }}/var/log/nginx/access.log;
+    error_log {{ valet_sh_prefix }}/var/log/nginx/error.log;
 
     gzip on;
     gzip_disable "msie6";
@@ -74,10 +74,10 @@ http {
         server unix:/var/run/php/php7.4-fpm.sock;
     }
 
-    include /etc/nginx/conf.d/*.conf;
+    include {{ valet_sh_prefix }}/etc/nginx/conf.d/*.conf;
 }
 
 stream {
-    include /etc/nginx/stream.d/*.conf;
+    include {{ valet_sh_prefix }}/etc/nginx/stream.d/*.conf;
 }
 
