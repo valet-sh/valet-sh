@@ -20,7 +20,7 @@ valet_install_default_roles:
   - certificate
   - network-manager
   - elasticsearch
-#  - zsh
+  - zsh
 #  - nginx
 #  - redis
 #  - php
