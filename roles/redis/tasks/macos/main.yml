@@ -1,0 +1,9 @@
+---
+
+- name: "ensure redis is installed"
+  homebrew:
+    name: redis
+    state: present
+
+- name: "ensure redis is restarted"
+  shell: brew services restart redis

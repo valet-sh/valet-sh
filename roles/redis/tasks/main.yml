@@ -1,18 +1,7 @@
 ---
 
-- name: ensure redis packages are installed
-  apt:
-    name: "{{ packages }}"
-    state: present
-  become: true
-  vars:
-    packages:
-      - redis-server
-      - redis-tools
+- include_tasks: ubuntu/main.yml
+  when: current_os == "ubuntu"
 
-- name: ensure redis-server is running and enabled
-  systemd:
-    name: redis-server
-    state: started
-    enabled: yes
-  become: true
+- include_tasks: macos/main.yml
+  when: current_os == "mac"

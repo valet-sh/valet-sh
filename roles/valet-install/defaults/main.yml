@@ -22,7 +22,7 @@ valet_install_default_roles:
   - elasticsearch
   - zsh
   - nginx
-#  - redis
+  - redis
 #  - php
 #  - nodejs
 #  - mailhog
