@@ -1,0 +1,19 @@
+---
+
+- name: "ensure dnsmasq is installed"
+  homebrew:
+    name: dnsmasq
+    state: present
+
+- name: "ensure domain '{{ dnsmasq_domain }}' is handled by local dns"
+  lineinfile:
+    path: "/etc/resolver/{{ dnsmasq_domain }}"
+    line: 'nameserver 127.0.0.1'
+    create: true
+  become: true
+
+- name: "ensure dns resolving for .{{ dnsmasq_domain }} domain is handled by dnsmasq"
+  template:
+    src: development-domain.conf.j2
+    dest: "/usr/local/etc/dnsmasq.d/development-domain.conf"
+  notify: brew | dnsmasq | restarted

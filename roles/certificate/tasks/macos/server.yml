@@ -5,7 +5,7 @@
     path: "{{ certificate_server_domain_cert_path }}"
     state: directory
     owner: root
-    group: root
+    group: wheel
     mode: '0755'
   become: true
 
@@ -19,8 +19,8 @@
   file:
     path: "{{ certificate_server_domain_key_file }}"
     owner: root
-    group: root
-    mode: 0600
+    group: wheel
+    mode: '0400'
   become: true
 
 - name: provide req.cnf
@@ -28,7 +28,7 @@
     src: "req.cnf.j2"
     dest: "{{ certificate_server_domain_cnf_file }}"
     owner: root
-    group: root
+    group: wheel
     mode: '0644'
   become: true
 

@@ -19,6 +19,14 @@
     creates: "{{ certificate_ca_key_file }}"
   become: true
 
+- name: "ca | ensure only root can read ca key file"
+  file:
+    path: "{{ certificate_ca_key_file }}"
+    owner: root
+    group: root
+    mode: '0400'
+  become: true
+
 - name: ca | generate CA Certificate
   shell: "openssl req -subj '/CN=TechDivision Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
   args:

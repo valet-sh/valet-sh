@@ -1,24 +1,7 @@
 ---
 
-- name: "enable dns resolving for .{{ dnsmasq_domain }} domain"
-  template:
-    src: development-domain.conf.j2
-    dest: "{{ dnsmasq_conf_file }}"
-  notify: systemd | network-manager | reload
-  become: true
+- include_tasks: ubuntu/main.yml
+  when: current_os == "ubuntu"
 
-- name: enable dnsmasq in network-manager
-  lineinfile:
-    path: "/etc/NetworkManager/NetworkManager.conf"
-    insertafter: '^\[main\]'
-    line: 'dns=dnsmasq'
-  notify: systemd | network-manager | reload
-  become: true
-
-- name: remove /run/systemd/resolve/stub-resolv.conf symlink
-  file:
-    src: "/var/run/NetworkManager/resolv.conf"
-    dest: "/etc/resolv.conf"
-    state: link
-  notify: systemd | network-manager | reload
-  become: true
+- include_tasks: macos/main.yml
+  when: current_os == "mac"

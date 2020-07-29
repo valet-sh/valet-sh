@@ -27,3 +27,15 @@
     name: network-manager
     state: restarted
   become: true
+
+- name: brew | dnsmasq | restarted
+  shell: brew services restart dnsmasq
+  become: true
+
+- name: brew | dnsmasq | stopped
+  shell: brew services stop dnsmasq
+  become: true
+
+- name: brew | dnsmasq | started
+  shell: brew services start dnsmasq
+  become: true
