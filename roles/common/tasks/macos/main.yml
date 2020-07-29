@@ -20,3 +20,8 @@
   shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
   args:
     creates: "/usr/local/bin/brew"
+
+- name: Ensure valet-sh tap is tapped
+  homebrew_tap:
+    tap: 'valet-sh/core'
+    state: present
