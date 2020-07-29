@@ -1,0 +1,31 @@
+---
+
+- name: "ensure adoptopenjdk8 is installed"
+  homebrew_cask:
+    name: "homebrew/cask-versions/adoptopenjdk8"
+    state: present
+
+- name: "ensure vsh-elasticsearch1 is installed"
+  homebrew:
+    name: vsh-elasticsearch1
+    state: present
+
+- name: "ensure vsh-elasticsearch2 is installed"
+  homebrew:
+    name: vsh-elasticsearch2
+    state: present
+
+- name: "ensure vsh-elasticsearch5 is installed"
+  homebrew:
+    name: vsh-elasticsearch5
+    state: present
+
+- name: "ensure vsh-elasticsearch6 is installed"
+  homebrew:
+    name: vsh-elasticsearch6
+    state: present
+
+- name: "ensure vsh-elasticsearch7 is installed"
+  homebrew:
+    name: vsh-elasticsearch7
+    state: present

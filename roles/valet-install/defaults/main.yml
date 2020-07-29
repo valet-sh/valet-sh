@@ -19,7 +19,7 @@ valet_install_default_roles:
   - common
   - certificate
   - network-manager
-#  - elasticsearch
+  - elasticsearch
 #  - zsh
 #  - nginx
 #  - redis

@@ -1,0 +1,30 @@
+---
+
+- name: "ensure openjdk8 and openjdk11 is installed"
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - openjdk-11-jre
+      - openjdk-8-jre
+  become: true
+
+- name: "ensure {{ elasticsearch_pid_path }} is created"
+  file:
+    path: "{{ elasticsearch_pid_path }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: '0755'
+    state: directory
+  become: true
+
+- include_tasks: install-v1.yml
+
+- include_tasks: install-v2.yml
+
+- include_tasks: install-v5.yml
+
+- include_tasks: install-v6.yml
+
+- include_tasks: install-v7.yml
