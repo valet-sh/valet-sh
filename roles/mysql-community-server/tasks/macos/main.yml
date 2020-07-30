@@ -15,20 +15,26 @@
 ##
 ---
 
-valet_install_default_roles:
-  - common
-  - certificate
-  - network-manager
-  - elasticsearch
-  - zsh
-  - nginx
-  - redis
-  - php
-  - nodejs
-  - mailhog
-  - mysql-community-server
-  - magerun1
-  - magerun2
-  - rabbitmq
-  - composer
-  - google-chrome
+- name: "ensure vsh-mysql57 is installed"
+  homebrew:
+    name: vsh-mysql57
+    state: present
+  notify: brew | vsh-mysql57 | restarted
+
+- name: "provide .my.cnf configuration file"
+  template:
+    src: "mysql57/.my.cnf.j2"
+    dest: "{{ current_home }}/.my5.7.cnf"
+    mode: '0644'
+
+#- name: "ensure vsh-mysql80 is installed"
+#  homebrew:
+#    name: vsh-mysql80
+#    state: present
+#  notify: brew | vsh-mysql80 | restarted
+
+#- name: "provide .my.cnf configuration file"
+#  template:
+#    src: "mysql80/.my.cnf.j2"
+#    dest: "{{ current_home }}/.my8.0.cnf"
+#    mode: '0644'

@@ -15,20 +15,12 @@
 ##
 ---
 
-valet_install_default_roles:
-  - common
-  - certificate
-  - network-manager
-  - elasticsearch
-  - zsh
-  - nginx
-  - redis
-  - php
-  - nodejs
-  - mailhog
-  - mysql-community-server
-  - magerun1
-  - magerun2
-  - rabbitmq
-  - composer
-  - google-chrome
+
+- include_tasks: migrations/main.yml
+
+
+- include_tasks: base.yml
+
+- include_tasks: install-57.yml
+
+- include_tasks: install-80.yml

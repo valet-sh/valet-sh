@@ -1,0 +1,13 @@
+---
+
+- name: check if magerun1 is installed
+  stat:
+    path: "{{ magerun1_bin_path }}"
+  register: magerun1_file_obj
+
+- name: ensure that magerun1 is installed
+  get_url:
+    url: "{{ magerun1_download_url }}"
+    dest: "{{ magerun1_bin_path }}"
+    mode: 0755
+  when: magerun1_file_obj.stat.exists == False

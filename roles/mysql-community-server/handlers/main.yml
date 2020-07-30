@@ -61,3 +61,21 @@
     daemon_reload: true
     state: restarted
   become: true
+
+- name: brew | vsh-mysql57 | started
+  shell: brew services start vsh-mysql57
+
+- name: brew | vsh-mysql57 | stopped
+  shell: brew services stop vsh-mysql57
+
+- name: brew | vsh-mysql57 | restarted
+  shell: brew services restart vsh-mysql57
+
+- name: brew | vsh-mysql80 | started
+  shell: brew services start vsh-mysql80
+
+- name: brew | vsh-mysql80 | stopped
+  shell: brew services stop vsh-mysql80
+
+- name: brew | vsh-mysql80 | restarted
+  shell: brew services restart vsh-mysql80

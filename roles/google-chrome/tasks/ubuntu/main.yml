@@ -1,0 +1,33 @@
+##
+# Copyright (c) 2019 TechDivision GmbH
+# All rights reserved
+#
+# This product includes proprietary software developed at TechDivision GmbH, Germany
+# For more information see http://www.techdivision.com/
+#
+# To obtain a valid license for using this software please contact us at
+# license@techdivision.com
+##
+---
+
+- name: add chrome repository signin key
+  apt_key:
+    url: https://dl.google.com/linux/linux_signing_key.pub
+    state: present
+  become: true
+
+- name: add chrome repository
+  apt_repository:
+    filename: "google-chrome"
+    repo: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+  become: true
+
+- name: install google chrome stable
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - google-chrome-stable
+  become: true

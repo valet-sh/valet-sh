@@ -1,14 +1,7 @@
 ---
 
-- name: check if magerun2 is installed
-  stat:
-    path: "{{ magerun2_bin_path }}"
-  register: magerun2_file_obj
+- include_tasks: ubuntu/main.yml
+  when: current_os == "ubuntu"
 
-- name: ensure that magerun2 is installed
-  get_url:
-    url: "{{ magerun2_download_url }}"
-    dest: "{{ magerun2_bin_path }}"
-    mode: 0755
-  when: magerun2_file_obj.stat.exists == False
-  become: true
+- include_tasks: macos/main.yml
+  when: current_os == "mac"

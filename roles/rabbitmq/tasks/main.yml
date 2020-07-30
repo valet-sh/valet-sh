@@ -1,57 +1,7 @@
 ---
 
-- name: ensure rabbitmq-server is installed
-  apt:
-    name: rabbitmq-server
-    state: present
-  become: true
+- include_tasks: ubuntu/main.yml
+  when: current_os == "ubuntu"
 
-- name: ensure rabbitmq-server is running and enabled
-  service:
-    name: rabbitmq-server
-    state: started
-    enabled: yes
-  become: true
-
-- name: Ensure the rabbitmq_management plugin is enabled
-  rabbitmq_plugin:
-    names: rabbitmq_management
-    state: enabled
-  become: true
-
-- name: "generate ssl-certificate for rabbitmq.{{ development_tld }}"
-  include_role:
-    name: certificate
-    public: true
-  vars:
-    cert_prefix: rabbitmq
-
-- name: "ensure systemd rabbitmq-server config directory exists"
-  file:
-    path: "/etc/systemd/system/rabbitmq-server.service.d/"
-    state: directory
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-
-- name: ensure rabbitmq-server.service override.conf is up2date
-  template:
-    src: "rabbitmq-server.service.j2"
-    dest: "/etc/systemd/system/rabbitmq-server.service.d/override.conf"
-    owner: root
-    group: root
-    mode: '0644'
-  notify: systemd | rabbitmq-server | full-restart
-  become: true
-
-- name: provide nginx vhost configuration for rabbitmq management plugin
-  template:
-    src: "rabbitmq.conf.j2"
-    dest: "/etc/nginx/conf.d/rabbitmq.conf"
-    owner: root
-    group: root
-    mode: '0644'
-  notify: systemd | nginx | reloaded
-  become: true
-
+- include_tasks: macos/main.yml
+  when: current_os == "mac"
