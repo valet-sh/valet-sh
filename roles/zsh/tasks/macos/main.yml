@@ -20,6 +20,11 @@
           . ~/.aliases
       fi
 
+- name: ensure .profile file exists
+  file:
+    path: "{{ current_home }}/.profile"
+    state: touch
+
 - name: check for .zprofile file in user's home directory
   stat:
     path: "{{ current_home }}/.zprofile"
