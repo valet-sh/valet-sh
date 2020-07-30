@@ -20,3 +20,12 @@
     name: mailhog
     state: restarted
   become: true
+
+- name: brew | mailhog | stopped
+  shell: brew services stop mailhog
+
+- name: brew | mailhog | started
+  shell: brew services start mailhog
+
+- name: brew | mailhog | restart
+  shell: brew services restart mailhog
