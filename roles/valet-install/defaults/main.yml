@@ -23,7 +23,7 @@ valet_install_default_roles:
   - zsh
   - nginx
   - redis
-#  - php
+  - php
 #  - nodejs
 #  - mailhog
 #  - mysql-community-server

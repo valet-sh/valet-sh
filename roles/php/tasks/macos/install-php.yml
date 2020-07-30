@@ -1,0 +1,44 @@
+---
+
+- name: "ensure {{ current_php }} is installed"
+  homebrew:
+    name: "{{ current_php }}"
+    state: present
+
+- name: "ensure xdebug config file exists"
+  lineinfile:
+    path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug.ini"
+    line: 'zend_extension=xdebug.so'
+    create: true
+
+- name: "ensure imagick config file exists"
+  lineinfile:
+    path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/imagick.ini"
+    line: 'extension=imagick.so'
+    create: true
+
+- name: "ensure imagick module is enabled"
+  file:
+    src: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/imagick.ini"
+    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/conf.d/imagick.ini"
+    state: link
+  notify: "brew | {{ current_php }} | restarted"
+
+- name: get stat for error.log file
+  stat:
+    path: "{{ php_error_log_path }}"
+  register: php_error_log_file_obj
+
+- name: create php_errors.log file
+  file:
+    dest:  "{{ php_error_log_path }}"
+    state: "{{ 'file' if  php_error_log_file_obj.stat.exists else 'touch' }}"
+    mode: '0755'
+  become: true
+
+- name: ensure php configuration is up2date
+  template:
+    src: "macos/valet-sh.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/conf.d/95-valet-sh.ini"
+    mode: '0644'
+  notify: "brew | {{ current_php }} | restarted"

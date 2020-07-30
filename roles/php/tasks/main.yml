@@ -1,33 +1,7 @@
 ---
 
-- include_tasks: "migrations/main.yml"
+- include_tasks: ubuntu/main.yml
+  when: current_os == "ubuntu"
 
-- name: ensure apt-transport-https is installed
-  apt:
-    name: apt-transport-https
-    state: present
-  become: true
-
-- name: use php ppa (Ubuntu)
-  apt_repository:
-    repo: 'ppa:ondrej/php'
-  become: true
-
-- name: "install defined php versions"
-  include: install-php.yml
-    current_php="{{ item }}"
-  with_items: "{{ php_multi }}"
-
-- name: "install php-imagick"
-  apt:
-    name: php-imagick
-    state: present
-  become: true
-
-- name: "set default php cli version"
-  alternatives:
-    name: php
-    path: "/usr/bin/php{{ item.version }}"
-  with_items: "{{ php_multi }}"
-  when: (item.default is defined) and (item.default == true)
-  become: true
+- include_tasks: macos/main.yml
+  when: current_os == "mac"
