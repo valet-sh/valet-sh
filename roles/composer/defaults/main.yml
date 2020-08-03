@@ -26,3 +26,17 @@ composer_aliases:
     target: "/usr/bin/php7.3 {{ composer_bin }}"
   - alias: "composer_php7.4"
     target: "/usr/bin/php7.4 {{ composer_bin }}"
+
+composer_aliases_mac:
+  - alias: "composer_php5.6"
+    target: "/usr/local/bin/php5.6 {{ composer_bin }}"
+  - alias: "composer_php7.0"
+    target: "/usr/local/bin/php7.0 {{ composer_bin }}"
+  - alias: "composer_php7.1"
+    target: "/usr/local/bin/php7.1 {{ composer_bin }}"
+  - alias: "composer_php7.2"
+    target: "/usr/local/bin/php7.2 {{ composer_bin }}"
+  - alias: "composer_php7.3"
+    target: "/usr/local/bin/php7.3 {{ composer_bin }}"
+  - alias: "composer_php7.4"
+    target: "/usr/local/bin/php7.4 {{ composer_bin }}"

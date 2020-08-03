@@ -78,3 +78,47 @@ valet_sh_service_alias_mapping:
   php74: "php7.4-fpm"
   rabbitmq: "rabbitmq-server"
   redis: "redis-server"
+
+valet_sh_service_defaultable_services_macos:
+  - scope: elasticsearch
+    default: vsh-elasticsearch6
+    values:
+      - vsh-elasticsearch1
+      - vsh-elasticsearch2
+      - vsh-elasticsearch5
+      - vsh-elasticsearch6
+      - vsh-elasticsearch7
+  - scope: php
+    default: vsh-php73
+    values:
+      - vsh-php56
+      - vsh-php70
+      - vsh-php71
+      - vsh-php72
+      - vsh-php73
+      - vsh-php74
+  - scope: mysql
+    default: vsh-mysql57
+    values:
+      - vsh-mysql57
+      - vsh-mysql80
+
+
+valet_sh_service_state_preset_macos:
+  - vsh-elasticsearch1: false
+  - vsh-elasticsearch2: false
+  - vsh-elasticsearch5: false
+  - vsh-elasticsearch6: true
+  - vsh-elasticsearch7: false
+  - vsh-php56: false
+  - vsh-php70: false
+  - vsh-php71: false
+  - vsh-php72: true
+  - vsh-php73: true
+  - vsh-php74: true
+  - vsh-mysql57: true
+  - vsh-mysql80: false
+  - rabbitmq: false
+  - redis: true
+
+valet_sh_service_alias_mapping_macos: {}

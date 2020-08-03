@@ -1,0 +1,93 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "actions » enable | fail when no service name was given"
+  fail:
+    msg: "no service name was given"
+  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
+
+- name: "actions » enable | check for alias service name"
+  set_fact:
+    valet_service_name_alias: "{{ item.value }}"
+  when: item.key == valet_service_name
+  with_dict: "{{ valet_sh_service_alias_mapping_macos }}"
+
+- name: "actions » enable | enable {{ valet_service_name }} service"
+  shell: "brew services start {{ valet_service_name }}"
+  become: true
+  when: valet_service_name_alias|length == 0
+
+- name: "actions » enable | enable {{ valet_service_name }} service"
+  shell: "brew services start {{ valet_service_name }}"
+  when: valet_service_name_alias|length == 0
+
+- name: "actions » enable | enable {{ valet_service_name }} service"
+  shell: "brew services start {{ valet_service_name_alias }}"
+  become: true
+  when: valet_service_name_alias|length > 0
+
+- name: "actions » enable | enable {{ valet_service_name }} service"
+  shell: "brew services start {{ valet_service_name_alias }}"
+  when: valet_service_name_alias|length > 0
+
+
+
+
+- name: "actions » enable | enable {{ valet_service_name }} service"
+  systemd:
+    name: "{{ valet_service_name }}"
+    enabled: yes
+    state: started
+  become: true
+  when: valet_service_name_alias|length == 0
+
+- name: "actions » enable | enable {{ valet_service_name }} service"
+  systemd:
+    name: "{{ valet_service_name_alias }}"
+    enabled: yes
+    state: started
+  become: true
+  when: valet_service_name_alias|length > 0
+
+- name: "actions » enable | include valet services file"
+  include_vars:
+    file: "{{ valet_etc_services_file }}"
+    name: valet_sh_services_obj
+
+- name: "actions » enable | prepare new config element"
+  set_fact:
+    new_service_state_element: "{ '{{ valet_service_name }}': true }"
+
+- name: "actions » enable | update service object"
+  set_fact:
+    valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+- name: "actions » enable | merge objects"
+  set_fact:
+    valet_sh_services_obj:
+      states: "{{ valet_sh_services_updated_states }}"
+      defaults: "{{ valet_sh_services_obj.defaults }}"
+
+- name: "actions » enable | transform object into nice yaml output"
+  set_fact:
+    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+- name: "actions » enable | write new services.yml file"
+  copy:
+    content: "{{ valet_etc_services_list }}"
+    dest: "{{ valet_etc_services_file }}"
+  become: true

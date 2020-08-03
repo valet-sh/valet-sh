@@ -1,0 +1,47 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: set valet_service_name version
+  set_fact:
+    valet_service_name_version: "{{ valet_service_name[-2:-1] }}.{{ valet_service_name[-1] }}"
+
+- name: "create symlinks for default mysql"
+  file:
+    src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ valet_service_name_version }}"
+    dest: "/usr/local/bin/{{ current_mysql_default_linkname }}"
+    state: link
+    force: true
+  with_items:
+    - mysql
+    - mysqldump
+    - mysqladmin
+  loop_control:
+    loop_var: current_mysql_default_linkname
+
+- name: "create .my.cnf symlink"
+  file:
+    src: "{{ current_home }}/.my{{ valet_service_name_version }}.cnf"
+    dest: "{{ current_home }}/.my.cnf"
+    state: link
+    force: true
+
+- name: "provide nginx stream configuration"
+  template:
+    src: "nginx/mysql.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/mysql.conf"
+    mode: '0644'
+  notify: brew | nginx | restarted
