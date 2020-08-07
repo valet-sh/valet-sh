@@ -162,6 +162,7 @@
     repo: "{{ ubuntu_dell_repositories_item }}"
     state: present
     filename: ubuntu_dell
+  with_items: "{{ ubuntu_dell_repositories }}"
   loop_control:
     loop_var: ubuntu_dell_repositories_item
 
