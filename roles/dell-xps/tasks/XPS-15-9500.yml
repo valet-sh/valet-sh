@@ -59,21 +59,12 @@
     - /etc/default/tlp
     - /etc/tlp.d
 
-- name: "enable graphic drivers ppa"
-  apt_repository:
-    repo: ppa:graphics-drivers/ppa
-    update_cache: yes
-    state: present
-  become: true
-  when: ansible_distribution_release == "bionic"
-
 - name: "disable graphic drivers ppa"
   apt_repository:
     repo: ppa:graphics-drivers/ppa
     update_cache: yes
     state: absent
   become: true
-  when: ansible_distribution_release != "bionic"
 
 - name: "run ubuntu-drivers autoinstall"
   shell: "ubuntu-drivers autoinstall"
@@ -95,27 +86,8 @@
 - apt_repository:
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: yes
-    state: present
-  become: true
-  when: ansible_distribution_release == "bionic"
-
-- apt_repository:
-    repo: ppa:eh5/pulseaudio-a2dp
-    update_cache: yes
     state: absent
   become: true
-  when: ansible_distribution_release != "bionic"
-
-- name: install bluetooth sound codec packages
-  apt:
-    name: "{{ packages }}"
-  vars:
-    packages:
-      - libavcodec58
-      - libldac
-      - pulseaudio-modules-bt
-  become: true
-  when: ansible_distribution_release == "bionic"
 
 - name: install intel microcode updates
   apt:
@@ -152,15 +124,11 @@
   shell: "prime-select intel"
   become: true
 
-- include_tasks: "hardware-related/bbswitch.yml"
-  when: ansible_distribution_release == "focal"
-
 - name: "ensure backport-iwlwifi-dkms package is NOT installed on focal"
   apt:
     name: "backport-iwlwifi-dkms"
     state: absent
   become: true
-  when: ansible_distribution_release == "focal"
 
 - name: update grub config
   lineinfile:
@@ -184,22 +152,21 @@
     - tracker-store.desktop
   become: true
 
-- set_fact:
-    systemd_sleep_modulename: "i2c_hid"
+- name: add dell repository key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: "{{ ubuntu_dell_repository_key }}"
 
-- name: provide systemd sleep configuration for touchpad
-  template:
-    src: systemd-sleep-module.j2
-    dest: "/lib/systemd/system-sleep/touchpad"
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-
-- name: install Ubuntu Hardware Enablement Stack
-  apt:
-    name: "{{ ubuntu_hwe_packages }}"
+- name: add ubuntu dell repositories
+  apt_repository:
+    repo: "{{ ubuntu_dell_repositories_item }}"
     state: present
-    install_recommends: true
+    filename: ubuntu_dell
+  loop_control:
+    loop_var: ubuntu_dell_repositories_item
+
+- name: "ensure fingerprint driver is installed"
+  apt:
+    name: ['oem-somerville-melisa-meta', 'libfprint-2-tod1-goodix', 'oem-somerville-meta', 'tlp-config -y']
+    state: present
   become: true
-  when: ansible_distribution_release == "bionic"
