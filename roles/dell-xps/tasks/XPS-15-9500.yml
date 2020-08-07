@@ -168,6 +168,6 @@
 
 - name: "ensure fingerprint driver is installed"
   apt:
-    name: ['oem-somerville-melisa-meta', 'libfprint-2-tod1-goodix', 'oem-somerville-meta', 'tlp-config -y']
+    name: ['oem-somerville-melisa-meta', 'libfprint-2-tod1-goodix', 'oem-somerville-meta']
     state: present
   become: true
