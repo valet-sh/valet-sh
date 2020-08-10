@@ -66,8 +66,10 @@
     state: absent
   become: true
 
-- name: "run ubuntu-drivers autoinstall"
-  shell: "ubuntu-drivers autoinstall"
+- name: ensure nvidia driver is installed
+  apt:
+    name: "nvidia-driver-440"
+    state: present
   become: true
 
 - name: install video codec packages
