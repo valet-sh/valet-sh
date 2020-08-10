@@ -156,6 +156,7 @@
   apt_key:
     keyserver: keyserver.ubuntu.com
     id: "{{ ubuntu_dell_repository_key }}"
+  become: true
 
 - name: add ubuntu dell repositories
   apt_repository:
@@ -165,6 +166,7 @@
   with_items: "{{ ubuntu_dell_repositories }}"
   loop_control:
     loop_var: ubuntu_dell_repositories_item
+  become: true
 
 - name: "ensure fingerprint driver is installed"
   apt:
