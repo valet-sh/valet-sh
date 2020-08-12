@@ -21,6 +21,7 @@ supported_models:
   - XPS 15 9560
   - XPS 15 9570
   - XPS 15 7590
+  - XPS 15 9500
   - XPS 13 9370
   - XPS 13 9380
 
@@ -35,7 +36,6 @@ basic_packages:
   - htop
   - iotop
   - aptitude
-#  - python-mysqldb
   - git
   - sudo
   - unzip
@@ -74,3 +74,11 @@ atheros_firmware:
 ubuntu_hwe_packages:
   - "linux-generic-hwe-{{ ansible_distribution_version }}"
   - "xserver-xorg-hwe-{{ ansible_distribution_version }}"
+
+ubuntu_dell_repositories:
+  - "deb http://dell.archive.canonical.com/updates/ {{ ansible_distribution_release }}-dell public"
+  - "deb http://dell.archive.canonical.com/updates/ {{ ansible_distribution_release }}-oem public"
+  - "deb http://dell.archive.canonical.com/updates/ {{ ansible_distribution_release }}-somerville public"
+  - "deb http://dell.archive.canonical.com/updates/ {{ ansible_distribution_release }}-somerville-melisa public"
+
+ubuntu_dell_repository_key: "F9FDA6BED73CDC22"
