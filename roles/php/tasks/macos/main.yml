@@ -1,16 +1,18 @@
 ---
 
-- name: asd
+- name: "define path to php error log"
   set_fact:
     php_error_log_path: "/tmp/php_errors.log"
 
 - name: "install defined php versions"
   include: macos/install-php.yml
-    current_php="{{ item }}"
+    current_php="{{ valet_sh_php_version_item }}"
   with_items:
-    #- vsh-php56
-    #- vsh-php70
+    - vsh-php56
+    - vsh-php70
     - vsh-php71
     - vsh-php72
     - vsh-php73
     - vsh-php74
+  loop_control:
+    loop_var: valet_sh_php_version_item
