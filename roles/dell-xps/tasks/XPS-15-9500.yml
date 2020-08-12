@@ -99,6 +99,8 @@
       - intel-microcode
   become: true
 
+- include_tasks: "hardware-related/bbswitch.yml"
+
 - name: enable fan speed with lm-sensors
   lineinfile:
     path: /etc/modprobe.d/dell-smm-hwmon.conf
