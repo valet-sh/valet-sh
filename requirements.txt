@@ -1,4 +1,5 @@
 setuptools
+testresources
 ansible==2.8.8
 beautifultable==0.5.3
 PyMySQL
