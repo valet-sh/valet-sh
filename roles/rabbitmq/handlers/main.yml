@@ -35,3 +35,13 @@
   systemd:
     daemon_reload: yes
   become: true
+
+- name: brew | rabbitmq | started
+  shell: brew services start rabbitmq
+
+- name: brew | rabbitmq | stopped
+  shell: brew services stop rabbitmq
+
+- name: brew | rabbitmq | restarted
+  shell: brew services restart rabbitmq
+
