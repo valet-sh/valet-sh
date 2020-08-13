@@ -15,4 +15,8 @@
 ##
 ---
 
-allow_duplicates: false
+dnsmasq_conf_file_default: "/etc/NetworkManager/dnsmasq.d/development-domain.conf"
+dnsmasq_conf_file: "{{ lookup('vars', 'dnsmasq_conf_file'+current_os, default=dnsmasq_conf_file_default) }}"
+
+dnsmasq_domain_default: "{{ development_tld }}"
+dnsmasq_domain: "{{ lookup('vars', 'dnsmasq_domain'+current_os, default=dnsmasq_domain_default) }}"

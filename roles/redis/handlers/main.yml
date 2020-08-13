@@ -15,4 +15,30 @@
 ##
 ---
 
-allow_duplicates: false
+- name: systemd | redis-server | started
+  systemd:
+    name: redis-server
+    state: started
+  become: true
+
+- name: systemd | redis-server | stopped
+  systemd:
+    name: redis-server
+    state: stopped
+  become: true
+
+- name: systemd | redis-server | restarted
+  systemd:
+    name: redis-server
+    state: restarted
+  become: true
+
+- name: brew | redis | started
+  shell: brew services start redis
+
+- name: brew | redis | stopped
+  shell: brew services stop redis
+
+- name: brew | redis | restarted
+  shell: brew services restart redis
+

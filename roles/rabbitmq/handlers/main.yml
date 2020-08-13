@@ -1,24 +1,24 @@
 ---
 
-- name: service | rabbitmq-server | started
+- name: systemd | rabbitmq-server | started
   systemd:
     name: rabbitmq-server
     state: started
   become: true
 
-- name: service | rabbitmq-server | stopped
+- name: systemd | rabbitmq-server | stopped
   systemd:
     name: rabbitmq-server
     state: stopped
   become: true
 
-- name: service | rabbitmq-server | restarted
+- name: systemd | rabbitmq-server | restarted
   systemd:
     name: rabbitmq-server
     state: restarted
   become: true
 
-- name: service | rabbitmq-server | reloaded
+- name: systemd | rabbitmq-server | reloaded
   systemd:
     name: rabbitmq-server
     state: reloaded
@@ -28,11 +28,6 @@
   systemd:
     name: rabbitmq-server
     state: restarted
-    daemon_reload: yes
-  become: true
-
-- name: systemd | reload
-  systemd:
     daemon_reload: yes
   become: true
 

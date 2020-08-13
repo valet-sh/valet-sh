@@ -1,0 +1,40 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+elasticsearch_base_path_default: "{{ valet_packages_path }}/elasticsearch"
+elasticsearch_base_path: "{{ lookup('vars', 'elasticsearch_base_path'+current_os, default=elasticsearch_base_path_default) }}"
+
+elasticsearch_pid_path_default: "/var/run/elasticsearch"
+elasticsearch_pid_path: "{{ lookup('vars', 'elasticsearch_pid_path'+current_os, default=elasticsearch_pid_path_default) }}"
+
+elasticsearch_version_1_download_url: "https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.5.tar.gz"
+elasticsearch_version_2_download_url: "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.6/elasticsearch-2.4.6.tar.gz"
+elasticsearch_version_5_download_url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.16.tar.gz"
+elasticsearch_version_6_download_url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.9.tar.gz"
+elasticsearch_version_7_download_url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.7.0-linux-x86_64.tar.gz"
+
+elasticsearch_use_plugins: true
+
+elasticsearch_plugins_default:
+    - analysis-phonetic
+    - analysis-icu
+elasticsearch_plugins: "{{ lookup('vars', 'elasticsearch_plugins'+current_os, default=elasticsearch_plugins_default) }}"
+
+elasticsearch_legacy_plugins_default:
+    - elasticsearch/elasticsearch-analysis-phonetic/2.7.0
+    - elasticsearch/elasticsearch-analysis-icu/2.7.0
+elasticsearch_legacy_plugins: "{{ lookup('vars', 'elasticsearch_legacy_plugins'+current_os, default=elasticsearch_legacy_plugins_default) }}"

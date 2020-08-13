@@ -36,7 +36,7 @@
 - name: ca | copy CA-Certificate file
   copy:
     src: "{{ certificate_ca_cert_file }}"
-    dest: "{{ trusted_root_ca_path }}/TechDivision_Development_CA.crt"
+    dest: "{{ certificate_trusted_root_ca_path }}/valet-sh_development_CA.crt"
     mode: '0644'
   register: copy_ca_to_trusted_root_ca_path_obj
   become: true

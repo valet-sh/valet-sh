@@ -15,4 +15,8 @@
 ##
 ---
 
-allow_duplicates: false
+nginx_dhparams_file_default: "{{ valet_sh_prefix }}/etc/nginx/dhparam.pem"
+nginx_dhparams_file: "{{ lookup('vars', 'nginx_dhparams_file'+'_'+current_os, default=nginx_dhparams_file_default) }}"
+
+nginx_dhparams_keysize_default: 2048
+nginx_dhparams_keysize: "{{ lookup('vars', 'nginx_dhparams_keysize'+'_'+current_os, default=nginx_dhparams_keysize_default) }}"

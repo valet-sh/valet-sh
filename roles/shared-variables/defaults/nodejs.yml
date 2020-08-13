@@ -15,4 +15,8 @@
 ##
 ---
 
-allow_duplicates: false
+nvm_version_default: "v0.35.3"
+nvm_version: "{{ lookup('vars', 'nvm_version'+current_os, default=nvm_version_default) }}"
+
+node_version_default: "11"
+node_version: "{{ lookup('vars', 'node_version'+current_os, default=node_version_default) }}"

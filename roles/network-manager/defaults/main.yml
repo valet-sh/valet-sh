@@ -1,4 +1,0 @@
----
-
-dnsmasq_conf_file: "/etc/NetworkManager/dnsmasq.d/development-domain.conf"
-dnsmasq_domain: "{{ development_tld }}"
