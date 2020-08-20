@@ -15,8 +15,11 @@
 ##
 ---
 
-nvm_version_default: "v0.35.3"
-nvm_version: "{{ lookup('vars', 'nvm_version'+current_os, default=nvm_version_default) }}"
+- name: "sub » write | transform object into nice yaml output"
+  set_fact:
+    valet_links_list: "{{ valet_links_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
 
-node_version_default: "11"
-node_version: "{{ lookup('vars', 'node_version'+current_os, default=node_version_default) }}"
+- name: "sub » write | write new links.yml file"
+  copy:
+    content: "{{ valet_links_list }}"
+    dest: "{{ valet_etc_links_file }}"

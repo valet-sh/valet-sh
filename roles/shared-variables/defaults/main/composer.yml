@@ -16,13 +16,13 @@
 ---
 
 composer_setup_tmp_default: "/tmp/composer-setup.php"
-composer_setup_tmp: "{{ lookup('vars', 'composer_setup_tmp'+current_os, default=composer_setup_tmp_default) }}"
+composer_setup_tmp: "{{ lookup('vars', 'composer_setup_tmp'+'_'+current_os, default=composer_setup_tmp_default) }}"
 
 composer_path_default: "/usr/local/bin"
-composer_path: "{{ lookup('vars', 'composer_path'+current_os, default=composer_path_default) }}"
+composer_path: "{{ lookup('vars', 'composer_path'+'_'+current_os, default=composer_path_default) }}"
 
 composer_bin_default: "{{ composer_path }}/composer"
-composer_bin: "{{ lookup('vars', 'composer_bin'+current_os, default=composer_bin_default) }}"
+composer_bin: "{{ lookup('vars', 'composer_bin'+'_'+current_os, default=composer_bin_default) }}"
 
 composer_aliases_default:
   - alias: "composer_php5.6"
@@ -50,4 +50,4 @@ composer_aliases_mac:
     target: "/usr/local/bin/php7.3 {{ composer_bin }}"
   - alias: "composer_php7.4"
     target: "/usr/local/bin/php7.4 {{ composer_bin }}"
-composer_aliases: "{{ lookup('vars', 'composer_aliases'+current_os, default=composer_aliases_default) }}"
+composer_aliases: "{{ lookup('vars', 'composer_aliases'+'_'+current_os, default=composer_aliases_default) }}"

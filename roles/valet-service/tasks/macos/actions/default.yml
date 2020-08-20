@@ -25,7 +25,7 @@
     valet_sh_service_service_is_allowed: true
   when: valet_service_name in item.1
   with_subelements:
-    - "{{ valet_sh_service_defaultable_services_macos }}"
+    - "{{ valet_sh_service_defaultable_services }}"
     - values
 
 - name: "actions » default | fail when action is not allowed"
@@ -37,7 +37,7 @@
   include_tasks: "defaults/{{ item.0.scope }}.yml"
   when: valet_service_name in item.1
   with_subelements:
-    - "{{ valet_sh_service_defaultable_services_macos }}"
+    - "{{ valet_sh_service_defaultable_services }}"
     - values
 
 - name: "actions » default | save service scope"
@@ -45,7 +45,7 @@
     valet_service_name_scope: "{{ item.0.scope }}"
   when: valet_service_name in item.1
   with_subelements:
-    - "{{ valet_sh_service_defaultable_services_macos }}"
+    - "{{ valet_sh_service_defaultable_services }}"
     - values
 
 - name: "actions » default | include valet services file"
@@ -75,4 +75,3 @@
   copy:
     content: "{{ valet_etc_services_list }}"
     dest: "{{ valet_etc_services_file }}"
-  become: true

@@ -1,0 +1,88 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "link | check if link_name variable is set"
+  fail:
+    msg: "link_name variable is not set"
+  when: link_name is not defined
+
+- name: "link | check if valet_current_path variable is set"
+  fail:
+    msg: "valet_current_path variable is not set"
+  when: valet_current_path is not defined
+
+- name: "link | fail when name is blacklisted"
+  fail:
+    msg: "{{ link_name }} is not allowed!"
+  when: "link_name in valet_link_blacklist"
+
+- include_tasks: "macos/sub/read.yml"
+
+- name: "link | fail when name already linked"
+  fail:
+    msg: "{{ link_name }} already linked!"
+  when: "link_name in valet_links_obj.valet_links.links_index"
+
+- include_tasks: "macos/partials/load-valet-sh-file.yml"
+
+- name: "link | change 'valet_current_path' when .valet-sh.yaml file was found"
+  set_fact:
+    valet_current_path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.path }}"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.path is defined
+
+- name: "link | check selected php version"
+  set_fact:
+    current_php_version: "{{ php_version }}"
+  when: (php_version is defined) and (php_version | length > 0)
+
+- name: "link | set default php version"
+  set_fact:
+    current_php_version: "{{ php_default_version_string }}"
+  when: (php_version is undefined) or (php_version | length == 0)
+
+- name: "link | generate ssl-certificate for {{ link_name }}"
+  include_role:
+    name: certificate
+    public: true
+  vars:
+    cert_prefix: "{{ link_name }}"
+
+- name: "link | find a matching application template"
+  block:
+    - include_tasks: macos/templates/magento1.yml
+    - include_tasks: macos/templates/magento2.yml
+    - include_tasks: macos/templates/fallback.yml
+  when: not template_found
+
+- name: "link | create new valet_link variable"
+  set_fact:
+    new_valet_link:
+      - name: "{{ link_name }}"
+        path: "{{ valet_current_path }}"
+        ssl: true
+
+- name: "link | assemble new valet_links_object"
+  set_fact:
+    valet_links_obj:
+      valet_links:
+        links_index: "{{ valet_links_obj.valet_links.links_index + [link_name] }}"
+        links: "{{ valet_links_obj.valet_links.links + new_valet_link }}"
+
+- include_tasks: "macos/sub/write.yml"

@@ -15,8 +15,15 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
+- include_tasks: macos/link.yml
+  when: valet_action == "link"
 
-- include_tasks: macos/main.yml
-  when: current_os == "mac"
+- include_tasks: macos/unlink.yml
+  when: valet_action == "unlink"
+
+- include_tasks: macos/relink.yml
+  when: valet_action == "relink"
+
+- include_tasks: macos/links.yml
+  when: valet_action == "links"
+

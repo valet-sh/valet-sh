@@ -22,7 +22,7 @@
 
 - name: "actions » list | include valet services file"
   set_fact:
-    valet_sh_services_current_states: "{{ valet_sh_service_state_preset_macos | combine(valet_sh_services_obj.states) }}"
+    valet_sh_services_current_states: "{{ valet_sh_service_state_preset | combine(valet_sh_services_obj.states) }}"
 
 - name: "actions » list | set empty array 'valet_sh_service_state_list'"
   set_fact:
@@ -41,11 +41,6 @@
     rows: "{{ valet_sh_service_state_list }}"
   tags:
   - skip_ansible_lint
-
-
-
-
-
 
 - name: "actions » list | get service defaults"
   set_fact:

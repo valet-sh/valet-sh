@@ -16,7 +16,7 @@
 ---
 
 certificate_server_key_size_default: 2048
-certificate_server_key_size: "{{ lookup('vars', 'certificate_server_key_size'+current_os, default=certificate_server_key_size_default) }}"
+certificate_server_key_size: "{{ lookup('vars', 'certificate_server_key_size'+'_'+current_os, default=certificate_server_key_size_default) }}"
 
 certificate_server_cert_lifetime_default: 800
 certificate_server_cert_lifetime: "{{ lookup('vars', 'certificate_server_cert_lifetime'+'_'+current_os, default=certificate_server_cert_lifetime_default) }}"

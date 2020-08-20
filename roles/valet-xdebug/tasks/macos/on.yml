@@ -1,4 +1,3 @@
-##
 #   Copyright 2020 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +14,9 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
-
-- include_tasks: macos/main.yml
-  when: current_os == "mac"
+- name: "on | create symlink for xdebug fpm configuration"
+  file:
+    src: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug.ini"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/conf.d/20-xdebug.ini"
+    state: link
+  notify: "brew | vsh-php{{ php_version }} | restarted"

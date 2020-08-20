@@ -27,8 +27,7 @@ valet_install_default_roles:
   - nodejs
   - mailhog
   - mysql-community-server
-  - magerun1
-  - magerun2
+  - magerun
   - rabbitmq
   - composer
   - google-chrome

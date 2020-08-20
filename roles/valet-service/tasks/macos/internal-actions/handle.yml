@@ -28,7 +28,7 @@
 
 - name: "internal-actions » handle | update service object"
   set_fact:
-    valet_sh_service_target_states: "{{ valet_sh_service_state_preset_macos | combine(valet_sh_services_obj.states) }}"
+    valet_sh_service_target_states: "{{ valet_sh_service_state_preset | combine(valet_sh_services_obj.states) }}"
 
 - name: "internal-actions » handle | handle state for each service"
   include_tasks: sub-handle-state.yml
@@ -51,7 +51,7 @@
 - name: "internal-actions » handle | handle defaults for each service"
   include: sub-handle-defaults.yml
     valet_sh_service_current_service_item="{{ item }}"
-  with_items: "{{ valet_sh_service_defaultable_services_macos }}"
+  with_items: "{{ valet_sh_service_defaultable_services }}"
 
 - name: "internal-actions » handle | update service defaults object"
   set_fact:

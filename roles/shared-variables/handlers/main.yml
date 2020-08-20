@@ -15,6 +15,11 @@
 ##
 ---
 
+- name: systemd | reload
+  systemd:
+    daemon_reload: yes
+  become: true
+
 - name: systemd | nginx | started
   systemd:
     daemon_reload: yes
@@ -163,7 +168,72 @@
     state: reloaded
   become: true
 
-- name: systemd | reload
+
+- name: "systemd | php7.4-fpm | started"
   systemd:
-    daemon_reload: yes
+    name: "php7.4-fpm"
+    state: started
   become: true
+
+- name: "systemd | php7.4-fpm | stopped"
+  systemd:
+    name: "php7.4-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php7.4-fpm | restarted"
+  systemd:
+    name: "php7.4-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php7.4-fpm | reloaded"
+  systemd:
+    name: "php7.4-fpm"
+    state: reloaded
+  become: true
+
+- name: brew | vsh-php70 | restarted
+  shell: brew services restart vsh-php70
+
+- name: brew | vsh-php70 | stopped
+  shell: brew services stop vsh-php70
+
+- name: brew | vsh-php70 | started
+  shell: brew services start vsh-php70
+
+- name: brew | vsh-php71 | restarted
+  shell: brew services restart vsh-php71
+
+- name: brew | vsh-php71 | stopped
+  shell: brew services stop vsh-php71
+
+- name: brew | vsh-php71 | started
+  shell: brew services start vsh-php71
+
+- name: brew | vsh-php72 | restarted
+  shell: brew services restart vsh-php72
+
+- name: brew | vsh-php72 | stopped
+  shell: brew services stop vsh-php72
+
+- name: brew | vsh-php72 | started
+  shell: brew services start vsh-php72
+
+- name: brew | vsh-php73 | restarted
+  shell: brew services restart vsh-php73
+
+- name: brew | vsh-php73 | stopped
+  shell: brew services stop vsh-php73
+
+- name: brew | vsh-php73 | started
+  shell: brew services start vsh-php73
+
+- name: brew | vsh-php74 | restarted
+  shell: brew services restart vsh-php74
+
+- name: brew | vsh-php74 | stopped
+  shell: brew services stop vsh-php74
+
+- name: brew | vsh-php74 | started
+  shell: brew services start vsh-php74

@@ -21,40 +21,70 @@
 
 - name: "internal-actions » sub-handle-state | check for alias service name"
   set_fact:
-    valet_service_name_alias: "{{ valet_sh_service_alias_mapping_macos_item.value }}"
-  when: valet_sh_service_alias_mapping_macos_item.key == valet_current_service_item.key
-  with_dict: "{{ valet_sh_service_alias_mapping_macos }}"
+    valet_service_name_alias: "{{ valet_sh_service_alias_mapping_item.value }}"
+  when: valet_sh_service_alias_mapping_item.key == valet_current_service_item.key
+  with_dict: "{{ valet_sh_service_alias_mapping }}"
   loop_control:
-    loop_var: valet_sh_service_alias_mapping_macos_item
+    loop_var: valet_sh_service_alias_mapping_item
 
-- name: "internal-actions » sub-handle-state | enable {{ valet_current_service_item.key }} service"
-  systemd:
-    name: "{{ valet_current_service_item.key }}"
-    enabled: yes
-    state: started
-  become: true
-  when: valet_service_name_alias|length == 0 and valet_current_service_item.value|bool
 
-- name: "internal-actions » sub-handle-state | enable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}'"
-  systemd:
-    name: "{{ valet_service_name_alias }}"
-    enabled: yes
-    state: started
+- name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
+  shell: "brew services start {{ valet_current_service_item.key }}"
   become: true
-  when: valet_service_name_alias|length > 0 and valet_current_service_item.value|bool
+  when:
+    - valet_service_name_alias|length == 0
+    - valet_service_name in valet_sh_service_privileged_services
+    - valet_current_service_item.value|bool
 
-- name: "internal-actions » sub-handle-state | disable {{ valet_current_service_item.key }} service"
-  systemd:
-    name: "{{ valet_current_service_item.key }}"
-    enabled: no
-    state: stopped
-  become: true
-  when: valet_service_name_alias|length == 0 and not valet_current_service_item.value|bool
+- name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
+  shell: "brew services start {{ valet_current_service_item.key }}"
+  when:
+    - valet_service_name_alias|length == 0
+    - valet_service_name not in valet_sh_service_privileged_services
+    - valet_current_service_item.value|bool
 
-- name: "internal-actions » sub-handle-state | disable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}'"
-  systemd:
-    name: "{{ valet_service_name_alias }}"
-    enabled: no
-    state: stopped
+- name: "internal-actions » sub-handle-state | start {{ valet_service_name }} service"
+  shell: "brew services start {{ valet_service_name_alias }}"
   become: true
-  when: valet_service_name_alias|length > 0 and not valet_current_service_item.value|bool
+  when:
+    - valet_service_name_alias|length > 0
+    - valet_service_name in valet_sh_service_privileged_services
+    - valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle-state | start {{ valet_service_name }} service"
+  shell: "brew services start {{ valet_service_name_alias }}"
+  when:
+    - valet_service_name_alias|length > 0
+    - valet_service_name not in valet_sh_service_privileged_services
+    - valet_current_service_item.value|bool
+
+
+- name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
+  shell: "brew services stop {{ valet_current_service_item.key }}"
+  become: true
+  when:
+    - valet_service_name_alias|length == 0
+    - valet_service_name in valet_sh_service_privileged_services
+    - not valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
+  shell: "brew services stop {{ valet_current_service_item.key }}"
+  when:
+    - valet_service_name_alias|length == 0
+    - valet_service_name not in valet_sh_service_privileged_services
+    - not valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle-state | stop {{ valet_service_name }} service"
+  shell: "brew services stop {{ valet_service_name_alias }}"
+  become: true
+  when:
+    - valet_service_name_alias|length > 0
+    - valet_service_name in valet_sh_service_privileged_services
+    - not valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle-state | stop {{ valet_service_name }} service"
+  shell: "brew services stop {{ valet_service_name_alias }}"
+  when:
+    - valet_service_name_alias|length > 0
+    - valet_service_name not in valet_sh_service_privileged_services
+    - not valet_current_service_item.value|bool

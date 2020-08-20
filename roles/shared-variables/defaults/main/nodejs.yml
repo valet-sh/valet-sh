@@ -15,8 +15,8 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
+nvm_version_default: "v0.35.3"
+nvm_version: "{{ lookup('vars', 'nvm_version'+'_'+current_os, default=nvm_version_default) }}"
 
-- include_tasks: macos/main.yml
-  when: current_os == "mac"
+node_version_default: "11"
+node_version: "{{ lookup('vars', 'node_version'+'_'+current_os, default=node_version_default) }}"

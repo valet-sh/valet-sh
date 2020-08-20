@@ -1,4 +1,3 @@
-##
 #   Copyright 2020 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +14,14 @@
 ##
 ---
 
-mailhog_release_url_default: "https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64"
-mailhog_release_url: "{{ lookup('vars', 'mailhog_release_url'+current_os, default=mailhog_release_url_default) }}"
+- name: "off | get stat for xdebug configuration file"
+  stat:
+    path: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/conf.d/20-xdebug.ini"
+  register: php_xdebug_config_obj
 
-mailhog_bin_target_default: "/usr/local/bin/mailhog"
-mailhog_bin_target: "{{ lookup('vars', 'mailhog_bin_target'+current_os, default=mailhog_bin_target_default) }}"
+- name: "off | delete xdebug configuration symlink if exists"
+  file:
+    path: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/conf.d/20-xdebug.ini"
+    state: absent
+  when: php_xdebug_config_obj.stat is defined and php_xdebug_config_obj.stat.islnk is defined
+  notify: "brew | vsh-php{{ php_version }} | restarted"

@@ -15,8 +15,20 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
+- include_tasks: "sub/read.yml"
 
-- include_tasks: macos/main.yml
-  when: current_os == "mac"
+- name: "links | set empty array 'valet_list'"
+  set_fact:
+    valet_list: []
+
+- name: "links | add available links to array"
+  set_fact:
+    valet_list: "{{ valet_list + [[ item.name, item.path, item.ssl ]] }}"
+  with_items: "{{ valet_links_obj.valet_links.links }}"
+
+- name: "links | print table based on 'valet_list' array"
+  vsh-table:
+    headers: ['Name', 'Path', 'SSL']
+    rows: "{{ valet_list }}"
+  tags:
+  - skip_ansible_lint

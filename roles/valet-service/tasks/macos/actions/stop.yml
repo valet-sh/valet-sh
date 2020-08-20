@@ -21,9 +21,21 @@
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
 - name: "actions » stop | stop {{ valet_service_name }} service"
-  systemd:
-    name: "{{ valet_service_name }}"
-    state: stopped
+  shell: "brew services stop {{ valet_service_name }}"
   become: true
+  when: valet_service_name_alias|length == 0 and (valet_service_name in valet_sh_service_privileged_services)
+
+- name: "actions » stop | stop {{ valet_service_name }} service"
+  shell: "brew services stop {{ valet_service_name }}"
+  when: valet_service_name_alias|length == 0 and (valet_service_name not in valet_sh_service_privileged_services)
+
+- name: "actions » stop | stop {{ valet_service_name }} service with alias '{{ valet_service_name_alias }}' (running as root)"
+  shell: "brew services stop {{ valet_service_name_alias }}"
+  become: true
+  when: valet_service_name_alias|length > 0 and (valet_service_name in valet_sh_service_privileged_services)
+
+- name: "actions » stop | stop {{ valet_service_name }} service"
+  shell: "brew services stop {{ valet_service_name_alias }}"
+  when: valet_service_name_alias|length > 0 and (valet_service_name not in valet_sh_service_privileged_services)
 
 

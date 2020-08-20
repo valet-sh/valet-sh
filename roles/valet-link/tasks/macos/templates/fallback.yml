@@ -1,0 +1,8 @@
+---
+
+- name: "templates » fallback | provide nginx fallback vhost for {{ link_name }}.{{ development_tld }}"
+  template:
+    src: "nginx/fallback.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
+    mode: '0644'
+  notify: brew | nginx | restarted

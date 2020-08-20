@@ -1,4 +1,3 @@
-##
 #   Copyright 2020 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +14,23 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
+- name: "check if valet_action variable is set"
+  fail:
+    msg: "valet_action variable is not set"
+  when: valet_action is not defined
 
-- include_tasks: macos/main.yml
-  when: current_os == "mac"
+- name: "check if php_version variable is set"
+  fail:
+    msg: "php_version variable is not set"
+  when: php_version is not defined
+
+- name: "fail when php version is not available"
+  fail:
+    msg: "requested PHP version {{ php_version }} is not available!"
+  when: "not php_version in available_php_versions"
+
+- include_tasks: on.yml
+  when: valet_action == "on"
+
+- include_tasks: off.yml
+  when: valet_action == "off"

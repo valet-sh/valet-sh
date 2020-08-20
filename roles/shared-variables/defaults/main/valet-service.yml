@@ -18,7 +18,7 @@
 valet_sh_service_internal_action: false
 valet_service_name_alias: ""
 
-valet_sh_service_allowed_actions:
+valet_sh_service_allowed_actions_default:
   - disable
   - enable
   - restart
@@ -26,8 +26,9 @@ valet_sh_service_allowed_actions:
   - stop
   - default
   - list
+valet_sh_service_allowed_actions: "{{ lookup('vars', 'valet_sh_service_allowed_actions'+'_'+current_os, default=valet_sh_service_allowed_actions_default) }}"
 
-valet_sh_service_defaultable_services:
+valet_sh_service_defaultable_services_default:
   - scope: elasticsearch
     default: elasticsearch6
     values:
@@ -50,36 +51,7 @@ valet_sh_service_defaultable_services:
     values:
       - mysql57
       - mysql80
-
-
-valet_sh_service_state_preset:
-  - elasticsearch1: false
-  - elasticsearch2: false
-  - elasticsearch5: false
-  - elasticsearch6: true
-  - elasticsearch7: false
-  - php56: false
-  - php70: false
-  - php71: false
-  - php72: true
-  - php73: true
-  - php74: true
-  - mysql57: true
-  - mysql80: false
-  - rabbitmq: false
-  - redis: true
-
-valet_sh_service_alias_mapping:
-  php56: "php5.6-fpm"
-  php70: "php7.0-fpm"
-  php71: "php7.1-fpm"
-  php72: "php7.2-fpm"
-  php73: "php7.3-fpm"
-  php74: "php7.4-fpm"
-  rabbitmq: "rabbitmq-server"
-  redis: "redis-server"
-
-valet_sh_service_defaultable_services_macos:
+valet_sh_service_defaultable_services_mac:
   - scope: elasticsearch
     default: vsh-elasticsearch6
     values:
@@ -102,9 +74,25 @@ valet_sh_service_defaultable_services_macos:
     values:
       - vsh-mysql57
       - vsh-mysql80
+valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services'+'_'+current_os, default=valet_sh_service_defaultable_services_default) }}"
 
-
-valet_sh_service_state_preset_macos:
+valet_sh_service_state_preset_default:
+  - elasticsearch1: false
+  - elasticsearch2: false
+  - elasticsearch5: false
+  - elasticsearch6: true
+  - elasticsearch7: false
+  - php56: false
+  - php70: false
+  - php71: false
+  - php72: true
+  - php73: true
+  - php74: true
+  - mysql57: true
+  - mysql80: false
+  - rabbitmq: false
+  - redis: true
+valet_sh_service_state_preset_mac:
   - vsh-elasticsearch1: false
   - vsh-elasticsearch2: false
   - vsh-elasticsearch5: false
@@ -120,5 +108,38 @@ valet_sh_service_state_preset_macos:
   - vsh-mysql80: false
   - rabbitmq: false
   - redis: true
+valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
 
+valet_sh_service_privileged_services_default:
+  - elasticsearch1
+  - elasticsearch2
+  - elasticsearch5
+  - elasticsearch6
+  - elasticsearch7
+  - php56
+  - php70
+  - php71
+  - php72
+  - php73
+  - php74
+  - mysql57
+  - mysql80
+  - rabbitmq
+  - redis
+  - dnsmasq
+valet_sh_service_privileged_services_mac:
+  - nginx
+  - dnsmasq
+valet_sh_service_privileged_services: "{{ lookup('vars', 'valet_sh_service_privileged_services'+'_'+current_os, default=valet_sh_service_privileged_services_default) }}"
+
+valet_sh_service_alias_mapping_default:
+  php56: "php5.6-fpm"
+  php70: "php7.0-fpm"
+  php71: "php7.1-fpm"
+  php72: "php7.2-fpm"
+  php73: "php7.3-fpm"
+  php74: "php7.4-fpm"
+  rabbitmq: "rabbitmq-server"
+  redis: "redis-server"
 valet_sh_service_alias_mapping_macos: {}
+valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"

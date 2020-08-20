@@ -16,6 +16,6 @@
     path: "{{ current_home }}/.aliases"
     line: "alias {{ current_composer_alias.alias }}='{{ current_composer_alias.target }}'"
     create: yes
-  with_items: "{{ composer_aliases_mac }}"
+  with_items: "{{ composer_aliases }}"
   loop_control:
     loop_var: current_composer_alias

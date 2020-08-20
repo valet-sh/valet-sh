@@ -15,8 +15,7 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
-
-- include_tasks: macos/main.yml
-  when: current_os == "mac"
+- name: "sub » read | include valet links configuration"
+  include_vars:
+    file: "{{ valet_etc_links_file }}"
+    name: valet_links_obj

@@ -8,8 +8,6 @@
   include: macos/install-php.yml
     current_php="{{ valet_sh_php_version_item }}"
   with_items:
-    - vsh-php56
-    - vsh-php70
     - vsh-php71
     - vsh-php72
     - vsh-php73
