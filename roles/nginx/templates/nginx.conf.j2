@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 user {{ current_user }} {{ current_group }};
 worker_processes auto;
 pid {{ valet_sh_prefix }}/var/run/nginx.pid;
@@ -55,24 +57,11 @@ http {
                 image/svg+xml
                 application/javascript;
 
-    upstream php56 {
-        server unix:/var/run/php/php5.6-fpm.sock;
+{% for (valet_sh_php_socket_item_key,valet_sh_php_socket_item_value) in valet_sh_php_sockets.iteritems() %}
+    upstream {{ valet_sh_php_socket_item_key }} {
+        server unix:{{ valet_sh_php_socket_item_value }};
     }
-    upstream php70 {
-        server unix:/var/run/php/php7.0-fpm.sock;
-    }
-    upstream php71 {
-        server unix:/var/run/php/php7.1-fpm.sock;
-    }
-    upstream php72 {
-        server unix:/var/run/php/php7.2-fpm.sock;
-    }
-    upstream php73 {
-        server unix:/var/run/php/php7.3-fpm.sock;
-    }
-    upstream php74 {
-        server unix:/var/run/php/php7.4-fpm.sock;
-    }
+{% endfor %}
 
     include {{ valet_sh_prefix }}/etc/nginx/conf.d/*.conf;
 }

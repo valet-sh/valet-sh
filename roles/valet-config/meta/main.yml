@@ -28,3 +28,4 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - 18.04
+        - 20.04

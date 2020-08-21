@@ -1,4 +1,3 @@
-##
 #   Copyright 2020 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,19 +14,7 @@
 ##
 ---
 
-valet_install_default_roles:
-  - common
-  - certificate
-  - dnsmasq
-  - elasticsearch
-  - zsh
-  - nginx
-  - redis
-  - php
-  - nodejs
-  - mailhog
-  - mysql-community-server
-  - magerun
-  - rabbitmq
-  - composer
-  - google-chrome
+# only "latest" or "previous" are allowed values
+valet_restore_default_db_identifier: "latest"
+valet_project_default_src_dir: "src"
+valet_sh_hub_user: "read"
