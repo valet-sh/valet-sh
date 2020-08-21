@@ -57,7 +57,7 @@ http {
                 image/svg+xml
                 application/javascript;
 
-{% for (valet_sh_php_socket_item_key,valet_sh_php_socket_item_value) in valet_sh_php_sockets.iteritems() %}
+{% for (valet_sh_php_socket_item_key,valet_sh_php_socket_item_value) in valet_sh_php_sockets.items() %}
     upstream {{ valet_sh_php_socket_item_key }} {
         server unix:{{ valet_sh_php_socket_item_value }};
     }

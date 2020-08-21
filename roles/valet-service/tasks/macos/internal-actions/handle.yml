@@ -50,14 +50,16 @@
 
 - name: "internal-actions » handle | handle defaults for each service"
   include: sub-handle-defaults.yml
-    valet_sh_service_current_service_item="{{ item }}"
+    valet_sh_service_current_service_item="{{ valet_sh_service_defaultable_services_loop_var }}"
   with_items: "{{ valet_sh_service_defaultable_services }}"
+  loop_control:
+    loop_var: valet_sh_service_defaultable_services_loop_var
 
 - name: "internal-actions » handle | update service defaults object"
   set_fact:
     valet_sh_service_target_defaults: "{{ valet_sh_service_default_services | combine(valet_sh_services_obj.defaults) }}"
 
-- include_tasks: "actions/default.yml"
+- include_tasks: "macos/actions/default.yml"
   vars:
     valet_service_name: "{{ valet_sh_service_defaults_target_item.value }}"
   with_dict: "{{ valet_sh_service_target_defaults }}"

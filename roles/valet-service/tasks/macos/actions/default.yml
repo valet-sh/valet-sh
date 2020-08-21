@@ -23,10 +23,12 @@
 - name: "actions » default | check if service is allowed"
   set_fact:
     valet_sh_service_service_is_allowed: true
-  when: valet_service_name in item.1
+  when: valet_service_name in valet_sh_service_defaultable_services_item3.1
   with_subelements:
     - "{{ valet_sh_service_defaultable_services }}"
     - values
+  loop_control:
+    loop_var: valet_sh_service_defaultable_services_item3
 
 - name: "actions » default | fail when action is not allowed"
   fail:
@@ -34,19 +36,23 @@
   when: valet_sh_service_service_is_allowed is not defined or not valet_sh_service_service_is_allowed|bool
 
 - name: "actions » default | load tasks for default action"
-  include_tasks: "defaults/{{ item.0.scope }}.yml"
-  when: valet_service_name in item.1
+  include_tasks: "defaults/{{ valet_sh_service_defaultable_services_item1.0.scope }}.yml"
+  when: valet_service_name in valet_sh_service_defaultable_services_item1.1
   with_subelements:
     - "{{ valet_sh_service_defaultable_services }}"
     - values
+  loop_control:
+    loop_var: valet_sh_service_defaultable_services_item1
 
 - name: "actions » default | save service scope"
   set_fact:
-    valet_service_name_scope: "{{ item.0.scope }}"
-  when: valet_service_name in item.1
+    valet_service_name_scope: "{{ valet_sh_service_defaultable_services_item2.0.scope }}"
+  when: valet_service_name in valet_sh_service_defaultable_services_item2.1
   with_subelements:
     - "{{ valet_sh_service_defaultable_services }}"
     - values
+  loop_control:
+    loop_var: valet_sh_service_defaultable_services_item2
 
 - name: "actions » default | include valet services file"
   include_vars:

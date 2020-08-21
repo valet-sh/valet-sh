@@ -50,9 +50,11 @@
   register: certificate_server_fullchain_file_obj
 
 - name: server | merge certificate and ca file into fullchain file
-  shell: "{{ item }}"
+  shell: "{{ certificate_server_domain_fullchain_item }}"
   with_items:
     - "cat {{ certificate_server_domain_cert_file }} > {{ certificate_server_domain_fullchain_file }}"
     - "cat {{ certificate_ca_cert_file }} >> {{ certificate_server_domain_fullchain_file }}"
   when: certificate_server_fullchain_file_obj.stat.exists == false
+  loop_control:
+    loop_var: certificate_server_domain_fullchain_item
   become: true

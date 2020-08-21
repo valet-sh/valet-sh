@@ -141,5 +141,12 @@ valet_sh_service_alias_mapping_default:
   php74: "php7.4-fpm"
   rabbitmq: "rabbitmq-server"
   redis: "redis-server"
-valet_sh_service_alias_mapping_macos: {}
+valet_sh_service_alias_mapping_mac:
+  mysql57: "vsh-mysql57"
+  mysql80: "vsh-mysql80"
+  elasticsearch1: "vsh-elasticsearch1"
+  elasticsearch2: "vsh-elasticsearch2"
+  elasticsearch4: "vsh-elasticsearch5"
+  elasticsearch6: "vsh-elasticsearch6"
+  elasticsearch7: "vsh-elasticsearch7"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
