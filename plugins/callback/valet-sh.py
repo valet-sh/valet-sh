@@ -37,15 +37,19 @@ class CallbackModule(CallbackModule_debug):
         return os.environ.get('APPLICATION_DEBUG_INFO_ENABLED') == '1'
 
     def _task_start(self, task, prefix=None):
-        if task.name and self.INDICATOR_VALET_SH_CLI_OUTPUT in task.name:
-            self._spinner.start(task.name.strip(self.INDICATOR_VALET_SH_CLI_OUTPUT).strip())
-        super(CallbackModule, self)._task_start(self._play)
+        if self._debug_enabled():
+            super(CallbackModule, self)._task_start(self._play)
+        else:
+            if task.name and self.INDICATOR_VALET_SH_CLI_OUTPUT in task.name:
+                self._spinner.start(task.name.strip(self.INDICATOR_VALET_SH_CLI_OUTPUT).strip())
 
     def v2_playbook_on_play_start(self, play):
         self._play = play
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_playbook_on_play_start(play)
+        else:
+            self._spinner.start(play.name)
 
     def _print_task_banner(self, task):
         # if debug is enabled call super function
@@ -62,7 +66,7 @@ class CallbackModule(CallbackModule_debug):
 
     def v2_runner_on_ok(self, result):
         if (self._spinner._spinner_id):
-            self._spinner.succeed()
+            self._spinner.stop()
         for key in result._result.keys():
             if key == 'vsh_stdout':
                 print(result._result[key])
