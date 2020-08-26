@@ -1,6 +1,6 @@
 setuptools
 testresources
-helo==0.0.30
+halo==0.0.30
 ansible==2.8.8
 beautifultable==0.5.3
 PyMySQL
