@@ -23,7 +23,6 @@ class CallbackModule(CallbackModule_debug):
     CALLBACK_TYPE = 'stdout'
     CALLBACK_NAME = 'valet-sh'
     SPINNER_COLOR = 'green'
-    INDICATOR_VALET_SH_CLI_OUTPUT = '@vsh'
 
     def __init__(self):
         self._spinner = Halo()
@@ -40,8 +39,7 @@ class CallbackModule(CallbackModule_debug):
         if self._debug_enabled():
             super(CallbackModule, self)._task_start(self._play)
         else:
-            if task.name and self.INDICATOR_VALET_SH_CLI_OUTPUT in task.name:
-                self._spinner.start(task.name.strip(self.INDICATOR_VALET_SH_CLI_OUTPUT).strip())
+            self._spinner.start(task.name)
 
     def v2_playbook_on_play_start(self, play):
         self._play = play
@@ -49,7 +47,7 @@ class CallbackModule(CallbackModule_debug):
         if self._debug_enabled():
             super(CallbackModule, self).v2_playbook_on_play_start(play)
         else:
-            self._spinner.start(play.name)
+            self._spinner.info(play.name)
 
     def _print_task_banner(self, task):
         # if debug is enabled call super function
@@ -64,11 +62,10 @@ class CallbackModule(CallbackModule_debug):
             if (self._last_task and self._last_task.name):
                 self._display.display(u"\u2714  %s" % (self._last_task_name), color=C.COLOR_SKIP)
 
-    def v2_runner_on_ok(self, result):
-        if (self._spinner._spinner_id):
-            self._spinner.stop()
+    def v2_runner_on_ok(self, result):    
         for key in result._result.keys():
             if key == 'vsh_stdout':
+                self._spinner.stop()
                 print(result._result[key])
         # if debug is enabled call super function
         if self._debug_enabled():
@@ -96,6 +93,8 @@ class CallbackModule(CallbackModule_debug):
         # if debug is enabled call super function
         if self._debug_enabled():
             super(CallbackModule, self).v2_playbook_on_stats(task)
+        else:
+            self._spinner.succeed('done')
 
     def v2_runner_item_on_ok(self, result):
         # if debug is enabled call super function
