@@ -31,3 +31,7 @@ galaxy_info:
       versions:
         - 18.04
         - 20.04
+    - name: MacOSX
+      versions:
+        - 10.14
+        - 10.15
