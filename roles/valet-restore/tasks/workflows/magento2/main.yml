@@ -59,9 +59,6 @@
     msg: "file '{{ valet_sh_instance_db_filename }}' does not exist!"
   when: not instancebackup_target_db_file_obj.stat.exists
 
-- name: "@vsh downloading '{{ valet_sh_instance_db_filename }}'..."
-  debug:
-
 - name: "workflows » magento2 | synchronize db dump {{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
   shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }} {{ current_tmp_dir }}" # noqa 204
   tags:
@@ -75,9 +72,6 @@
     login_port: "{{ valet_sh_project_mysql_server_port }}"
     state: absent
 
-- name: "@vsh importing '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
-  debug:
-
 - name: "workflows » magento2 | import db dump '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
   mysql_db:
     name: "{{ valet_sh_project_database_name }}"
@@ -87,12 +81,6 @@
     login_port: "{{ valet_sh_project_mysql_server_port }}"
     encoding: "utf8"
     state: import
-
-- name: "@vsh import of '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}' successfully finished"
-  debug:
-
-- name: "@vsh synchronizing filesystem..."
-  debug:
 
 - name: "workflows » magento2 | synchronize filesystem"
   shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
@@ -105,12 +93,6 @@
     loop_var: valet_sh_restore_current_fs
   tags:
   - skip_ansible_lint
-
-- name: "@vsh synchronizing filesystem finished..."
-  debug:
-
-- name: "@vsh run post restore commands"
-  debug:
 
 - name: "workflows » magento2 | run post restore commands"
   shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_post_command }}"

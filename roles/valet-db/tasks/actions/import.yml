@@ -41,14 +41,8 @@
     valet_db_file: "{{ valet_current_path }}/{{ valet_db_filename }}"
   when: valet_db_file is not defined
 
-- name: "@vsh starting import of '{{ valet_db_file }}' into '{{ valet_db_name }}'"
-  debug:
-
 - name: "actions » import | Import database {{ valet_db_file }} into database '{{ valet_db_name }}'"
   mysql_db:
     state: import
     name: "{{ valet_db_name }}"
     target: "{{ valet_db_file }}"
-
-- name: "@vsh import has successfully finished"
-  debug:

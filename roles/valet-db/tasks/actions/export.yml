@@ -37,14 +37,8 @@
       valet_db_filename: "{{ valet_db_name }}-{{ current_datetime }}.sql.gz"
   when: valet_db_filename is not defined
 
-- name: "@vsh starting export of '{{ valet_db_name }}' into {{ valet_current_path }}/{{ valet_db_filename }}"
-  debug:
-
 - name: "actions » export | create db {{ valet_db_name }} into {{ valet_current_path }}/{{ valet_db_filename }}"
   mysql_db:
     state: dump
     name: "{{ valet_db_name }}"
     target: "{{ valet_current_path }}/{{ valet_db_filename }}"
-
-- name: "@vsh export has successfully finished"
-  debug:
