@@ -4,11 +4,11 @@
 #
 # @author: "Philipp Dittert"
 # @author: "Johann Zelger"
-# @command: "services"
+# @command: "service"
 # @description: "start/stop or enable/disable a service"
 # @usage: "valet.sh service <start|stop|restart|enable|disable|default> elasticsearch6"
 
-- name: "link"
+- name: "service"
   hosts: local
   gather_facts: True
   vars_prompt:
