@@ -15,11 +15,11 @@
 ##
 ---
 
-- include_tasks: "internal-actions/{{ valet_service_action }}.yml"
+- include_tasks: "ubuntu/internal-actions/{{ valet_service_action }}.yml"
   when: valet_sh_service_internal_action|bool
 
-- include_tasks: check-vars.yml
+- include_tasks: ubuntu/check-vars.yml
   when: not valet_sh_service_internal_action|bool
 
-- include_tasks: "actions/{{ valet_service_action }}.yml"
+- include_tasks: "ubuntu/actions/{{ valet_service_action }}.yml"
   when: not valet_sh_service_internal_action|bool

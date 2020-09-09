@@ -17,7 +17,7 @@
 
 - name: ca | ensure base directories existing
   file:
-    path: "{{ item }}"
+    path: "{{ certificate_base_path_item }}"
     state: directory
     owner: root
     group: root
@@ -27,6 +27,8 @@
     - "{{ certificate_ca_cert_path }}"
     - "{{ certificate_server_cert_path }}"
   become: true
+  loop_control:
+    loop_var: certificate_base_path_item
 
 - name: ca | generate private ca key
   shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
@@ -43,7 +45,7 @@
   become: true
 
 - name: ca | generate CA Certificate
-  shell: "openssl req -subj '/CN=TechDivision Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
+  shell: "openssl req -subj '/CN=valet.sh Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
   args:
     creates: "{{ certificate_ca_cert_file }}"
   become: true

@@ -19,7 +19,7 @@
   shell: |
     lspci | grep "{{ atheros_wifi }}"
   register: atheros_wifi_device
-  ignore_errors: yes
+  failed_when: yes
   changed_when: false
 
 # Todo: Check if firmware files are already deployed

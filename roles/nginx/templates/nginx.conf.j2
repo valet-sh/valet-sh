@@ -2,7 +2,7 @@
 
 user {{ current_user }} {{ current_group }};
 worker_processes auto;
-pid {{ valet_sh_prefix }}/var/run/nginx.pid;
+pid {{ nginx_pid_path }};
 include {{ valet_sh_prefix }}/etc/nginx/modules-enabled/*.conf;
 
 events {

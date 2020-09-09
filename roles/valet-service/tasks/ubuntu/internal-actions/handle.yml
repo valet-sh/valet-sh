@@ -57,7 +57,7 @@
   set_fact:
     valet_sh_service_target_defaults: "{{ valet_sh_service_default_services | combine(valet_sh_services_obj.defaults) }}"
 
-- include_tasks: "actions/default.yml"
+- include_tasks: "ubuntu/actions/default.yml"
   vars:
     valet_service_name: "{{ valet_sh_service_defaults_target_item.value }}"
   with_dict: "{{ valet_sh_service_target_defaults }}"

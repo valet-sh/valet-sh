@@ -15,15 +15,15 @@
 ##
 ---
 
-- include_tasks: macos/link.yml
+- include_tasks: ubuntu/link.yml
   when: valet_action == "link"
 
-- include_tasks: macos/unlink.yml
+- include_tasks: ubuntu/unlink.yml
   when: valet_action == "unlink"
 
-- include_tasks: macos/relink.yml
+- include_tasks: ubuntu/relink.yml
   when: valet_action == "relink"
 
-- include_tasks: macos/links.yml
+- include_tasks: ubuntu/links.yml
   when: valet_action == "links"
 

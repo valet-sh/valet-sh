@@ -19,7 +19,7 @@
   shell: |
     lspci | grep "Device 2723"
   register: intel_killer_wifi_device
-  ignore_errors: yes
+  failed_when: false
   changed_when: false
 
 - block:
