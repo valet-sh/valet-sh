@@ -24,6 +24,10 @@ class CallbackModule(CallbackModule_debug):
     CALLBACK_TYPE = 'stdout'
     CALLBACK_NAME = 'valet-sh'
 
+    def dump(self, obj):
+        for attr in dir(obj):
+            print("obj.%s = %r" % (attr, getattr(obj, attr)))
+
     def __init__(self):
         self._output = 1
         self._spinner = itertools.cycle(["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"])
@@ -66,20 +70,22 @@ class CallbackModule(CallbackModule_debug):
             super(CallbackModule, self).v2_runner_on_ok(result)
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
-        vsh_msg = ''
         if self._debug_enabled():
             super(CallbackModule, self).v2_runner_on_failed(result, ignore_errors)
         else:
+            vsh_msg = ''
             # get result ansible dict
             resultDict = "%s" % (result._result)
             # convert to json object
             jsonObj = json.loads(json.dumps(ast.literal_eval(resultDict)))
-            # get msg from object
-            if 'msg' in jsonObj:
+
+            if ('results' in jsonObj):
+                vsh_msg = jsonObj['results'][0]['module_stderr']
+            elif 'msg' in jsonObj:
                 vsh_msg = jsonObj['msg']
-            if 'message' in jsonObj:
+            elif 'message' in jsonObj:
                 vsh_msg = jsonObj['message']
-            # display error
+
             print('\x1b[2K')
             print("\033[1;31m✘ " + vsh_msg + '\033[0m' , end="\n")
 
