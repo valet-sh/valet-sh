@@ -25,15 +25,24 @@
     name: vsh-elasticsearch1
     state: present
 
-- name: "ensure elasticsearch 1 plugins are installed"
-  elasticsearch_plugin:
-    name: "{{ current_elasticsearch_plugin }}"
-    state: present
-    plugin_bin: "/usr/local/opt/vsh-elasticsearch1/libexec/bin/plugin"
-    plugin_dir: "/usr/local/opt/vsh-elasticsearch1/libexec/plugins"
-  - with_items: "{{ elasticsearch_legacy_plugins }}"
-    loop_control:
-      loop_var: current_elasticsearch_plugin
+- name: "ensure elasticsearch1 plugins are installed"
+  shell: "/usr/local/opt/vsh-elasticsearch1/libexec/bin/plugin install {{ current_elasticsearch_plugin }}"
+  with_items: "{{ elasticsearch_legacy_plugins }}"
+  failed_when: false
+  loop_control:
+    loop_var: current_elasticsearch_plugin
+
+
+
+#- name: "ensure elasticsearch 1 plugins are installed"
+#  elasticsearch_plugin:
+#    name: "{{ current_elasticsearch_plugin }}"
+#    state: present
+#    plugin_bin: "/usr/local/opt/vsh-elasticsearch1/libexec/bin/plugin"
+#    plugin_dir: "/usr/local/opt/vsh-elasticsearch1/libexec/plugins"
+#  with_items: "{{ elasticsearch_legacy_plugins }}"
+#  loop_control:
+#    loop_var: current_elasticsearch_plugin
 
 - name: "ensure vsh-elasticsearch2 is installed"
   homebrew:
@@ -46,9 +55,9 @@
     state: present
     plugin_bin: "/usr/local/opt/vsh-elasticsearch2/libexec/bin/plugin"
     plugin_dir: "/usr/local/opt/vsh-elasticsearch2/libexec/plugins"
-  - with_items: "{{ elasticsearch_plugins }}"
-    loop_control:
-      loop_var: current_elasticsearch_plugin
+  with_items: "{{ elasticsearch_plugins }}"
+  loop_control:
+    loop_var: current_elasticsearch_plugin
 
 - name: "ensure vsh-elasticsearch5 is installed"
   homebrew:
@@ -61,9 +70,9 @@
     state: present
     plugin_bin: "/usr/local/opt/vsh-elasticsearch5/libexec/bin/elasticsearch-plugin"
     plugin_dir: "/usr/local/opt/vsh-elasticsearch5/libexec/plugins"
-  - with_items: "{{ elasticsearch_plugins }}"
-    loop_control:
-      loop_var: current_elasticsearch_plugin
+  with_items: "{{ elasticsearch_plugins }}"
+  loop_control:
+    loop_var: current_elasticsearch_plugin
 
 - name: "ensure vsh-elasticsearch6 is installed"
   homebrew:
@@ -77,9 +86,9 @@
     state: present
     plugin_bin: "/usr/local/opt/vsh-elasticsearch6/libexec/bin/elasticsearch-plugin"
     plugin_dir: "/usr/local/opt/vsh-elasticsearch6/libexec/plugins"
-  - with_items: "{{ elasticsearch_plugins }}"
-    loop_control:
-      loop_var: current_elasticsearch_plugin
+  with_items: "{{ elasticsearch_plugins }}"
+  loop_control:
+    loop_var: current_elasticsearch_plugin
 
 - name: "ensure vsh-elasticsearch7 is installed"
   homebrew:
@@ -92,6 +101,6 @@
     state: present
     plugin_bin: "/usr/local/opt/vsh-elasticsearch7/libexec/bin/elasticsearch-plugin"
     plugin_dir: "/usr/local/opt/vsh-elasticsearch7/libexec/plugins"
-  - with_items: "{{ elasticsearch_plugins }}"
-    loop_control:
-      loop_var: current_elasticsearch_plugin
+  with_items: "{{ elasticsearch_plugins }}"
+  loop_control:
+    loop_var: current_elasticsearch_plugin
