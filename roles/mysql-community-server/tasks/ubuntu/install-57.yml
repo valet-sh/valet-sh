@@ -229,9 +229,16 @@
   become: true
 
 - block:
+#    - name: "migrate existing mysql data folder"
+#      command: "mv /var/lib/mysql/* {{ current_mysql_data_path }}"
+#      become: true
+
     - name: "migrate existing mysql data folder"
-      command: "mv /var/lib/mysql/* {{ current_mysql_data_path }}"
+      synchronize:
+        src: "/var/lib/mysql/"
+        dest: "{{ current_mysql_data_path }}"
       become: true
+
   when:
     - current_mysql_data_dir_status_obj.matched == 0
     - legacy_mysql_data_dir_status_obj.matched > 0
