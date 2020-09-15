@@ -1,5 +1,6 @@
+# coding=utf-8
 # Make coding more python3-ish
-from __future__ import (absolute_import, division, print_function)
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 __metaclass__ = type
 
@@ -79,11 +80,9 @@ class CallbackModule(CallbackModule_debug):
             # convert to json object
             jsonObj = json.loads(json.dumps(ast.literal_eval(resultDict)))
 
-            if ('results' in jsonObj):
-                vsh_msg = jsonObj['results'][0]['module_stderr']
-            elif 'msg' in jsonObj:
+            if 'msg' in jsonObj:
                 vsh_msg = jsonObj['msg']
-            elif 'message' in jsonObj:
+            if 'message' in jsonObj:
                 vsh_msg = jsonObj['message']
 
             print('\x1b[2K')
