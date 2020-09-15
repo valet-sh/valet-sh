@@ -229,14 +229,16 @@
   become: true
 
 - block:
-#    - name: "migrate existing mysql data folder"
-#      command: "mv /var/lib/mysql/* {{ current_mysql_data_path }}"
-#      become: true
-
     - name: "migrate existing mysql data folder"
       synchronize:
         src: "/var/lib/mysql/"
         dest: "{{ current_mysql_data_path }}"
+      become: true
+
+    - name: "remove old mysql data folder"
+      file:
+        path: "/var/lib/mysql/"
+        state: absent
       become: true
 
   when:
