@@ -46,13 +46,15 @@
 
 - name: ensure tpl config does not exist
   file:
-    path: "{{ item }}"
+    path: "{{ valet_tlp_config_item }}"
     state: absent
   become: true
   with_items:
     - /etc/tlp.conf
     - /etc/default/tlp
     - /etc/tlp.d
+  loop_control:
+    loop_var: valet_tlp_config_item
 
 - name: "enable graphic drivers ppa"
   apt_repository:
@@ -178,13 +180,15 @@
 - name: disable gnome tracker apps
   systemd:
     masked: yes
-    name: "{{ item }}"
+    name: "{{ ubuntu_gnome_tracker_apps_item }}"
   with_items:
     - tracker-extract.desktop
     - tracker-miner-apps.desktop
     - tracker-miner-fs.desktop
     - tracker-store.desktop
   become: true
+  loop_control:
+    loop_var: ubuntu_gnome_tracker_apps_item
 
 - name: disable fingerprint reader
   lineinfile:

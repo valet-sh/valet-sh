@@ -30,8 +30,10 @@
 
 - name: "install defined php versions"
   include: install-php.yml
-    current_php="{{ item }}"
+    current_php="{{ php_multi_item }}"
   with_items: "{{ php_multi }}"
+  loop_control:
+    loop_var: php_multi_item
 
 - name: "install php-imagick"
   apt:

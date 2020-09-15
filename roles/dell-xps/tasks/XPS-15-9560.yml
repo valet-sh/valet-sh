@@ -43,23 +43,27 @@
 
 - name: Fix Sleep/Wake Bluetooth Bug
   lineinfile:
-    path: "{{ item }}"
+    path: "{{ valet_tlp_config_item }}"
     regexp: '^RESTORE_DEVICE_STATE_ON_STARTUP'
     line: 'RESTORE_DEVICE_STATE_ON_STARTUP=1'
   become: true
   with_first_found:
     - /etc/tlp.conf
     - /etc/default/tlp
+  loop_control:
+    loop_var: valet_tlp_config_item
 
 - name: Fix Audio Feedback/White Noise from Headphones on Battery Bug
   lineinfile:
-    path: "{{ item }}"
+    path: "{{ valet_tlp_config_item }}"
     regexp: '^SOUND_POWER_SAVE_ON_BAT'
     line: 'SOUND_POWER_SAVE_ON_BAT=0'
   become: true
   with_first_found:
     - /etc/tlp.conf
     - /etc/default/tlp
+  loop_control:
+    loop_var: valet_tlp_config_item
 
 - name: ensure tlp service is restarted
   systemd:
@@ -164,13 +168,16 @@
 - name: disable gnome tracker apps
   systemd:
     masked: yes
-    name: "{{ item }}"
+    name: "{{ ubuntu_gnome_tracker_apps_item }}"
   with_items:
     - tracker-extract.desktop
     - tracker-miner-apps.desktop
     - tracker-miner-fs.desktop
     - tracker-store.desktop
   become: true
+  loop_control:
+    loop_var: ubuntu_gnome_tracker_apps_item
+
 
 - name: disable fingerprint reader
   lineinfile:

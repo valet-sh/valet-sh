@@ -50,8 +50,10 @@
 
 - name: "internal-actions » handle | handle defaults for each service"
   include: sub-handle-defaults.yml
-    valet_sh_service_current_service_item="{{ item }}"
+    valet_sh_service_current_service_item="{{ valet_sh_service_defaultable_services_item }}"
   with_items: "{{ valet_sh_service_defaultable_services }}"
+  loop_control:
+    loop_var: valet_sh_service_defaultable_services_item
 
 - name: "internal-actions » handle | update service defaults object"
   set_fact:

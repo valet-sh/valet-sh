@@ -134,13 +134,15 @@
 - name: disable gnome tracker apps
   systemd:
     masked: yes
-    name: "{{ item }}"
+    name: "{{ ubuntu_gnome_tracker_apps_item }}"
   with_items:
     - tracker-extract.desktop
     - tracker-miner-apps.desktop
     - tracker-miner-fs.desktop
     - tracker-store.desktop
   become: true
+  loop_control:
+    loop_var: ubuntu_gnome_tracker_apps_item
 
 #- name: disable fingerprint reader
 #  lineinfile:

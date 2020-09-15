@@ -17,9 +17,11 @@
 
 - name: "include role"
   include_role:
-    name: "{{ item }}"
+    name: "{{ valet_install_default_roles_item }}"
     public: true
   with_items: "{{ valet_install_default_roles }}"
+  loop_control:
+    loop_var: valet_install_default_roles_item
 
 - name: "include role"
   include_role:
