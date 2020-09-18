@@ -255,10 +255,13 @@
     - name: run mysql initialize command
       shell: "{{ current_mysql_dist_path }}/bin/mysqld --defaults-file={{ current_mysql_etc_path }}/my.cnf --datadir={{ current_mysql_data_path }} --pid-file=/run/mysqld/{{ current_mysql_key }}.pid --initialize-insecure"
       become: true
-      notify: "systemd | {{ current_mysql_key }} | restarted"
 
-    - name: "flush handlers"
-      meta: flush_handlers
+    - name: ensure mysql 5.7 is restarted
+      systemd:
+        name: mysql57
+        daemon_reload: true
+        state: restarted
+      become: true
 
     - name: Deletes anonymous MySQL server user for ansible_fqdn
       mysql_user:
