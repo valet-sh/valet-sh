@@ -1,4 +1,3 @@
----
 #
 # valet.sh | db
 #
@@ -6,8 +5,9 @@
 # @command: "db"
 # @description: "list, create, drop, reset, import, export a mysql database"
 # @usage: "valet.sh db <action>"
-# @help: "valet.sh -h db"
-
+# @help:
+# tbd...
+---
 - name: "db"
   hosts: local
   gather_facts: True

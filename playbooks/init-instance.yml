@@ -1,12 +1,13 @@
----
 #
 # valet.sh | init-instance
 #
 # @author: "Philipp Dittert"
 # @command: "init-instance"
-# @description: "run init-instance command | Usage: valet.sh init-instance
-# @usage: "valet.sh init-instance
-
+# @description: "run init-instance command | Usage: valet.sh init-instance"
+# @usage: "valet.sh init-instance"
+# @help:
+# tbd...
+---
 - name: "init-instance"
   hosts: local
   gather_facts: True
