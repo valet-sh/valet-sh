@@ -24,6 +24,8 @@ from logging.handlers import RotatingFileHandler
 # init logger
 logger = logging.getLogger('valet-sh')
 logger.setLevel(logging.DEBUG)
+if not os.path.exists('log'):
+    os.makedirs('log')
 vsh_log_filename = 'log/debug.log'
 fh = RotatingFileHandler(vsh_log_filename, backupCount=9)
 fh.setLevel(logging.DEBUG)
