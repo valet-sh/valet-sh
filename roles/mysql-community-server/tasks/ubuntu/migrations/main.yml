@@ -22,4 +22,4 @@
     enabled: no
     masked: yes
   become: true
-  ignore_errors: yes
+  failed_when: false

@@ -30,3 +30,8 @@
   vars:
     valet_sh_service_internal_action: true
     valet_service_action: "handle"
+
+- name: "include certificate role"
+  include_role:
+    name: "certificate"
+    public: true
