@@ -42,8 +42,18 @@ class CallbackModule(CallbackModule_debug):
             super(CallbackModule, self)._task_start(task)
         else:
             if self._output == 1:
+                taskname_orig = task.get_name()
+                taskname = (taskname_orig[:75] + '...') if len(taskname_orig) > 75 else taskname_orig
                 print('\x1b[2K', end="\r")
-                print("\033[1;32m" + next(self._spinner) + "\033[0m " + task.get_name(), end="\r")
+                print("\033[1;32m" + next(self._spinner) + "\033[0m " + taskname, end="\r")
+
+    def v2_playbook_on_cleanup_task_start(self, task):
+        if self._debug_enabled():
+            super(CallbackModule, self).v2_playbook_on_cleanup_task_start(task)
+
+    def v2_playbook_on_handler_task_start(self, task):
+        if self._debug_enabled():
+            super(CallbackModule, self).v2_playbook_on_handler_task_start(task)
 
     def v2_runner_on_start(self, host, task):
         if self._debug_enabled():
