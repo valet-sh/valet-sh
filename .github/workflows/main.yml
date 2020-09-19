@@ -1,0 +1,39 @@
+name: CI
+
+# events but only for the 2.x branch
+on:
+  push:
+    branches: [ 2.x ]
+  pull_request:
+    branches: [ 2.x ]
+
+jobs:
+  test-install-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        
+      - name: Installing dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-setuptools git
+          sudo pip3 install -r requirements.txt
+
+      - name: Run valet.sh install
+        run: |
+          BASE_DIR=$PWD valet.sh install
+  test-install-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+        
+      - name: Installing dependencies
+        run: |
+          brew update
+          brew upgrade
+          sudo easy_install pip
+          sudo pip install -r requirements.txt
+
+      - name: Run valet.sh install
+        run: |
+          BASE_DIR=$PWD valet.sh install
