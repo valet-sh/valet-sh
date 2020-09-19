@@ -1,6 +1,6 @@
 # valet.sh
 
-[![Build Status](https://dev.azure.com/valet-sh/valet-sh/_apis/build/status/valet-sh.valet-sh)](https://dev.azure.com/valet-sh/valet-sh/_build/latest?definitionId=2)
+![CI](https://github.com/valet-sh/valet-sh/workflows/CI/badge.svg?branch=2.x)
 
 ## Installation
 
