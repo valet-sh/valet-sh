@@ -3,4 +3,4 @@ testresources
 ansible==2.8.8
 beautifultable==0.5.3
 PyMySQL
-git+https://github.com/valet-sh/cli
+git+https://github.com/valet-sh/cli@1.2.3
