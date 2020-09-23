@@ -1,0 +1,31 @@
+{{ ansible_managed | comment }}
+
+upstream vsh-elasticsearch1 {
+    server 127.0.0.1:9201;
+}
+upstream vsh-elasticsearch2 {
+    server 127.0.0.1:9202;
+}
+upstream vsh-elasticsearch5 {
+    server 127.0.0.1:9205;
+}
+upstream vsh-elasticsearch6 {
+    server 127.0.0.1:9206;
+}
+upstream vsh-elasticsearch7 {
+    server 127.0.0.1:9207;
+}
+
+server {
+  listen    127.0.0.1:9200;
+
+  location / {
+    proxy_pass            http://{{ valet_service_name }};
+    proxy_read_timeout    90;
+    proxy_connect_timeout 90;
+    proxy_set_header      Host $host;
+    proxy_set_header      X-Real-IP $remote_addr;
+    proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header      Proxy "";
+  }
+}

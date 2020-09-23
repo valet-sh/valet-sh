@@ -17,7 +17,7 @@
 
 - name: "provide elasticsearch default configuration"
   template:
-    src: "nginx/elasticsearch.conf.j2"
+    src: "ubuntu/nginx/elasticsearch.conf.j2"
     dest: "/etc/nginx/conf.d/elasticsearch.conf"
     owner: root
     group: root

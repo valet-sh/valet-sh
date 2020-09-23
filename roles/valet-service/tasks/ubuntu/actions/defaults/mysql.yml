@@ -44,7 +44,7 @@
 
 - name: "provide nginx stream configuration"
   template:
-    src: "nginx/mysql.conf.j2"
+    src: "ubuntu/nginx/mysql.conf.j2"
     dest: "/etc/nginx/stream.d/mysql.conf"
     owner: root
     group: root
