@@ -1,13 +1,31 @@
----
 #
 # valet.sh | config
 #
 # @author: "Philipp Dittert"
 # @command: "config"
+# @platform: macOS Ubuntu
 # @description: "Manage config parameters | Usage: valet.sh config <command> <key> <value>"
 # @usage: "valet.sh config <command> <key> <value>"
+# @help:
+#
+# set or retrieve custom valet.sh variables. Some features may require custom variables
+# and values for your local environment. This is the command this.
+#
+# set: sets a valet.sh variable
+# valet.sh config set varname varvalue
+#
+# get: returns a valet.sh variable
+# valet.sh config get varname
+#
+# list: returns all custom valet.sh variables
+# valet.sh config list
+#
+# remove: deletes a custom valet.sh variable
+# valet.sh config remove varname
+#
+---
 
-- name: "link"
+- name: "config"
   hosts: local
   gather_facts: true
   vars_prompt:
