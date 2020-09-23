@@ -19,6 +19,12 @@
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
+- name: "actions » start | check for alias service name"
+  set_fact:
+    valet_service_name_alias: "{{ item.value }}"
+  when: item.key == valet_service_name
+  with_dict: "{{ valet_sh_service_alias_mapping }}"
+
 - name: "actions » start | start {{ valet_service_name }} service"
   shell: "brew services start {{ valet_service_name }}"
   become: true
