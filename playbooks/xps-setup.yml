@@ -1,4 +1,3 @@
----
 #
 # valet.sh | xps-setup
 #
@@ -8,7 +7,9 @@
 # @author: "Philipp Dittert"
 # @author: "Florian Schmid"
 # @usage: "valet.sh xps-setup"
-
+# @help:
+# tbd...
+---
 - name: "xps-setup"
   hosts: local
   gather_facts: True
