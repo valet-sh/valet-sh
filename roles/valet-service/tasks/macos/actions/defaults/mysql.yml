@@ -41,7 +41,7 @@
 
 - name: "provide nginx stream configuration"
   template:
-    src: "macos/nginx/mysql.conf.j2"
+    src: "nginx/mysql.conf.j2"
     dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/mysql.conf"
     mode: '0644'
   notify: brew | nginx | restarted

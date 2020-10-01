@@ -17,7 +17,7 @@
 
 - name: "provide elasticsearch default configuration"
   template:
-    src: "macos/nginx/elasticsearch.conf.j2"
+    src: "nginx/elasticsearch.conf.j2"
     dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/elasticsearch.conf"
     mode: '0644'
   notify: brew | nginx | restarted

@@ -92,22 +92,6 @@ valet_sh_service_state_preset_default:
   - mysql80: false
   - rabbitmq: false
   - redis: true
-valet_sh_service_state_preset_mac:
-  - vsh-elasticsearch1: false
-  - vsh-elasticsearch2: false
-  - vsh-elasticsearch5: false
-  - vsh-elasticsearch6: true
-  - vsh-elasticsearch7: false
-  - vsh-php56: false
-  - vsh-php70: false
-  - vsh-php71: false
-  - vsh-php72: true
-  - vsh-php73: true
-  - vsh-php74: true
-  - vsh-mysql57: true
-  - vsh-mysql80: false
-  - rabbitmq: false
-  - redis: true
 valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
 
 valet_sh_service_privileged_services_default:
@@ -144,6 +128,12 @@ valet_sh_service_alias_mapping_default:
 valet_sh_service_alias_mapping_mac:
   mysql57: "vsh-mysql57"
   mysql80: "vsh-mysql80"
+  php56: "vsh-php56"
+  php70: "vsh-php70"
+  php71: "vsh-php71"
+  php72: "vsh-php72"
+  php73: "vsh-php73"
+  php74: "vsh-php74"
   elasticsearch1: "vsh-elasticsearch1"
   elasticsearch2: "vsh-elasticsearch2"
   elasticsearch4: "vsh-elasticsearch5"

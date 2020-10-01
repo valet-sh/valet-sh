@@ -40,3 +40,12 @@
   homebrew_tap:
     tap: 'valet-sh/core'
     state: present
+
+- name: ensure LaunchDaemons script for maxfiles limit is deployed
+  template:
+    src: "limit.maxfiles.conf.j2"
+    dest: "/Library/LaunchDaemons/limit.maxfiles.plist"
+  become: true
+
+- name: ensure maxfile limit daemon is started
+  shell: "launchctl load -w /Library/LaunchDaemons/limit.maxfiles.plist"
