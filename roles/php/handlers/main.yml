@@ -160,6 +160,15 @@
     state: reloaded
   become: true
 
+- name: brew | vsh-php56 | restarted
+  shell: brew services restart vsh-php56
+
+- name: brew | vsh-php56 | stopped
+  shell: brew services stop vsh-php56
+
+- name: brew | vsh-php56 | started
+  shell: brew services start vsh-php56
+
 - name: brew | vsh-php70 | restarted
   shell: brew services restart vsh-php70
 

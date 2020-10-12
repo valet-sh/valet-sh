@@ -53,27 +53,27 @@ valet_sh_service_defaultable_services_default:
       - mysql80
 valet_sh_service_defaultable_services_mac:
   - scope: elasticsearch
-    default: vsh-elasticsearch6
+    default: elasticsearch6
     values:
-      - vsh-elasticsearch1
-      - vsh-elasticsearch2
-      - vsh-elasticsearch5
-      - vsh-elasticsearch6
-      - vsh-elasticsearch7
+      - elasticsearch1
+      - elasticsearch2
+      - elasticsearch5
+      - elasticsearch6
+      - elasticsearch7
   - scope: php
-    default: vsh-php73
+    default: php73
     values:
-      - vsh-php56
-      - vsh-php70
-      - vsh-php71
-      - vsh-php72
-      - vsh-php73
-      - vsh-php74
+      - php56
+      - php70
+      - php71
+      - php72
+      - php73
+      - php74
   - scope: mysql
-    default: vsh-mysql57
+    default: mysql57
     values:
-      - vsh-mysql57
-      - vsh-mysql80
+      - mysql57
+      - mysql80
 valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services'+'_'+current_os, default=valet_sh_service_defaultable_services_default) }}"
 
 valet_sh_service_state_preset_default:
