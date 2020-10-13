@@ -57,6 +57,11 @@
     current_php_version: "{{ php_default_version_string }}"
   when: (php_version is undefined) or (php_version | length == 0)
 
+- name: "link | fail when php_version is unknown"
+  fail:
+    msg: "unknown php version '{{ current_php_version }}'"
+  when: "current_php_version not in php_allowed_version_strings"
+
 - name: "link | generate ssl-certificate for {{ link_name }}"
   include_role:
     name: certificate

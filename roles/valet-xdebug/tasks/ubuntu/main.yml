@@ -19,6 +19,11 @@
     msg: "valet_action variable is not set"
   when: valet_action is not defined
 
+- name: "check if valet_action has a valid value"
+  fail:
+    msg: "invalid action '{{ valet_action }}' - please use 'on' or 'off'"
+  when: valet_action != "on" and valet_action != "off"
+
 - name: "check if php_version variable is set"
   fail:
     msg: "php_version variable is not set"

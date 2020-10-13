@@ -7,7 +7,12 @@
 # @description: "Link current directory with given name | Usage: valet.sh link projectx php72"
 # @usage: "valet.sh link <name> <php-version>"
 # @help:
-# tbd...
+#
+# EXAMPLES:
+#
+# link the current folder as projectx and use php7.2
+# valet.sh link projectx php7
+#
 ---
 - name: "link"
   hosts: local

@@ -19,6 +19,14 @@ template_found: False
 
 php_default_version_string: "php72"
 
+php_allowed_version_strings:
+  - "php56"
+  - "php70"
+  - "php71"
+  - "php72"
+  - "php73"
+  - "php74"
+
 valet_link_blacklist:
   - mailhog
   - rabbitmq

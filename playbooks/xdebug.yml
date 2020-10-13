@@ -7,7 +7,15 @@
 # @description: "enables xdebug for given php version e.g 7.2 7.3 | Usage: xdebug on 7.1"
 # @usage: "valet.sh xdebug <state> <php-version>"
 # @help:
-# tbd...
+#
+# EXAMPLES:
+#
+# enable xdebug for php 7.2
+# valet.sh xdebug on 7.2
+#
+# disable xdebug for php 7.2
+# valet.sh xdebug off 7.2
+#
 ---
 - name: "xdebug"
   hosts: local
