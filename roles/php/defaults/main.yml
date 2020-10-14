@@ -173,6 +173,35 @@ php_fpm_settings_default:
   - conf: "xdebug.idekey"
     value: "PHPSTORM"
 
+## mac os specific settings
+php_fpm_settings_default_macos:
+  - conf: "date.timezone"
+    value: "Europe/Berlin"
+  - conf: "max_execution_time"
+    value: "900"
+  - conf: "error_log"
+    value: "{{ php_error_log_path }}"
+  - conf: "memory_limit"
+    value: "8192M"
+  - conf: "upload_max_filesize"
+    value: "128M"
+  - conf: "post_max_size"
+    value: "128M"
+  - conf: "max_input_vars"
+    value: "10000"
+  - conf: "sendmail_path"
+    value: "{{ mailhog_bin_target }} sendmail test@test"
+  - conf: "xdebug.remote_enable"
+    value: "1"
+  - conf: "xdebug.remote_host"
+    value: "localhost"
+  - conf: "xdebug.remote_port"
+    value: "9000"
+  - conf: "xdebug.remote_autostart"
+    value: "1"
+  - conf: "xdebug.idekey"
+    value: "PHPSTORM"
+
 php_fpm_settings_additional_default: []
 
 php_modules_default: "{{ php_modules }}"
