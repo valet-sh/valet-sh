@@ -22,6 +22,24 @@
     valet_db_name: "{{ valet_arg1 }}"
   when: valet_arg1 | length > 0
 
+- name: "actions » drop | fail when no database name was set"
+  fail:
+    msg: "not database name was set"
+  when: valet_db_name | length == 0
+
+- name: "actions » drop | get list of mysql databases"
+  shell: "mysql -B --disable-column-names --execute 'show databases'" # noqa 305 301
+  register: mysql_query_show_databases_obj
+
+- name: "actions » drop | read current databases from command output"
+  set_fact:
+    valet_current_databases: "{{ mysql_query_show_databases_obj.stdout_lines | difference(valet_mysql_db_blacklist) }}"
+
+- name: "actions » drop | fail when specified database does not exist"
+  fail:
+    msg: "database '{{ valet_db_name }}' does not exist"
+  when: valet_db_name not in valet_current_databases
+
 - name: "actions » drop | drop database '{{ valet_db_name }}'"
   mysql_db:
     name: "{{ valet_db_name }}"
