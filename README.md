@@ -1,6 +1,8 @@
 # valet.sh
 
-![CI](https://github.com/valet-sh/valet-sh/workflows/CI/badge.svg?branch=2.x)
+## Documentation
+
+See https://valet.sh
 
 ## Installation
 
@@ -16,9 +18,3 @@ See command descriptions when executing `valet.sh`
 Usage:
   command [options] [command] [arguments]
 ```
-
-tbd.
-
-## Credits
-
-tbd.
