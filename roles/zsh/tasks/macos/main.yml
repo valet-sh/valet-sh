@@ -4,6 +4,7 @@
   git:
     repo: "https://github.com/robbyrussell/oh-my-zsh"
     dest: "{{ current_home }}/.oh-my-zsh"
+    force: yes
   register: cloning
 
 - name: Creating new ~/.zshrc
