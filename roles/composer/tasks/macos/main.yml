@@ -18,7 +18,14 @@
 - name: "ensure composer is installed"
   homebrew:
     name: composer
-    state: present
+    state: absent
+
+- name: download Composer setup
+  get_url:
+    url: https://getcomposer.org/composer-1.phar
+    dest: "{{ composer_bin }}"
+    mode: "0755"
+    force: true
 
 - name: install prestissimo
   composer:
