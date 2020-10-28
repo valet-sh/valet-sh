@@ -15,12 +15,12 @@
 ##
 ---
 
-- name: "ensure composer is installed"
+- name: "ensure composer is not installed via homebrew"
   homebrew:
     name: composer
     state: absent
 
-- name: download Composer setup
+- name: "ensure composer is installed"
   get_url:
     url: https://getcomposer.org/composer-1.phar
     dest: "{{ composer_bin }}"
