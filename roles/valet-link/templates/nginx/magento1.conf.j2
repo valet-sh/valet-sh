@@ -1,3 +1,15 @@
+{% if valet_sh_project_multidomain_config is defined %}
+map $host $storecode_{{ link_name }} {
+{% for key, value in valet_sh_project_multidomain_config.items() %}
+{% if value == "default" %}
+    {{ value }} {{ key }};
+{% else %}
+    ~^{{ value }}.(.*)$ {{ key }};
+{% endif %}
+{% endfor %}
+}
+{% endif %}
+
 server {
     listen 127.0.0.1:80;
 
@@ -52,6 +64,10 @@ server {
 		fastcgi_pass   $upstream;
 		fastcgi_buffers 16 16k;
 		fastcgi_buffer_size 32k;
+{% if valet_sh_project_multidomain_config is defined %}
+        fastcgi_param MAGE_RUN_CODE $storecode_{{ link_name }};
+        fastcgi_param MAGE_RUN_TYPE store;
+{% endif %}
 		fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
 		fastcgi_read_timeout 900;
 		include    fastcgi_params;
