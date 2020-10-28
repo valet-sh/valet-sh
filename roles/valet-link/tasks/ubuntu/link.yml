@@ -71,10 +71,10 @@
 
 - name: "link | find a matching application template"
   block:
-    - include_tasks: macos/templates/magento2.yml
-    - include_tasks: macos/templates/neos.yml
-    - include_tasks: macos/templates/magento1.yml
-    - include_tasks: macos/templates/fallback.yml
+    - include_tasks: ubuntu/templates/magento2.yml
+    - include_tasks: ubuntu/templates/neos.yml
+    - include_tasks: ubuntu/templates/magento1.yml
+    - include_tasks: ubuntu/templates/fallback.yml
   when: not template_found
 
 - name: "link | create new valet_link variable"
