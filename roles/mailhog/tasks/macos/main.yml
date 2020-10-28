@@ -34,4 +34,6 @@
     dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/mailhog.conf"
     mode: '0644'
   notify: brew | nginx | restarted
-  become: true
+
+- name: brew | mailhog | restart
+  shell: brew services restart mailhog

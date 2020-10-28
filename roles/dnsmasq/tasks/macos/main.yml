@@ -32,3 +32,7 @@
     src: development-domain.conf.j2
     dest: "/usr/local/etc/dnsmasq.d/development-domain.conf"
   notify: brew | dnsmasq | restarted
+
+- name: brew | dnsmasq | restarted
+  shell: brew services restart dnsmasq
+  become: true
