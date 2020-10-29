@@ -19,22 +19,13 @@
   stat: "path={{ composer_bin }}"
   register: composer_bin_obj
 
-- name: download Composer setup
+- name: "ensure composer is installed"
   get_url:
-    url: https://getcomposer.org/installer
-    dest: "{{ composer_setup_tmp }}"
+    url: https://getcomposer.org/composer-1.phar
+    dest: "{{ composer_bin }}"
     mode: "0755"
+    force: true
   when: not composer_bin_obj.stat.exists
-
-- name: run Composer setup
-  command: "/usr/bin/php {{ composer_setup_tmp }} --install-dir={{composer_path}} --filename=composer"
-  when: not composer_bin_obj.stat.exists
-  become: true
-
-- name: delete Composer setup file
-  file:
-    path: "{{ composer_setup_tmp }}"
-    state: absent
 
 - name: install prestissimo
   composer:
