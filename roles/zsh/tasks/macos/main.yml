@@ -11,6 +11,7 @@
   copy:
     src: "~/.oh-my-zsh/templates/zshrc.zsh-template"
     dest: "{{ current_home }}/.zshrc"
+    force: no
   when: cloning is changed
 
 - name: load aliases file in .zshrc
