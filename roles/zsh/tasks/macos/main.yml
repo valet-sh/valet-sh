@@ -21,11 +21,6 @@
       if [ -f ~/.aliases ]; then
           . ~/.aliases
       fi
-
-- name: extend PATH variable
-  blockinfile:
-    path: "{{ current_home }}/.zshrc"
-    block: |
       export PATH=$PATH:/usr/local/sbin
 
 - name: ensure .profile file exists
