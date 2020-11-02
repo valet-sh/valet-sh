@@ -17,6 +17,8 @@
 - name: load aliases file in .zshrc
   blockinfile:
     path: "{{ current_home }}/.zshrc"
+    marker_begin: "ZSH BEGIN"
+    marker_end: "ZSH END"
     block: |
       if [ -f ~/.aliases ]; then
           . ~/.aliases
