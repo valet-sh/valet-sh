@@ -15,17 +15,12 @@
 ##
 ---
 
-- name: check if Composer is installed
-  stat: "path={{ composer_bin }}"
-  register: composer_bin_obj
-
 - name: "ensure composer is installed"
   get_url:
     url: https://getcomposer.org/composer-1.phar
     dest: "{{ composer_bin }}"
     mode: "0755"
     force: true
-  when: not composer_bin_obj.stat.exists
 
 - name: install prestissimo
   composer:
