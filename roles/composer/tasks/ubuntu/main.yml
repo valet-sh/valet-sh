@@ -21,6 +21,7 @@
     dest: "{{ composer_bin }}"
     mode: "0755"
     force: true
+  become: true
 
 - name: install prestissimo
   composer:
