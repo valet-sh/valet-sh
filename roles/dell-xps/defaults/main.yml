@@ -62,13 +62,13 @@ swapsize: "8GB"
 atheros_wifi: "QCA6174"
 atheros_firmware:
   board:
-    url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/board.bin?raw=true
+    url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/2.0/board.bin?raw=true
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/board.bin
   firmware2:
     url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/board-2.bin?raw=true
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/board-2.bin
   firmware4:
-    url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/firmware-4.bin_WLAN.RM.2.0-00180-QCARMSWPZ-1?raw=true
+    url: https://github.com/kvalo/ath10k-firmware/blob/master/QCA6174/hw3.0/2.0/firmware-4.bin_WLAN.RM.2.0-00180-QCARMSWPZ-1?raw=true
     dest: /lib/firmware/ath10k/QCA6174/hw3.0/firmware-4.bin
 
 ubuntu_hwe_packages:
