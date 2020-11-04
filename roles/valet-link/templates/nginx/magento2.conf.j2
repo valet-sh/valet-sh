@@ -1,5 +1,5 @@
 {% if valet_sh_project_multidomain_config is defined %}
-map $host $storecode_{{ link_name }} {
+map $host $storecode_{{ link_name|replace("-", "_")  }} {
 {% for key, value in valet_sh_project_multidomain_config.items() %}
 {% if value == "default" %}
     {{ value }} {{ key }};
@@ -186,7 +186,7 @@ server {
         fastcgi_read_timeout 600s;
         fastcgi_connect_timeout 600s;
 {% if valet_sh_project_multidomain_config is defined %}
-        fastcgi_param MAGE_RUN_CODE $storecode_{{ link_name }};
+        fastcgi_param MAGE_RUN_CODE $storecode_{{ link_name|replace("-", "_") }};
         fastcgi_param MAGE_RUN_TYPE store;
 {% endif %}
         fastcgi_index  index.php;
