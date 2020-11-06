@@ -17,7 +17,7 @@
 
 - name: "templates » magento2 | check for magento2 project"
   stat:
-    path: "{{ valet_current_path }}/pub/index.php"
+    path: "{{ valet_current_path }}/app/etc/config.php"
   register: m2_checker_obj
 
 - block:
