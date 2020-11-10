@@ -21,11 +21,6 @@
     state: present
   notify: brew | rabbitmq | restarted
 
-- name: Ensure the rabbitmq_management plugin is enabled
-  rabbitmq_plugin:
-    names: rabbitmq_management
-    state: enabled
-
 - name: "generate ssl-certificate for rabbitmq.{{ development_tld }}"
   include_role:
     name: certificate
