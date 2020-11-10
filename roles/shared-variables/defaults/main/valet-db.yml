@@ -15,26 +15,10 @@
 ##
 ---
 
-- name: fail when valet_action is unknown
-  fail:
-    msg: "unknown action '{{ valet_action }}'"
-  when: valet_action not in valet_db_allowed_actions
-
-- include_tasks: ls.yml
-  when: valet_action == "ls"
-
-- include_tasks: create.yml
-  when: valet_action == "create"
-
-- include_tasks: reset.yml
-  when: valet_action == "reset"
-
-- include_tasks: drop.yml
-  when: valet_action == "drop"
-
-- include_tasks: import.yml
-  when: valet_action == "import"
-
-- include_tasks: export.yml
-  when: valet_action == "export"
-
+valet_db_allowed_actions:
+  - "ls"
+  - "create"
+  - "reset"
+  - "drop"
+  - "import"
+  - "export"
