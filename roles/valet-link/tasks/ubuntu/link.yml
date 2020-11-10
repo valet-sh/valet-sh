@@ -84,6 +84,7 @@
       - name: "{{ link_name }}"
         path: "{{ valet_current_path }}"
         ssl: true
+        phpVersion: "{{ current_php_version }}"
 
 - name: "link | assemble new valet_links_object"
   set_fact:
