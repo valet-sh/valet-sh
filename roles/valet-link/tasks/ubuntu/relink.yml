@@ -15,8 +15,8 @@
 ##
 ---
 
-- include_tasks: "unlink.yml"
+- include_tasks: "ubuntu/unlink.yml"
   vars:
     valet_link_silent: true
 
-- include_tasks: "link.yml"
+- include_tasks: "ubuntu/link.yml"
