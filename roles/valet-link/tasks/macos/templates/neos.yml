@@ -25,8 +25,6 @@
       template:
         src: "nginx/neos.conf.j2"
         dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
-        owner: root
-        group: root
         mode: '0644'
       notify: brew | nginx | restarted
 
