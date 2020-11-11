@@ -3,12 +3,14 @@
 #
 # @author: "Philipp Dittert"
 # @command: "db"
-# @description: "list, create, drop, reset, import, export a mysql database"
+# @description: "ls, create, drop, reset, import, export a mysql database"
 # @usage: "valet.sh db <action>"
 # @help:
 #
-# list: list all databases
-# valet.sh db list
+# all commands will be executed on the default mysql database you selected
+#
+# ls: ls all databases
+# valet.sh db ls
 #
 # create: create a new database
 # valet.sh db create <dbname>
@@ -19,10 +21,11 @@
 # reset: drops and creates a database
 # valet.sh db reset <dbname>
 #
-# import: import a mysql database dump. Database will be created when
+# import: import a mysql database dump. Database will be created if it does not exist
+# valet.sh db import <db-filename> <dbname>
 #
-# TODO
-#
+# export: export a mysql database into given db-filename
+# valet.sh db export <db-filename> <dbname>
 #
 #
 ---

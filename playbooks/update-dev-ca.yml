@@ -7,7 +7,10 @@
 # @description: "adds the local development CA to Firefox/Chrome as trusted certificate"
 # @usage: "valet.sh update-dev-ca"
 # @help:
-# tbd...
+#
+# ensure the development CA is imported into the browser keystore
+# valet.sh update-dev-ca
+#
 ---
 - name: "update-dev-ca"
   hosts: local

@@ -10,8 +10,12 @@
 #
 # EXAMPLES:
 #
-# link the current folder as projectx and use php7.2
-# valet.sh link projectx php7.2
+# link the current folder as projectx. When no php version is defined php71 will be used
+# valet.sh link projectx
+#
+# link the current folder as projectx and use php73
+# valet.sh link projectx php73
+#
 #
 ---
 - name: "link"

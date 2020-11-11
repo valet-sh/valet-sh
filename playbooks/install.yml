@@ -4,10 +4,13 @@
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
 # @command: "install"
-# @description: "Install and configure the default development stack ddd"
+# @description: "Install and configure the default development stack"
 # @usage: "valet.sh install"
 # @help:
-# tbd...
+#
+# install: install and configure the default development stack
+# valet.sh install
+#
 ---
 - name: "install"
   hosts: local

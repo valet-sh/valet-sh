@@ -7,7 +7,27 @@
 # @description: "start/stop or enable/disable a service"
 # @usage: "valet.sh service <start|stop|restart|enable|disable|default> elasticsearch6"
 # @help:
-# tbd...
+#
+# start: start a valet-sh service. Service will NOT put in autostart
+# valet.sh service start mysql80
+#
+# start: stop a valet-sh service. Service will NOT removed from autostart
+# valet.sh service stop mysql80
+#
+# start: restart a valet-sh service
+# valet.sh service restart mysql80
+#
+# enable: enable a valet-sh service. Service will be started and put in the autostart (start after reboot)
+# valet.sh service enable elasticsearch7
+#
+# disable: disable a valet-sh service. Service will be stopped and removed from autostart
+# valet.sh service disable elasticsearch7
+#
+# default: define a default service. only elaticsearch<X>, mysql<XX> and php<xx> is allowed
+# valet.sh service default elasticsearch7
+#
+# Read more: https://valet.sh/display/VSH/service
+#
 ---
 - name: "service"
   hosts: local
