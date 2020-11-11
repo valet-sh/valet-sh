@@ -11,7 +11,7 @@
 # EXAMPLES:
 #
 # link the current folder as projectx and use php7.2
-# valet.sh link projectx php7
+# valet.sh link projectx php7.2
 #
 ---
 - name: "link"
