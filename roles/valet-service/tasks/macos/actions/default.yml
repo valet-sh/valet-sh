@@ -20,10 +20,14 @@
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
+- name: "actions » default | reset flag var"
+  set_fact:
+    valet_sh_service_service_is_allowed: false
+
 - name: "actions » default | check if service is allowed"
   set_fact:
     valet_sh_service_service_is_allowed: true
-  when: valet_service_name in valet_sh_service_defaultable_services_item3.1
+  when: valet_service_name == valet_sh_service_defaultable_services_item3.1
   with_subelements:
     - "{{ valet_sh_service_defaultable_services }}"
     - values
@@ -37,7 +41,7 @@
 
 - name: "actions » default | load tasks for default action"
   include_tasks: "defaults/{{ valet_sh_service_defaultable_services_item1.0.scope }}.yml"
-  when: valet_service_name in valet_sh_service_defaultable_services_item1.1
+  when: valet_service_name == valet_sh_service_defaultable_services_item1.1
   with_subelements:
     - "{{ valet_sh_service_defaultable_services }}"
     - values
@@ -47,7 +51,7 @@
 - name: "actions » default | save service scope"
   set_fact:
     valet_service_name_scope: "{{ valet_sh_service_defaultable_services_item2.0.scope }}"
-  when: valet_service_name in valet_sh_service_defaultable_services_item2.1
+  when: valet_service_name == valet_sh_service_defaultable_services_item2.1
   with_subelements:
     - "{{ valet_sh_service_defaultable_services }}"
     - values
