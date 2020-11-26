@@ -22,6 +22,6 @@
 - name: "create symlink for default php"
   file:
     src: "/usr/local/bin/php{{ valet_service_name_version }}"
-    dest: "/usr/local/bin/php"
+    dest: "/usr/local/bin/default-php"
     state: link
     force: true

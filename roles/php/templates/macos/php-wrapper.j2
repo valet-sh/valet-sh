@@ -1,0 +1,36 @@
+#!/bin/bash
+
+AVAILABLE_PHP_VERSION='5.6 7.0 7.1 7.2 7.3 7.4'
+
+function get_target_version {
+    VALET_SH_FILE=$1
+
+    SELECTED_PHP_VERSION=$(cat $VALET_SH_FILE | shyaml get-value services.php.version 2>/dev/null)
+    if [ $? -eq 0 ]
+    then
+      if [[ " $AVAILABLE_PHP_VERSION " =~ .*\ $SELECTED_PHP_VERSION\ .* ]]; then
+         TARGET_PHP_VERSION=$SELECTED_PHP_VERSION
+         return 0
+      fi
+    fi
+    return 1
+}
+
+if test -f ".valet-sh.yml"; then
+  CURRENT_VALET_SH_FILE=".valet-sh.yml"
+elif test -f "../.valet-sh.yml"; then
+  CURRENT_VALET_SH_FILE="../.valet-sh.yml"
+fi
+
+if [[ $CURRENT_VALET_SH_FILE ]]
+then
+  get_target_version $CURRENT_VALET_SH_FILE
+  if [ $? -eq 0 ]
+  then
+    /usr/local/bin/php${TARGET_PHP_VERSION} "$@"
+  else
+    /usr/local/bin/default-php "$@"
+  fi
+else
+  /usr/local/bin/default-php "$@"
+fi

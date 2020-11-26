@@ -57,3 +57,21 @@
     dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/conf.d/95-valet-sh.ini"
     mode: '0644'
   notify: "brew | {{ current_php }} | restarted"
+
+- name: "create symlink for default php"
+  file:
+    src: "/usr/local/bin/php7.3"
+    dest: "/usr/local/bin/default-php"
+    state: link
+
+- name: ensure shyaml is present
+  pip:
+    name: shyaml
+    executable: pip3
+    state: present
+
+- name: ensure php wrapper script is up2date
+  template:
+    src: "macos/php-wrapper.j2"
+    dest: "{{ valet_sh_prefix }}/bin/php"
+    mode: '0755'
