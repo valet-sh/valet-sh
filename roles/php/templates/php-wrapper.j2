@@ -5,7 +5,8 @@ AVAILABLE_PHP_VERSION='5.6 7.0 7.1 7.2 7.3 7.4'
 function get_target_version {
     VALET_SH_FILE=$1
 
-    SELECTED_PHP_VERSION=$(cat $VALET_SH_FILE | shyaml get-value services.php.version 2>/dev/null)
+    SELECTED_PHP_VERSION=$(shyaml get-value services.php.version < "${VALET_SH_FILE}" 2>/dev/null)
+   	# shellcheck disable=SC2181
     if [ $? -eq 0 ]
     then
       if [[ " $AVAILABLE_PHP_VERSION " =~ .*\ $SELECTED_PHP_VERSION\ .* ]]; then
@@ -25,15 +26,13 @@ fi
 if [[ $CURRENT_VALET_SH_FILE ]]
 then
   get_target_version $CURRENT_VALET_SH_FILE
+  # shellcheck disable=SC2181
   if [ $? -eq 0 ]
   then
-    /usr/bin/php${TARGET_PHP_VERSION} "$@"
+    /usr/bin/php"${TARGET_PHP_VERSION}" "$@"
   else
     /usr/bin/php "$@"
   fi
 else
   /usr/bin/php "$@"
 fi
-
-
-
