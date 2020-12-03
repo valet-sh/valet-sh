@@ -27,7 +27,7 @@
       private: yes
   vars:
     valet_action: link
-    link_name: "{{ cli.args[0] }}"
+    link_name: "{{ cli.args[0] | default() }}"
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
     php_version: "{{ cli.args[1] | default() }}"
   roles:

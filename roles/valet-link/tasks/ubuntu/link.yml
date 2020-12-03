@@ -18,7 +18,7 @@
 - name: "link | check if link_name variable is set"
   fail:
     msg: "link_name variable is not set"
-  when: link_name is not defined
+  when: link_name is not defined or link_name|length == 0
 
 - name: "link | check if valet_current_path variable is set"
   fail:
@@ -30,14 +30,14 @@
     msg: "{{ link_name }} is not allowed!"
   when: "link_name in valet_link_blacklist"
 
-- include_tasks: "sub/read.yml"
+- include_tasks: "ubuntu/sub/read.yml"
 
 - name: "link | fail when name already linked"
   fail:
     msg: "{{ link_name }} already linked!"
   when: "link_name in valet_links_obj.valet_links.links_index"
 
-- include_tasks: "partials/load-valet-sh-file.yml"
+- include_tasks: "ubuntu/partials/load-valet-sh-file.yml"
   when: valet_sh_project_vars is not defined
 
 - name: "link | change 'valet_current_path' when .valet-sh.yaml file was found"
@@ -85,6 +85,7 @@
         path: "{{ valet_current_path }}"
         ssl: true
         phpVersion: "{{ current_php_version }}"
+        template: "{{ nginx_template }}"
 
 - name: "link | assemble new valet_links_object"
   set_fact:
@@ -93,4 +94,4 @@
         links_index: "{{ valet_links_obj.valet_links.links_index + [link_name] }}"
         links: "{{ valet_links_obj.valet_links.links + new_valet_link }}"
 
-- include_tasks: "sub/write.yml"
+- include_tasks: "ubuntu/sub/write.yml"

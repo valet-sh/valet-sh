@@ -6,3 +6,7 @@
     dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
     mode: '0644'
   notify: brew | nginx | restarted
+
+- name: "templates » fallback | set var 'nginx_template' when no app was found"
+  set_fact:
+    nginx_template: "Fallback"

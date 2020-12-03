@@ -42,4 +42,5 @@
     - name: "templates » magento2 | set var 'template_found' when magento2 instance was found"
       set_fact:
         template_found: true
+        nginx_template: "Magento 2"
   when: m2_checker_obj.stat.exists

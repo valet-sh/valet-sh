@@ -18,7 +18,7 @@
 - name: "link | check if link_name variable is set"
   fail:
     msg: "link_name variable is not set"
-  when: link_name is not defined
+  when: link_name is not defined or link_name|length == 0
 
 - name: "link | check if valet_current_path variable is set"
   fail:
@@ -38,6 +38,7 @@
   when: "link_name in valet_links_obj.valet_links.links_index"
 
 - include_tasks: "macos/partials/load-valet-sh-file.yml"
+  when: valet_sh_project_vars is not defined
 
 - name: "link | change 'valet_current_path' when .valet-sh.yaml file was found"
   set_fact:
@@ -84,6 +85,7 @@
         path: "{{ valet_current_path }}"
         ssl: true
         phpVersion: "{{ current_php_version }}"
+        template: "{{ nginx_template }}"
 
 - name: "link | assemble new valet_links_object"
   set_fact:
