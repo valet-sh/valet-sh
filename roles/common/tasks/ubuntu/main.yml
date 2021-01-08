@@ -31,6 +31,8 @@
     value: "262144"
     state: present
   become: true
+  tags: notest
+  
 
 - name: set fs.inotify.max_user_watches to 524288
   sysctl:
@@ -38,3 +40,4 @@
     value: "524288"
     state: present
   become: true
+  tags: notest

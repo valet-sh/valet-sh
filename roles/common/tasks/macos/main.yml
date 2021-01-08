@@ -22,6 +22,7 @@
     state: present
     reload: no
   become: true
+  tags: notest
 
 - name: set fs.inotify.max_user_watches to 524288
   sysctl:
@@ -30,6 +31,7 @@
     state: present
     reload: no
   become: true
+  tags: notest
 
 - name: ensure homebrew is installed
   shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'

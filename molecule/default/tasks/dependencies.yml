@@ -1,0 +1,30 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Upgrade all apt packages
+  apt:
+    upgrade: dist
+    force_apt_get: true
+
+- name: Install apt packages
+  apt:
+    pkg:
+    - python3-pip
+    - python3-setuptools
+    - git
+    - sudo
+    - network-manager
+
+- name: Add test user as sudoer
+  user:
+    name: test
+    groups: sudo
+    append: true
+    state: present
+    createhome: true
+
+
+

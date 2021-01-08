@@ -1,0 +1,20 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: "geerlingguy/docker-ubuntu2004-ansible:latest"
+    command: ""
+    privileged: True
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:rw"
+      - "${MOLECULE_PROJECT_DIRECTORY}:/usr/local/valet-sh/valet-sh:rw"
+provisioner:
+  name: ansible  
+  env:
+    USER: "test"
+    ANSIBLE_ROLES_PATH: "../../roles"
+verifier:
+  name: ansible

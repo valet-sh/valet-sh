@@ -37,3 +37,4 @@
     state: link
   notify: systemd | network-manager | reload
   become: true
+  tags: notest

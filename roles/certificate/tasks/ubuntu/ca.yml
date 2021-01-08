@@ -55,6 +55,7 @@
     src: "{{ certificate_ca_cert_file }}"
     dest: "{{ certificate_trusted_root_ca_path }}/valet-sh_development_CA.crt"
     mode: '0644'
+    remote_src: true
   register: copy_ca_to_trusted_root_ca_path_obj
   become: true
 
