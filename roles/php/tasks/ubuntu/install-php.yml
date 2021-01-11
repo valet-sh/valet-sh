@@ -31,12 +31,25 @@
   set_fact:
     php_specific_modules: "{{ php_modules | map('regex_replace', '^(.*)$', php_version_string + '-\\1') | list }}"
 
+- name: ensure xdebug php package can be installed
+  file:
+    path: "/etc/apt/preferences.d/valet-sh-php{{ php_version|replace('.', '-') }}-xdebug"
+    state: absent
+  become: true
+
 - name: "install {{ php_version_string }} modules"
   apt:
     name: "{{ php_specific_modules }}"
     state: present
   notify: "systemd | {{ php_version_string }}-fpm | restarted"
   become: true
+
+- name: "include xdebug compilation tasks"
+  include: compile-xdebug.yml
+  when:
+    - current_php.compile_xdebug is defined
+    - current_php.compile_xdebug.status is defined
+    - current_php.compile_xdebug.status|bool
 
 - name: get stat for xdebug cli configuration file
   stat:
