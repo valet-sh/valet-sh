@@ -16,7 +16,7 @@
 ---
 
 - name: "ensure adoptopenjdk8 is installed"
-  homebrew_cask:
+  community.general.homebrew_cask:
     name: "homebrew/cask-versions/adoptopenjdk8"
     state: present
 
