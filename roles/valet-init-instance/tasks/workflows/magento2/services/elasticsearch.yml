@@ -27,6 +27,21 @@
         port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
         delay: 5
   when:
+    - current_os == "ubuntu"
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.elasticsearch is defined
+    - valet_sh_project_vars.services.elasticsearch.version is defined
+
+- block:
+    - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
+      shell: "brew services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+
+    - name: "workflows » magento2 » services » elasticsearch | wait for elasticsearch to be reachable"
+      wait_for:
+        port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
+        delay: 5
+  when:
+    - current_os == "mac"
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.elasticsearch is defined
     - valet_sh_project_vars.services.elasticsearch.version is defined
