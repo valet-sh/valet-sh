@@ -4,6 +4,8 @@
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
 # @command: "update-dev-ca"
+# @platform: macOS Ubuntu
+# @sudo: true
 # @description: "adds the local development CA to Firefox/Chrome as trusted certificate"
 # @usage: "valet.sh update-dev-ca"
 # @help:
@@ -15,9 +17,5 @@
 - name: "update-dev-ca"
   hosts: local
   gather_facts: True
-  vars_prompt:
-    - name: "ansible_become_pass"
-      prompt: "[sudo] Password"
-      private: yes
   roles:
     - certificate

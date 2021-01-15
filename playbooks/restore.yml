@@ -4,6 +4,7 @@
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
 # @command: "restore"
+# @platform: macOS Ubuntu
 # @description: "restore persistent instance resources (eg. db, media-files)"
 # @usage: "valet.sh restore <(optional) instancebackup-identifier> <(optional) valet_restore_db_identifier>"
 # @help:

@@ -4,6 +4,7 @@
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
 # @command: "install"
+# @platform: macOS Ubuntu
 # @description: "Install and configure the default development stack"
 # @usage: "valet.sh install"
 # @help:
