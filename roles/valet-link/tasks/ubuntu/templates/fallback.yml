@@ -9,3 +9,7 @@
     mode: '0644'
   notify: systemd | nginx | restarted
   become: true
+
+- name: "templates » fallback | set var 'nginx_template' when no app was found"
+  set_fact:
+    nginx_template: "Fallback"

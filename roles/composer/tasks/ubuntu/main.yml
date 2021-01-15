@@ -26,6 +26,7 @@
 - name: install prestissimo
   composer:
     command: require
+    executable: /usr/bin/php7.3
     global_command: yes
     arguments: hirak/prestissimo
 

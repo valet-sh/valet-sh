@@ -31,4 +31,5 @@
     - name: "templates » neos | set var 'template_found' when neos instance was found"
       set_fact:
         template_found: true
+        nginx_template: "Neos CMS"
   when: neos_checker_obj.stat.exists

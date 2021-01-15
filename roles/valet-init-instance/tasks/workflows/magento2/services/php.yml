@@ -27,6 +27,21 @@
         path: "/var/run/php/php{{ valet_sh_project_vars.services.php.version }}-fpm.sock"
         delay: 5
   when:
+    - current_os == "ubuntu"
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.php is defined
+    - valet_sh_project_vars.services.php.version is defined
+
+- block:
+    - name: "workflows » magento2 » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
+      shell: "brew services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
+
+    - name: "workflows » magento2 » services » php | wait for php-fpm to be reachable"
+      wait_for:
+        path: "/tmp/vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}.sock"
+        delay: 5
+  when:
+    - current_os == "mac"
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.php is defined
     - valet_sh_project_vars.services.php.version is defined
