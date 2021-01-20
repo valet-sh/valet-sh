@@ -44,6 +44,38 @@
         state: present
       become: true
   when:
+    - current_os == "ubuntu"
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.rabbitmq is defined
+    - valet_sh_project_vars.services.rabbitmq.vhost is defined
+
+- block:
+    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
+      shell: brew services start rabbitmq
+
+    - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
+      wait_for:
+        port: 5672
+        delay: 5
+
+    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
+      rabbitmq_vhost:
+        name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+        node: "rabbit@localhost"
+        state: present
+
+    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user exists"
+      rabbitmq_user:
+        user: "{{ valet_sh_service_rabbitmq_user }}"
+        password: "{{ valet_sh_service_rabbitmq_password }}"
+        vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+        node: "rabbit@localhost"
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+        state: present
+  when:
+    - current_os == "mac"
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.rabbitmq is defined
     - valet_sh_project_vars.services.rabbitmq.vhost is defined

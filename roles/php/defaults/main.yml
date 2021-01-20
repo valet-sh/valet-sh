@@ -104,6 +104,9 @@ php_multi:
         - "xdebug"
         - "sqlite3"
   - version: "7.3"
+    compile_xdebug:
+      status: true
+      version: 2.9.8
     config:
       php_cli_settings:
         - conf: "date.timezone"
@@ -184,9 +187,11 @@ php_multi:
         - "zip"
         - "bcmath"
         - "ldap"
-        - "xdebug"
         - "sqlite3"
   - version: "7.4"
+    compile_xdebug:
+      status: true
+      version: 2.9.8
     config:
       php_cli_settings:
         - conf: "date.timezone"
@@ -267,7 +272,6 @@ php_multi:
         - "zip"
         - "bcmath"
         - "ldap"
-        - "xdebug"
         - "sqlite3"
 
 php_modules:

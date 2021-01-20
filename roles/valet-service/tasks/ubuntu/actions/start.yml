@@ -14,14 +14,28 @@
 #   limitations under the License.
 ##
 ---
+
 - name: "actions » start | fail when no service name was given"
   fail:
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
+
+- name: "actions » start | check for alias service name"
+  set_fact:
+    valet_service_name_alias: "{{ item.value }}"
+  when: item.key == valet_service_name
+  with_dict: "{{ valet_sh_service_alias_mapping }}"
 
 - name: "actions » start | start {{ valet_service_name }} service"
   systemd:
     name: "{{ valet_service_name }}"
     state: started
   become: true
+  when: valet_service_name_alias|length == 0
 
+- name: "actions » start | start {{ valet_service_name }} service"
+  systemd:
+    name: "{{ valet_service_name_alias }}"
+    state: started
+  become: true
+  when: valet_service_name_alias|length > 0
