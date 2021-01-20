@@ -4,6 +4,19 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 __metaclass__ = type
 
+DOCUMENTATION = '''
+    callback: valet-sh
+    type: stdout
+    short_description: valet.sh Ansible screen output
+    version_added: historical
+    description:
+        - This is the valet-sh output callback for ansible-playbook.
+    extends_documentation_fragment:
+      - default_callback
+    requirements:
+      - set as stdout in configuration
+'''
+
 import os
 import signal
 import json
