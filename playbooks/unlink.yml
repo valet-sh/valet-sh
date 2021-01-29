@@ -4,6 +4,8 @@
 # @author: "Johann Zelger"
 # @author: "Philipp Dittert"
 # @command: "unlink"
+# @platform: macOS Ubuntu
+# @sudo: true
 # @description: "Unlink current directory with given name"
 # @usage: "valet.sh unlink <name>"
 # @help:
@@ -15,10 +17,6 @@
 - name: "unlink"
   hosts: local
   gather_facts: True
-  vars_prompt:
-    - name: "ansible_become_pass"
-      prompt: "[sudo] Password"
-      private: yes
   vars:
     valet_action: unlink
     link_name: "{{ cli.args[0] }}"

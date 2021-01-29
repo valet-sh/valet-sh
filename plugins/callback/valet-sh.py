@@ -4,6 +4,19 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 __metaclass__ = type
 
+DOCUMENTATION = '''
+    callback: valet-sh
+    type: stdout
+    short_description: valet.sh Ansible screen output
+    version_added: historical
+    description:
+        - This is the valet-sh output callback for ansible-playbook.
+    extends_documentation_fragment:
+      - default_callback
+    requirements:
+      - set as stdout in configuration
+'''
+
 import os
 import signal
 import json
@@ -16,7 +29,6 @@ import itertools
 from ansible import constants as C
 
 from ansible.plugins.callback.default import CallbackModule as CallbackModule_default
-from ansible.plugins.callback.debug import CallbackModule as CallbackModule_debug
 from ansible.utils.display import Display
 from ansible.module_utils._text import to_bytes, to_text
 from logging.handlers import RotatingFileHandler
@@ -57,7 +69,7 @@ class LogDisplay(Display):
         lvl = logging.DEBUG
         logger.log(lvl, msg2)
 
-class CallbackModule(CallbackModule_debug):
+class CallbackModule(CallbackModule_default):
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'stdout'
     CALLBACK_NAME = 'valet-sh'
