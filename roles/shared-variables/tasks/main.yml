@@ -25,6 +25,11 @@
     current_group: "{{ lookup('env','USER') }}"
   when: ansible_distribution == 'Ubuntu'
 
+- name: "set 'current_group' var for ubuntu"
+  set_fact:
+    current_group: "{{ lookup('env','USER') }}"
+  when: ansible_distribution == 'Linux Mint'
+
 - name: "set 'current_group' var for macos"
   set_fact:
     current_group: "staff"
