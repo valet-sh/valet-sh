@@ -34,7 +34,7 @@ mysql_community_server_57:
   port: 3307
 
 mysql_community_server_80:
-  package_url: "https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.20-linux-glibc2.12-x86_64.tar.xz"
-  package_signature: c21bdd67e4c163ba6d0d5d90344ceb9715aba71a89c6367bd7ae49146b827f91
+  package_url: "https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.23-linux-glibc2.12-x86_64.tar.xz"
+  package_signature: 7a328851d0857942c454492dcae469d690be6958a3bca082a9a69146fceb3fc5
   port: 3308
 
