@@ -45,6 +45,11 @@
     current_os: "ubuntu"
   when: ansible_distribution == 'Linux Mint'
 
+- name: "set 'os_codename' var"
+  set_fact:
+    os_codename: "focal"
+  when: current_os == 'ubuntu'
+
 - name: "set 'current_os' var"
   set_fact:
     current_os: "mac"

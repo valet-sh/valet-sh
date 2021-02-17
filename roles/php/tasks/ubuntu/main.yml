@@ -26,6 +26,7 @@
 - name: use php ppa (Ubuntu)
   apt_repository:
     repo: 'ppa:ondrej/php'
+    codename: "{{ os_codename }}"
   become: true
 
 - name: "install defined php versions"

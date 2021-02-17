@@ -25,6 +25,7 @@
   apt_repository:
     filename: "google-chrome"
     repo: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+    codename: "{{ os_codename }}"
   become: true
 
 - name: install google chrome stable
