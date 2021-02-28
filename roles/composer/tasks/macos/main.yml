@@ -24,6 +24,8 @@
   get_url:
     url: https://getcomposer.org/composer-1.phar
     dest: "{{ composer_bin }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: "0755"
     force: true
 
