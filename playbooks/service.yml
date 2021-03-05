@@ -4,6 +4,8 @@
 # @author: "Philipp Dittert"
 # @author: "Johann Zelger"
 # @command: "service"
+# @platform: macOS Ubuntu
+# @sudo: true
 # @description: "start/stop or enable/disable a service"
 # @usage: "valet.sh service <start|stop|restart|enable|disable|default> elasticsearch6"
 # @help:
@@ -32,10 +34,6 @@
 - name: "service"
   hosts: local
   gather_facts: True
-  vars_prompt:
-    - name: "ansible_become_pass"
-      prompt: "[sudo] Password"
-      private: yes
   vars:
     valet_service_action: "{{ cli.args[0] }}"
     valet_service_name: "{{ cli.args[1] }}"

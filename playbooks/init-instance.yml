@@ -3,7 +3,7 @@
 #
 # @author: "Philipp Dittert"
 # @command: "init-instance"
-# @platform: ubuntu
+# @platform: macOS Ubuntu
 # @description: "run init-instance command | Usage: valet.sh init-instance
 # @help: "valet.sh -h db"
 # @usage: "valet.sh init-instance

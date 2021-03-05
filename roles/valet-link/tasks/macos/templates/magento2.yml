@@ -15,10 +15,15 @@
 ##
 ---
 
-- name: "templates » magento2 | check for magento2 project"
+- name: "templates » magento2 | check for file '/app/etc/di.xml' (magento2 project)"
   stat:
     path: "{{ valet_current_path }}/app/etc/di.xml"
-  register: m2_checker_obj
+  register: m2_checker_1_obj
+
+- name: "templates » magento2 | check for file '/app/etc/config.php' (magento2 project)"
+  stat:
+    path: "{{ valet_current_path }}/app/etc/config.php"
+  register: m2_checker_2_obj
 
 - block:
     - name: "link | check for multidomain configuration in .valet-sh.yml file"
@@ -40,4 +45,4 @@
       set_fact:
         template_found: true
         nginx_template: "Magento 2"
-  when: m2_checker_obj.stat.exists
+  when: m2_checker_1_obj.stat.exists or m2_checker_2_obj.stat.exists

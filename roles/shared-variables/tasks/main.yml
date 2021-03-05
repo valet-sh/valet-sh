@@ -25,6 +25,11 @@
     current_group: "{{ lookup('env','USER') }}"
   when: ansible_distribution == 'Ubuntu'
 
+- name: "set 'current_group' var for ubuntu"
+  set_fact:
+    current_group: "{{ lookup('env','USER') }}"
+  when: ansible_distribution == 'Linux Mint'
+
 - name: "set 'current_group' var for macos"
   set_fact:
     current_group: "staff"
@@ -37,8 +42,18 @@
 
 - name: "set 'current_os' var"
   set_fact:
+    current_os: "ubuntu"
+  when: ansible_distribution == 'Linux Mint'
+
+- name: "set 'current_os' var"
+  set_fact:
     current_os: "mac"
   when: ansible_distribution == 'MacOSX'
+
+- name: "set 'os_codename' var"
+  set_fact:
+    os_codename: "focal"
+  when: current_os == 'ubuntu'
 
 - name: fail when no supported operating system was found
   fail:
