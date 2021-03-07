@@ -1,0 +1,58 @@
+## experimental feature that is used by "init-instance" and "restore" command
+hub:
+# the hostname
+  host: "dummy.example.com"
+# the ssh target port
+  port: 22
+# the absolute path
+  path: "/data"
+
+services:
+  node:
+    version: 10
+  php:
+    # php version that should be used in the nginx configuration but for cli execution as well
+    version: 7.3
+  mysql:
+    # the mysql database version
+    version: 5.7
+    # the mysql databasename
+    database: "projectx"
+  elasticsearch:
+    # the elasticsearch major version
+    version: 7
+    # list of elasticsearch plugins that have to be installed
+    plugins:
+      - "analysis-phonetic"
+      - "analysis-icu"
+  rabbitmq:
+    # the rabbitmq vhost
+    vhost: project-x
+
+instance:
+  # the instance key is used by the "link" command as link-name
+  key: "projectX"
+  # defines the nginx configuration template to be used
+  type: "magento2"
+  # relative path to project source code
+  path: "src"
+  # a multidomain mapping that is used by some nginx templates like magento1 or magento2
+  multidomain:
+    de: "default"
+    en: "en"
+  # experimental feature that is used by the "restore" command
+  # synchronize a database and (multiple) directories of a remote system to the local environment
+  sync:
+    identifier: test
+    db: true
+    fs:
+      - "pub/media"
+    post_restore_actions:
+      indexer:
+        reindex:
+          - elasticsuite_categories_fulltext
+          - elasticsuite_thesaurus
+  # a application security key. used by "init-instance" command
+  crypt_key: "71f3e5a45c97b7d868bf1aed85b3d6b213a6611f"
+  # custom configurations that can be used within "init-instance" or "restore" command
+  config:

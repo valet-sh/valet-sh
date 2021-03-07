@@ -1,0 +1,21 @@
+#
+# valet.sh | init
+#
+# @author: "Philipp Dittert"
+# @command: "init"
+# @platform: macOS Ubuntu
+# @sudo: true
+# @description: "run init command | Usage: valet.sh init
+# @usage: "valet.sh init
+# @help: "valet.sh -h init"
+
+---
+
+- name: "init"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_action: init
+    valet_current_path: "{{ lookup('env','OLDPWD') }}"
+  roles:
+    - valet-init
