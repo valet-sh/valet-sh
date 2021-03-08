@@ -58,11 +58,18 @@
     mode: '0644'
   notify: "brew | {{ current_php }} | restarted"
 
+- name: "get stat for '/usr/local/bin/default-php'"
+  stat:
+    path: "/usr/local/bin/default-php"
+  register: php_default_symlink_obj
+
 - name: "create symlink for default php"
   file:
     src: "/usr/local/bin/php7.3"
     dest: "/usr/local/bin/default-php"
     state: link
+    force: true
+  when: php_default_symlink_obj.stat.islnk is not defined
 
 - name: ensure php wrapper script is up2date
   template:
