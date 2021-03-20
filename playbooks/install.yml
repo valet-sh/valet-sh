@@ -21,4 +21,5 @@
       prompt: "[sudo] Password"
       private: yes
   roles:
+    - sudo-permission-check
     - valet-install

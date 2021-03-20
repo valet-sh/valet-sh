@@ -22,4 +22,5 @@
     valet_restore_db_identifier: "{{ cli.args[1] | default() }}"
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
   roles:
+    - sudo-permission-check
     - valet-restore
