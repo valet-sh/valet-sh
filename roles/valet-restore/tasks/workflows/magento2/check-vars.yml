@@ -133,7 +133,7 @@
   set_fact:
     valet_instancebackup_identifier: "{{ valet_sh_project_vars.instance.sync.identifier | trim  }}"
   when:
-    - (valet_instancebackup_identifier is not defined) or (not valet_instancebackup_identifier|bool)
+    - (valet_instancebackup_identifier is not defined) or valet_instancebackup_identifier|length == 0
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.sync is defined
     - valet_sh_project_vars.instance.sync.identifier is defined
