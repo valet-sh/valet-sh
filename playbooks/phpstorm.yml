@@ -1,0 +1,22 @@
+#
+# valet.sh | phpstorm
+#
+# @author: "Philipp Dittert"
+# @command: "phpstorm"
+# @platform: macOS Ubuntu
+# @sudo: true
+# @description: "starts phpstorm with current directory as argument"
+# @usage: "valet.sh phpstorm"
+# @help:
+#
+# valet.sh phpstorm
+#
+---
+
+- name: "phpstorm"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_current_path: "{{ lookup('env','OLDPWD') }}"
+  roles:
+    - valet-phpstorm
