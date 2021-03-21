@@ -20,7 +20,7 @@ valet_install_default_roles_default:
   - certificate
   - dnsmasq
   - elasticsearch
-  - zsh
+  - shell
   - nginx
   - redis
   - php
@@ -36,7 +36,7 @@ valet_install_default_roles_mac:
   - certificate
   - dnsmasq
   - elasticsearch
-  - zsh
+  - shell
   - nginx
   - redis
   - php

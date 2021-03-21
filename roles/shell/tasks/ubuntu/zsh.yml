@@ -1,0 +1,74 @@
+##
+#   Copyright 2021 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: ensure zsh is installed
+  apt:
+    name: "{{ packages }}"
+    state: present
+  register: installation
+  vars:
+    packages:
+      - zsh
+  become: true
+
+- name: Backing up existing ~/.zshrc
+  shell: "if [ -f {{ current_home }}/.zshrc ]; then mv {{ current_home }}/.zshrc {{ current_home }}/.zshrc.orig; fi"
+  when: installation is changed
+
+- name: Cloning  oh-my-zsh
+  git:
+    repo: "https://github.com/robbyrussell/oh-my-zsh"
+    dest: "{{ current_home }}/.oh-my-zsh"
+  when: installation is changed
+  register: cloning
+
+- name: Creating new ~/.zshrc
+  copy:
+    src: "~/.oh-my-zsh/templates/zshrc.zsh-template"
+    dest: "{{ current_home }}/.zshrc"
+    force: no
+  when: cloning is changed
+
+- name: load aliases file in .zshrc
+  blockinfile:
+    path: "{{ current_home }}/.zshrc"
+    block: |
+      if [ -f ~/.aliases ]; then
+          . ~/.aliases
+      fi
+
+- name: check for .zprofile file in user's home directory
+  stat:
+    path: "{{ current_home }}/.zprofile"
+  register: zsh_zprofile_obj
+
+- name: create .zprofile when not existent
+  blockinfile:
+    path: "{{ current_home }}/.zprofile"
+    block: |
+      emulate sh
+      . ~/.profile
+      emulate zsh
+    create: yes
+  when: zsh_zprofile_obj.stat.exists == False
+
+- name: change default shell to zsh for current user
+  user:
+    name: "{{ current_user }}"
+    shell: /usr/bin/zsh
+  when: installation is success
+  become: true
