@@ -1,24 +1,25 @@
+##
+#   Copyright 2021 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
 ---
-
-- name: ensure zsh is installed
-  apt:
-    name: "{{ packages }}"
-    state: present
-  register: installation
-  vars:
-    packages:
-      - zsh
-  become: true
-
-- name: Backing up existing ~/.zshrc
-  shell: "if [ -f {{ current_home }}/.zshrc ]; then mv {{ current_home }}/.zshrc {{ current_home }}/.zshrc.orig; fi"
-  when: installation is changed
 
 - name: Cloning  oh-my-zsh
   git:
     repo: "https://github.com/robbyrussell/oh-my-zsh"
     dest: "{{ current_home }}/.oh-my-zsh"
-  when: installation is changed
+    force: yes
   register: cloning
 
 - name: Creating new ~/.zshrc
@@ -31,10 +32,18 @@
 - name: load aliases file in .zshrc
   blockinfile:
     path: "{{ current_home }}/.zshrc"
+    marker_begin: "ZSH BEGIN"
+    marker_end: "ZSH END"
     block: |
       if [ -f ~/.aliases ]; then
           . ~/.aliases
       fi
+      export PATH=$PATH:/usr/local/sbin
+
+- name: ensure .profile file exists
+  file:
+    path: "{{ current_home }}/.profile"
+    state: touch
 
 - name: check for .zprofile file in user's home directory
   stat:
@@ -54,6 +63,5 @@
 - name: change default shell to zsh for current user
   user:
     name: "{{ current_user }}"
-    shell: /usr/bin/zsh
-  when: installation is success
+    shell: /bin/zsh
   become: true
