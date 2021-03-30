@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2020 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,6 +15,16 @@
 ##
 ---
 
-- include_tasks: composer1.yml
+- name: "ensure '/usr/bin/composer' is deleted"
+  file:
+    path: "/usr/bin/composer"
+    state: absent
+  become: true
 
-- include_tasks: composer2.yml
+- name: "set '{{ valet_service_name }}' as default"
+  file:
+    src: "/usr/local/bin/{{ valet_service_name }}"
+    dest: "/usr/local/bin/composer"
+    state: link
+    force: true
+  become: true
