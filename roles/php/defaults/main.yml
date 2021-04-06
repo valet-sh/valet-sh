@@ -103,6 +103,7 @@ php_multi:
         - "ldap"
         - "xdebug"
         - "sqlite3"
+        - "imagick"
   - version: "7.3"
     compile_xdebug:
       status: true
@@ -188,6 +189,7 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "sqlite3"
+        - "imagick"
   - version: "7.4"
     compile_xdebug:
       status: true
@@ -273,6 +275,7 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "sqlite3"
+        - "imagick"
 
 php_modules:
   - "xmlrpc"
@@ -294,6 +297,7 @@ php_modules:
   - "mcrypt"
   - "xdebug"
   - "sqlite3"
+  - "imagick"
 
 
 php_error_log_path: "/tmp/php_errors.log"
