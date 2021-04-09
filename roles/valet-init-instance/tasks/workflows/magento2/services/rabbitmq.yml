@@ -38,6 +38,7 @@
         user: "{{ valet_sh_service_rabbitmq_user }}"
         password: "{{ valet_sh_service_rabbitmq_password }}"
         vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+        tags: "administrator"
         configure_priv: .*
         read_priv: .*
         write_priv: .*
@@ -70,6 +71,7 @@
         password: "{{ valet_sh_service_rabbitmq_password }}"
         vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
         node: "rabbit@localhost"
+        tags: "administrator"
         configure_priv: .*
         read_priv: .*
         write_priv: .*
