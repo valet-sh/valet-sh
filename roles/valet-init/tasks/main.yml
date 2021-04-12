@@ -17,7 +17,7 @@
 
 - name: "fail when variable 'valet_current_path' is not defined or empty"
   fail:
-    msg: "varialbe 'valet_current_path' is not defined"
+    msg: "variable 'valet_current_path' is not defined"
   when: valet_current_path is not defined or valet_current_path|length==0
 
 - name: "fail when no command action '{{ valet_action }}' was found"

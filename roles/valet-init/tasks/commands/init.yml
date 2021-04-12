@@ -15,6 +15,16 @@
 ##
 ---
 
+- name: "check if '.valet-sh.yml' file already exists in '{{valet_current_path}}'"
+  stat:
+    path: "{{valet_current_path}}/.valet-sh.yml"
+  register: valet_sh_file_obj
+
+- name: "fail when '.valet-sh.yml' file does exist"
+  fail:
+    msg: "'.valet-sh.yml' already exists in current directory"
+  when: valet_sh_file_obj.stat.exists
+
 - name: "commands » init | provide .valet-sh.yml stub file"
   template:
     src: "valet-sh.yml.j2"
@@ -23,3 +33,4 @@
     group: "{{ current_group }}"
     mode: '0644'
     force: false
+  become: true
