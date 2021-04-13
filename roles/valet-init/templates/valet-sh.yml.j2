@@ -1,0 +1,40 @@
+hub:
+  host: "dummy.example.com"
+  port: 22
+  path: "/data"
+
+services:
+  node:
+    version: 11
+  php:
+    version: 7.4
+  mysql:
+    version: 8.0
+    database: "projectx"
+  elasticsearch:
+    version: 7
+    plugins:
+      - "analysis-phonetic"
+      - "analysis-icu"
+  rabbitmq:
+    vhost: project-x
+
+instance:
+  key: "projectX"
+  type: "magento2"
+  path: "src"
+  multidomain:
+    de: "default"
+    en: "en"
+  sync:
+    identifier: test
+    db: true
+    fs:
+      - "pub/media"
+    post_restore_actions:
+      indexer:
+        reindex:
+          - elasticsuite_categories_fulltext
+          - elasticsuite_thesaurus
+  crypt_key: "71f3e5a45c97b7d868bf1aed85b3d6b213a6611f"
+  config: {}
