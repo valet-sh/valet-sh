@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2021 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
   get_url:
     url: https://getcomposer.org/composer-1.phar
     dest: "{{ composer_bin }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: "0755"
     force: true
   become: true

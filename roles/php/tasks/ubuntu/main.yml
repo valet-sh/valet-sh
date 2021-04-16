@@ -49,3 +49,10 @@
   with_items: "{{ php_multi }}"
   when: (item.default is defined) and (item.default == true)
   become: true
+
+- name: ensure php wrapper script is up2date
+  template:
+    src: "php-wrapper.j2"
+    dest: "/usr/local/bin/php"
+    mode: '0755'
+  become: true

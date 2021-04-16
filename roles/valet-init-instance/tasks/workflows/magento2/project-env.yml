@@ -38,6 +38,7 @@
   - name: "workflows » magento2 » project-env | set magento2 related variables"
     set_fact:
       valet_sh_magento2_db_name: "{{ valet_sh_project_vars.services.mysql.database }}"
+      valet_sh_magento2_key: "{{ valet_sh_project_vars.instance.key }}"
       valet_sh_magento2_crypt_key: "{{ valet_sh_project_vars.instance.crypt_key }}"
       vsh_m2_env_config_default: "{{ valet_sh_project_vars.instance.config.system.default | default([]) }}"
       vsh_m2_env_config_stores: "{{ valet_sh_project_vars.instance.config.system.stores | default([]) }}"

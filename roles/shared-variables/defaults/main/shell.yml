@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2021 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,13 +15,9 @@
 ##
 ---
 
-- name: set valet_service_name version
-  set_fact:
-    valet_service_name_version: "{{ valet_service_name[-2:-1] }}.{{ valet_service_name[-1] }}"
+shell_default_shell: zsh
 
-- name: "create symlink for default php"
-  file:
-    src: "/usr/local/bin/php{{ valet_service_name_version }}"
-    dest: "/usr/local/bin/default-php"
-    state: link
-    force: true
+shell_available_shells:
+  - zsh
+  - bash
+
