@@ -1,0 +1,59 @@
+##
+#   Copyright 2021 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- block:
+    - name: "workflows » neos » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
+      systemd:
+        name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+        state: started
+      become: true
+
+    - name: "workflows » neos » services » elasticsearch | wait for elasticsearch to be reachable"
+      wait_for:
+        port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
+        delay: 5
+
+    - name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_elasticsearch_version' var"
+      set_fact:
+        valet_sh_neos_elasticsearch_version: "{{ valet_sh_project_vars.services.elasticsearch.version }}"
+
+  when:
+    - current_os == "ubuntu"
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.elasticsearch is defined
+    - valet_sh_project_vars.services.elasticsearch.version is defined
+
+- block:
+    - name: "workflows » neos » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
+      shell: "brew services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+
+    - name: "workflows » neos » services » elasticsearch | wait for elasticsearch to be reachable"
+      wait_for:
+        port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
+        delay: 5
+
+    - name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_elasticsearch_version' var"
+      set_fact:
+        valet_sh_neos_elasticsearch_version: "{{ valet_sh_project_vars.services.elasticsearch.version }}"
+
+  when:
+    - current_os == "mac"
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.elasticsearch is defined
+    - valet_sh_project_vars.services.elasticsearch.version is defined
+
+## TODO: implement plugin installation for elasticsearch based on .valet-sh.yml file
