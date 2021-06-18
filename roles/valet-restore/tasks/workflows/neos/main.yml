@@ -30,16 +30,26 @@
   shell: "ssh-keyscan -tecdsa -p {{ valet_sh_hub_port|string }} {{ valet_sh_hub_host }}"
   register: valet_sh_hub_host_ssh_fingerprint_obj
 
+- name: "workflows » neos | set known_host hash field name'"
+  set_fact:
+    valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
+  when: valet_sh_hub_port != 22 or valet_sh_hub_port != "22"
+
+- name: "workflows » neos | set known_host hash field name'"
+  set_fact:
+    valet_sh_known_host_hashed_name: "{{ valet_sh_hub_host }}"
+  when: valet_sh_hub_port == 22 or valet_sh_hub_port == "22"
+
 - name: "workflows » neos | ensure ssh-key for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}' is in known_hosts"
   known_hosts:
-    name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
+    name: "{{ valet_sh_known_host_hashed_name }}"
     key: "{{ valet_sh_hub_host_ssh_fingerprint_obj.stdout }}"
     path: "~/.ssh/known_hosts"
     state: present
 
 - name: "workflows » neos | check if instancebackup idenfifier '{{ valet_instancebackup_identifier }}'"
   stat:
-    path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}"
+    path: "{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/"
   register: instancebackup_identifier_target_obj
   delegate_to: hub
 
@@ -50,7 +60,7 @@
 
 - name: "workflows » neos | check if instancebackup idenfifier '{{ valet_sh_instance_db_filename }}'"
   stat:
-    path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
+    path: "{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/{{ valet_sh_instance_db_filename }}"
   register: instancebackup_target_db_file_obj
   delegate_to: hub
 
@@ -60,7 +70,7 @@
   when: not instancebackup_target_db_file_obj.stat.exists
 
 - name: "workflows » neos | synchronize db dump {{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
-  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }} {{ current_tmp_dir }}" # noqa 204
+  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/{{ valet_sh_instance_db_filename }} {{ current_tmp_dir }}" # noqa 204
   tags:
   - skip_ansible_lint
 
@@ -84,7 +94,7 @@
     state: import
 
 - name: "workflows » neos | synchronize filesystem"
-  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
+  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/fs/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
   with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
   when:
     - valet_sh_project_vars.instance is defined
@@ -102,21 +112,3 @@
     loop_var: valet_sh_restore_current_post_command
   tags:
   - skip_ansible_lint
-
-- block:
-  - name: "workflows » neos | run full reindex when defined in .valet-sh.yml"
-    shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/bin/magento indexer:reindex"
-    when:
-      - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindexAll is defined
-      - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindexAll|bool
-
-  - name: "workflows » neos | run custom indexer commands defined in .valet-sh.yml"
-    shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/bin/magento indexer:reindex {{ valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex | join(' ') }}"
-    when:
-      - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex is defined
-      - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex
-  when:
-    - valet_sh_project_vars.instance is defined
-    - valet_sh_project_vars.instance.sync is defined
-    - valet_sh_project_vars.instance.sync.post_restore_actions is defined
-    - valet_sh_project_vars.instance.sync.post_restore_actions.indexer is defined

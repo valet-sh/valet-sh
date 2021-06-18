@@ -16,20 +16,10 @@
 ---
 
 - block:
-  - name: "workflows » neos » project-env | check existence of '{{ valet_sh_project_vars.instance.processed_config }}'"
-    stat:
-      path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.processed_config }}"
-    register: neos_env_php_obj
-
-  - name: "workflows » neos » project-env | fail when '{{ valet_sh_project_vars.instance.processed_config }}' does not exist"
-    fail:
-      msg: "processed configuration file '{{ valet_sh_project_vars.instance.processed_config }}' does not exist"
-    when: not neos_env_php_obj.stat.exists|bool
-
-  - name: "workflows » neos » project-env | copy Settings.ci.yml"
+  - name: "workflows » neos » project-env | copy Settings.ci.yaml"
     copy:
       src: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.processed_config }}"
-      dest: "{{ valet_sh_project_src_path }}/Configuration/Settings.ci.yml"
+      dest: "{{ valet_sh_project_src_path }}/Configuration/Settings.ci.yaml"
       remote_src: yes
     when: neos_env_php_obj.stat.exists|bool
   when: valet_sh_project_vars.instance.processed_config is defined
@@ -53,9 +43,9 @@
       - valet_sh_project_vars.services.mysql.version is defined
       - valet_sh_project_vars.services.mysql.version == 8.0
 
-  - name: "workflows » neos » project-env | provide env.php for project"
+  - name: "workflows » neos » project-env | provide Settings.ci.yaml for project"
     template:
-      src: "templates/Settings.ci.yml.j2"
-      dest: "{{ valet_sh_project_src_path }}/Configuration/Settings.ci.yml"
+      src: "templates/Settings.ci.yaml.j2"
+      dest: "{{ valet_sh_project_src_path }}/Configuration/Settings.ci.yaml"
 
   when: valet_sh_project_vars.instance.processed_config is not defined

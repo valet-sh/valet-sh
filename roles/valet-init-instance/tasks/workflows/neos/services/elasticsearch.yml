@@ -48,7 +48,7 @@
 
     - name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_elasticsearch_version' var"
       set_fact:
-        valet_sh_neos_elasticsearch_version: "{{ valet_sh_project_vars.services.elasticsearch.version }}"
+        valet_sh_neos_elasticsearch_version: "{{ valet_sh_project_vars.services.elasticsearch.version | int }}"
 
   when:
     - current_os == "mac"

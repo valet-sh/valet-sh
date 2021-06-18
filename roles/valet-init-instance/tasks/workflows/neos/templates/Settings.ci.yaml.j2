@@ -7,6 +7,8 @@ Neos:
         user: "root"
         password: "root"
         host: "{{ valet_sh_neos_db_host }}"
+    core:
+      phpBinaryPathAndFilename: {{ php_bin }}
 {% if valet_sh_neos_elasticsearch_version is defined  %}
   ContentRepository:
     Search:
@@ -17,7 +19,7 @@ Flowpack:
     clients:
         default:
             - host: localhost
-              port: {{ valet_sh_elasticsearch_ports[valet_sh_neos_elasticsearch_version] }}
+              port: {{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}
     indexes:
       default:
         {{ valet_sh_project_vars.instance.key }}:
