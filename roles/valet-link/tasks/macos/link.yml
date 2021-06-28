@@ -53,10 +53,34 @@
     current_php_version: "{{ php_version }}"
   when: (php_version is defined) and (php_version | length > 0)
 
+- name: "link | check for php version in .valet-sh.yml file"
+  set_fact:
+    current_php_version: "php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.php is defined
+    - valet_sh_project_vars.services.php.version is defined
+    - current_php_version is not defined
+
+- block:
+    - name: "link | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+    - name: "link | check for system default php version in services.yml file"
+      set_fact:
+        current_php_version: "{{ valet_sh_services_obj.defaults.php }}"
+      when:
+        - valet_sh_services_obj is defined
+        - valet_sh_services_obj.defaults is defined
+        - valet_sh_services_obj.defaults.php is defined
+  when: current_php_version is not defined or current_php_version|length==0
+
 - name: "link | set default php version"
   set_fact:
     current_php_version: "{{ php_default_version_string }}"
-  when: (php_version is undefined) or (php_version | length == 0)
+  when: (current_php_version is undefined) or (current_php_version | length == 0)
 
 - name: "link | fail when php_version is unknown"
   fail:
