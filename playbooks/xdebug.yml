@@ -23,7 +23,8 @@
   hosts: local
   gather_facts: True
   vars:
-    valet_action: "{{ cli.args[0] }}"
-    php_version: "{{ cli.args[1] }}"
+    valet_action: "{{ cli.args[0] | default() }}"
+    php_version: "{{ cli.args[1] | default() }}"
+    valet_current_path: "{{ lookup('env','OLDPWD') }}"
   roles:
     - valet-xdebug
