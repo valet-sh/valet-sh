@@ -60,7 +60,7 @@ valet_links_stub:
     links_index: []
     links: []
 
-valet_sh_default_node_version: 10
+valet_sh_default_node_version: 14
 
 valet_sh_elasticsearch_ports_default:
   1: 9201
