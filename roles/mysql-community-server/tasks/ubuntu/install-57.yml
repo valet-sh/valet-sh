@@ -222,29 +222,6 @@
   register: current_mysql_data_dir_status_obj
   become: true
 
-- name: "check if '/var/lib/mysql' is empty"
-  find:
-    path: '/var/lib/mysql'
-  register: legacy_mysql_data_dir_status_obj
-  become: true
-
-- block:
-    - name: "migrate existing mysql data folder"
-      synchronize:
-        src: "/var/lib/mysql/"
-        dest: "{{ current_mysql_data_path }}"
-      become: true
-
-    - name: "remove old mysql data folder"
-      file:
-        path: "/var/lib/mysql/"
-        state: absent
-      become: true
-
-  when:
-    - current_mysql_data_dir_status_obj.matched == 0
-    - legacy_mysql_data_dir_status_obj.matched > 0
-
 - block:
     - name: create dummy mysql-client configuration file
       tempfile:
@@ -311,4 +288,3 @@
         state: absent
   when:
     - current_mysql_data_dir_status_obj.matched == 0
-    - legacy_mysql_data_dir_status_obj.matched == 0
