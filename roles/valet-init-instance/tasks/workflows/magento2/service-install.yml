@@ -21,4 +21,6 @@
 
 - include_tasks: services/php.yml
 
+- include_tasks: services/mysql.yml
+
 - include_tasks: services/node.yml
