@@ -17,6 +17,9 @@ server {
     ssl_certificate {{ certificate_server_domain_fullchain_file }};
     ssl_certificate_key {{ certificate_server_domain_key_file }};
 
+    access_log {{ valet_sh_prefix }}/var/log/nginx/{{ link_name }}.{{ development_tld }}-access.log;
+    error_log {{ valet_sh_prefix }}/var/log/nginx/{{ link_name }}.{{ development_tld }}-error.log;
+
     root {{ valet_current_path }}/Web;
 
     index index.php;

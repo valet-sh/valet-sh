@@ -17,17 +17,31 @@
 - name: "check if valet_action variable is set"
   fail:
     msg: "valet_action variable is not set"
-  when: valet_action is not defined
+  when: valet_action is not defined or valet_action|length==0
 
 - name: "check if valet_action has a valid value"
   fail:
     msg: "invalid action '{{ valet_action }}' - please use 'on' or 'off'"
   when: valet_action != "on" and valet_action != "off"
 
+- block:
+    - include_tasks: "ubuntu/partials/load-valet-sh-file.yml"
+      when: valet_sh_project_vars is not defined
+
+    - name: "check for php version in .valet-sh.yml file"
+      set_fact:
+        php_version: "{{ valet_sh_project_vars.services.php.version }}"
+      when:
+        - valet_sh_project_vars is defined
+        - valet_sh_project_vars.services is defined
+        - valet_sh_project_vars.services.php is defined
+        - valet_sh_project_vars.services.php.version is defined
+  when: php_version is not defined or php_version|length==0
+
 - name: "check if php_version variable is set"
   fail:
     msg: "php_version variable is not set"
-  when: php_version is not defined
+  when: php_version is not defined or php_version|length==0
 
 - name: "fail when php version is not available"
   fail:
