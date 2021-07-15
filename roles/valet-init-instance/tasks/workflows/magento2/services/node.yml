@@ -28,8 +28,8 @@
     - valet_sh_project_vars.services.node.version is defined
 
 # ansible cannot change any setting of the current shell as every "shell" or "command" module call will be executed in a
-# new separated shell. The command "nvm install 10" don't change the node version for the current user shell, but only for
-# the shell currently started by ansible for the module execution
+# new separated shell. The command "nvm install 14" doesn't change the node version for the current user shell, but only
+# for the shell currently started by ansible for the module execution
 
 #- name: "workflows » magento2 » services » node | switch node version to '{{ valet_sh_node_version }}'"
 #  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ valet_sh_node_version }}" # noqa 301
