@@ -149,7 +149,7 @@
 
 - name: "workflows » neos » check-vars | set restore commands from .valet-sh.yml file"
   set_fact:
-    valet_restore_post_restore_commands: "{{ valet_restore_workflow.post_restore_commands }}"
+    valet_restore_post_restore_commands: "{{ valet_sh_project_vars.instance.sync.commands }}"
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.sync is defined

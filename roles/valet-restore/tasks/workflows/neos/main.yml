@@ -119,6 +119,21 @@
   tags:
   - skip_ansible_lint
 
+- name: "workflows » neos | delete old domains when 'multi_domain' setting is present in .valet-sh.yml"
+  shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/flow domain:delete '*'"
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.multi_domain is defined
+
+- name: "workflows » neos | set dev domains in neos"
+  shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/flow domain:add {{ valet_sh_multi_domain_item.key }} {{ valet_sh_multi_domain_item.value }}.{{ valet_sh_project_vars.instance.key }}.{{ development_tld }}"
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.multi_domain is defined
+  with_dict: "{{ valet_sh_project_vars.instance.multi_domain }}"
+  loop_control:
+    loop_var: valet_sh_multi_domain_item
+
 - name: "workflows » neos | run post restore commands"
   shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_post_command }}"
   with_items: "{{ valet_restore_post_restore_commands }}"
