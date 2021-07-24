@@ -51,6 +51,11 @@ valet_sh_service_defaultable_services_default:
     values:
       - mysql57
       - mysql80
+  - scope: composer
+    default: composer1
+    values:
+      - composer1
+      - composer2
 valet_sh_service_defaultable_services_mac:
   - scope: elasticsearch
     default: elasticsearch6
@@ -74,6 +79,11 @@ valet_sh_service_defaultable_services_mac:
     values:
       - mysql57
       - mysql80
+  - scope: composer
+    default: composer1
+    values:
+      - composer1
+      - composer2
 valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services'+'_'+current_os, default=valet_sh_service_defaultable_services_default) }}"
 
 valet_sh_service_state_preset_default:

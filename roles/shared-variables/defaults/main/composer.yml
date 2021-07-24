@@ -21,6 +21,18 @@ composer_setup_tmp: "{{ lookup('vars', 'composer_setup_tmp'+'_'+current_os, defa
 composer_path_default: "/usr/local/bin"
 composer_path: "{{ lookup('vars', 'composer_path'+'_'+current_os, default=composer_path_default) }}"
 
+composer1_path_default: "{{ valet_packages_path }}/composer1"
+composer1_path: "{{ lookup('vars', 'composer1_path'+'_'+current_os, default=composer1_path_default) }}"
+
+composer1_bin_default: "{{ composer1_path }}/bin/composer"
+composer1_bin: "{{ lookup('vars', 'composer1_bin'+'_'+current_os, default=composer1_bin_default) }}"
+
+composer2_path_default: "{{ valet_packages_path }}/composer2"
+composer2_path: "{{ lookup('vars', 'composer2_path'+'_'+current_os, default=composer2_path_default) }}"
+
+composer2_bin_default: "{{ composer2_path }}/bin/composer"
+composer2_bin: "{{ lookup('vars', 'composer2_bin'+'_'+current_os, default=composer2_bin_default) }}"
+
 composer_bin_default: "{{ composer_path }}/composer"
 composer_bin: "{{ lookup('vars', 'composer_bin'+'_'+current_os, default=composer_bin_default) }}"
 
