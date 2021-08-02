@@ -1,0 +1,67 @@
+##
+#   Copyright 2021 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » neos » check-vars | get path of composer binary"
+  shell: "which composer"  # noqa 305 301
+  register: composer_bin_obj
+
+- name: "workflows » neos » check-vars | set composer_bin variable"
+  set_fact:
+    composer_bin: "{{ composer_bin_obj.stdout }}"
+
+- name: "workflows » neos » check-vars | set default php binary name"
+  set_fact:
+    php_bin_name: "php"
+
+- name: "workflows » neos » check-vars | red configured php version in valet-sh.yml"
+  set_fact:
+    php_version_number: "{{ valet_sh_project_vars.services.php.version }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.php is defined
+    - valet_sh_project_vars.services.php.version is defined
+
+- name: "workflows » neos » check-vars | add suffix to php binary when configured in valet-sh.yml"
+  set_fact:
+    php_bin_name: "php{{ php_version_number }}"
+  when:
+    - php_version_number is defined
+    - php_version_number|length > 0
+
+- name: "workflows » neos » check-vars | get path of php binary"
+  shell: "which {{ php_bin_name }}"  # noqa 305 301
+  register: php_bin_obj
+
+- name: "workflows » neos » check-vars | fail when no php binary could be found"
+  fail:
+    msg: "could not find php binary '{{ php_bin_name }}'"
+  when: php_bin_obj.stdout | length == 0
+
+- name: "workflows » neos » check-vars | set php_bin variable"
+  set_fact:
+    php_bin: "{{ php_bin_obj.stdout }}"
+
+- name: "workflows » neos » check-vars | set default path to project source"
+  set_fact:
+    valet_sh_project_src_path: "{{ valet_current_path }}"
+
+- name: "workflows » neos » check-vars | set path to project source"
+  set_fact:
+    valet_sh_project_src_path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.path }}"
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.path is defined
