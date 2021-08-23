@@ -29,5 +29,6 @@
     - vsh-php72
     - vsh-php73
     - vsh-php74
+    - vsh-php80
   loop_control:
     loop_var: valet_sh_php_version_item
