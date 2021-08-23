@@ -33,8 +33,7 @@ instance:
       - "pub/media"
     post_restore_actions:
       indexer:
-        reindex:
-          - elasticsuite_categories_fulltext
-          - elasticsuite_thesaurus
+        reindexAll: true
   crypt_key: "71f3e5a45c97b7d868bf1aed85b3d6b213a6611f"
   config: {}
+
