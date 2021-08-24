@@ -127,7 +127,7 @@ valet_sh_service_alias_mapping_default:
   php72: "php7.2-fpm"
   php73: "php7.3-fpm"
   php74: "php7.4-fpm"
-  php80: "php7.4-fpm"
+  php80: "php8.0-fpm"
   rabbitmq: "rabbitmq-server"
   redis: "redis-server"
 valet_sh_service_alias_mapping_mac:
