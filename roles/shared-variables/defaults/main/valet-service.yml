@@ -46,6 +46,7 @@ valet_sh_service_defaultable_services_default:
       - php72
       - php73
       - php74
+      - php80
   - scope: mysql
     default: mysql57
     values:
@@ -69,6 +70,7 @@ valet_sh_service_defaultable_services_mac:
       - php72
       - php73
       - php74
+      - php80
   - scope: mysql
     default: mysql57
     values:
@@ -88,6 +90,7 @@ valet_sh_service_state_preset_default:
   - php72: true
   - php73: true
   - php74: true
+  - php80: false
   - mysql57: true
   - mysql80: false
   - rabbitmq: false
@@ -106,6 +109,7 @@ valet_sh_service_privileged_services_default:
   - php72
   - php73
   - php74
+  - php80
   - mysql57
   - mysql80
   - rabbitmq
@@ -123,6 +127,7 @@ valet_sh_service_alias_mapping_default:
   php72: "php7.2-fpm"
   php73: "php7.3-fpm"
   php74: "php7.4-fpm"
+  php80: "php8.0-fpm"
   rabbitmq: "rabbitmq-server"
   redis: "redis-server"
 valet_sh_service_alias_mapping_mac:
@@ -134,6 +139,7 @@ valet_sh_service_alias_mapping_mac:
   php72: "vsh-php72"
   php73: "vsh-php73"
   php74: "vsh-php74"
+  php80: "vsh-php80"
   elasticsearch1: "vsh-elasticsearch1"
   elasticsearch2: "vsh-elasticsearch2"
   elasticsearch5: "vsh-elasticsearch5"
