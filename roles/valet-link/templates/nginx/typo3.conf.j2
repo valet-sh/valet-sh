@@ -20,7 +20,7 @@ server {
     access_log {{ valet_sh_prefix }}/var/log/nginx/{{ link_name }}.{{ development_tld }}-access.log;
     error_log {{ valet_sh_prefix }}/var/log/nginx/{{ link_name }}.{{ development_tld }}-error.log;
 
-    root {{ valet_current_path }}/Web;
+    root {{ valet_current_path }}/public;
 
     index index.php;
 
