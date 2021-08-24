@@ -310,7 +310,6 @@ php_multi:
         - "readline"
         - "opcache"
         - "mysql"
-        - "json"
         - "intl"
         - "gd"
         - "fpm"
