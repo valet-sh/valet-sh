@@ -1,0 +1,44 @@
+server {
+    listen 127.0.0.1:80;
+
+    server_name {{ link_name }}.{{ development_tld }} *.{{ link_name }}.{{ development_tld }};
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 127.0.0.1:443 ssl http2;
+
+    server_name {{ link_name }}.{{ development_tld }} *.{{ link_name }}.{{ development_tld }};
+    set $upstream "{{ current_php_version }}";
+
+    ssl_certificate {{ certificate_server_domain_fullchain_file }};
+    ssl_certificate_key {{ certificate_server_domain_key_file }};
+
+    access_log {{ valet_sh_prefix }}/var/log/nginx/{{ link_name }}.{{ development_tld }}-access.log;
+    error_log {{ valet_sh_prefix }}/var/log/nginx/{{ link_name }}.{{ development_tld }}-error.log;
+
+    root {{ valet_current_path }}/public;
+
+    index index.php;
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass $upstream;
+        fastcgi_index index.php;
+
+        fastcgi_param TYPO3_CONTEXT Development;
+
+        fastcgi_read_timeout 300s;
+        fastcgi_split_path_info ^(.+\.php)(.*)$;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+
+    location / {
+        index index.php;
+        try_files $uri $uri/ /index.php?$args;
+    }
+}
