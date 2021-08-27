@@ -16,14 +16,14 @@
 ---
 
 - name: "workflows » magento2 » project-install | run composer install in project source path when defined in .valet-sh.yml"
-  command: "{{ php_bin }} {{ composer_bin_obj.stdout }} install"
+  command: "{{ php_bin }} {{ composer_bin }} install"
   args:
     chdir: "{{ valet_sh_project_src_path }}"
     removes: "composer.json"
   when: valet_current_path != valet_sh_project_src_path
 
 - name: "workflows » magento2 » project-install | run composer install in current dir"
-  command: "{{ php_bin }} {{ composer_bin_obj.stdout }} install"
+  command: "{{ php_bin }} {{ composer_bin }} install"
   args:
     chdir: "{{ valet_current_path }}"
     removes: "composer.json"

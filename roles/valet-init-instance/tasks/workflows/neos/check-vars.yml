@@ -15,13 +15,27 @@
 ##
 ---
 
-- name: "workflows » neos » check-vars | get path of composer binary"
-  shell: "which composer"  # noqa 305 301
-  register: composer_bin_obj
-
-- name: "workflows » neos » check-vars | set composer_bin variable"
+- name: "workflows » magento2 » check-vars | set path to composer1 (default)"
   set_fact:
-    composer_bin: "{{ composer_bin_obj.stdout }}"
+    composer_bin: "{{ composer1_bin }}"
+
+- name: "workflows » magento2 » check-vars | read composer1 version from .valet-sh.yml"
+  set_fact:
+    composer_bin: "{{ composer1_bin }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.composer is defined
+    - valet_sh_project_vars.services.composer.version is defined
+    - valet_sh_project_vars.services.composer.version == 1
+
+- name: "workflows » magento2 » check-vars | read composer2 version from .valet-sh.yml"
+  set_fact:
+    composer_bin: "{{ composer2_bin }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.composer is defined
+    - valet_sh_project_vars.services.composer.version is defined
+    - valet_sh_project_vars.services.composer.version == 2
 
 - name: "workflows » neos » check-vars | set default php binary name"
   set_fact:
