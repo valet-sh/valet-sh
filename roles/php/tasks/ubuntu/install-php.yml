@@ -31,6 +31,12 @@
   set_fact:
     php_specific_modules: "{{ php_modules | map('regex_replace', '^(.*)$', php_version_string + '-\\1') | list }}"
 
+- name: ensure xdebug.ini configuration is deleted
+  file:
+    path: "/etc/php/{{ php_version }}/mods-available/xdebug.ini"
+    state: absent
+  become: true
+
 - name: ensure xdebug php package can be installed
   file:
     path: "/etc/apt/preferences.d/valet-sh-php{{ php_version|replace('.', '-') }}-xdebug"
@@ -98,8 +104,7 @@
     group: root
     mode: '0644'
   with_first_found:
-  - "{{ playbook_dir }}/overrides/php/templates/99-cli.conf.j2"
-  - "99-cli.conf.j2"
+  - "ubuntu/99-cli.conf.j2"
   loop_control:
     loop_var: inside_item
   become: true
@@ -112,8 +117,7 @@
     group: root
     mode: '0644'
   with_first_found:
-  - "{{ playbook_dir }}/overrides/php/templates/99-fpm.conf.j2"
-  - "99-fpm.conf.j2"
+  - "ubuntu/99-fpm.conf.j2"
   notify: "systemd | {{ php_version_string }}-fpm | restarted"
   loop_control:
     loop_var: inside_item
@@ -129,3 +133,33 @@
     loop_var: inside_item
   notify: "systemd | {{ php_version_string }}-fpm | restarted"
   become: true
+
+- name: ensure xdebug2 config is deployed
+  template:
+    src: "ubuntu/xdebug2.ini.j2"
+    dest: "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: 'php_version in native_xdebug2_versions'
+
+- name: ensure xdebug3 config is deployed
+  template:
+    src: "ubuntu/xdebug3.ini.j2"
+    dest: "/etc/php/{{ php_version }}/mods-available/xdebug3.ini"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: 'php_version in native_xdebug3_versions'
+
+- name: ensure compiled xdebug2 config is deployed
+  template:
+    src: "ubuntu/xdebug2-compiled.ini.j2"
+    dest: "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: 'php_version in compiled_xdebug2_versions'

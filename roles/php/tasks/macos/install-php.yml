@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2021 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,16 +15,41 @@
 ##
 ---
 
+- name: "set php_version variable"
+  set_fact:
+    php_version: "{{ current_php[-2:-1] }}.{{ current_php[-1] }}"
+
 - name: "ensure {{ current_php }} is installed"
   homebrew:
     name: "{{ current_php }}"
     state: present
 
-- name: "ensure xdebug config file exists"
-  lineinfile:
+- name: ensure xdebug.ini configuration is deleted
+  file:
     path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug.ini"
-    line: 'zend_extension=xdebug.so'
-    create: true
+    state: absent
+  become: true
+
+- name: ensure xdebug2 config is deployed
+  template:
+    src: "macos/xdebug2.ini.j2"
+    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug2.ini"
+    mode: '0644'
+  when: 'php_version in native_xdebug2_versions'
+
+- name: ensure xdebug3 config is deployed
+  template:
+    src: "macos/xdebug3.ini.j2"
+    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug3.ini"
+    mode: '0644'
+  when: 'php_version in native_xdebug3_versions'
+
+- name: ensure compiled xdebug2 config is deployed
+  template:
+    src: "macos/xdebug2-compiled.ini.j2"
+    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug2.ini"
+    mode: '0644'
+  when: 'php_version in compiled_xdebug2_versions'
 
 - name: "ensure imagick config file exists"
   lineinfile:

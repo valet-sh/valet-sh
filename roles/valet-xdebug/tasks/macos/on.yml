@@ -14,9 +14,42 @@
 ##
 ---
 
-- name: "on | create symlink for xdebug fpm configuration"
+- name: "on | include valet services file"
+  include_vars:
+    file: "{{ valet_etc_services_file }}"
+    name: valet_sh_services_obj
+
+- name: "on | set default xdebug version to 3"
+  set_fact:
+    xdebug_preferred_version: "xdebug3"
+
+- name: "on | read preferred xdebug version"
+  set_fact:
+    xdebug_preferred_version: "{{ valet_sh_services_obj.defaults.xdebug }}"
+  when:
+    - valet_sh_services_obj.defaults is defined
+    - valet_sh_services_obj.defaults.xdebug is defined
+
+- name: "on | create symlink for xdebug cli/fpm configuration"
   file:
-    src: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug.ini"
+    src: "{{ item }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/conf.d/20-xdebug.ini"
     state: link
   notify: "brew | vsh-php{{ php_version }} | restarted"
+  with_first_found:
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug3.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug2-compiled.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug2.ini"
+  when: xdebug_preferred_version == "xdebug3"
+
+- name: "on | create symlink for xdebug cli/fpm configuration"
+  file:
+    src: "{{ item }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/conf.d/20-xdebug.ini"
+    state: link
+  notify: "brew | vsh-php{{ php_version }} | restarted"
+  with_first_found:
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug2-compiled.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug2.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug3.ini"
+  when: xdebug_preferred_version == "xdebug2"
