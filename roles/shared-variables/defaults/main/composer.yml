@@ -15,8 +15,11 @@
 ##
 ---
 
-composer1_bin_default: "{{ composer_path }}/bin/composer"
+composer_path_default: "/usr/local/bin"
+composer_path: "{{ lookup('vars', 'composer_path'+'_'+current_os, default=composer_path_default) }}"
+
+composer1_bin_default: "{{ composer_path }}/composer"
 composer1_bin: "{{ lookup('vars', 'composer1_bin'+'_'+current_os, default=composer1_bin_default) }}"
 
-composer2_bin_default: "{{ composer_path }}/bin/composer"
+composer2_bin_default: "{{ composer_path }}/composer"
 composer2_bin: "{{ lookup('vars', 'composer2_bin'+'_'+current_os, default=composer2_bin_default) }}"
