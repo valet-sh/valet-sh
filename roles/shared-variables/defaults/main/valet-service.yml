@@ -52,6 +52,11 @@ valet_sh_service_defaultable_services_default:
     values:
       - mysql57
       - mysql80
+  - scope: xdebug
+    default: xdebug3
+    values:
+      - xdebug2
+      - xdebug3
 valet_sh_service_defaultable_services_mac:
   - scope: elasticsearch
     default: elasticsearch6
@@ -76,6 +81,11 @@ valet_sh_service_defaultable_services_mac:
     values:
       - mysql57
       - mysql80
+  - scope: xdebug
+    default: xdebug3
+    values:
+      - xdebug2
+      - xdebug3
 valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services'+'_'+current_os, default=valet_sh_service_defaultable_services_default) }}"
 
 valet_sh_service_state_preset_default:

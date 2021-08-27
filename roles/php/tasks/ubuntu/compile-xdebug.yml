@@ -20,22 +20,6 @@
     msg: "no xdebug version set"
   when: current_php.compile_xdebug.version is not defined
 
-- name: "remove {{ php_version_string }} xdebug module package"
-  apt:
-    name: "{{ php_version_string }}-xdebug"
-    state: absent
-  notify: "systemd | {{ php_version_string }}-fpm | restarted"
-  become: true
-
-- name: ensure xdebug  php package can not be installed for this version
-  template:
-    src: "xdebug-preferences.j2"
-    dest: "/etc/apt/preferences.d/valet-sh-php{{ php_version|replace('.', '-') }}-xdebug"
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-
 - name: "install php-dev and pecl package when required"
   apt:
     name: ["php{{ php_version }}-dev","php-pear", "build-essential"]
@@ -75,25 +59,20 @@
   args:
     chdir: "{{ xdebug_tmp_directory_obj.path }}"
 
-- name: "run make install on xdebug module source"
-  command: "make install"
-  args:
-    chdir: "{{ xdebug_tmp_directory_obj.path }}"
+- name: "get php extension dir"
+  command: "/usr/bin/php-config{{ php_version }} --extension-dir"
+  register: php_extension_dir
+
+- name: "copy xdebug.so extension to extension dir"
+  copy:
+    src: "{{ xdebug_tmp_directory_obj.path }}/modules/xdebug.so"
+    dest: "{{ php_extension_dir.stdout }}/{{ current_php.compile_xdebug.target_module_name | default('xdebug2') }}.so"
   become: true
 
 - name: ensure tmp directory is deleted
   file:
     path: "{{ xdebug_tmp_directory_obj.path }}"
     state: absent
-  become: true
-
-- name: ensure xdebug config is deployed
-  template:
-    src: "xdebug.ini.j2"
-    dest: "/etc/php/{{ php_version }}/mods-available/xdebug.ini"
-    owner: root
-    group: root
-    mode: '0644'
   become: true
 
 
