@@ -15,39 +15,8 @@
 ##
 ---
 
-composer_setup_tmp_default: "/tmp/composer-setup.php"
-composer_setup_tmp: "{{ lookup('vars', 'composer_setup_tmp'+'_'+current_os, default=composer_setup_tmp_default) }}"
+composer1_bin_default: "{{ composer_path }}/bin/composer"
+composer1_bin: "{{ lookup('vars', 'composer1_bin'+'_'+current_os, default=composer1_bin_default) }}"
 
-composer_path_default: "/usr/local/bin"
-composer_path: "{{ lookup('vars', 'composer_path'+'_'+current_os, default=composer_path_default) }}"
-
-composer_bin_default: "{{ composer_path }}/composer"
-composer_bin: "{{ lookup('vars', 'composer_bin'+'_'+current_os, default=composer_bin_default) }}"
-
-composer_aliases_default:
-  - alias: "composer_php5.6"
-    target: "/usr/bin/php5.6 {{ composer_bin }}"
-  - alias: "composer_php7.0"
-    target: "/usr/bin/php7.0 {{ composer_bin }}"
-  - alias: "composer_php7.1"
-    target: "/usr/bin/php7.1 {{ composer_bin }}"
-  - alias: "composer_php7.2"
-    target: "/usr/bin/php7.2 {{ composer_bin }}"
-  - alias: "composer_php7.3"
-    target: "/usr/bin/php7.3 {{ composer_bin }}"
-  - alias: "composer_php7.4"
-    target: "/usr/bin/php7.4 {{ composer_bin }}"
-composer_aliases_mac:
-  - alias: "composer_php5.6"
-    target: "/usr/local/bin/php5.6 {{ composer_bin }}"
-  - alias: "composer_php7.0"
-    target: "/usr/local/bin/php7.0 {{ composer_bin }}"
-  - alias: "composer_php7.1"
-    target: "/usr/local/bin/php7.1 {{ composer_bin }}"
-  - alias: "composer_php7.2"
-    target: "/usr/local/bin/php7.2 {{ composer_bin }}"
-  - alias: "composer_php7.3"
-    target: "/usr/local/bin/php7.3 {{ composer_bin }}"
-  - alias: "composer_php7.4"
-    target: "/usr/local/bin/php7.4 {{ composer_bin }}"
-composer_aliases: "{{ lookup('vars', 'composer_aliases'+'_'+current_os, default=composer_aliases_default) }}"
+composer2_bin_default: "{{ composer_path }}/bin/composer"
+composer2_bin: "{{ lookup('vars', 'composer2_bin'+'_'+current_os, default=composer2_bin_default) }}"

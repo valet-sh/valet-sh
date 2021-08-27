@@ -15,8 +15,15 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
+- name: "ensure composer-1 is installed"
+  get_url:
+    url: https://getcomposer.org/composer-1.phar
+    dest: "{{ composer1_bin }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+    force: true
+  become: true
 
-- include_tasks: macos/main.yml
-  when: current_os == "mac"
+- name: install prestissimo
+  command: "/usr/local/bin/php7.3 /usr/local/bin/composer1 global require hirak/prestissimo"

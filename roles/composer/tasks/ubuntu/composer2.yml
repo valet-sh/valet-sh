@@ -15,8 +15,12 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
-
-- include_tasks: macos/main.yml
-  when: current_os == "mac"
+- name: "ensure composer-2 is installed"
+  get_url:
+    url: https://getcomposer.org/composer-2.phar
+    dest: "{{ composer2_bin }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+    force: true
+  become: true

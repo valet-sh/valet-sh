@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2021 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,33 +15,6 @@
 ##
 ---
 
-- name: "ensure composer is not installed via homebrew"
-  homebrew:
-    name: composer
-    state: absent
+- include_tasks: composer1.yml
 
-- name: "ensure composer is installed"
-  get_url:
-    url: https://getcomposer.org/composer-1.phar
-    dest: "{{ composer_bin }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0755"
-    force: true
-  become: true
-
-- name: install prestissimo
-  composer:
-    command: require
-    executable: /usr/local/bin/php7.3
-    global_command: yes
-    arguments: hirak/prestissimo
-
-- name: "add composer aliases to {{ current_home }}/.aliases"
-  lineinfile:
-    path: "{{ current_home }}/.aliases"
-    line: "alias {{ current_composer_alias.alias }}='{{ current_composer_alias.target }}'"
-    create: yes
-  with_items: "{{ composer_aliases }}"
-  loop_control:
-    loop_var: current_composer_alias
+- include_tasks: composer2.yml
