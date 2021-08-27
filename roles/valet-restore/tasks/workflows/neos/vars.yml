@@ -1,5 +1,4 @@
-##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2021 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,20 +14,8 @@
 ##
 ---
 
-- name: "define path to php error log"
-  set_fact:
-    php_error_log_path: "/tmp/php_errors.log"
-
-- name: "install defined php versions"
-  include: macos/install-php.yml
-    current_php="{{ valet_sh_php_version_item }}"
-  with_items:
-    - vsh-php56
-    - vsh-php70
-    - vsh-php71
-    - vsh-php72
-    - vsh-php73
-    - vsh-php74
-    - vsh-php80
-  loop_control:
-    loop_var: valet_sh_php_version_item
+valet_restore_workflow:
+  post_restore_commands:
+  - "flow flow:cache:flush"
+  - "flow doctrine:migrate"
+  - "flow resource:publish"

@@ -26,6 +26,7 @@ php_allowed_version_strings:
   - "php72"
   - "php73"
   - "php74"
+  - "php80"
 
 valet_link_blacklist:
   - mailhog

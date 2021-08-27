@@ -17,5 +17,5 @@
 valet_restore_workflow:
   post_restore_commands:
   - "bin/magento cache:flush"
-  - "bin/magento app:config:import"
+  - "bin/magento app:config:import -n"
   - "bin/magento setup:upgrade"

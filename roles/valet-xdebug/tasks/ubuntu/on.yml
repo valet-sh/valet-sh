@@ -14,17 +14,68 @@
 ##
 ---
 
-- name: "on | create symlink for xdebug cli configuration"
-  file:
-    src: "/etc/php/{{ php_version }}/mods-available/xdebug.ini"
-    dest: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
-    state: link
-  become: true
+- name: "on | include valet services file"
+  include_vars:
+    file: "{{ valet_etc_services_file }}"
+    name: valet_sh_services_obj
 
-- name: "on | create symlink for xdebug fpm configuration"
-  file:
-    src: "/etc/php/{{ php_version }}/mods-available/xdebug.ini"
-    dest: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
-    state: link
-  notify: "systemd | php{{ php_version }}-fpm | restarted"
-  become: true
+- name: "on | set default xdebug version to 3"
+  set_fact:
+    xdebug_preferred_version: "xdebug3"
+
+- name: "on | read preferred xdebug version"
+  set_fact:
+    xdebug_preferred_version: "{{ valet_sh_services_obj.defaults.xdebug }}"
+  when:
+    - valet_sh_services_obj.defaults is defined
+    - valet_sh_services_obj.defaults.xdebug is defined
+
+- block:
+    - name: "on | create symlink for xdebug cli configuration"
+      file:
+        src: "{{ item }}"
+        dest: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
+        state: link
+      become: true
+      with_first_found:
+        - "/etc/php/{{ php_version }}/mods-available/xdebug3.ini"
+        - "/etc/php/{{ php_version }}/mods-available/xdebug2-compiled.ini"
+        - "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
+
+    - name: "on | create symlink for xdebug fpm configuration"
+      file:
+        src: "{{ item }}"
+        dest: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
+        state: link
+      notify: "systemd | php{{ php_version }}-fpm | restarted"
+      become: true
+      with_first_found:
+        - "/etc/php/{{ php_version }}/mods-available/xdebug3.ini"
+        - "/etc/php/{{ php_version }}/mods-available/xdebug2-compiled.ini"
+        - "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
+  when: xdebug_preferred_version == "xdebug3"
+
+- block:
+    - name: "on | create symlink for xdebug cli configuration"
+      file:
+        src: "{{ item }}"
+        dest: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
+        state: link
+      become: true
+      with_first_found:
+        - "/etc/php/{{ php_version }}/mods-available/xdebug2-compiled.ini"
+        - "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
+        - "/etc/php/{{ php_version }}/mods-available/xdebug3.ini"
+
+    - name: "on | create symlink for xdebug fpm configuration"
+      file:
+        src: "{{ item }}"
+        dest: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
+        state: link
+      notify: "systemd | php{{ php_version }}-fpm | restarted"
+      become: true
+      with_first_found:
+        - "/etc/php/{{ php_version }}/mods-available/xdebug2-compiled.ini"
+        - "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
+        - "/etc/php/{{ php_version }}/mods-available/xdebug3.ini"
+  when: xdebug_preferred_version == "xdebug2"

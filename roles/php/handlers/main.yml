@@ -160,6 +160,31 @@
     state: reloaded
   become: true
 
+- name: "systemd | php8.0-fpm | started"
+  systemd:
+    name: "php8.0-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php8.0-fpm | stopped"
+  systemd:
+    name: "php8.0-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php8.0-fpm | restarted"
+  systemd:
+    name: "php8.0-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php8.0-fpm | reloaded"
+  systemd:
+    name: "php8.0-fpm"
+    state: reloaded
+  become: true
+
+
 - name: brew | vsh-php56 | restarted
   shell: brew services restart vsh-php56
 
@@ -213,3 +238,12 @@
 
 - name: brew | vsh-php74 | started
   shell: brew services start vsh-php74
+
+- name: brew | vsh-php80 | restarted
+  shell: brew services restart vsh-php80
+
+- name: brew | vsh-php80 | stopped
+  shell: brew services stop vsh-php80
+
+- name: brew | vsh-php80 | started
+  shell: brew services start vsh-php80

@@ -1,0 +1,30 @@
+Neos:
+  Flow:
+    persistence:
+      backendOptions:
+        driver: pdo_mysql
+        dbname: "{{ valet_sh_neos_db_name }}"
+        user: "root"
+        password: "root"
+        host: "{{ valet_sh_neos_db_host }}"
+    core:
+      phpBinaryPathAndFilename: {{ php_bin }}
+{% if valet_sh_neos_elasticsearch_version is defined  %}
+  ContentRepository:
+    Search:
+      elasticSearch:
+        indexName: {{ valet_sh_project_vars.instance.key }}
+Flowpack:
+  ElasticSearch:
+    clients:
+        default:
+            - host: localhost
+              port: {{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}
+    indexes:
+      default:
+        {{ valet_sh_project_vars.instance.key }}:
+          settings:
+            index:
+              number_of_shards: 1
+              number_of_replicas: 0
+{% endif %}
