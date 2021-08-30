@@ -4,6 +4,8 @@ hub:
   path: "/data"
 
 services:
+  composer:
+    version: 2
   node:
     version: 14
   php:
@@ -34,6 +36,5 @@ instance:
     post_restore_actions:
       indexer:
         reindexAll: true
-  crypt_key: "71f3e5a45c97b7d868bf1aed85b3d6b213a6611f"
+  crypt_key: "abcdefghijklmnopqrstuvxyz1234567890crypt"
   config: {}
-
