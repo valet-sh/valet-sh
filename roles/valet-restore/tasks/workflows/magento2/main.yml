@@ -109,12 +109,26 @@
   tags:
   - skip_ansible_lint
 
+- name: "workflows » magento2 | set var 'valet_restore_run_post_restore_commands'"
+  set_fact:
+    valet_restore_run_post_restore_commands: true
+
+- name: "workflows » magento2 | override var 'valet_restore_run_post_restore_commands'"
+  set_fact:
+    valet_restore_run_post_restore_commands: false
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.sync is defined
+    - valet_sh_project_vars.instance.sync.post_restore_actions is defined
+    - valet_sh_project_vars.instance.sync.post_restore_actions.skip_default_commands is defined
+    - valet_sh_project_vars.instance.sync.post_restore_actions.skip_default_commands|bool
 
 - name: "workflows » magento2 | run post restore commands"
   shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_post_command }}"
   with_items: "{{ valet_restore_post_restore_commands }}"
   loop_control:
     loop_var: valet_sh_restore_current_post_command
+  when: valet_restore_run_post_restore_commands
   tags:
   - skip_ansible_lint
 
