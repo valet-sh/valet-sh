@@ -35,7 +35,7 @@
   hosts: local
   gather_facts: True
   vars:
-    valet_service_action: "{{ cli.args[0] }}"
-    valet_service_name: "{{ cli.args[1] }}"
+    valet_service_action: "{{ cli.args[0] | default() }}"
+    valet_service_name: "{{ cli.args[1] | default() }}"
   roles:
     - valet-service
