@@ -43,14 +43,26 @@
     msg: "php_version variable is not set"
   when: php_version is not defined or php_version|length==0
 
+- block:
+    - name: "check if php_version string mapped to origin"
+      set_fact:
+        php_version: "{{ valet_sh_available_php_versions_alias_mapping_item.0.origin }}"
+      when: php_version in valet_sh_available_php_versions_alias_mapping_item.1
+      with_subelements:
+        - "{{ available_php_versions_alias_mapping }}"
+        - aliases
+      loop_control:
+        loop_var: valet_sh_available_php_versions_alias_mapping_item
+  when: "not php_version in available_php_versions"
+
 - name: "fail when php version is not available"
   fail:
     msg: "requested PHP version {{ php_version }} is not available!"
   when: "not php_version in available_php_versions"
 
-- name: "change php_version string for macos"
+- name: set php_version_number
   set_fact:
-    php_version: "{{ php_version | replace('.','') }}"
+    php_version_number: "{{ php_version[-2:-1] }}{{ php_version[-1] }}"
 
 - include_tasks: on.yml
   when: valet_action == "on"

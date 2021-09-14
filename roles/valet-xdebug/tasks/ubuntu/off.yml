@@ -16,25 +16,25 @@
 
 - name: "off | get stat for xdebug cli configuration file"
   stat:
-    path: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
+    path: "/etc/php/{{ php_version_number }}/cli/conf.d/20-xdebug.ini"
   register: php_xdebug_cli_config_obj
 
 - name: "off | get stat for xdebug fpm configuration file"
   stat:
-    path: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
+    path: "/etc/php/{{ php_version_number }}/fpm/conf.d/20-xdebug.ini"
   register: php_xdebug_fpm_config_obj
 
 - name: "off | delete xdebug cli configuration symlink if exists"
   file:
-    path: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
+    path: "/etc/php/{{ php_version_number }}/cli/conf.d/20-xdebug.ini"
     state: absent
   when: php_xdebug_cli_config_obj.stat is defined and php_xdebug_cli_config_obj.stat.islnk is defined
   become: true
 
 - name: "off | delete xdebug fpm configuration symlink if exists"
   file:
-    path: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
+    path: "/etc/php/{{ php_version_number }}/fpm/conf.d/20-xdebug.ini"
     state: absent
   when: php_xdebug_fpm_config_obj.stat is defined and php_xdebug_fpm_config_obj.stat.islnk is defined
-  notify: "systemd | php{{ php_version }}-fpm | restarted"
+  notify: "systemd | php{{ php_version_number }}-fpm | restarted"
   become: true
