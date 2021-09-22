@@ -2,24 +2,26 @@
 <head>
 <title>valet.sh sites</title>
 </head>
-<body>
-<table>
+<body text-align="center">
+<h1 style="text-align:center">valet.sh sites</h1>
+<div>
+<table width="60%" style="margin: 0 auto; text-align:center">
 <tr>
 <th>Link</th>
 <th>Path</th>
 <th>PHP-Version</th>
 <th>Application</th>
 </tr>
-{% for current_valet_link in valet_links_obj %}
+{% for current_valet_link in valet_links_obj.valet_links.links %}
 <tr>
-<td>{{ current_valet_link.name }}</td>
+<td><a href="https://{{ current_valet_link.name }}.{{ development_tld }}">{{ current_valet_link.name }}</a></td>
 <td>{{ current_valet_link.path }}</td>
 <td>{{ current_valet_link.phpVersion | default("") }}</td>
 <td>{{ current_valet_link.template | default("") }}</td>
 </tr>
 {% endfor %}
 </table>
-
+</div>
 </body>
 </html>
 
