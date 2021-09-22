@@ -1,0 +1,25 @@
+<html>
+<head>
+<title>valet.sh sites</title>
+</head>
+<body>
+<table>
+<tr>
+<th>Link</th>
+<th>Path</th>
+<th>PHP-Version</th>
+<th>Application</th>
+</tr>
+{% for current_valet_link in valet_links_obj %}
+<tr>
+<td>{{ current_valet_link.name }}</td>
+<td>{{ current_valet_link.path }}</td>
+<td>{{ current_valet_link.phpVersion | default("") }}</td>
+<td>{{ current_valet_link.template | default("") }}</td>
+</tr>
+{% endfor %}
+</table>
+
+</body>
+</html>
+

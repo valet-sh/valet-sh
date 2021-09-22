@@ -95,3 +95,7 @@ valet_sh_service_mysql_port_presets_default:
   mysql57: "3307"
   mysql80: "3308"
 valet_sh_service_mysql_port_presets: "{{ lookup('vars', 'valet_sh_service_mysql_port_presets'+'_'+current_os, default=valet_sh_service_mysql_port_presets_default) }}"
+
+
+valet_sh_default_vhost_domain: "sites"
+valet_sh_default_vhost_root: "/usr/local/valet-sh/default-vhost"

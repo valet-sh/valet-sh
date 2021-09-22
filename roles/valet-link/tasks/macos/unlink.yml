@@ -57,4 +57,6 @@
             links: "{{ new_valet_links }}"
   when: "link_name in valet_links_obj.valet_links.links_index"
 
+- include_tasks: "macos/partials/update-default-vhost-template.yml"
+
 - include_tasks: "macos/sub/write.yml"
