@@ -147,13 +147,31 @@
   set_fact:
     valet_restore_post_restore_commands: "{{ valet_restore_workflow.post_restore_commands }}"
 
-- name: "workflows » magento2 » check-vars | set restore commands from .valet-sh.yml file"
+- name: "workflows » magento2 » check-vars | set empty list for custom restore commands"
   set_fact:
-    valet_restore_post_restore_commands: "{{ valet_restore_workflow.post_restore_commands }}"
+    valet_restore_custom_post_restore_commands: []
+
+- name: "workflows » magento2 » check-vars | set custom restore commands from .valet-sh.yml file"
+  set_fact:
+    valet_restore_custom_post_restore_commands: "{{ valet_sh_project_vars.instance.sync.post_restore_actions.commands is defined }}"
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.sync is defined
-    - valet_sh_project_vars.instance.sync.commands is defined
+    - valet_sh_project_vars.instance.sync.post_restore_actions is defined
+    - valet_sh_project_vars.instance.sync.post_restore_actions.commands is defined
+
+- name: "workflows » magento2 » check-vars | set empty list for custom restore sql queries"
+  set_fact:
+    valet_restore_custom_post_restore_sql_queries: []
+
+- name: "workflows » magento2 » check-vars | set custom restore commands from .valet-sh.yml file"
+  set_fact:
+    valet_restore_custom_post_restore_sql_queries: "{{ valet_sh_project_vars.instance.sync.post_restore_actions.sql_queries is defined }}"
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.sync is defined
+    - valet_sh_project_vars.instance.sync.post_restore_actions is defined
+    - valet_sh_project_vars.instance.sync.post_restore_actions.sql_queries is defined
 
 - name: "workflows » magento2 » check-vars | set default php cli bin"
   set_fact:
