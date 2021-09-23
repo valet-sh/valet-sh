@@ -131,4 +131,6 @@
         links_index: "{{ valet_links_obj.valet_links.links_index + [link_name] }}"
         links: "{{ valet_links_obj.valet_links.links + new_valet_link }}"
 
+- include_tasks: "macos/partials/update-default-vhost-template.yml"
+
 - include_tasks: "macos/sub/write.yml"

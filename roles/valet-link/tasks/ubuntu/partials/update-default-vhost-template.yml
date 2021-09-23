@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2021 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,14 +15,11 @@
 ##
 ---
 
-template_found: False
-
-php_default_version_string: "php72"
-
-valet_link_blacklist:
-  - mailhog
-  - rabbitmq
-  - sites
-
-# do not throw an error if unlink or link is not possible when true
-valet_link_silent: false
+- name: "provide default vhost template landing page"
+  template:
+    src: "default-vhost/index.html.j2"
+    dest: "{{ valet_sh_default_vhost_root }}/index.html"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true

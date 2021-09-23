@@ -1,0 +1,25 @@
+server {
+    listen 127.0.0.1:80 default;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 127.0.0.1:443 ssl http2 default;
+
+    root {{ valet_sh_default_vhost_root }};
+
+    ssl_certificate {{ certificate_server_domain_fullchain_file }};
+    ssl_certificate_key {{ certificate_server_domain_key_file }};
+
+    access_log {{ valet_sh_prefix }}/var/log/nginx/{{ valet_sh_default_vhost_domain }}.{{ development_tld }}-access.log;
+    error_log {{ valet_sh_prefix }}/var/log/nginx/{{ valet_sh_default_vhost_domain }}.{{ development_tld }}-error.log;
+
+    index index.php index.html index.htm;
+
+    location / {
+    }
+
+}
