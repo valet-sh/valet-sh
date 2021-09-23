@@ -33,23 +33,23 @@
 - name: "on | create symlink for xdebug cli/fpm configuration"
   file:
     src: "{{ item }}"
-    dest: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/conf.d/20-xdebug.ini"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/conf.d/20-xdebug.ini"
     state: link
-  notify: "brew | vsh-php{{ php_version }} | restarted"
+  notify: "brew | vsh-php{{ php_version_number }} | restarted"
   with_first_found:
-    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug3.ini"
-    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug2-compiled.ini"
-    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug2.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug3.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug2-compiled.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug2.ini"
   when: xdebug_preferred_version == "xdebug3"
 
 - name: "on | create symlink for xdebug cli/fpm configuration"
   file:
     src: "{{ item }}"
-    dest: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/conf.d/20-xdebug.ini"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/conf.d/20-xdebug.ini"
     state: link
-  notify: "brew | vsh-php{{ php_version }} | restarted"
+  notify: "brew | vsh-php{{ php_version_number }} | restarted"
   with_first_found:
-    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug2-compiled.ini"
-    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug2.ini"
-    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version }}/mods-available/xdebug3.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug2-compiled.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug2.ini"
+    - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug3.ini"
   when: xdebug_preferred_version == "xdebug2"

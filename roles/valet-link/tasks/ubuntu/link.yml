@@ -82,10 +82,22 @@
     current_php_version: "{{ php_default_version_string }}"
   when: (current_php_version is undefined) or (current_php_version | length == 0)
 
+- block:
+    - name: "link | check if php_version string mapped to origin"
+      set_fact:
+        current_php_version: "{{ valet_sh_available_php_versions_alias_mapping_item.0.origin }}"
+      when: current_php_version in valet_sh_available_php_versions_alias_mapping_item.1
+      with_subelements:
+        - "{{ available_php_versions_alias_mapping }}"
+        - aliases
+      loop_control:
+        loop_var: valet_sh_available_php_versions_alias_mapping_item
+  when: "current_php_version not in available_php_versions"
+
 - name: "link | fail when php_version is unknown"
   fail:
     msg: "unknown php version '{{ current_php_version }}'"
-  when: "current_php_version not in php_allowed_version_strings"
+  when: "current_php_version not in available_php_versions"
 
 - name: "link | generate ssl-certificate for {{ link_name }}"
   include_role:

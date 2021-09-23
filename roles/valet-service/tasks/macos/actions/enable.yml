@@ -20,6 +20,16 @@
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
+- name: "actions » enable | check fuzzy service names"
+  set_fact:
+    valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
+  when: valet_service_name in valet_sh_available_php_versions_alias_mapping_item.1
+  with_subelements:
+    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
+    - aliases
+  loop_control:
+    loop_var: valet_sh_available_php_versions_alias_mapping_item
+
 - name: "actions » enable | check for alias service name"
   set_fact:
     valet_service_name_alias: "{{ item.value }}"

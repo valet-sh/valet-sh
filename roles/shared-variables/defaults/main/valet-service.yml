@@ -140,6 +140,53 @@ valet_sh_service_privileged_services_mac:
   - dnsmasq
 valet_sh_service_privileged_services: "{{ lookup('vars', 'valet_sh_service_privileged_services'+'_'+current_os, default=valet_sh_service_privileged_services_default) }}"
 
+valet_sh_service_fuzzy_alias_mapping:
+  - target: php56
+    aliases:
+      - "PHP5.6"
+      - "php5.6"
+      - "PHP56"
+  - target: php70
+    aliases:
+      - "PHP7.0"
+      - "php7.0"
+      - "PHP70"
+  - target: php71
+    aliases:
+      - "PHP7.1"
+      - "php7.1"
+      - "PHP71"
+  - target: php72
+    aliases:
+      - "PHP7.2"
+      - "php7.2"
+      - "PHP72"
+  - target: php73
+    aliases:
+      - "PHP7.3"
+      - "php7.3"
+      - "PHP73"
+  - target: php74
+    aliases:
+      - "PHP7.4"
+      - "php7.4"
+      - "PHP74"
+  - target: php80
+    aliases:
+      - "PHP8.0"
+      - "php8.0"
+      - "PHP80"
+  - target: mysql57
+    aliases:
+      - "MYSQL5.7"
+      - "mysql5.7"
+      - "MYSQL57"
+  - target: mysql80
+    aliases:
+      - "MYSQL8.0"
+      - "mysql8.0"
+      - "MYSQL80"
+
 valet_sh_service_alias_mapping_default:
   php56: "php5.6-fpm"
   php70: "php7.0-fpm"
