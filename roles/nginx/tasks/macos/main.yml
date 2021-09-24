@@ -73,7 +73,7 @@
 - name: "provide default vhost"
   template:
     src: "default-vhost.conf.j2"
-    dest: "/etc/nginx/conf.d/{{ valet_sh_default_vhost_domain }}.{{ development_tld }}.conf"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/{{ valet_sh_default_vhost_domain }}.{{ development_tld }}.conf"
     mode: '0644'
   notify: brew | nginx | restarted
 
