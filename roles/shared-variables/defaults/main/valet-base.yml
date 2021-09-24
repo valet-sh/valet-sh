@@ -45,7 +45,7 @@ available_php_versions_alias_mapping:
       - "7.0"
       - "php70"
       - "php7.0"
-      - "PHP7.0"
+      - "PHP70"
       - "PHP7.0"
     origin: "php70"
   - aliases:
@@ -53,7 +53,7 @@ available_php_versions_alias_mapping:
       - "7.1"
       - "php71"
       - "php7.1"
-      - "PHP7.1"
+      - "PHP71"
       - "PHP7.1"
     origin: "php71"
   - aliases:
@@ -61,7 +61,7 @@ available_php_versions_alias_mapping:
       - "7.2"
       - "php72"
       - "php7.2"
-      - "PHP7.2"
+      - "PHP72"
       - "PHP7.2"
     origin: "php72"
   - aliases:
@@ -69,7 +69,7 @@ available_php_versions_alias_mapping:
       - "7.3"
       - "php73"
       - "php7.3"
-      - "PHP7.3"
+      - "PHP73"
       - "PHP7.3"
     origin: "php73"
   - aliases:
@@ -77,7 +77,7 @@ available_php_versions_alias_mapping:
       - "7.4"
       - "php74"
       - "php7.4"
-      - "PHP7.4"
+      - "PHP74"
       - "PHP7.4"
     origin: "php74"
   - aliases:
@@ -85,7 +85,7 @@ available_php_versions_alias_mapping:
       - "8.0"
       - "php80"
       - "php8.0"
-      - "PHP8.0"
+      - "PHP80"
       - "PHP8.0"
     origin: "php80"
 
