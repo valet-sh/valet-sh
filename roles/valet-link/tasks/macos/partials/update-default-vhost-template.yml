@@ -19,7 +19,7 @@
   template:
     src: "default-vhost/index.html.j2"
     dest: "{{ valet_sh_default_vhost_root }}/index.html"
-    owner: root
-    group: root
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: '0644'
   become: true
