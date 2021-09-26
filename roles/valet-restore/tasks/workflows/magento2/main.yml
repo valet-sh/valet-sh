@@ -94,14 +94,12 @@
   tags:
   - skip_ansible_lint
 
-
 - name: "workflows » magento2 | run custom sql-queries for database '{{ valet_sh_project_database_name }}'"
   mysql_query:
     login_db: "{{ valet_sh_project_database_name }}"
     config_file: "{{ valet_sh_project_mysql_client_configuration }}"
     login_host: "127.0.0.1"
     login_port: "{{ valet_sh_project_mysql_server_port }}"
-    encoding: "utf8"
     query: "{{ valet_restore_current_custom_post_restore_sql_queries }}"
   with_items: "{{ valet_restore_custom_post_restore_sql_queries }}"
   loop_control:
@@ -139,7 +137,6 @@
     loop_var: valet_sh_restore_current_custom_post_command
   tags:
   - skip_ansible_lint
-
 
 - block:
   - name: "workflows » magento2 | run full reindex when defined in .valet-sh.yml"

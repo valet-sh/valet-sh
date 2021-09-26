@@ -153,7 +153,7 @@
 
 - name: "workflows » magento2 » check-vars | set custom restore commands from .valet-sh.yml file"
   set_fact:
-    valet_restore_custom_post_restore_commands: "{{ valet_sh_project_vars.instance.sync.post_restore_actions.commands is defined }}"
+    valet_restore_custom_post_restore_commands: "{{ valet_sh_project_vars.instance.sync.post_restore_actions.commands }}"
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.sync is defined
@@ -166,7 +166,7 @@
 
 - name: "workflows » magento2 » check-vars | set custom restore commands from .valet-sh.yml file"
   set_fact:
-    valet_restore_custom_post_restore_sql_queries: "{{ valet_sh_project_vars.instance.sync.post_restore_actions.sql_queries is defined }}"
+    valet_restore_custom_post_restore_sql_queries: "{{ valet_sh_project_vars.instance.sync.post_restore_actions.sql_queries }}"
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.sync is defined
