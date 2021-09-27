@@ -1,27 +1,61 @@
-<html>
+<!--suppress JSUnresolvedLibraryURL -->
+<!doctype html>
+<html lang="en">
 <head>
-<title>valet.sh sites</title>
+    <title>valet.sh sites</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css"/>
+    <style>
+      html, body { font-family: "Helvetica Neue", "Verdana", sans-serif; text-align: center; }
+      body { padding: 20px; font-size: .8em; }
+      h1 { text-align: center; }
+      a { color: #56BCAB !important; }
+      .table_wrapper { max-width: 65%; margin: 0 auto; }
+      td { border: 1px solid #333; }
+    </style>
 </head>
-<body text-align="center">
-<h1 style="text-align:center">valet.sh sites</h1>
-<div>
-<table width="60%" style="margin: 0 auto; text-align:center">
-<tr>
-<th>Link</th>
-<th>Path</th>
-<th>PHP-Version</th>
-<th>Application</th>
-</tr>
-{% for current_valet_link in valet_links_obj.valet_links.links %}
-<tr>
-<td><a href="https://{{ current_valet_link.name }}.{{ development_tld }}">{{ current_valet_link.name }}</a></td>
-<td>{{ current_valet_link.path }}</td>
-<td>{{ current_valet_link.phpVersion | default("") }}</td>
-<td>{{ current_valet_link.template | default("") }}</td>
-</tr>
-{% endfor %}
-</table>
+<body>
+<h1>valet.sh Sites</h1>
+
+<div class="table_wrapper">
+    <table id="table"></table>
 </div>
+
+<!--suppress JSUnresolvedFunction -->
+<script>
+    let data = [
+        {% for current_valet_link in valet_links_obj.valet_links.links %}
+        {
+            "link": "{{ current_valet_link.name }}",
+            "path": "{{ current_valet_link.path }}",
+            "php_version": "{{ current_valet_link.phpVersion | default("") }}",
+            "application": "{{ current_valet_link.template | default("") }}",
+        },
+        {% endfor %}
+    ];
+
+    $(function () {
+        $('#table').DataTable({
+            pageLength: 100,
+            data: data,
+            columns: [
+                {
+                    title: "Link",
+                    data: "link",
+                    render: function (data) {
+                        return '<a href="https://' + data + '.{{ development_tld }}">' + data + '</a>';
+                    }
+                },
+                {title: "Path", data: "path"},
+                {title: "PHP version", data: "php_version"},
+                {title: "Application", data: "application"}
+            ],
+        });
+    })
+</script>
 </body>
 </html>
-
