@@ -36,5 +36,7 @@ instance:
     post_restore_actions:
       indexer:
         reindexAll: true
+      commands:
+        - "bin/magento admin:user:create --admin-user=admin --admin-password=admin123 --admin-email=info@example.com --admin-firstname=Admin --admin-lastname=Admin"
   crypt_key: "abcdefghijklmnopqrstuvxyz1234567890crypt"
   config: {}
