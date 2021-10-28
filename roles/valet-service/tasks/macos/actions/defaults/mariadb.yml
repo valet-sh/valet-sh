@@ -27,7 +27,7 @@
     force: true
   with_items:
     - mariadb
-    - mariadbdump
-    - mariadbadmin
+    - mariadump
+    - mariaadmin
   loop_control:
     loop_var: current_mariadb_default_linkname
