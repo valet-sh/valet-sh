@@ -1,0 +1,10 @@
+[mysqldump]
+user = root
+password=root
+protocol=tcp
+port={{ mariadb_server_104.port }}
+host=127.0.0.1
+quick
+quote-names
+max_allowed_packet	= 256M
+default-character-set = utf8mb4

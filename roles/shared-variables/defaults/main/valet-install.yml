@@ -27,6 +27,7 @@ valet_install_default_roles_default:
   - nodejs
   - mailhog
   - mysql-community-server
+  - mariadb-server
   - magerun
   - rabbitmq
   - composer
@@ -43,6 +44,7 @@ valet_install_default_roles_mac:
   - nodejs
   - mailhog
   - mysql-community-server
+  - mariadb-server
   - magerun
   - rabbitmq
   - composer

@@ -1,0 +1,20 @@
+[Unit]
+Description=Mariadb 10.4 Server
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=notify
+PrivateNetwork=false
+User=mysql
+Group=mysql
+PIDFile=/run/mysqld/{{ current_mariadb_key }}.pid
+PermissionsStartOnly=true
+ExecStart={{ current_mariadb_dist_path }}/bin/mysqld --defaults-file={{ current_mariadb_etc_path }}/my.cnf --datadir={{ current_mariadb_data_path }} --pid-file=/run/mysqld/{{ current_mariadb_key }}.pid
+TimeoutSec=600
+Restart=on-failure
+RuntimeDirectory=mysqld
+RuntimeDirectoryMode=755
+LimitNOFILE=5000
