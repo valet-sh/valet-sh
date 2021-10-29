@@ -1,0 +1,83 @@
+##
+#   Copyright 2021 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "ensure vsh-mariadb104 is installed"
+  homebrew:
+    name: vsh-mariadb104
+    state: present
+
+- name: "provide .my.cnf configuration file"
+  template:
+    src: "{{ mariadb104_template_dot_my }}"
+    dest: "{{ current_home }}/.mariadb10.4.cnf"
+    mode: '0644'
+  with_first_found:
+    - "macos/mariadb104/.my.cnf.j2"
+  loop_control:
+    loop_var: mariadb104_template_dot_my
+
+- name: "provide mysql.cnf configuration file"
+  template:
+    src: "{{ mariadb104_template_mysql }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb104/conf.d/mysql.cnf"
+    mode: '0644'
+  with_first_found:
+    - "macos/mariadb104/mysql.cnf.j2"
+  loop_control:
+    loop_var: mariadb104_template_mysql
+
+- name: "provide mysqldump.cnf configuration file"
+  template:
+    src: "{{ mariadb104_template_mysqldump }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb104/conf.d/mysqldump.cnf"
+    mode: '0644'
+  with_first_found:
+    - "macos/mariadb104/mysqldump.cnf.j2"
+    - "mariadb104/mysqldump.cnf.j2"
+  loop_control:
+    loop_var: mariadb104_template_mysqldump
+
+- name: "provide mysqld.cnf configuration file"
+  template:
+    src: "{{ mariadb104_template_mysqld }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb104/conf.d/mysqld.cnf"
+    mode: '0644'
+  with_first_found:
+    - "macos/mariadb104/mysqld.cnf.j2"
+    - "mariadb104/mysqld.cnf.j2"
+  loop_control:
+    loop_var: mariadb104_template_mysqld
+
+- name: brew | vsh-mariadb104 | restarted
+  shell: brew services restart vsh-mariadb104
+
+- name: wait for mariadb104 to start
+  wait_for:
+    port: 3317
+    delay: 5
+
+- name: Set root password
+  mysql_user:
+    login_host: 127.0.0.1
+    login_port: "{{ mariadb_server_104.port }}"
+    login_user: root
+    login_password: "{{ mariadb_server_default_root_password }}"
+    config_file: "/tmp/noexistent.cnf"
+    name: "root"
+    password: "{{ mariadb_server_default_root_password }}"
+    check_implicit_admin: yes
+    state: present

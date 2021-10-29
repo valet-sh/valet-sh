@@ -52,6 +52,10 @@ valet_sh_service_defaultable_services_default:
     values:
       - mysql57
       - mysql80
+  - scope: mariadb
+    default: mariadb104
+    values:
+      - mariadb104
   - scope: xdebug
     default: xdebug3
     values:
@@ -86,6 +90,10 @@ valet_sh_service_defaultable_services_mac:
     values:
       - mysql57
       - mysql80
+  - scope: mariadb
+    default: mariadb104
+    values:
+      - mariadb104
   - scope: xdebug
     default: xdebug3
     values:
@@ -113,6 +121,7 @@ valet_sh_service_state_preset_default:
   - php80: false
   - mysql57: true
   - mysql80: false
+  - mariadb104: false
   - rabbitmq: false
   - redis: true
 valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
@@ -132,6 +141,7 @@ valet_sh_service_privileged_services_default:
   - php80
   - mysql57
   - mysql80
+  - mariadb104
   - rabbitmq
   - redis
   - dnsmasq
@@ -186,6 +196,11 @@ valet_sh_service_fuzzy_alias_mapping:
       - "MYSQL8.0"
       - "mysql8.0"
       - "MYSQL80"
+  - target: mariadb104
+    aliases:
+      - "mariadb10.4"
+      - "MARIADB10.4"
+      - "MARIADB104"
 
 valet_sh_service_alias_mapping_default:
   php56: "php5.6-fpm"
@@ -200,6 +215,7 @@ valet_sh_service_alias_mapping_default:
 valet_sh_service_alias_mapping_mac:
   mysql57: "vsh-mysql57"
   mysql80: "vsh-mysql80"
+  mariadb104: "vsh-mariadb104"
   php56: "vsh-php56"
   php70: "vsh-php70"
   php71: "vsh-php71"

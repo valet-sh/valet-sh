@@ -1,0 +1,34 @@
+##
+#   Copyright 2021 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+mariadb_server:
+  base_path: "{{ valet_packages_path }}/mariadb"
+  base_packages:
+    - "libaio1"
+    - "libncurses5"
+    - "libtinfo5"
+    - "python3-pymysql"
+  default_root_password: "root"
+  default_user: mysql
+  default_group: mysql
+
+mariadb_server_default_root_password: "root"
+
+mariadb_server_104:
+  package_url: "http://mariadb.mirrors.ovh.net/MariaDB/mariadb-10.4.21/bintar-linux-systemd-x86_64/mariadb-10.4.21-linux-systemd-x86_64.tar.gz"
+  package_signature: 0a00aa490bed6b185bcc016e5ab3392cfa21873f24183795e701b14b9c51b533
+  port: 3317

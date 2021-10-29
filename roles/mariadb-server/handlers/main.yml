@@ -1,0 +1,81 @@
+##
+#   Copyright 2021 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: systemd | daemon-reload
+  systemd:
+    daemon_reload: true
+  become: true
+
+- name: systemd | mariadb104 | started
+  systemd:
+    name: mariadb104
+    daemon_reload: true
+    state: started
+  become: true
+
+- name: systemd | mariadb104 | stopped
+  systemd:
+    name: mariadb104
+    daemon_reload: true
+    state: stopped
+  become: true
+
+- name: systemd | mariadb104 | restarted
+  systemd:
+    name: mariadb104
+    daemon_reload: true
+    state: restarted
+  become: true
+
+- name: systemd | mariadb105 | started
+  systemd:
+    name: mariadb105
+    daemon_reload: true
+    state: started
+  become: true
+
+- name: systemd | mariadb105 | stopped
+  systemd:
+    name: mariadb105
+    daemon_reload: true
+    state: stopped
+  become: true
+
+- name: systemd | mariadb105 | restarted
+  systemd:
+    name: mariadb105
+    daemon_reload: true
+    state: restarted
+  become: true
+
+- name: brew | vsh-mariadb104 | started
+  shell: brew services start vsh-mariadb104
+
+- name: brew | vsh-mariadb104 | stopped
+  shell: brew services stop vsh-mariadb104
+
+- name: brew | vsh-mariadb104 | restarted
+  shell: brew services restart vsh-mariadb104
+
+- name: brew | vsh-mariadb105 | started
+  shell: brew services start vsh-mariadb105
+
+- name: brew | vsh-mariadb105 | stopped
+  shell: brew services stop vsh-mariadb105
+
+- name: brew | vsh-mariadb105 | restarted
+  shell: brew services restart vsh-mariadb105
