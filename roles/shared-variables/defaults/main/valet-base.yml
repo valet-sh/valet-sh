@@ -164,6 +164,7 @@ valet_sh_php_sockets: "{{ lookup('vars', 'valet_sh_php_sockets'+'_'+current_os, 
 valet_sh_service_mysql_port_presets_default:
   mysql57: "3307"
   mysql80: "3308"
+  mariadb104: "3317"
 valet_sh_service_mysql_port_presets: "{{ lookup('vars', 'valet_sh_service_mysql_port_presets'+'_'+current_os, default=valet_sh_service_mysql_port_presets_default) }}"
 
 

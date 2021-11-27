@@ -21,10 +21,10 @@ valet_sh_project_hub_fqdn: "gitlab.{{ valet_project_name }}.{{ valet_sh_config.h
 
 valet_sh_default_project_git_clone_command: "ssh://git@{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_config.hub_gitlab_ssh_port }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}.git"
 
-
 valet_sh_service_rabbitmq_user: admin
 valet_sh_service_rabbitmq_password: admin
 
 valet_sh_service_mysql_host_presets:
   mysql57: "127.0.0.1:3307"
   mysql80: "127.0.0.1:3308"
+  mariadb104: "127.0.0.1:3317"

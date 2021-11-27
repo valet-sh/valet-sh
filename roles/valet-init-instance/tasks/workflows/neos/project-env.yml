@@ -27,8 +27,23 @@
 - block:
   - name: "workflows » neos » project-env | set neos related variables"
     set_fact:
-      valet_sh_neos_db_name: "{{ valet_sh_project_vars.services.mysql.database }}"
       valet_sh_neos_key: "{{ valet_sh_project_vars.instance.key }}"
+
+  - name: "workflows » neos » project-env | set neos related variables"
+    set_fact:
+      valet_sh_neos_db_name: "{{ valet_sh_project_vars.services.mysql.database }}"
+    when:
+      - valet_sh_project_vars.services is defined
+      - valet_sh_project_vars.services.mysql is defined
+      - valet_sh_project_vars.services.mysql.database is defined
+
+  - name: "workflows » neos » project-env | set neos related variables"
+    set_fact:
+      valet_sh_neos_db_name: "{{ valet_sh_project_vars.services.mariadb.database }}"
+    when:
+      - valet_sh_project_vars.services is defined
+      - valet_sh_project_vars.services.mariadb is defined
+      - valet_sh_project_vars.services.mariadb.database is defined
 
   - name: "workflows » neos » project-env | set neos 'valet_sh_neos_db_host' var"
     set_fact:
@@ -42,6 +57,15 @@
       - valet_sh_project_vars.services.mysql is defined
       - valet_sh_project_vars.services.mysql.version is defined
       - valet_sh_project_vars.services.mysql.version == 8.0
+
+  - name: "workflows » neos » project-env | override neos 'valet_sh_neos_db_host' var"
+    set_fact:
+      valet_sh_neos_db_host: "{{ valet_sh_service_mysql_host_presets.mariadb104 }}"
+    when:
+      - valet_sh_project_vars.services is defined
+      - valet_sh_project_vars.services.mariadb is defined
+      - valet_sh_project_vars.services.mariadb.version is defined
+      - valet_sh_project_vars.services.mariadb.version == 10.4
 
   - name: "workflows » neos » project-env | provide Settings.generated.yaml for project"
     template:
