@@ -15,32 +15,86 @@
 ##
 ---
 
-- name: set valet_service_name version
+- name: "delete mariadb default symlinks"
+  file:
+    path: "/usr/local/bin/{{ current_mariadb_default_linkname }}"
+    state: absent
+  with_items:
+    - mariadb
+    - mariadump
+    - mariaadmin
+  loop_control:
+    loop_var: current_mariadb_default_linkname
+  become: true
+
+- name: set valet_service_name version if service is mysql
   set_fact:
     valet_service_name_version: "{{ valet_service_name[-2:-1] }}.{{ valet_service_name[-1] }}"
+    valet_service_base_name: "mysql"
+  when: valet_service_name is search("mysql")
 
-- name: "create symlinks for default mysql"
-  file:
-    src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ valet_service_name_version }}"
-    dest: "/usr/local/bin/{{ current_mysql_default_linkname }}"
-    owner: root
-    group: root
-    state: link
-    force: true
-  become: true
-  with_items:
-    - mysql
-    - mysqldump
-    - mysqladmin
-  loop_control:
-    loop_var: current_mysql_default_linkname
+- name: set valet_service_name version if service is mariadb
+  set_fact:
+    valet_service_name_version: "{{ valet_service_name[-3:-1] }}.{{ valet_service_name[-1] }}"
+    valet_service_base_name: "mariadb"
+  when: valet_service_name is search("mariadb")
 
-- name: "create .my.cnf symlink"
-  file:
-    src: "{{ current_home }}/.my{{ valet_service_name_version }}.cnf"
-    dest: "{{ current_home }}/.my.cnf"
-    state: link
-    force: true
+
+- block:
+  - name: "create symlinks for default mysql"
+    file:
+      src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ valet_service_name_version }}"
+      dest: "/usr/local/bin/{{ current_mysql_default_linkname }}"
+      state: link
+      force: true
+    become: true
+    with_items:
+      - mysql
+      - mysqldump
+      - mysqladmin
+    loop_control:
+      loop_var: current_mysql_default_linkname
+
+  - name: "create .my.cnf symlink for mysql service"
+    file:
+      src: "{{ current_home }}/.my{{ valet_service_name_version }}.cnf"
+      dest: "{{ current_home }}/.my.cnf"
+      state: link
+      force: true
+  when: valet_service_base_name == "mysql"
+
+- block:
+  - name: "create symlinks for default mysql"
+    file:
+      src: "/usr/local/bin/mariadb{{ valet_service_name_version }}"
+      dest: "/usr/local/bin/mysql"
+      state: link
+      force: true
+    become: true
+
+  - name: "create symlinks for default mysqladmin"
+    file:
+      src: "/usr/local/bin/mariaadmin{{ valet_service_name_version }}"
+      dest: "/usr/local/bin/mysqladmin"
+      state: link
+      force: true
+    become: true
+
+  - name: "create symlinks for default mysqldump"
+    file:
+      src: "/usr/local/bin/mariadump{{ valet_service_name_version }}"
+      dest: "/usr/local/bin/mysqldump"
+      state: link
+      force: true
+    become: true
+
+  - name: "create .my.cnf symlink for mariadb service"
+    file:
+      src: "{{ current_home }}/.mariadb{{ valet_service_name_version }}.cnf"
+      dest: "{{ current_home }}/.my.cnf"
+      state: link
+      force: true
+  when: valet_service_base_name == "mariadb"
 
 - name: "provide nginx stream configuration"
   template:
