@@ -2,7 +2,7 @@
 <?php
 
 array_shift($argv);
-$proc = proc_open('COMPOSER_HOME="{{ current_home }}/.config/composer1" COMPOSER_CACHE_DIR="{{ current_home }}/.cache/composer1" ' . PHP_BINARY . ' {{ composer1_bin }} ' . implode(' ', $argv), [STDIN, STDOUT, STDERR], $pipes);
+$proc = proc_open(PHP_BINARY . ' {{ composer1_phar_bin }} ' . implode(' ', $argv), [STDIN, STDOUT, STDERR], $pipes);
 $status = proc_get_status($proc);
 while ($status["running"]) {
   usleep(100000);

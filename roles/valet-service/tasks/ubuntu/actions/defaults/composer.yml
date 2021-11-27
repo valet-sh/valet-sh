@@ -15,10 +15,14 @@
 ##
 ---
 
-- name: "ensure {{ valet_service_name }} is default version"
+- name: set valet_service_name version
+  set_fact:
+    valet_service_name_version: "{{ valet_service_name[-1] }}"
+
+- name: "create symlink for default composer"
   file:
-    src: "/usr/local/bin/{{ valet_service_name }}"
-    dest: "/usr/local/bin/composer"
+    src: "/usr/local/bin/composer{{ valet_service_name_version }}"
+    dest: "/usr/local/bin/default-composer"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     state: link

@@ -18,3 +18,24 @@
 - include_tasks: composer1.yml
 
 - include_tasks: composer2.yml
+
+- name: ensure composer wrapper script is up2date
+  template:
+    src: "composer-wrapper.j2"
+    dest: "/usr/local/bin/composer"
+    mode: '0755'
+  become: true
+
+- name: "get stat for '/usr/local/bin/composer-php'"
+  stat:
+    path: "/usr/local/bin/default-composer"
+  register: composer_default_symlink_obj
+
+- name: "create symlink for default php"
+  file:
+    src: "/usr/local/bin/composer1"
+    dest: "/usr/local/bin/default-composer"
+    state: link
+    force: true
+  become: true
+  when: composer_default_symlink_obj.stat.islnk is not defined

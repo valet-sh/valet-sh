@@ -1,0 +1,38 @@
+#!/bin/bash
+
+AVAILABLE_COMPOSER_VERSION='1 2'
+
+function get_target_version {
+    VALET_SH_FILE=$1
+
+    SELECTED_COMPOSER_VERSION=$(/usr/local/valet-sh/venv/bin/shyaml get-value services.composer.version < "${VALET_SH_FILE}" 2>/dev/null)
+   	# shellcheck disable=SC2181
+    if [ $? -eq 0 ]
+    then
+      if [[ " $AVAILABLE_COMPOSER_VERSION " =~ .*\ $SELECTED_COMPOSER_VERSION\ .* ]]; then
+         TARGET_COMPOSER_VERSION=$SELECTED_COMPOSER_VERSION
+         return 0
+      fi
+    fi
+    return 1
+}
+
+if test -f ".valet-sh.yml"; then
+  CURRENT_VALET_SH_FILE=".valet-sh.yml"
+elif test -f "../.valet-sh.yml"; then
+  CURRENT_VALET_SH_FILE="../.valet-sh.yml"
+fi
+
+if [[ $CURRENT_VALET_SH_FILE ]]
+then
+  get_target_version $CURRENT_VALET_SH_FILE
+  # shellcheck disable=SC2181
+  if [ $? -eq 0 ]
+  then
+    exec /usr/local/bin/composer"${TARGET_COMPOSER_VERSION}" "$@"
+  else
+    exec /usr/local/bin/default-composer "$@"
+  fi
+else
+  exec /usr/local/bin/default-composer "$@"
+fi
