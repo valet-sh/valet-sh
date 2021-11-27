@@ -35,6 +35,8 @@ elasticsearch_plugins_default:
 elasticsearch_plugins: "{{ lookup('vars', 'elasticsearch_plugins'+'_'+current_os, default=elasticsearch_plugins_default) }}"
 
 elasticsearch_legacy_plugins_default:
-    - elasticsearch/elasticsearch-analysis-phonetic/2.7.0
-    - elasticsearch/elasticsearch-analysis-icu/2.7.0
+  - name: "analysis-phonetic"
+    url: "https://download.elasticsearch.org/elasticsearch/elasticsearch-analysis-phonetic/elasticsearch-analysis-phonetic-2.7.0.zip"
+  - name: "analysis-icu"
+    url: "https://download.elasticsearch.org/elasticsearch/elasticsearch-analysis-icu/elasticsearch-analysis-icu-2.7.0.zip"
 elasticsearch_legacy_plugins: "{{ lookup('vars', 'elasticsearch_legacy_plugins'+'_'+current_os, default=elasticsearch_legacy_plugins_default) }}"

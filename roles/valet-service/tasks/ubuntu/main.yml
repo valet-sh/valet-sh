@@ -15,6 +15,9 @@
 ##
 ---
 
+- include_tasks: "ubuntu/internal-actions/migrations.yml"
+  when: valet_sh_service_internal_action|bool
+
 - include_tasks: "ubuntu/internal-actions/{{ valet_service_action }}.yml"
   when: valet_sh_service_internal_action|bool
 
