@@ -86,6 +86,7 @@ valet_sh_service_defaultable_services_mac:
       - php73
       - php74
       - php80
+      - php81
   - scope: mysql
     default: mysql57
     values:
