@@ -23,3 +23,9 @@ composer1_bin: "{{ lookup('vars', 'composer1_bin'+'_'+current_os, default=compos
 
 composer2_bin_default: "{{ composer_path }}/composer2"
 composer2_bin: "{{ lookup('vars', 'composer2_bin'+'_'+current_os, default=composer2_bin_default) }}"
+
+composer1_phar_bin_default: "{{ composer_path }}/composer1.phar"
+composer1_phar_bin: "{{ lookup('vars', 'composer1_phar_bin'+'_'+current_os, default=composer1_phar_bin_default) }}"
+
+composer2_phar_bin_default: "{{ composer_path }}/composer2.phar"
+composer2_phar_bin: "{{ lookup('vars', 'composer2_phar_bin'+'_'+current_os, default=composer2_phar_bin_default) }}"
