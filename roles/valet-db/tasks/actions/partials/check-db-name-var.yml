@@ -27,3 +27,12 @@
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.database is defined
+
+- name: "actions » partials » check-db-name-var | override database name when defined in valet-sh.yml file"
+  set_fact:
+    valet_db_name: "{{ valet_sh_project_vars.services.mariadb.database | trim }}"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mariadb is defined
+    - valet_sh_project_vars.services.mariadb.database is defined

@@ -39,6 +39,29 @@
 
 - block:
 
+    - name:  "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
+      set_fact:
+        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}"
+
+    - name: "workflows » magento2 » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
+      systemd:
+        name: "{{ valet_sh_service_mariadb_current_name }}"
+        state: started
+      become: true
+
+    - name: "workflows » magento2 » services » mariadb | wait for mariadb to be reachable"
+      wait_for:
+        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
+        delay: 5
+  when:
+    - current_os == "ubuntu"
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mariadb is defined
+    - valet_sh_project_vars.services.mariadb.version is defined
+
+
+- block:
+
     - name:  "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
       set_fact:
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}"
@@ -55,3 +78,22 @@
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.version is defined
+
+- block:
+
+    - name:  "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
+      set_fact:
+        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}"
+
+    - name: "workflows » magento2 » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
+      shell: "brew services start vsh-{{ valet_sh_service_mariadb_current_name }}"
+
+    - name: "workflows » magento2 » services » mariadb | wait for mariadb to be reachable"
+      wait_for:
+        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
+        delay: 5
+  when:
+    - current_os == "mac"
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mariadb is defined
+    - valet_sh_project_vars.services.mariadb.version is defined
