@@ -51,8 +51,8 @@
       path: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
       state: absent
 
-  - name: "install plugins"
-    shell: "{{ current_elasticsearch_base_path }}/bin/plugin install {{ current_elasticsearch_plugin }}"
+  - name: "install elasticsearch 1 plugins"
+    shell: "{{ current_elasticsearch_base_path }}/bin/plugin --install {{ current_elasticsearch_plugin.name }} --url {{ current_elasticsearch_plugin.url }}"
     with_items: "{{ elasticsearch_legacy_plugins }}"
     loop_control:
       loop_var: current_elasticsearch_plugin
