@@ -52,9 +52,6 @@ valet_sh_service_defaultable_services_default:
     values:
       - mysql57
       - mysql80
-  - scope: mariadb
-    default: mariadb104
-    values:
       - mariadb104
   - scope: xdebug
     default: xdebug3
@@ -90,9 +87,6 @@ valet_sh_service_defaultable_services_mac:
     values:
       - mysql57
       - mysql80
-  - scope: mariadb
-    default: mariadb104
-    values:
       - mariadb104
   - scope: xdebug
     default: xdebug3
