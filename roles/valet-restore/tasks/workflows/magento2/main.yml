@@ -83,7 +83,7 @@
     state: import
 
 - name: "workflows » magento2 | synchronize filesystem"
-  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
+  shell: "mkdir -p {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/; rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
   with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
   when:
     - valet_sh_project_vars.instance is defined
