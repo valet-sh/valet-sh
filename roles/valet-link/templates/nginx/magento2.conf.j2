@@ -179,7 +179,7 @@ server {
     }
 
     # PHP entry point for main application
-    location ~ (index|get|static|report|404|503|health_check)\.php$ {
+    location ~ (index|get|test|static|report|404|503|health_check)\.php$ {
         try_files $uri =404;
         fastcgi_pass   $upstream;
         fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
