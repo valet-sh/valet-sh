@@ -31,7 +31,7 @@
   systemd:
     name: "{{ valet_current_service_item.key }}"
     enabled: yes
-    state: started
+    state: restarted
   become: true
   when: valet_service_name_alias|length == 0 and valet_current_service_item.value|bool
 
@@ -39,7 +39,7 @@
   systemd:
     name: "{{ valet_service_name_alias }}"
     enabled: yes
-    state: started
+    state: restarted
   become: true
   when: valet_service_name_alias|length > 0 and valet_current_service_item.value|bool
 
