@@ -15,10 +15,14 @@
 ##
 ---
 
+#- name: "ensure rabbitmq is installed"
+#  homebrew:
+#    name: rabbitmq
+#    state: present
+#  notify: brew | rabbitmq | restarted
+
 - name: "ensure rabbitmq is installed"
-  homebrew:
-    name: rabbitmq
-    state: present
+  shell: "{{ valet_sh_homebrew_bin }} install rabbitmq"
   notify: brew | rabbitmq | restarted
 
 - name: "generate ssl-certificate for rabbitmq.{{ development_tld }}"

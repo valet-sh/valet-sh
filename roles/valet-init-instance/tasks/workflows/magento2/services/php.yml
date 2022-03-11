@@ -34,7 +34,7 @@
 
 - block:
     - name: "workflows » magento2 » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
-      shell: "brew services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
+      shell: "{{ valet_sh_homebrew_bin }} services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
 
     - name: "workflows » magento2 » services » php | wait for php-fpm to be reachable"
       wait_for:

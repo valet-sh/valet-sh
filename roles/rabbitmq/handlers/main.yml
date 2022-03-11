@@ -47,11 +47,11 @@
   become: true
 
 - name: brew | rabbitmq | started
-  shell: brew services start rabbitmq
+  shell: "{{ valet_sh_homebrew_bin }} services start rabbitmq"
 
 - name: brew | rabbitmq | stopped
-  shell: brew services stop rabbitmq
+  shell: "{{ valet_sh_homebrew_bin }} services stop rabbitmq"
 
 - name: brew | rabbitmq | restarted
-  shell: brew services restart rabbitmq
+  shell: "{{ valet_sh_homebrew_bin }} services restart rabbitmq"
 

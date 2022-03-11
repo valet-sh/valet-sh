@@ -52,7 +52,7 @@
 
 - block:
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      shell: brew services start rabbitmq
+      shell: "{{ valet_sh_homebrew_bin }} services start rabbitmq
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
       wait_for:

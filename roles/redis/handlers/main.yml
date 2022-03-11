@@ -34,11 +34,11 @@
   become: true
 
 - name: brew | redis | started
-  shell: brew services start redis
+  shell: "{{ valet_sh_homebrew_bin }} services start redis"
 
 - name: brew | redis | stopped
-  shell: brew services stop redis
+  shell: "{{ valet_sh_homebrew_bin }} services stop redis"
 
 - name: brew | redis | restarted
-  shell: brew services restart redis
+  shell: "{{ valet_sh_homebrew_bin }} services restart redis"
 

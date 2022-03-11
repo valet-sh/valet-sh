@@ -15,10 +15,14 @@
 ##
 ---
 
+#- name: "ensure mailhog is installed"
+#  homebrew:
+#    name: mailhog
+#    state: present
+#  notify: brew | mailhog | restart
+
 - name: "ensure mailhog is installed"
-  homebrew:
-    name: mailhog
-    state: present
+  shell: "{{ valet_sh_homebrew_bin }} install mailhog"
   notify: brew | mailhog | restart
 
 - name: "generate ssl-certificate for {{ cert_prefix }}"
@@ -36,4 +40,4 @@
   notify: brew | nginx | restarted
 
 - name: brew | mailhog | restart
-  shell: brew services restart mailhog
+  shell: "{{ valet_sh_homebrew_bin }} services restart mailhog"

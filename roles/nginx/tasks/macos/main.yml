@@ -15,10 +15,13 @@
 ##
 ---
 
+#- name: "ensure nginx is installed"
+#  homebrew:
+#    name: nginx
+#    state: present
+
 - name: "ensure nginx is installed"
-  homebrew:
-    name: nginx
-    state: present
+  shell: "{{ valet_sh_homebrew_bin }} install nginx"
 
 - name: Generate dhparams file
   shell: "openssl dhparam -out {{ nginx_dhparams_file }} {{ nginx_dhparams_keysize }}"

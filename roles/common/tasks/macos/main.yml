@@ -32,7 +32,7 @@
   become: true
 
 - name: ensure homebrew is installed
-  shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
+  shell: '{{ valet_sh_arch_prefix }}/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
   args:
     creates: "/usr/local/bin/brew"
 

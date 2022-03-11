@@ -34,7 +34,7 @@
 
 - block:
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
-      shell: "brew services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+      shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
     - name: "workflows » magento2 » services » elasticsearch | wait for elasticsearch to be reachable"
       wait_for:
