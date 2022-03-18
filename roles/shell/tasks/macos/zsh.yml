@@ -50,7 +50,7 @@
       if [ -f ~/.aliases ]; then
           . ~/.aliases
       fi
-      export PATH=$PATH:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin
+      export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:$PATH
   when: current_arch == "arm64"
 
 - name: ensure .profile file exists
