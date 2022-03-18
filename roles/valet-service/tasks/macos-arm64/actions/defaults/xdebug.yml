@@ -15,11 +15,5 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
 
-- include_tasks: macos/main.yml
-  when: current_os == "mac" and current_arch != "arm64"
-
-- include_tasks: macos-arm64/main.yml
-  when: current_os == "mac" and current_arch == "arm64"
+## nothing to do

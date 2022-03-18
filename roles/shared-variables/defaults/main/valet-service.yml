@@ -234,3 +234,23 @@ valet_sh_service_alias_mapping_mac:
   elasticsearch6: "vsh-elasticsearch6"
   elasticsearch7: "vsh-elasticsearch7"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
+
+valet_sh_service_rosetta2_emulation:
+  rabbitmq: false
+  nginx: true
+  mysql57: true
+  mysql80: true
+  mariadb104: true
+  php56: true
+  php70: true
+  php71: true
+  php72: true
+  php73: true
+  php74: true
+  php80: true
+  php81: true
+  elasticsearch1: true
+  elasticsearch2: true
+  elasticsearch5: true
+  elasticsearch6: true
+  elasticsearch7: true

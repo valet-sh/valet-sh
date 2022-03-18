@@ -45,13 +45,3 @@
     state: restarted
     daemon_reload: yes
   become: true
-
-- name: brew | rabbitmq | started
-  shell: "{{ valet_sh_homebrew_bin }} services start rabbitmq"
-
-- name: brew | rabbitmq | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop rabbitmq"
-
-- name: brew | rabbitmq | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart rabbitmq"
-

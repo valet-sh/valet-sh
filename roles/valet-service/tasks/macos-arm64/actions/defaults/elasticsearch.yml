@@ -15,11 +15,9 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
-
-- include_tasks: macos/main.yml
-  when: current_os == "mac" and current_arch != "arm64"
-
-- include_tasks: macos-arm64/main.yml
-  when: current_os == "mac" and current_arch == "arm64"
+- name: "provide elasticsearch default configuration"
+  template:
+    src: "nginx/elasticsearch.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/elasticsearch.conf"
+    mode: '0644'
+  notify: brew | nginx | restarted

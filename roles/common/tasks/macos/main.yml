@@ -36,10 +36,24 @@
   args:
     creates: "/usr/local/bin/brew"
 
+- name: ensure native homebrew is installed on apple silicon
+  shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
+  args:
+    creates: "/opt/homebrew/bin/brew"
+  when: current_arch == "arm64"
+
+- name: ensure brew_x86 wrapper script is up2date (only on m1)
+  template:
+    src: "brew_x86.j2"
+    dest: "/usr/local/bin/brew_x86"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: '0755'
+  become: true
+  when: current_arch == "arm64"
+
 - name: Ensure valet-sh tap is tapped
-  homebrew_tap:
-    tap: 'valet-sh/core'
-    state: present
+  shell: '{{ valet_sh_homebrew_bin }} tap valet-sh/core'
 
 - name: ensure LaunchDaemons script for maxfiles limit is deployed
   template:

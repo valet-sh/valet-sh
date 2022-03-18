@@ -52,7 +52,12 @@
 
 - block:
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      shell: "{{ valet_sh_homebrew_bin }} services start rabbitmq"
+      shell: "{{ valet_sh_homebrew_bin_x86 }} services start rabbitmq"
+      when: current_arch != "arm64"
+
+    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
+      shell: "{{ valet_sh_homebrew_bin_arm64 }} services start rabbitmq"
+      when: current_arch == "arm64"
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
       wait_for:

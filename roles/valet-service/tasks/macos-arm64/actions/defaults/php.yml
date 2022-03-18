@@ -15,11 +15,13 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
+- name: set valet_service_name version
+  set_fact:
+    valet_service_name_version: "{{ valet_service_name[-2:-1] }}.{{ valet_service_name[-1] }}"
 
-- include_tasks: macos/main.yml
-  when: current_os == "mac" and current_arch != "arm64"
-
-- include_tasks: macos-arm64/main.yml
-  when: current_os == "mac" and current_arch == "arm64"
+- name: "create symlink for default php"
+  file:
+    src: "/usr/local/bin/php{{ valet_service_name_version }}"
+    dest: "/usr/local/bin/default-php"
+    state: link
+    force: true

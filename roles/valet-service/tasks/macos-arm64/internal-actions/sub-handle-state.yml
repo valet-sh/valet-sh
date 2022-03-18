@@ -1,0 +1,102 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "set default homebrew bin"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin }}"
+
+- name: "override homebrew bin path if service is rabbitmq"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin_arm64 }}"
+  when: valet_current_service_item.key == "rabbitmq"
+
+- name: "internal-actions » sub-handle-state | reset valet_service_name_alias variable"
+  set_fact:
+    valet_service_name_alias: ""
+
+- name: "internal-actions » sub-handle-state | check for alias service name"
+  set_fact:
+    valet_service_name_alias: "{{ valet_sh_service_alias_mapping_item.value }}"
+  when: valet_sh_service_alias_mapping_item.key == valet_current_service_item.key
+  with_dict: "{{ valet_sh_service_alias_mapping }}"
+  loop_control:
+    loop_var: valet_sh_service_alias_mapping_item
+
+- name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_current_service_item.key }}"
+  become: true
+  when:
+    - valet_service_name_alias|length == 0
+    - valet_current_service_item.key in valet_sh_service_privileged_services
+    - valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_current_service_item.key }}"
+  when:
+    - valet_service_name_alias|length == 0
+    - valet_current_service_item.key not in valet_sh_service_privileged_services
+    - valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_service_name_alias }}"
+  become: true
+  when:
+    - valet_service_name_alias|length > 0
+    - valet_current_service_item.key in valet_sh_service_privileged_services
+    - valet_current_service_item.value|bool
+
+- name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_service_name_alias }}"
+  when:
+    - valet_service_name_alias|length > 0
+    - valet_current_service_item.key not in valet_sh_service_privileged_services
+    - valet_current_service_item.value|bool
+
+
+- name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_current_service_item.key }}"
+  become: true
+  when:
+    - valet_service_name_alias|length == 0
+    - valet_current_service_item.key in valet_sh_service_privileged_services
+    - not valet_current_service_item.value|bool
+  failed_when: false
+
+- name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_current_service_item.key }}"
+  when:
+    - valet_service_name_alias|length == 0
+    - valet_current_service_item.key not in valet_sh_service_privileged_services
+    - not valet_current_service_item.value|bool
+  failed_when: false
+
+- name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name_alias }}"
+  become: true
+  when:
+    - valet_service_name_alias|length > 0
+    - valet_current_service_item.key in valet_sh_service_privileged_services
+    - not valet_current_service_item.value|bool
+  failed_when: false
+
+- name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name_alias }}"
+  when:
+    - valet_service_name_alias|length > 0
+    - valet_current_service_item.key not in valet_sh_service_privileged_services
+    - not valet_current_service_item.value|bool
+  failed_when: false
