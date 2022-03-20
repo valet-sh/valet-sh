@@ -155,6 +155,13 @@
     - valet_sh_project_vars.instance.sync is defined
     - valet_sh_project_vars.instance.sync.identifier is defined
 
+- name: "workflows » magento2 » check-vars | override valet_instancebackup_identifier with valet_opt_instance_identifier when set"
+  set_fact:
+    valet_instancebackup_identifier: "{{ valet_opt_instance_identifier | trim  }}"
+  when:
+    - valet_opt_instance_identifier is  defined
+    - valet_opt_instance_identifier|length>0
+
 - name: "workflows » magento2 » check-vars | ensure valet_instancebackup_identifier has a value"
   fail:
     msg: "you need to set a valid 'instancebackup-identifier' ether in your .valet-sh.yml file or as an argument"

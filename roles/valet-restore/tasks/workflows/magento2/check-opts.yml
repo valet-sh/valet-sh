@@ -14,10 +14,20 @@
 ##
 ---
 
-valet_opt_flag_skip_db: false
+- debug:
+    msg: "{{ valet_cli_opts }}"
 
-valet_restore_workflow:
-  post_restore_commands:
-  - "bin/magento cache:flush"
-  - "bin/magento app:config:import -n"
-  - "bin/magento setup:upgrade"
+- name: "workflows » magento2 » check-opts | check if '--skip-db' opt is set"
+  set_fact:
+    valet_opt_flag_skip_db: true
+  when: '--skip-db' in valet_cli_opts
+
+- debug:
+    msg: "{{ valet_opt_flag_skip_db }}"
+
+- name: "workflows » magento2 » check-opts | check if '--identifier' opt is set"
+  set_fact:
+    valet_opt_instance_identifier: "{{ valet_cli_opts | regex_search('identifier=(.+)', '\\1') | first | default() }}"
+
+- debug:
+    msg: "{{ valet_opt_instance_identifier }}"
