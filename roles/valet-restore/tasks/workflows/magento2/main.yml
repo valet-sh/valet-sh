@@ -16,9 +16,9 @@
 
 - include_vars: "vars.yml"
 
-- include_tasks: "check-vars.yml"
-
 - include_tasks: "check-opts.yml"
+
+- include_tasks: "check-vars.yml"
 
 - name: "workflows » magento2 | register hub host"
   add_host:
@@ -39,19 +39,8 @@
     path: "~/.ssh/known_hosts"
     state: present
 
-- name: "workflows » magento2 | check if instancebackup idenfifier '{{ valet_instancebackup_identifier }}'"
-  stat:
-    path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}"
-  register: instancebackup_identifier_target_obj
-  delegate_to: hub
-
-- name: "workflows » magento2 | fail when instance identifier does not exist"
-  fail:
-    msg: "Instance-Backup identifier '{{ valet_instancebackup_identifier }}' does not exist!"
-  when: not instancebackup_identifier_target_obj.stat.exists
-
 - block:
-    - name: "workflows » magento2 | check if instancebackup idenfifier '{{ valet_sh_instance_db_filename }}'"
+    - name: "workflows » magento2 | check if instancebackup '{{ valet_sh_instance_db_filename }}' for identifier '{{ valet_instancebackup_identifier }}'"
       stat:
         path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
       register: instancebackup_target_db_file_obj
@@ -84,33 +73,47 @@
         login_port: "{{ valet_sh_project_mysql_server_port }}"
         encoding: "utf8"
         state: import
-  when: valet_opt_flag_skip_db is not defined of not valet_opt_flag_skip_db|bool
+  when: not valet_restore_skip_db|bool and (valet_opt_flag_skip_db is not defined or not valet_opt_flag_skip_db|bool)
 
-- name: "workflows » magento2 | ensure sync directories exists"
-  file:
-    path: "{{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}"
-    state: directory
-  with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
-  when:
-    - valet_sh_project_vars.instance is defined
-    - valet_sh_project_vars.instance.sync is defined
-    - valet_sh_project_vars.instance.sync.fs is defined
-  loop_control:
-    loop_var: valet_sh_restore_current_fs
-  tags:
-    - skip_ansible_lint
+- block:
+    - name: "workflows » magento2 | check if instancebackup '{{ valet_sh_instance_db_filename }}' for identifier '{{ valet_instancebackup_identifier }}'"
+      stat:
+        path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
+      register: instancebackup_target_db_file_obj
+      delegate_to: hub
 
-- name: "workflows » magento2 | synchronize filesystem"
-  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
-  with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
-  when:
-    - valet_sh_project_vars.instance is defined
-    - valet_sh_project_vars.instance.sync is defined
-    - valet_sh_project_vars.instance.sync.fs is defined
-  loop_control:
-    loop_var: valet_sh_restore_current_fs
-  tags:
-    - skip_ansible_lint
+    - name: "workflows » magento2 | fail when db dump '{{ valet_sh_instance_db_filename }}' in identifier '{{ valet_instancebackup_identifier }}' does not exist"
+      fail:
+        msg: "identifier '{{ valet_instancebackup_identifier }}' does not exist!"
+      when: not instancebackup_target_db_file_obj.stat.exists
+
+    - name: "workflows » magento2 | ensure sync directories exists"
+      file:
+        path: "{{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}"
+        state: directory
+      with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
+      when:
+        - valet_sh_project_vars.instance is defined
+        - valet_sh_project_vars.instance.sync is defined
+        - valet_sh_project_vars.instance.sync.fs is defined
+      loop_control:
+        loop_var: valet_sh_restore_current_fs
+      tags:
+        - skip_ansible_lint
+
+    - name: "workflows » magento2 | synchronize filesystem"
+      shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/auto/fs/{{ valet_instancebackup_identifier }}/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
+      with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
+      when:
+        - valet_sh_project_vars.instance is defined
+        - valet_sh_project_vars.instance.sync is defined
+        - valet_sh_project_vars.instance.sync.fs is defined
+      loop_control:
+        loop_var: valet_sh_restore_current_fs
+      tags:
+        - skip_ansible_lint
+
+  when: valet_opt_flag_skip_fs is not defined or not valet_opt_flag_skip_fs|bool
 
 - name: "workflows » magento2 | run custom sql-queries for database '{{ valet_sh_project_database_name }}'"
   mysql_query:
@@ -175,4 +178,4 @@
     - valet_sh_project_vars.instance.sync is defined
     - valet_sh_project_vars.instance.sync.post_restore_actions is defined
     - valet_sh_project_vars.instance.sync.post_restore_actions.indexer is defined
-    - valet_opt_flag_skip_db is not defined of not valet_opt_flag_skip_db|bool
+    - valet_opt_flag_skip_db is not defined or not valet_opt_flag_skip_db|bool
