@@ -52,8 +52,7 @@
 
 - name: "set 'os_codename' var"
   set_fact:
-    os_codename: "focal"
-  when: current_os == 'ubuntu'
+    os_codename: "{{ ansible_distribution_release }}"
 
 - name: fail when no supported operating system was found
   fail:
