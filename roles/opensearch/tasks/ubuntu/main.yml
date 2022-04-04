@@ -22,6 +22,7 @@
   vars:
     packages:
       - openjdk-17-jre
+      - openjdk-17-jdk
   become: true
 
 - name: "ensure {{ opensearch_pid_path }} is created"
