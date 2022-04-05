@@ -41,7 +41,7 @@ def main():
     headers = module.params.get('headers')
     rows = module.params.get('rows')
 
-    table = BeautifulTable()
+    table = BeautifulTable(max_width=120)
     table.column_headers = headers
     
     for row in rows:
