@@ -16,9 +16,7 @@
 ---
 
 - name: "ensure vsh-opensearch1 is installed"
-  homebrew:
-    name: vsh-opensearch1
-    state: present
+  shell: "{{ valet_sh_homebrew_bin }} install vsh-opensearch1"
 
 - name: "ensure opensearch 1 plugins are installed"
   elasticsearch_plugin:
