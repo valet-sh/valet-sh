@@ -25,6 +25,9 @@ valet_sh_prefix: "{{ lookup('vars', 'valet_sh_prefix'+'_'+current_os, default=va
 valet_base_path_default: "/usr/local/valet-sh"
 valet_base_path: "{{ lookup('vars', 'valet_base_path'+'_'+current_os, default=valet_base_path_default) }}"
 
+valet_dist_path_default: "{{ valet_base_path }}/valet-sh"
+valet_dist_path: "{{ lookup('vars', 'valet_dist_path'+'_'+current_os, default=valet_dist_path_default) }}"
+
 valet_etc_path_default: "{{ valet_base_path }}/etc"
 valet_etc_path: "{{ lookup('vars', 'valet_etc_path'+'_'+current_os, default=valet_etc_path_default) }}"
 
@@ -125,6 +128,9 @@ valet_etc_links_file: "{{ valet_etc_path }}/links.yml"
 valet_etc_config_file: "{{ valet_etc_path }}/config.yml"
 
 valet_etc_services_file: "{{ valet_etc_path }}/services.yml"
+
+valet_etc_revision_filename: "REVISION"
+valet_etc_revision_file: "{{ valet_etc_path }}/{{ valet_etc_revision_filename }}"
 
 valet_sh_filename: ".valet-sh.yml"
 
