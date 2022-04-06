@@ -14,12 +14,22 @@
 #   limitations under the License.
 ##
 ---
-- name: "actions » start | fail when no service name was given"
+
+- name: "actions » stop | fail when no service name was given"
   fail:
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
-- name: "actions » start | check fuzzy service names"
+- name: "actions » stop | set default homebrew bin"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin }}"
+
+- name: "actions » stop | override homebrew bin path if service is rabbitmq"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin_arm64 }}"
+  when: valet_service_name == "rabbitmq"
+
+- name: "actions » stop | check fuzzy service names"
   set_fact:
     valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
   when: valet_service_name in valet_sh_available_php_versions_alias_mapping_item.1
@@ -29,26 +39,28 @@
   loop_control:
     loop_var: valet_sh_available_php_versions_alias_mapping_item
 
-- name: "actions » start | check for alias service name"
+- name: "actions » stop | check for alias service name"
   set_fact:
     valet_service_name_alias: "{{ item.value }}"
   when: item.key == valet_service_name
   with_dict: "{{ valet_sh_service_alias_mapping }}"
 
-- name: "actions » start | start {{ valet_service_name }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name }}"
+- name: "actions » stop | stop {{ valet_service_name }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name }}"
   become: true
   when: valet_service_name_alias|length == 0 and (valet_service_name in valet_sh_service_privileged_services)
 
-- name: "actions » start | start {{ valet_service_name }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name }}"
+- name: "actions » stop | stop {{ valet_service_name }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name }}"
   when: valet_service_name_alias|length == 0 and (valet_service_name not in valet_sh_service_privileged_services)
 
-- name: "actions » start | start {{ valet_service_name }} service with alias '{{ valet_service_name_alias }}' (running as root)"
-  shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name_alias }}"
+- name: "actions » stop | stop {{ valet_service_name }} service with alias '{{ valet_service_name_alias }}' (running as root)"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name_alias }}"
   become: true
   when: valet_service_name_alias|length > 0 and (valet_service_name in valet_sh_service_privileged_services)
 
-- name: "actions » start | start {{ valet_service_name }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name_alias }}"
+- name: "actions » stop | stop {{ valet_service_name }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name_alias }}"
   when: valet_service_name_alias|length > 0 and (valet_service_name not in valet_sh_service_privileged_services)
+
+

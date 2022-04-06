@@ -1,0 +1,54 @@
+##
+#   Copyright 2021 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "internal-actions » migrations | include valet services file"
+  include_vars:
+    file: "{{ valet_etc_services_file }}"
+    name: valet_sh_services_obj
+
+- name: "internal-actions » migrations | remove blacklisted defaults"
+  set_fact:
+    valet_sh_blacklisted_service:
+      - mariadb
+
+- name: "internal-actions » migrations | set var valet_sh_services_updates_defaults"
+  set_fact:
+    valet_sh_services_updates_defaults: {}
+
+- name: "internal-actions » migrations | remove blacklisted services from default list"
+  set_fact:
+    valet_sh_services_updates_defaults: "{{ valet_sh_services_updates_defaults | combine({valet_sh_services_obj_defaults_item.key: valet_sh_services_obj_defaults_item.value}) }}"
+  when: valet_sh_services_obj_defaults_item.key not in valet_sh_blacklisted_service
+  loop: "{{ valet_sh_services_obj.defaults | dict2items }}"
+  loop_control:
+    loop_var: valet_sh_services_obj_defaults_item
+
+- name: "internal-actions » migrations | merge objects"
+  set_fact:
+    valet_sh_services_obj:
+      defaults: "{{ valet_sh_services_updates_defaults }}"
+      states: "{{ valet_sh_services_obj.states }}"
+
+- name: "internal-actions » migrations | transform object into nice yaml output"
+  set_fact:
+    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+- name: "internal-actions » migrations | write new services.yml file"
+  copy:
+    content: "{{ valet_etc_services_list }}"
+    dest: "{{ valet_etc_services_file }}"
+  become: true

@@ -15,10 +15,13 @@
 ##
 ---
 
+#- name: "ensure vsh-mariadb104 is installed"
+#  homebrew:
+#    name: vsh-mariadb104
+#    state: present
+
 - name: "ensure vsh-mariadb104 is installed"
-  homebrew:
-    name: vsh-mariadb104
-    state: present
+  shell: "{{ valet_sh_homebrew_bin }} install vsh-mariadb104"
 
 - name: "provide .my.cnf configuration file"
   template:
@@ -63,7 +66,7 @@
     loop_var: mariadb104_template_mysqld
 
 - name: brew | vsh-mariadb104 | restarted
-  shell: brew services restart vsh-mariadb104
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb104"
 
 - name: wait for mariadb104 to start
   wait_for:

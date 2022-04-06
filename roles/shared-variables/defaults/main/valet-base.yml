@@ -15,6 +15,9 @@
 ##
 ---
 
+
+
+
 valet_sh_prefix_default: ""
 valet_sh_prefix_mac: "/usr/local"
 valet_sh_prefix: "{{ lookup('vars', 'valet_sh_prefix'+'_'+current_os, default=valet_sh_prefix_default) }}"
@@ -27,6 +30,14 @@ valet_etc_path: "{{ lookup('vars', 'valet_etc_path'+'_'+current_os, default=vale
 
 valet_packages_path_default: "{{ valet_base_path }}/packages"
 valet_packages_path: "{{ lookup('vars', 'valet_packages_path'+'_'+current_os, default=valet_packages_path_default) }}"
+
+valet_sh_arch_prefix_default: ""
+valet_sh_arch_prefix_arm64: "arch --x86_64 "
+valet_sh_arch_prefix: "{{ lookup('vars', 'valet_sh_arch_prefix'+'_'+current_arch, default=valet_sh_arch_prefix_default) }}"
+
+valet_sh_homebrew_bin: "{{ valet_sh_arch_prefix }}/usr/local/bin/brew"
+valet_sh_homebrew_bin_x86: "/usr/local/bin/brew"
+valet_sh_homebrew_bin_arm64: "/opt/homebrew/bin/brew"
 
 development_tld_default: test
 development_tld: "{{ lookup('vars', 'development_tld'+'_'+current_os, default=development_tld_default) }}"

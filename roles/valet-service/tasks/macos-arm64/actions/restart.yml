@@ -20,6 +20,15 @@
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
+- name: "actions » restart | set default homebrew bin"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin }}"
+
+- name: "actions » restart | override homebrew bin path if service is rabbitmq"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin_arm64 }}"
+  when: valet_service_name == "rabbitmq"
+
 - block:
     - name: "actions » restart all | include valet services file"
       include_vars:
@@ -40,7 +49,7 @@
         loop_var: valet_sh_services_current_states_item
       when: valet_sh_services_current_states_item.value|bool
 
-    - include_tasks: "macos/actions/sub-restart-all.yml"
+    - include_tasks: "macos-arm64/actions/sub-restart-all.yml"
       vars:
         valet_current_service_item: "{{ valet_sh_services_current_states_item }}"
       with_dict: "{{ valet_sh_services_current_states }}"
@@ -67,20 +76,20 @@
     with_dict: "{{ valet_sh_service_alias_mapping }}"
 
   - name: "actions » restart | restart {{ valet_service_name }} service"
-    shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_service_name }}"
+    shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_service_name }}"
     become: true
     when: valet_service_name_alias|length == 0 and (valet_service_name in valet_sh_service_privileged_services)
 
   - name: "actions » restart | restart {{ valet_service_name }} service"
-    shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_service_name }}"
+    shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_service_name }}"
     when: valet_service_name_alias|length == 0 and (valet_service_name not in valet_sh_service_privileged_services)
 
   - name: "actions » restart | restart {{ valet_service_name }} service with alias '{{ valet_service_name_alias }}' (running as root)"
-    shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_service_name_alias }}"
+    shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_service_name_alias }}"
     become: true
     when: valet_service_name_alias|length > 0 and (valet_service_name in valet_sh_service_privileged_services)
 
   - name: "actions » restart | restart {{ valet_service_name }} service"
-    shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_service_name_alias }}"
+    shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_service_name_alias }}"
     when: valet_service_name_alias|length > 0 and (valet_service_name not in valet_sh_service_privileged_services)
   when: valet_service_name != "all"

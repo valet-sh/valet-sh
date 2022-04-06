@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2021 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,10 +15,13 @@
 ##
 ---
 
-#- name: "install | ensure openssl is installed"
-#  homebrew:
-#    name: openssl
-#    state: present
+- name: set valet_service_name version
+  set_fact:
+    valet_service_name_version: "{{ valet_service_name[-1] }}"
 
-- name: "install | ensure openssl is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install openssl"
+- name: "create symlink for default composer"
+  file:
+    src: "/usr/local/bin/composer{{ valet_service_name_version }}"
+    dest: "/usr/local/bin/default-composer"
+    state: link
+    force: true

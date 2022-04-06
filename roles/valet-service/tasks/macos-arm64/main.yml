@@ -15,10 +15,14 @@
 ##
 ---
 
-#- name: "install | ensure openssl is installed"
-#  homebrew:
-#    name: openssl
-#    state: present
+- include_tasks: "macos-arm64/internal-actions/migrations.yml"
+  when: valet_sh_service_internal_action|bool
 
-- name: "install | ensure openssl is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install openssl"
+- include_tasks: "macos-arm64/internal-actions/{{ valet_service_action }}.yml"
+  when: valet_sh_service_internal_action|bool
+
+- include_tasks: macos-arm64/check-vars.yml
+  when: not valet_sh_service_internal_action|bool
+
+- include_tasks: "macos-arm64/actions/{{ valet_service_action }}.yml"
+  when: not valet_sh_service_internal_action|bool

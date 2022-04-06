@@ -15,11 +15,27 @@
 ##
 ---
 
-- name: "ensure rabbitmq is installed"
-  homebrew:
-    name: rabbitmq
-    state: present
-  notify: brew | rabbitmq | restarted
+#- name: "ensure rabbitmq is installed"
+#  homebrew:
+#    name: rabbitmq
+#    state: present
+#  notify: brew | rabbitmq | restarted
+
+- block:
+    - name: "ensure rabbitmq is installed"
+      shell: "/usr/local/bin/brew install rabbitmq"
+
+    - name: "ensure rabbitmq is restarted"
+      shell: "/usr/local/bin/brew services restart rabbitmq"
+  when: current_arch != "arm64"
+
+- block:
+    - name: "ensure rabbitmq is installed"
+      shell: "/opt/homebrew/bin/brew install rabbitmq"
+
+    - name: "ensure rabbitmq is restarted"
+      shell: "/opt/homebrew/bin/brew services restart rabbitmq"
+  when: current_arch == "arm64"
 
 - name: "generate ssl-certificate for rabbitmq.{{ development_tld }}"
   include_role:

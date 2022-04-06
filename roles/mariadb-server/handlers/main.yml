@@ -63,19 +63,19 @@
   become: true
 
 - name: brew | vsh-mariadb104 | started
-  shell: brew services start vsh-mariadb104
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb104"
 
 - name: brew | vsh-mariadb104 | stopped
-  shell: brew services stop vsh-mariadb104
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb104"
 
 - name: brew | vsh-mariadb104 | restarted
-  shell: brew services restart vsh-mariadb104
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb104"
 
 - name: brew | vsh-mariadb105 | started
-  shell: brew services start vsh-mariadb105
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb105"
 
 - name: brew | vsh-mariadb105 | stopped
-  shell: brew services stop vsh-mariadb105
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb105"
 
 - name: brew | vsh-mariadb105 | restarted
-  shell: brew services restart vsh-mariadb105
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb105"

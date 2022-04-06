@@ -50,6 +50,11 @@
     current_os: "mac"
   when: ansible_distribution == 'MacOSX'
 
+- name: "set 'current_arch' var"
+  set_fact:
+    current_arch: "arm64"
+  when: ansible_architecture == 'arm64'
+
 - name: "set 'os_codename' var"
   set_fact:
     os_codename: "{{ ansible_distribution_release }}"

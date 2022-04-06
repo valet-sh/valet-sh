@@ -37,10 +37,10 @@
   become: true
 
 - name: brew | mailhog | stopped
-  shell: brew services stop mailhog
+  shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"
 
 - name: brew | mailhog | started
-  shell: brew services start mailhog
+  shell: "{{ valet_sh_homebrew_bin }} services start mailhog"
 
 - name: brew | mailhog | restart
-  shell: brew services restart mailhog
+  shell: "{{ valet_sh_homebrew_bin }} services restart mailhog"

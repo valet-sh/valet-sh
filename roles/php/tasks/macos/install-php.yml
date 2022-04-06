@@ -19,10 +19,13 @@
   set_fact:
     php_version: "{{ current_php[-2:-1] }}.{{ current_php[-1] }}"
 
+#- name: "ensure {{ current_php }} is installed"
+#  homebrew:
+#    name: "{{ current_php }}"
+#    state: present
+
 - name: "ensure {{ current_php }} is installed"
-  homebrew:
-    name: "{{ current_php }}"
-    state: present
+  shell: "{{ valet_sh_homebrew_bin }} install {{ current_php }}"
 
 - name: "ensure directory '{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available' exists"
   file:

@@ -15,12 +15,21 @@
 ##
 ---
 
-- name: "actions » enable | fail when no service name was given"
+- name: "actions » disable | set default homebrew bin"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin }}"
+
+- name: "actions » disable | override homebrew bin path if service is rabbitmq"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin_arm64 }}"
+  when: valet_service_name == "rabbitmq"
+
+- name: "actions » disable | fail when no service name was given"
   fail:
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
-- name: "actions » enable | check fuzzy service names"
+- name: "actions » disable | check fuzzy service names"
   set_fact:
     valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
   when: valet_service_name in valet_sh_available_php_versions_alias_mapping_item.1
@@ -30,54 +39,58 @@
   loop_control:
     loop_var: valet_sh_available_php_versions_alias_mapping_item
 
-- name: "actions » enable | check for alias service name"
+- name: "actions » disable | check for alias service name"
   set_fact:
     valet_service_name_alias: "{{ item.value }}"
   when: item.key == valet_service_name
   with_dict: "{{ valet_sh_service_alias_mapping }}"
 
-- name: "actions » enable | enable {{ valet_service_name }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name }}"
+- name: "actions » disable | disable {{ valet_service_name }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name }}"
   become: true
+  failed_when: false
   when: valet_service_name_alias|length == 0 and (valet_service_name in valet_sh_service_privileged_services)
 
-- name: "actions » enable | enable {{ valet_service_name }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name }}"
+- name: "actions » disable | disable {{ valet_service_name }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name }}"
+  failed_when: false
   when: valet_service_name_alias|length == 0 and (valet_service_name not in valet_sh_service_privileged_services)
 
-- name: "actions » enable | enable {{ valet_service_name }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name_alias }}"
+- name: "actions » disable | disable {{ valet_service_name }} service with alias '{{ valet_service_name_alias }}' (running as root)"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name_alias }}"
   become: true
+  failed_when: false
   when: valet_service_name_alias|length > 0 and (valet_service_name in valet_sh_service_privileged_services)
 
-- name: "actions » enable | enable {{ valet_service_name }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name_alias }}"
+- name: "actions » disable | disable {{ valet_service_name }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name_alias }}"
+  failed_when: false
   when: valet_service_name_alias|length > 0 and (valet_service_name not in valet_sh_service_privileged_services)
 
-- name: "actions » enable | include valet services file"
+- name: "actions » disable | include valet services file"
   include_vars:
     file: "{{ valet_etc_services_file }}"
     name: valet_sh_services_obj
 
-- name: "actions » enable | prepare new config element"
+- name: "actions » disable | prepare new config element"
   set_fact:
-    new_service_state_element: "{ '{{ valet_service_name }}': true }"
+    new_service_state_element: "{ '{{ valet_service_name }}': false }"
 
-- name: "actions » enable | update service object"
+- name: "actions » disable | update service object"
   set_fact:
     valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
 
-- name: "actions » enable | merge objects"
+- name: "actions » disable | merge objects"
   set_fact:
     valet_sh_services_obj:
       states: "{{ valet_sh_services_updated_states }}"
       defaults: "{{ valet_sh_services_obj.defaults }}"
 
-- name: "actions » enable | transform object into nice yaml output"
+- name: "actions » disable | transform object into nice yaml output"
   set_fact:
     valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
 
-- name: "actions » enable | write new services.yml file"
+- name: "actions » disable | write new services.yml file"
   copy:
     content: "{{ valet_etc_services_list }}"
     dest: "{{ valet_etc_services_file }}"

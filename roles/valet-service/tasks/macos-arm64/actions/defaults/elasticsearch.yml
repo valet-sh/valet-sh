@@ -15,10 +15,9 @@
 ##
 ---
 
-#- name: "install | ensure openssl is installed"
-#  homebrew:
-#    name: openssl
-#    state: present
-
-- name: "install | ensure openssl is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install openssl"
+- name: "provide elasticsearch default configuration"
+  template:
+    src: "nginx/elasticsearch.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/elasticsearch.conf"
+    mode: '0644'
+  notify: brew | nginx | restarted
