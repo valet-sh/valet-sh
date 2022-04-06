@@ -1,0 +1,76 @@
+##
+#   Copyright 2022 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: set current opensearch base path
+  set_fact:
+    current_opensearch_base_path: "{{ opensearch_base_path }}1"
+    current_opensearch_key: "opensearch1"
+
+- name: "get stats for dir {{ current_opensearch_base_path }}"
+  stat:
+    path: "{{ current_opensearch_base_path }}"
+  register: current_opensearch_base_path_obj
+
+- block:
+  - name: Download opensearch package
+    get_url:
+      url: "{{ opensearch_version_1_download_url }}"
+      dest: "/tmp/{{ current_opensearch_key }}.tar.gz"
+
+  - name: "create {{ current_opensearch_base_path }}"
+    file:
+      path: "{{ current_opensearch_base_path }}"
+      owner: "{{ current_user }}"
+      group: "{{ current_group }}"
+      mode: '0755'
+      state: directory
+    become: true
+
+  - name: Extract opensearch archive
+    unarchive:
+      src: "/tmp/{{ current_opensearch_key }}.tar.gz"
+      dest: "{{ current_opensearch_base_path }}"
+      extra_opts: [--strip-components=1]
+
+  - name: "delete opensearch release tar.gz"
+    file:
+      path: "/tmp/{{ current_opensearch_key }}.tar.gz"
+      state: absent
+
+  - name: "install plugins"
+    shell: "{{ current_opensearch_base_path }}/bin/opensearch-plugin install {{ current_opensearch_plugin }}"
+    with_items: "{{ opensearch_plugins }}"
+    loop_control:
+      loop_var: current_opensearch_plugin
+  when: not current_opensearch_base_path_obj.stat.exists
+
+- name: "provide {{ current_opensearch_key }} configuration"
+  template:
+    src: "config/{{ current_opensearch_key }}.yml.j2"
+    dest: "{{ current_opensearch_base_path }}/config/opensearch.yml"
+    mode: '0644'
+  notify: "systemd | opensearch1 | restarted"
+
+- name: "provide {{ current_opensearch_key }} systemd unit file"
+  template:
+    src: "systemd/{{ current_opensearch_key }}.service.j2"
+    dest: "/etc/systemd/system/{{ current_opensearch_key }}.service"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: "systemd | opensearch1 | restarted"
