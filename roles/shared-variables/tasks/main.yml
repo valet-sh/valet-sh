@@ -52,8 +52,7 @@
 
 - name: "set 'current_arch' var"
   set_fact:
-    current_arch: "arm64"
-  when: ansible_architecture == 'arm64'
+    current_arch: "{{ ansible_architecture }}"
 
 - name: "set 'os_codename' var"
   set_fact:
