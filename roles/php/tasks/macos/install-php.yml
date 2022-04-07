@@ -105,8 +105,8 @@
   when: php_default_symlink_obj.stat.islnk is not defined
 
 - name: ensure php wrapper script is up2date
-  template:
-    src: "macos/php-wrapper.j2"
+  copy:
+    src: "macos/php-wrapper"
     dest: "{{ valet_sh_prefix }}/bin/php"
     mode: '0755'
     force: true
