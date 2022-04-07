@@ -30,12 +30,6 @@ function search_for_valet_sh_yml () {
 
 CURRENT_VALET_SH_FILE = $(search_for_valet_sh_yml)
 
-#if test -f ".valet-sh.yml"; then
-#  CURRENT_VALET_SH_FILE=".valet-sh.yml"
-#elif test -f "../.valet-sh.yml"; then
-#  CURRENT_VALET_SH_FILE="../.valet-sh.yml"
-#fi
-
 if [[ $CURRENT_VALET_SH_FILE ]]
 then
   get_target_version $CURRENT_VALET_SH_FILE
