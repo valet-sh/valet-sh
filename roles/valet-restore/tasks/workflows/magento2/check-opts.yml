@@ -14,16 +14,10 @@
 ##
 ---
 
-- debug:
-    msg: "{{ valet_cli_opts }}"
-
 - name: "workflows » magento2 » check-opts | check if '--skip-db' opt is set"
   set_fact:
     valet_opt_flag_skip_db: true
   when: "'--skip-db' in valet_cli_opts"
-
-- debug:
-    msg: "{{ valet_opt_flag_skip_db }}"
 
 - name: "workflows » magento2 » check-opts | check if '--skip-fs' opt is set"
   set_fact:
@@ -42,6 +36,3 @@
   set_fact:
     valet_opt_instance_identifier: "{{ valet_opt_instance_identifier | first }}"
   when: valet_opt_instance_identifier is defined and valet_opt_instance_identifier|length>0
-
-- debug:
-    msg: "{{ valet_opt_instance_identifier }}"
