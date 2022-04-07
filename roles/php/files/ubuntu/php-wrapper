@@ -22,7 +22,7 @@ function search_for_valet_sh_yml () {
   local directory="$PWD"
   for (( n=${#slashes}; n>0; --n ))
   do
-    test -f "$directory/.valet-sh.yml" && return "$directory/.valet-sh.yml"
+    test -f "$directory/.valet-sh.yml" && echo "$directory/.valet-sh.yml" && return
     directory="$directory/.."
   done
   return
