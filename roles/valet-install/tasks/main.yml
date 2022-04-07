@@ -40,3 +40,4 @@
     src: "{{ valet_dist_path }}/{{ valet_etc_revision_filename }}"
     dest: "{{ valet_etc_revision_file }}"
     mode: '0644'
+    force: true
