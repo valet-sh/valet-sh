@@ -43,3 +43,5 @@
 - include_tasks: install-v6.yml
 
 - include_tasks: install-v7.yml
+
+- include_tasks: install-v8.yml

@@ -123,3 +123,16 @@
   with_items: "{{ elasticsearch_plugins }}"
   loop_control:
     loop_var: current_elasticsearch_plugin
+
+- name: "ensure vsh-elasticsearch8 is installed"
+  shell: "{{ valet_sh_homebrew_bin }} install vsh-elasticsearch8"
+
+- name: "ensure elasticsearch 8 plugins are installed"
+  elasticsearch_plugin:
+    name: "{{ current_elasticsearch_plugin }}"
+    state: present
+    plugin_bin: "/usr/local/opt/vsh-elasticsearch8/libexec/bin/elasticsearch-plugin"
+    plugin_dir: "/usr/local/opt/vsh-elasticsearch8/libexec/plugins"
+  with_items: "{{ elasticsearch_plugins }}"
+  loop_control:
+    loop_var: current_elasticsearch_plugin

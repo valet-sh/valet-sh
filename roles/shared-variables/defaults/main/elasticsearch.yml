@@ -26,6 +26,7 @@ elasticsearch_version_2_download_url: "https://download.elastic.co/elasticsearch
 elasticsearch_version_5_download_url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.16.tar.gz"
 elasticsearch_version_6_download_url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.9.tar.gz"
 elasticsearch_version_7_download_url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.7.0-linux-x86_64.tar.gz"
+elasticsearch_version_8_download_url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.1.2-linux-x86_64.tar.gz"
 
 elasticsearch_use_plugins: true
 
