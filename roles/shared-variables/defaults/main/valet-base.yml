@@ -157,6 +157,10 @@ valet_sh_elasticsearch_ports_default:
   8: 9208
 valet_sh_elasticsearch_ports: "{{ lookup('vars', 'valet_sh_elasticsearch_ports'+'_'+current_os, default=valet_sh_elasticsearch_ports_default) }}"
 
+valet_sh_opensearch_ports_default:
+  1: 9221
+valet_sh_opensearch_ports: "{{ lookup('vars', 'valet_sh_opensearch_ports'+'_'+current_os, default=valet_sh_opensearch_ports_default) }}"
+
 valet_sh_php_sockets_default:
   php56: /var/run/php/php5.6-fpm.sock
   php70: /var/run/php/php7.0-fpm.sock
