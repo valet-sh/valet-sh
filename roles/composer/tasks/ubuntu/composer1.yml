@@ -34,4 +34,4 @@
   become: true
 
 - name: install prestissimo
-  command: "/usr/bin/php7.3 /usr/local/bin/composer1 global require hirak/prestissimo"
+  command: "/usr/bin/php7.3 /usr/local/bin/composer1 global require hirak/prestissimo -n"
