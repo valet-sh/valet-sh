@@ -15,10 +15,13 @@
 ##
 ---
 
+#- name: "ensure dnsmasq is installed"
+#  homebrew:
+#    name: dnsmasq
+#    state: present
+
 - name: "ensure dnsmasq is installed"
-  homebrew:
-    name: dnsmasq
-    state: present
+  shell: "{{ valet_sh_homebrew_bin }} install dnsmasq"
 
 - name: "ensure domain '{{ dnsmasq_domain }}' is handled by local dns"
   lineinfile:
@@ -34,5 +37,5 @@
   notify: brew | dnsmasq | restarted
 
 - name: brew | dnsmasq | restarted
-  shell: brew services restart dnsmasq
+  shell: "{{ valet_sh_homebrew_bin }} services  restart dnsmasq"
   become: true

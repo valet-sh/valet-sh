@@ -37,6 +37,8 @@ valet_sh_service_defaultable_services_default:
       - elasticsearch5
       - elasticsearch6
       - elasticsearch7
+      - elasticsearch8
+      - opensearch1
   - scope: php
     default: php73
     values:
@@ -73,6 +75,8 @@ valet_sh_service_defaultable_services_mac:
       - elasticsearch5
       - elasticsearch6
       - elasticsearch7
+      - elasticsearch8
+      - opensearch1
   - scope: php
     default: php73
     values:
@@ -108,6 +112,8 @@ valet_sh_service_state_preset_default:
   - elasticsearch5: false
   - elasticsearch6: true
   - elasticsearch7: false
+  - elasticsearch8: false
+  - opensearch1: false
   - php56: false
   - php70: false
   - php71: false
@@ -129,6 +135,8 @@ valet_sh_service_privileged_services_default:
   - elasticsearch5
   - elasticsearch6
   - elasticsearch7
+  - elasticsearch8
+  - opensearch1
   - php56
   - php70
   - php71
@@ -233,4 +241,27 @@ valet_sh_service_alias_mapping_mac:
   elasticsearch5: "vsh-elasticsearch5"
   elasticsearch6: "vsh-elasticsearch6"
   elasticsearch7: "vsh-elasticsearch7"
+  elasticsearch8: "vsh-elasticsearch8"
+  opensearch1: "vsh-opensearch1"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
+
+valet_sh_service_rosetta2_emulation:
+  rabbitmq: false
+  nginx: true
+  mysql57: true
+  mysql80: true
+  mariadb104: true
+  php56: true
+  php70: true
+  php71: true
+  php72: true
+  php73: true
+  php74: true
+  php80: true
+  php81: true
+  elasticsearch1: true
+  elasticsearch2: true
+  elasticsearch5: true
+  elasticsearch6: true
+  elasticsearch7: true
+  elasticsearch8: true

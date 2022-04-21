@@ -1,0 +1,29 @@
+##
+#   Copyright 2022 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "ensure vsh-opensearch1 is installed"
+  shell: "{{ valet_sh_homebrew_bin }} install vsh-opensearch1"
+
+- name: "ensure opensearch 1 plugins are installed"
+  elasticsearch_plugin:
+    name: "{{ current_opensearch_plugin }}"
+    state: present
+    plugin_bin: "/usr/local/opt/vsh-opensearch1/libexec/bin/opensearch-plugin"
+    plugin_dir: "/usr/local/opt/vsh-opensearch1/libexec/plugins"
+  with_items: "{{ opensearch_plugins }}"
+  loop_control:
+    loop_var: current_opensearch_plugin

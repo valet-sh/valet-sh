@@ -44,13 +44,13 @@
   become: true
 
 - name: brew | dnsmasq | restarted
-  shell: brew services restart dnsmasq
+  shell: "{{ valet_sh_homebrew_bin }} services restart dnsmasq"
   become: true
 
 - name: brew | dnsmasq | stopped
-  shell: brew services stop dnsmasq
+  shell: "{{ valet_sh_homebrew_bin }} services stop dnsmasq"
   become: true
 
 - name: brew | dnsmasq | started
-  shell: brew services start dnsmasq
+  shell: "{{ valet_sh_homebrew_bin }} services start dnsmasq"
   become: true

@@ -50,10 +50,13 @@
     current_os: "mac"
   when: ansible_distribution == 'MacOSX'
 
+- name: "set 'current_arch' var"
+  set_fact:
+    current_arch: "{{ ansible_architecture }}"
+
 - name: "set 'os_codename' var"
   set_fact:
-    os_codename: "focal"
-  when: current_os == 'ubuntu'
+    os_codename: "{{ ansible_distribution_release }}"
 
 - name: fail when no supported operating system was found
   fail:

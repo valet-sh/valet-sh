@@ -155,3 +155,31 @@
     name: elasticsearch7
     state: restarted
   become: true
+
+- name: systemd | elasticsearch8 | started
+  systemd:
+    daemon_reload: yes
+    name: elasticsearch8
+    state: started
+  become: true
+
+- name: systemd | elasticsearch8 | stopped
+  systemd:
+    daemon_reload: yes
+    name: elasticsearch8
+    state: stopped
+  become: true
+
+- name: systemd | elasticsearch8 | restarted
+  systemd:
+    daemon_reload: yes
+    name: elasticsearch8
+    state: restarted
+  become: true
+
+- name: systemd | elasticsearch8 | reloaded
+  systemd:
+    daemon_reload: yes
+    name: elasticsearch8
+    state: restarted
+  become: true

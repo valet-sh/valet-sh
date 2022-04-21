@@ -17,11 +17,18 @@ function get_target_version {
     return 1
 }
 
-if test -f ".valet-sh.yml"; then
-  CURRENT_VALET_SH_FILE=".valet-sh.yml"
-elif test -f "../.valet-sh.yml"; then
-  CURRENT_VALET_SH_FILE="../.valet-sh.yml"
-fi
+function search_for_valet_sh_yml () {
+  local slashes=${PWD//[^\/]/}
+  local directory="$PWD"
+  for (( n=${#slashes}; n>0; --n ))
+  do
+    test -f "$directory/.valet-sh.yml" && echo "$directory/.valet-sh.yml" && return
+    directory="$directory/.."
+  done
+  return
+}
+
+CURRENT_VALET_SH_FILE=$(search_for_valet_sh_yml)
 
 if [[ $CURRENT_VALET_SH_FILE ]]
 then

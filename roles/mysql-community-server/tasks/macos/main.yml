@@ -15,10 +15,13 @@
 ##
 ---
 
+#- name: "ensure vsh-mysql57 is installed"
+#  homebrew:
+#    name: vsh-mysql57
+#    state: present
+
 - name: "ensure vsh-mysql57 is installed"
-  homebrew:
-    name: vsh-mysql57
-    state: present
+  shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql57"
 
 - name: "provide .my.cnf configuration file"
   template:
@@ -65,7 +68,7 @@
     loop_var: mysql57_template_mysqld
 
 - name: brew | vsh-mysql57 | restarted
-  shell: brew services restart vsh-mysql57
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql57"
 
 - name: wait for mysql57 to start
   wait_for:
@@ -86,10 +89,13 @@
 
 ##### start mysql8.0 installation
 
+#- name: "ensure vsh-mysql80 is installed"
+#  homebrew:
+#    name: vsh-mysql80
+#    state: present
+
 - name: "ensure vsh-mysql80 is installed"
-  homebrew:
-    name: vsh-mysql80
-    state: present
+  shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql80"
 
 - name: "provide .my.cnf configuration file"
   template:
@@ -136,7 +142,7 @@
     loop_var: mysql80_template_mysqld
 
 - name: brew | vsh-mysql80 | restarted
-  shell: brew services restart vsh-mysql80
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql80"
 
 - name: wait for mysql80 to start
   wait_for:

@@ -21,6 +21,7 @@
     valet_instancebackup_identifier: "{{ cli.args[0] | default() }}"
     valet_restore_db_identifier: "{{ cli.args[1] | default() }}"
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
+    valet_cli_opts: "{{ cli.opts | default([]) }}"
   roles:
     - sudo-permission-check
     - valet-restore

@@ -21,6 +21,8 @@
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
     valet_project_name: "{{ cli.args[0] | default() }}"
     valet_git_project_name: "{{ cli.args[1] | default() }}"
+    valet_cli_opts: "{{ cli.opts | default([]) }}"
+
   roles:
     - sudo-permission-check
     - valet-init-instance

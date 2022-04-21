@@ -39,6 +39,19 @@
           . ~/.aliases
       fi
       export PATH=$PATH:/usr/local/sbin
+  when: current_arch != "arm64"
+
+- name: load aliases file in .zshrc
+  blockinfile:
+    path: "{{ current_home }}/.zshrc"
+    marker_begin: "ZSH BEGIN"
+    marker_end: "ZSH END"
+    block: |
+      if [ -f ~/.aliases ]; then
+          . ~/.aliases
+      fi
+      export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:$PATH
+  when: current_arch == "arm64"
 
 - name: ensure .profile file exists
   file:

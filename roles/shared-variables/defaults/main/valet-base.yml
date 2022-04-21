@@ -15,6 +15,9 @@
 ##
 ---
 
+
+
+
 valet_sh_prefix_default: ""
 valet_sh_prefix_mac: "/usr/local"
 valet_sh_prefix: "{{ lookup('vars', 'valet_sh_prefix'+'_'+current_os, default=valet_sh_prefix_default) }}"
@@ -22,11 +25,22 @@ valet_sh_prefix: "{{ lookup('vars', 'valet_sh_prefix'+'_'+current_os, default=va
 valet_base_path_default: "/usr/local/valet-sh"
 valet_base_path: "{{ lookup('vars', 'valet_base_path'+'_'+current_os, default=valet_base_path_default) }}"
 
+valet_dist_path_default: "{{ valet_base_path }}/valet-sh"
+valet_dist_path: "{{ lookup('vars', 'valet_dist_path'+'_'+current_os, default=valet_dist_path_default) }}"
+
 valet_etc_path_default: "{{ valet_base_path }}/etc"
 valet_etc_path: "{{ lookup('vars', 'valet_etc_path'+'_'+current_os, default=valet_etc_path_default) }}"
 
 valet_packages_path_default: "{{ valet_base_path }}/packages"
 valet_packages_path: "{{ lookup('vars', 'valet_packages_path'+'_'+current_os, default=valet_packages_path_default) }}"
+
+valet_sh_arch_prefix_default: ""
+valet_sh_arch_prefix_arm64: "arch --x86_64 "
+valet_sh_arch_prefix: "{{ lookup('vars', 'valet_sh_arch_prefix'+'_'+current_arch, default=valet_sh_arch_prefix_default) }}"
+
+valet_sh_homebrew_bin: "{{ valet_sh_arch_prefix }}/usr/local/bin/brew"
+valet_sh_homebrew_bin_x86: "/usr/local/bin/brew"
+valet_sh_homebrew_bin_arm64: "/opt/homebrew/bin/brew"
 
 development_tld_default: test
 development_tld: "{{ lookup('vars', 'development_tld'+'_'+current_os, default=development_tld_default) }}"
@@ -115,6 +129,9 @@ valet_etc_config_file: "{{ valet_etc_path }}/config.yml"
 
 valet_etc_services_file: "{{ valet_etc_path }}/services.yml"
 
+valet_etc_revision_filename: "REVISION"
+valet_etc_revision_file: "{{ valet_etc_path }}/{{ valet_etc_revision_filename }}"
+
 valet_sh_filename: ".valet-sh.yml"
 
 valet_sh_hub_read_user: "read"
@@ -139,6 +156,10 @@ valet_sh_elasticsearch_ports_default:
   7: 9207
   8: 9208
 valet_sh_elasticsearch_ports: "{{ lookup('vars', 'valet_sh_elasticsearch_ports'+'_'+current_os, default=valet_sh_elasticsearch_ports_default) }}"
+
+valet_sh_opensearch_ports_default:
+  1: 9221
+valet_sh_opensearch_ports: "{{ lookup('vars', 'valet_sh_opensearch_ports'+'_'+current_os, default=valet_sh_opensearch_ports_default) }}"
 
 valet_sh_php_sockets_default:
   php56: /var/run/php/php5.6-fpm.sock

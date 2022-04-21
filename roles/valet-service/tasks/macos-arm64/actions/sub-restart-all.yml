@@ -1,0 +1,68 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "set 'valet_current_service_name' var"
+  set_fact:
+    valet_current_service_name: "{{ valet_current_service_item.key }}"
+
+- name: "actions » restart | set default homebrew bin"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin }}"
+
+- name: "actions » restart | override homebrew bin path if service is rabbitmq"
+  set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin_arm64 }}"
+  when: valet_current_service_name == "rabbitmq"
+
+- name: "actions » restart | check fuzzy service names"
+  set_fact:
+    valet_current_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
+  when: valet_current_service_name in valet_sh_available_php_versions_alias_mapping_item.1
+  with_subelements:
+    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
+    - aliases
+  loop_control:
+    loop_var: valet_sh_available_php_versions_alias_mapping_item
+
+- name: "actions » restart | reset valet_service_name_alias variable"
+  set_fact:
+    valet_current_service_name_alias: ""
+
+- name: "actions » restart | check for alias service name"
+  set_fact:
+    valet_current_service_name_alias: "{{ item.value }}"
+  when: item.key == valet_current_service_name
+  with_dict: "{{ valet_sh_service_alias_mapping }}"
+
+- name: "actions » restart | restart {{ valet_current_service_name }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_current_service_name }}"
+  become: true
+  when: valet_current_service_name_alias|length == 0 and (valet_current_service_name in valet_sh_service_privileged_services)
+
+- name: "actions » restart | restart {{ valet_current_service_name }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_current_service_name }}"
+  when: valet_current_service_name_alias|length == 0 and (valet_current_service_name not in valet_sh_service_privileged_services)
+
+- name: "actions » restart | restart {{ valet_current_service_name }} service with alias '{{ valet_current_service_name_alias }}' (running as root)"
+  shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_current_service_name_alias }}"
+  become: true
+  when: valet_current_service_name_alias|length > 0 and (valet_current_service_name in valet_sh_service_privileged_services)
+
+- name: "actions » restart | restart {{ valet_current_service_name }} service"
+  shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_current_service_name_alias }}"
+  when: valet_current_service_name_alias|length > 0 and (valet_current_service_name not in valet_sh_service_privileged_services)
+
