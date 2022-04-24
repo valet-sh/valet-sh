@@ -19,15 +19,15 @@
   template:
     src: development-domain.conf.j2
     dest: "{{ dnsmasq_conf_file }}"
-  notify: systemd | network-manager | reload
+  notify: systemd | NetworkManager | reload
   become: true
 
-- name: enable dnsmasq in network-manager
+- name: enable dnsmasq in NetworkManager
   lineinfile:
     path: "/etc/NetworkManager/NetworkManager.conf"
     insertafter: '^\[main\]'
     line: 'dns=dnsmasq'
-  notify: systemd | network-manager | reload
+  notify: systemd | NetworkManager | reload
   become: true
 
 - name: remove /run/systemd/resolve/stub-resolv.conf symlink
@@ -35,5 +35,5 @@
     src: "/var/run/NetworkManager/resolv.conf"
     dest: "/etc/resolv.conf"
     state: link
-  notify: systemd | network-manager | reload
+  notify: systemd | NetworkManager | reload
   become: true
