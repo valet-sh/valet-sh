@@ -66,7 +66,7 @@
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}"
 
     - name: "workflows » neos » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
-      shell: {{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
+      shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
 
     - name: "workflows » neos » services » mysql | wait for mysql to be reachable"
       wait_for:
