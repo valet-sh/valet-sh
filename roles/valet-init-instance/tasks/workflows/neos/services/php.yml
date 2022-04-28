@@ -34,7 +34,7 @@
 
 - block:
     - name: "workflows » neos » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
-      shell: {{ valet_sh_homebrew_bin }} services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
+      shell: "{{ valet_sh_homebrew_bin }} services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
 
     - name: "workflows » neos » services » php | wait for php-fpm to be reachable"
       wait_for:
