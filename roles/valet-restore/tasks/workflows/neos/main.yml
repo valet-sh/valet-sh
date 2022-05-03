@@ -16,6 +16,8 @@
 
 - include_vars: "vars.yml"
 
+- include_tasks: "check-opts.yml"
+
 - include_tasks: "check-vars.yml"
 
 - name: "workflows » neos | register hub host"
