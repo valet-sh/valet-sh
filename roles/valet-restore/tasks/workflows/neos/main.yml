@@ -126,6 +126,7 @@
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.multi_domain is defined
+  failed_when: false
 
 - name: "workflows » neos | set dev domains in neos"
   shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/flow domain:add {{ valet_sh_multi_domain_item.key }} {{ valet_sh_multi_domain_item.value }}.{{ valet_sh_project_vars.instance.key }}.{{ development_tld }}"
