@@ -9,9 +9,9 @@ services:
   node:
     version: 14
   php:
-    version: 7.4
-  mysql:
-    version: 8.0
+    version: 8.1
+  mariadb:
+    version: 10.4
     database: "projectx"
   elasticsearch:
     version: 7
@@ -37,6 +37,6 @@ instance:
       indexer:
         reindexAll: true
       commands:
-        - "bin/magento admin:user:create --admin-user=admin --admin-password=admin123 --admin-email=info@example.com --admin-firstname=Admin --admin-lastname=Admin"
+        - bin/magento admin:user:create --admin-user=admin --admin-password=admin123 --admin-email=info@example.com --admin-firstname=Admin --admin-lastname=Admin
   crypt_key: "abcdefghijklmnopqrstuvxyz1234567890crypt"
   config: {}
