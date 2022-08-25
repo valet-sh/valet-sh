@@ -17,8 +17,10 @@
 
 - name: "fail when os is not ubuntu 20.04"
   fail:
-    msg: "only Ubuntu 20.04 is supported for XPS15 9500!"
-  when: ansible_distribution_release != "focal"
+    msg: "only Ubuntu 20.04 and 22.04 is supported for XPS15 9500!"
+  when:
+    - ansible_distribution_release != "focal"
+    - ansible_distribution_release != "jammy"
 
 - name: ensure universe repository is enabled
   shell: "add-apt-repository -y universe"
