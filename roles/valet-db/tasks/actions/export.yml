@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2022 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -41,4 +41,6 @@
   mysql_db:
     state: dump
     name: "{{ valet_db_name }}"
+    config_file: "{{ valet_db_mysql_target_config_file }}"
+    config_overrides_defaults: true
     target: "{{ valet_current_path }}/{{ valet_db_filename }}"
