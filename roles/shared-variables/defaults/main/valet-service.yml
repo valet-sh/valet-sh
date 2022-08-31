@@ -66,6 +66,10 @@ valet_sh_service_defaultable_services_default:
     values:
       - composer1
       - composer2
+  - scope: nginx
+    default: nginx
+    vaules:
+      - nginx
 valet_sh_service_defaultable_services_mac:
   - scope: elasticsearch
     default: elasticsearch6
@@ -104,6 +108,10 @@ valet_sh_service_defaultable_services_mac:
     values:
       - composer1
       - composer2
+  - scope: nginx
+    default: nginx
+    values:
+      - nginx
 valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services'+'_'+current_os, default=valet_sh_service_defaultable_services_default) }}"
 
 valet_sh_service_state_preset_default:
@@ -127,6 +135,7 @@ valet_sh_service_state_preset_default:
   - mariadb104: false
   - rabbitmq: false
   - redis: true
+  - nginx: true
 valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
 
 valet_sh_service_privileged_services_default:
@@ -224,6 +233,7 @@ valet_sh_service_alias_mapping_default:
   php81: "php8.1-fpm"
   rabbitmq: "rabbitmq-server"
   redis: "redis-server"
+  nginx: "nginx"
 valet_sh_service_alias_mapping_mac:
   mysql57: "vsh-mysql57"
   mysql80: "vsh-mysql80"
@@ -243,6 +253,7 @@ valet_sh_service_alias_mapping_mac:
   elasticsearch7: "vsh-elasticsearch7"
   elasticsearch8: "vsh-elasticsearch8"
   opensearch1: "vsh-opensearch1"
+  nginx: "nginx"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
 
 valet_sh_service_rosetta2_emulation:
