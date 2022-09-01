@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2022 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,22 +15,46 @@
 ##
 ---
 
-- name: ensure that magerun1 is installed
-  get_url:
-    url: "{{ magerun1_download_url }}"
-    dest: "{{ magerun1_bin_path }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: 0755
-    force: true
-  become: true
+- name: Install magerun1
+  block:
+    - name: Check if magerun1 is already installed
+      stat:
+        path: "{{ magerun1_bin_path }}"
+      register: magerun1_exist
 
-- name: ensure that magerun2 is installed
-  get_url:
-    url: "{{ magerun2_download_url }}"
-    dest: "{{ magerun2_bin_path }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: 0755
-    force: true
-  become: true
+    - name: Remove magerun1
+      file:
+        path: "{{ magerun1_bin_path }}"
+        state: absent
+      when: magerun1_exist.stat.exists
+
+    - name: Install magerun1
+      get_url:
+        url: "{{ magerun1_download_url }}"
+        dest: "{{ magerun1_bin_path }}"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
+        mode: 0755
+      become: true
+
+- name: Install magerun2
+  block:
+    - name: Check if magerun2 is already installed
+      stat:
+        path: "{{ magerun2_bin_path }}"
+      register: magerun2_exist
+
+    - name: Remove magerun2
+      file:
+        path: "{{ magerun2_bin_path }}"
+        state: absent
+      when: magerun2_exist.stat.exists
+
+    - name: Install magerun2
+      get_url:
+        url: "{{ magerun2_download_url }}"
+        dest: "{{ magerun2_bin_path }}"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
+        mode: 0755
+      become: true
