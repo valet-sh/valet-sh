@@ -68,7 +68,7 @@ valet_sh_service_defaultable_services_default:
       - composer2
   - scope: nginx
     default: nginx
-    vaules:
+    values:
       - nginx
 valet_sh_service_defaultable_services_mac:
   - scope: elasticsearch
