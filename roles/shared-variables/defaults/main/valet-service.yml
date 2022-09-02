@@ -136,6 +136,7 @@ valet_sh_service_state_preset_default:
   - rabbitmq: false
   - redis: true
   - nginx: true
+  - dnsmasq: true
 valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
 
 valet_sh_service_privileged_services_default:
@@ -234,6 +235,7 @@ valet_sh_service_alias_mapping_default:
   rabbitmq: "rabbitmq-server"
   redis: "redis-server"
   nginx: "nginx"
+  dnsmasq: "dnsmasq"
 valet_sh_service_alias_mapping_mac:
   mysql57: "vsh-mysql57"
   mysql80: "vsh-mysql80"
@@ -254,6 +256,7 @@ valet_sh_service_alias_mapping_mac:
   elasticsearch8: "vsh-elasticsearch8"
   opensearch1: "vsh-opensearch1"
   nginx: "nginx"
+  dnsmasq: "dnsmasq"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
 
 valet_sh_service_rosetta2_emulation:
