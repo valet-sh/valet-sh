@@ -250,6 +250,7 @@ valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mappi
 valet_sh_service_rosetta2_emulation:
   rabbitmq: false
   nginx: true
+  dnsmasq: true
   mysql57: true
   mysql80: true
   mariadb104: true
