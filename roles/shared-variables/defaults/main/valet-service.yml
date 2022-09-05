@@ -66,10 +66,6 @@ valet_sh_service_defaultable_services_default:
     values:
       - composer1
       - composer2
-  - scope: nginx
-    default: nginx
-    values:
-      - nginx
 valet_sh_service_defaultable_services_mac:
   - scope: elasticsearch
     default: elasticsearch6
@@ -108,10 +104,6 @@ valet_sh_service_defaultable_services_mac:
     values:
       - composer1
       - composer2
-  - scope: nginx
-    default: nginx
-    values:
-      - nginx
 valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services'+'_'+current_os, default=valet_sh_service_defaultable_services_default) }}"
 
 valet_sh_service_state_preset_default:
