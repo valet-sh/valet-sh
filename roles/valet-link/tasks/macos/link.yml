@@ -106,6 +106,24 @@
   vars:
     cert_prefix: "{{ link_name }}"
 
+
+- block:
+    - name: Set fact for restart_php_service
+      set_fact:
+       restart_php_service: "vsh-{{ current_php_version }}"
+
+    - name: "actions » restart | restart {{ restart_php_service }}"
+      shell: "{{ valet_sh_homebrew_bin }} services restart {{ restart_php_service }}"
+      become: true
+      failed_when: false
+      when: current_php_version in valet_sh_service_privileged_services
+
+    - name: "actions » restart | restart {{ restart_php_service }}"
+      shell: "{{ valet_sh_homebrew_bin }} services restart {{ restart_php_service }}"
+      failed_when: false
+      when: current_php_version not in valet_sh_service_privileged_services
+  when: current_php_version is defined
+
 - name: "link | find a matching application template"
   block:
     - include_tasks: macos/templates/magento2.yml
