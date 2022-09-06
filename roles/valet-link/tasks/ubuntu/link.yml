@@ -15,6 +15,18 @@
 ##
 ---
 
+- include_tasks: "ubuntu/partials/load-valet-sh-file.yml"
+  when: valet_sh_project_vars is not defined
+
+- name: "link | set 'link_name' when .valet-sh.yaml file was found"
+  set_fact:
+    link_name: "{{ valet_sh_project_vars.instance.key }}"
+  when:
+    - (link_name is not defined or link_name|length == 0)
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.key is defined
+
 - name: "link | check if link_name variable is set"
   fail:
     msg: "link_name variable is not set"
@@ -36,9 +48,6 @@
   fail:
     msg: "{{ link_name }} already linked!"
   when: "link_name in valet_links_obj.valet_links.links_index"
-
-- include_tasks: "ubuntu/partials/load-valet-sh-file.yml"
-  when: valet_sh_project_vars is not defined
 
 - name: "link | change 'valet_current_path' when .valet-sh.yaml file was found"
   set_fact:
