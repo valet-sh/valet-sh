@@ -1,3 +1,4 @@
+##
 #   Copyright 2022 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,14 +15,21 @@
 ##
 ---
 
-- include_tasks: workflows/magento2/check-vars.yml
+- name: "workflows » magento2 » project-cc | clear cache folders"
+  file:
+    path: "{{ valet_sh_project_src_path }}/{{ current_project_cache_path_item }}"
+    state: absent
+  with_items:
+    - "var/full_page_cache/"
+    - "var/cache/"
+    - "var/page_cache/"
+    - "generated/"
+    - "var/generation/"
+    - "var/view_preprocessed/"
+    - "pub/static/"
+  loop_control:
+    loop_var: current_project_cache_path_item
 
-- include_tasks: workflows/magento2/env.yml
-  when:
-    - valet_project_action is defined
-    - valet_project_action == "env"
-
-- include_tasks: workflows/magento2/cc.yml
-  when:
-    - valet_project_action is defined
-    - valet_project_action == "cc"
+- name: "workflows » magento2 » project-cc | flush redis"
+  shell: "redis-cli flushall"
+  failed_when: false
