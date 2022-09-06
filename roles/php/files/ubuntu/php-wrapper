@@ -36,10 +36,10 @@ then
   # shellcheck disable=SC2181
   if [ $? -eq 0 ]
   then
-    /usr/bin/php"${TARGET_PHP_VERSION}" "$@"
+    exec /usr/bin/php"${TARGET_PHP_VERSION}" "$@"
   else
-    /usr/bin/php "$@"
+    exec /usr/bin/php "$@"
   fi
 else
-  /usr/bin/php "$@"
+  exec /usr/bin/php "$@"
 fi
