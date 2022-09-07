@@ -17,5 +17,7 @@
 - name: "update-dev-ca"
   hosts: local
   gather_facts: True
+  vars:
+    update_dev_ca_force: true
   roles:
     - certificate

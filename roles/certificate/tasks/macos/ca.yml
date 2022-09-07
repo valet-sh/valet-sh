@@ -54,4 +54,6 @@
 - name: "ca | add ca certificate to keystore"
   shell: "security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ certificate_ca_cert_file }}"
   become: true
-  when: generate_trusted_root_ca_obj is changed
+  when: > 
+   generate_trusted_root_ca_obj is changed or
+   update_dev_ca_force is defined and update_dev_ca_force|bool
