@@ -16,7 +16,7 @@
 ---
 
 dependencies:
-  - role: valet-base
+  - role: shared-variables
 
 galaxy_info:
   author: dittertp

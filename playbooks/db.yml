@@ -4,7 +4,6 @@
 # @author: "Philipp Dittert"
 # @command: "db"
 # @platform: macOS Ubuntu
-# @sudo: true
 # @description: "ls, create, drop, reset, import, export a mysql database"
 # @usage: "valet.sh db <action>"
 # @help:

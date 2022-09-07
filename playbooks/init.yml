@@ -4,7 +4,6 @@
 # @author: "Philipp Dittert"
 # @command: "init"
 # @platform: macOS Ubuntu
-# @sudo: true
 # @description: "creates a default .valet-sh.yml file in current directory
 # @usage: "valet.sh init
 # @help: "valet.sh -h init"
