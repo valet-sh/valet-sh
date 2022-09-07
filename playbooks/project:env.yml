@@ -1,0 +1,25 @@
+#
+# valet.sh | project:env
+#
+# @author: "Philipp Dittert"
+# @command: "project:env"
+# @platform: macOS Ubuntu
+# @sudo: true
+# @description: "Deploys the project-specific env configuration"
+# @usage: "valet.sh project:env"
+# @help:
+#
+# valet.sh project:env
+#
+---
+
+- name: "project:env"
+  hosts: local
+  gather_facts: True
+  tags:
+    - project_env
+  vars:
+    valet_current_path: "{{ lookup('env','OLDPWD') }}"
+    valet_project_action: env
+  roles:
+    - valet-project

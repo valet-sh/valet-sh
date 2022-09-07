@@ -1,0 +1,7 @@
+valet_sh_service_rabbitmq_user: admin
+valet_sh_service_rabbitmq_password: admin
+
+valet_sh_service_mysql_host_presets:
+  mysql57: "127.0.0.1:3307"
+  mysql80: "127.0.0.1:3308"
+  mariadb104: "127.0.0.1:3317"
