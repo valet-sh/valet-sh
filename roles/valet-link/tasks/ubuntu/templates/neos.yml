@@ -15,6 +15,23 @@
 ##
 ---
 
+- name: "templates » neos | change 'valet_flow_context' when .valet-sh.yaml file was found"
+  set_fact:
+    valet_flow_context: "{{ valet_sh_project_vars.instance.flow_context }}"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.flow_context is defined
+
+- name: "templates » neos | set 'neos_template_found' when type in .valet-sh.yml was set"
+  set_fact:
+    neos_template_found: true
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.type is defined
+    - valet_sh_project_vars.instance.type == "neos"
+
 - name: "templates » neos | check for neos project"
   stat:
     path: "{{ valet_current_path }}/flow"
@@ -35,4 +52,4 @@
       set_fact:
         template_found: true
         nginx_template: "Neos CMS"
-  when: neos_checker_obj.stat.exists
+  when: neos_checker_obj.stat.exists or neos_template_found|bool
