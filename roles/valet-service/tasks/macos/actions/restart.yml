@@ -66,7 +66,7 @@
     when: item.key == valet_service_name
     with_dict: "{{ valet_sh_service_alias_mapping }}"
 
-  - name: "actions » restart | restart {{ valet_service_name }} service"
+  - name: "actions » restart | restart {{ valet_service_name }} service (running as root)"
     shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_service_name }}"
     become: true
     when: valet_service_name_alias|length == 0 and (valet_service_name in valet_sh_service_privileged_services)

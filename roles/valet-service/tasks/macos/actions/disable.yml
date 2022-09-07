@@ -36,7 +36,7 @@
   when: item.key == valet_service_name
   with_dict: "{{ valet_sh_service_alias_mapping }}"
 
-- name: "actions » disable | disable {{ valet_service_name }} service"
+- name: "actions » disable | disable {{ valet_service_name }} service (running as root)"
   shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_service_name }}"
   become: true
   failed_when: false
