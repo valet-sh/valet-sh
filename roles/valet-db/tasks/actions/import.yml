@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2022 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -44,5 +44,7 @@
 - name: "actions » import | Import database {{ valet_db_file }} into database '{{ valet_db_name }}'"
   mysql_db:
     state: import
+    config_file: "{{ valet_db_mysql_target_config_file }}"
+    config_overrides_defaults: true
     name: "{{ valet_db_name }}"
     target: "{{ valet_db_file }}"

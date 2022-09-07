@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2022 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 ---
 
 - name: "actions » ls | get list of mysql databases"
-  shell: "mysql -B --disable-column-names --execute 'show databases'" # noqa 305 301
+  shell: "{{ valet_db_mysql_client_binary }} -B --disable-column-names --execute 'show databases'" # noqa 305 301
   register: mysql_query_show_databases_obj
 
 - name: "actions » ls | read current databases from command output"

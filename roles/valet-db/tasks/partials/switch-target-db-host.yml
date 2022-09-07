@@ -1,0 +1,85 @@
+##
+#   Copyright 2022 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "actions » partials » switch-target-db-host | set default my.cnf config path"
+  set_fact:
+    valet_db_mysql_target_config_file: "{{ current_home }}/.my.cnf"
+
+- name: "actions » partials » switch-target-db-host | override my.cnf config path"
+  set_fact:
+    valet_db_mysql_target_config_file: "{{ current_home }}/.my5.7.cnf"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mysql is defined
+    - valet_sh_project_vars.services.mysql.version is defined
+    - valet_sh_project_vars.services.mysql.version == 5.7
+
+- name: "actions » partials » switch-target-db-host | override my.cnf config path"
+  set_fact:
+    valet_db_mysql_target_config_file: "{{ current_home }}/.my8.0.cnf"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mysql is defined
+    - valet_sh_project_vars.services.mysql.version is defined
+    - valet_sh_project_vars.services.mysql.version == 8.0
+
+- name: "actions » partials » switch-target-db-host | override my.cnf config path"
+  set_fact:
+    valet_db_mysql_target_config_file: "{{ current_home }}/.my10.4.cnf"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mariadb is defined
+    - valet_sh_project_vars.services.mariadb.version is defined
+    - valet_sh_project_vars.services.mariadb.version == 10.4
+
+
+- name: "actions » partials » switch-target-db-host | set default mysql client binary"
+  set_fact:
+    valet_db_mysql_client_binary: "mysql"
+
+- name: "actions » partials » switch-target-db-host | override mysql client binary"
+  set_fact:
+        valet_db_mysql_client_binary: "mysql5.7"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mysql is defined
+    - valet_sh_project_vars.services.mysql.version is defined
+    - valet_sh_project_vars.services.mysql.version == 5.7
+
+- name: "actions » partials » switch-target-db-host | override mysql client binary"
+  set_fact:
+        valet_db_mysql_client_binary: "mysql8.0"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mysql is defined
+    - valet_sh_project_vars.services.mysql.version is defined
+    - valet_sh_project_vars.services.mysql.version == 8.0
+
+- name: "actions » partials » switch-target-db-host | override mysql client binary"
+  set_fact:
+        valet_db_mysql_client_binary: "mariadb10.4"
+  when:
+    - valet_sh_project_vars is defined
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mariadb is defined
+    - valet_sh_project_vars.services.mariadb.version is defined
+    - valet_sh_project_vars.services.mariadb.version == 10.4

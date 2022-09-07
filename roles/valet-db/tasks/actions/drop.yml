@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2022 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@
   when: valet_db_name | length == 0
 
 - name: "actions » drop | get list of mysql databases"
-  shell: "mysql -B --disable-column-names --execute 'show databases'" # noqa 305 301
+  shell: "{{ valet_db_mysql_client_binary }} -B --disable-column-names --execute 'show databases'" # noqa 305 301
   register: mysql_query_show_databases_obj
 
 - name: "actions » drop | read current databases from command output"
@@ -43,4 +43,6 @@
 - name: "actions » drop | drop database '{{ valet_db_name }}'"
   mysql_db:
     name: "{{ valet_db_name }}"
+    config_file: "{{ valet_db_mysql_target_config_file }}"
+    config_overrides_defaults: true
     state: absent
