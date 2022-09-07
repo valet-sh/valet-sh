@@ -135,7 +135,7 @@
       set_fact:
        restart_php_service: "vsh-{{ current_php_version }}"
 
-    - name: "actions » restart | restart {{ restart_php_service }}"
+    - name: "actions » restart | restart {{ restart_php_service }} (running as root)"
       shell: "{{ valet_sh_homebrew_bin }} services restart {{ restart_php_service }}"
       become: true
       failed_when: false
