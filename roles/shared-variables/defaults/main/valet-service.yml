@@ -128,6 +128,28 @@ valet_sh_service_state_preset_default:
   - rabbitmq: false
   - redis: true
   - nginx: true
+valet_sh_service_state_preset_mac:
+  - elasticsearch1: false
+  - elasticsearch2: false
+  - elasticsearch5: false
+  - elasticsearch6: true
+  - elasticsearch7: false
+  - elasticsearch8: false
+  - opensearch1: false
+  - php56: false
+  - php70: false
+  - php71: false
+  - php72: true
+  - php73: true
+  - php74: true
+  - php80: false
+  - php81: false
+  - mysql57: true
+  - mysql80: false
+  - mariadb104: false
+  - rabbitmq: false
+  - redis: true
+  - nginx: true
   - dnsmasq: true
 valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
 
@@ -153,7 +175,6 @@ valet_sh_service_privileged_services_default:
   - rabbitmq
   - redis
   - nginx
-  - dnsmasq
 valet_sh_service_privileged_services_mac:
   - nginx
   - dnsmasq
