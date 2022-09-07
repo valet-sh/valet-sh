@@ -1,0 +1,22 @@
+#
+# valet.sh | project:cc
+#
+# @author: "Philipp Dittert"
+# @command: "project:cc"
+# @platform: macOS Ubuntu
+# @description: "clears the project-specific cache folders"
+# @usage: "valet.sh project:cc"
+# @help:
+#
+# valet.sh project:cc
+#
+---
+
+- name: "project:cc"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_current_path: "{{ lookup('env','OLDPWD') }}"
+    valet_project_action: cc
+  roles:
+    - valet-project

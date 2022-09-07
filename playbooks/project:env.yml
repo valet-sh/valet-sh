@@ -4,7 +4,6 @@
 # @author: "Philipp Dittert"
 # @command: "project:env"
 # @platform: macOS Ubuntu
-# @sudo: true
 # @description: "Deploys the project-specific env configuration"
 # @usage: "valet.sh project:env"
 # @help:
