@@ -44,9 +44,23 @@
 
 - include_tasks: "ubuntu/sub/read.yml"
 
-- name: "link | fail when name already linked"
-  fail:
-    msg: "{{ link_name }} already linked!"
+- block:
+    - name: "link | set empty array 'new_valet_links'"
+      set_fact:
+        new_valet_links: [ ]
+
+    - name: "link | add existing links to 'new_valet_links' array"
+      set_fact:
+        new_valet_links: "{{ new_valet_links + [item] }}"
+      when: "item.name != link_name"
+      with_items: "{{ valet_links_obj.valet_links.links }}"
+
+    - name: "link | assemble new valet_links_object"
+      set_fact:
+        valet_links_obj:
+          valet_links:
+            links_index: "{{ valet_links_obj.valet_links.links_index | difference ([link_name]) }}"
+            links: "{{ new_valet_links }}"
   when: "link_name in valet_links_obj.valet_links.links_index"
 
 - name: "link | change 'valet_current_path' when .valet-sh.yaml file was found"
