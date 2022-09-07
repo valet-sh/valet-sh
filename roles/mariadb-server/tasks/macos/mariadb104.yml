@@ -26,7 +26,7 @@
 - name: "provide .my.cnf configuration file"
   template:
     src: "{{ mariadb104_template_dot_my }}"
-    dest: "{{ current_home }}/.mariadb10.4.cnf"
+    dest: "{{ current_home }}/.my10.4.cnf"
     mode: '0644'
   with_first_found:
     - "macos/mariadb104/.my.cnf.j2"
