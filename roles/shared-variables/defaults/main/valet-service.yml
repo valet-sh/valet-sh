@@ -127,6 +127,8 @@ valet_sh_service_state_preset_default:
   - mariadb104: false
   - rabbitmq: false
   - redis: true
+  - nginx: true
+  - dnsmasq: true
 valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
 
 valet_sh_service_privileged_services_default:
@@ -150,6 +152,7 @@ valet_sh_service_privileged_services_default:
   - mariadb104
   - rabbitmq
   - redis
+  - nginx
   - dnsmasq
 valet_sh_service_privileged_services_mac:
   - nginx
@@ -248,6 +251,7 @@ valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mappi
 valet_sh_service_rosetta2_emulation:
   rabbitmq: false
   nginx: true
+  dnsmasq: true
   mysql57: true
   mysql80: true
   mariadb104: true
