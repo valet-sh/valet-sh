@@ -115,6 +115,25 @@
   vars:
     cert_prefix: "{{ link_name }}"
 
+- block:
+    - name: Set fact for restart_php_service
+      set_fact:
+        restart_php_service: "{{ current_php_version[:3] }}{{ current_php_version[-2:] | join('.') }}-fpm"
+
+    - name: "actions » restart | restart {{ restart_php_service }}"
+      systemd:
+        name: "{{ restart_php_service }}"
+      become: true
+      failed_when: false
+      when: current_php_version in valet_sh_service_privileged_services
+
+    - name: "actions » restart | restart {{ restart_php_service }}"
+      systemd:
+        name: "{{ restart_php_service }}"
+      failed_when: false
+      when: current_php_version not in valet_sh_service_privileged_services
+  when: current_php_version is defined
+
 - name: "link | find a matching application template"
   block:
     - include_tasks: ubuntu/templates/magento2.yml
