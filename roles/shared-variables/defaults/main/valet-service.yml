@@ -152,6 +152,7 @@ valet_sh_service_privileged_services_default:
   - mariadb104
   - rabbitmq
   - redis
+  - nginx
   - dnsmasq
 valet_sh_service_privileged_services_mac:
   - nginx
