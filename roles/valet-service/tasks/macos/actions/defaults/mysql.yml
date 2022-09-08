@@ -44,7 +44,7 @@
   - name: "create symlinks for default mysql"
     file:
       src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ valet_service_name_version }}"
-      dest: "/usr/local/bin/{{ current_mysql_default_linkname }}"
+      dest: "/usr/local/bin/default-{{ current_mysql_default_linkname }}"
       state: link
       force: true
     with_items:
@@ -66,21 +66,21 @@
   - name: "create symlinks for default mysql"
     file:
       src: "/usr/local/bin/mariadb{{ valet_service_name_version }}"
-      dest: "/usr/local/bin/mysql"
+      dest: "/usr/local/bin/default-mysql"
       state: link
       force: true
 
-  - name: "create symlinks for default mysql"
+  - name: "create symlinks for default mysqladmin"
     file:
       src: "/usr/local/bin/mariaadmin{{ valet_service_name_version }}"
-      dest: "/usr/local/bin/mysqladmin"
+      dest: "/usr/local/bin/default-mysqladmin"
       state: link
       force: true
 
-  - name: "create symlinks for default mysql"
+  - name: "create symlinks for default mysqldump"
     file:
       src: "/usr/local/bin/mariadump{{ valet_service_name_version }}"
-      dest: "/usr/local/bin/mysqldump"
+      dest: "/usr/local/bin/default-mysqldump"
       state: link
       force: true
 

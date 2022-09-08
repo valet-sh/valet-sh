@@ -160,3 +160,21 @@
     password: "{{ mysql_community_server_default_root_password }}"
     check_implicit_admin: yes
     state: present
+
+- name: ensure mysql wrapper script is up2date
+  template:
+    src: "wrapper/mysql-wrapper.j2"
+    dest: "/usr/local/bin/mysql"
+    mode: '0755'
+
+- name: ensure mysqladmin wrapper script is up2date
+  template:
+    src: "wrapper/mysqladmin-wrapper.j2"
+    dest: "/usr/local/bin/mysqladmin"
+    mode: '0755'
+
+- name: ensure mysqldump wrapper script is up2date
+  template:
+    src: "wrapper/mysqldump-wrapper.j2"
+    dest: "/usr/local/bin/mysqldump"
+    mode: '0755'
