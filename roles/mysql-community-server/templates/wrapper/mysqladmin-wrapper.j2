@@ -43,8 +43,8 @@ then
   then
     exec /usr/local/bin/"${TARGET_EDITION}${TARGET_VERSION}" "$@"
   else
-    exec /usr/local/bin/default-mysql "$@"
+    exec /usr/local/bin/default-mysqladmin "$@"
   fi
 else
-  exec /usr/local/bin/default-mysql "$@"
+  exec /usr/local/bin/default-mysqladmin "$@"
 fi

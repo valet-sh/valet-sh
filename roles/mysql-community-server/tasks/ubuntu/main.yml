@@ -22,3 +22,24 @@
 - include_tasks: install-57.yml
 
 - include_tasks: install-80.yml
+
+- name: ensure mysql wrapper script is up2date
+  template:
+    src: "wrapper/mysql-wrapper.j2"
+    dest: "/usr/local/bin/mysql"
+    mode: '0755'
+  become: true
+
+- name: ensure mysqladmin wrapper script is up2date
+  template:
+    src: "wrapper/mysqladmin-wrapper.j2"
+    dest: "/usr/local/bin/mysqladmin"
+    mode: '0755'
+  become: true
+
+- name: ensure mysqldump wrapper script is up2date
+  template:
+    src: "wrapper/mysqldump-wrapper.j2"
+    dest: "/usr/local/bin/mysqldump"
+    mode: '0755'
+  become: true
