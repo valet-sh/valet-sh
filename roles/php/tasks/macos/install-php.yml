@@ -19,11 +19,6 @@
   set_fact:
     php_version: "{{ current_php[-2:-1] }}.{{ current_php[-1] }}"
 
-#- name: "ensure {{ current_php }} is installed"
-#  homebrew:
-#    name: "{{ current_php }}"
-#    state: present
-
 - name: "ensure {{ current_php }} is installed"
   shell: "{{ valet_sh_homebrew_bin }} install {{ current_php }}"
 
@@ -83,6 +78,20 @@
     state: "{{ 'file' if  php_error_log_file_obj.stat.exists else 'touch' }}"
     mode: '0755'
   become: true
+
+- name: set PATH env variable
+  lineinfile:
+    path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/php-fpm.d/www.conf"
+    regexp: ';env[PATH] = /usr/local/bin:/usr/bin:/bin'
+    line: "env[PATH] = /usr/local/bin:/usr/bin:/bin"
+  when: current_php != "vsh-php56"
+
+- name: set PATH env variable for php5.6
+  lineinfile:
+    path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/php-fpm.conf"
+    regexp: ';env[PATH] = /usr/local/bin:/usr/bin:/bin'
+    line: "env[PATH] = /usr/local/bin:/usr/bin:/bin"
+  when: current_php == "vsh-php56"
 
 - name: ensure php configuration is up2date
   template:

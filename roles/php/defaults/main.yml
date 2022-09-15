@@ -321,6 +321,9 @@ php_fpm_pool_configuration_default:
     value: "{{ current_user }}"
   - conf: "listen.group"
     value: "{{ current_group }}"
+  - conf: "env[PATH]"
+    value: "/usr/local/bin:/usr/bin:/bin"
+
 
 php_fpm_settings_default:
   - conf: "date.timezone"
