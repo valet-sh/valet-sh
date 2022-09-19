@@ -20,9 +20,6 @@
     name: "homebrew/cask-versions/adoptopenjdk8"
     state: absent
 
-- name: "ensure brew formular 'adoptopenjdk8' is removed"
-  shell: "{{ valet_sh_homebrew_bin }} remove adoptopenjdk8"
-
 - name: "ensure temurin8 is installed"
   homebrew_cask:
     name: "homebrew/cask-versions/temurin8"
