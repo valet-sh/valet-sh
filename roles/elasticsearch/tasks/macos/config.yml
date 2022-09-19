@@ -15,58 +15,58 @@
 ##
 ---
 
-- name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch5/config/jvm.options' to 1GB"
+- name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch5/jvm.options' to 1GB"
   lineinfile:
-    path: "/usr/local/etc/vsh-elasticsearch5/config/jvm.options"
+    path: "/usr/local/etc/vsh-elasticsearch5/jvm.options"
     regexp: '^-Xms'
     line: "-Xms1g"
   notify: "brew | vsh-elasticsearch5 | restarted"
 
-- name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch5/config/jvm.options' to 1GB"
+- name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch5/jvm.options' to 1GB"
   lineinfile:
-    path: "/usr/local/etc/vsh-elasticsearch5/config/jvm.options"
+    path: "/usr/local/etc/vsh-elasticsearch5/jvm.options"
     regexp: '^-Xmx'
     line: "-Xmx1g"
   notify: "brew | vsh-elasticsearch5 | restarted"
 
-- name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch6/config/jvm.options' to 1GB"
+- name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch6/jvm.options' to 1GB"
   lineinfile:
-    path: "/usr/local/etc/vsh-elasticsearch6/config/jvm.options"
+    path: "/usr/local/etc/vsh-elasticsearch6/jvm.options"
     regexp: '^-Xms'
     line: "-Xms1g"
   notify: "brew | vsh-elasticsearch6 | restarted"
 
-- name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch6/config/jvm.options' to 1GB"
+- name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch6/jvm.options' to 1GB"
   lineinfile:
-    path: "/usr/local/etc/vsh-elasticsearch6/config/jvm.options"
+    path: "/usr/local/etc/vsh-elasticsearch6/jvm.options"
     regexp: '^-Xmx'
     line: "-Xmx1g"
   notify: "brew | vsh-elasticsearch6 | restarted"
 
-- name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch7/config/jvm.options' to 2GB"
+- name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch7/jvm.options' to 2GB"
   lineinfile:
-    path: "/usr/local/etc/vsh-elasticsearch7/config/jvm.options"
+    path: "/usr/local/etc/vsh-elasticsearch7/jvm.options"
     regexp: '^-Xms'
     line: "-Xms2g"
   notify: "brew | vsh-elasticsearch7 | restarted"
 
-- name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch7/config/jvm.options' to 2GB"
+- name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch7/jvm.options' to 2GB"
   lineinfile:
-    path: "/usr/local/etc/vsh-elasticsearch7/config/jvm.options"
+    path: "/usr/local/etc/vsh-elasticsearch7/jvm.options"
     regexp: '^-Xmx'
     line: "-Xmx2g"
   notify: "brew | vsh-elasticsearch7 | restarted"
 
-- name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch8/config/jvm.options' to 2GB"
+- name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch8/jvm.options' to 2GB"
   lineinfile:
-    path: "/usr/local/etc/vsh-elasticsearch8/config/jvm.options"
+    path: "/usr/local/etc/vsh-elasticsearch8/jvm.options"
     regexp: '^-Xms'
     line: "-Xms2g"
   notify: "brew | vsh-elasticsearch8 | restarted"
 
-- name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch8/config/jvm.options' to 1GB"
+- name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch8/jvm.options' to 1GB"
   lineinfile:
-    path: "/usr/local/etc/vsh-elasticsearch8/config/jvm.options"
+    path: "/usr/local/etc/vsh-elasticsearch8/jvm.options"
     regexp: '^-Xmx'
     line: "-Xmx2g"
   notify: "brew | vsh-elasticsearch8 | restarted"
