@@ -80,6 +80,20 @@
     mode: '0644'
   notify: "systemd | elasticsearch5 | restarted"
 
+- name: "set 'Xms' in '{{ current_elasticsearch_base_path }}/config/jvm.options' to 1GB"
+  lineinfile:
+    path: "{{ current_elasticsearch_base_path }}/config/jvm.options"
+    regexp: '^-Xms'
+    line: "-Xms1g"
+  notify: "systemd | elasticsearch5 | restarted"
+
+- name: "set 'Xmx' in '{{ current_elasticsearch_base_path }}/config/jvm.options' to 1GB"
+  lineinfile:
+    path: "{{ current_elasticsearch_base_path }}/config/jvm.options"
+    regexp: '^-Xmx'
+    line: "-Xmx1g"
+  notify: "systemd | elasticsearch5 | restarted"
+
 - name: "provide {{ current_elasticsearch_key }} systemd unit file"
   template:
     src: "systemd/{{ current_elasticsearch_key }}.service.j2"

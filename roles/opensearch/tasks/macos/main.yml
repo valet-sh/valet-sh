@@ -16,3 +16,5 @@
 ---
 
 - include_tasks: macos/install.yml
+
+- include_tasks: macos/config.yml

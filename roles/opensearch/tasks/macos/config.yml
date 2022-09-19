@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2022 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,6 +15,16 @@
 ##
 ---
 
-- include_tasks: macos/install.yml
+- name: "set 'Xms' in '/usr/local/etc/vsh-opensearch1/config/jvm.options' to 2GB"
+  lineinfile:
+    path: "/usr/local/etc/vsh-opensearch1/config/jvm.options"
+    regexp: '^-Xms'
+    line: "-Xms2g"
+  notify: "brew | vsh-opensearch1 | restarted"
 
-- include_tasks: macos/config.yml
+- name: "set 'Xmx' in '/usr/local/etc/vsh-opensearch1/config/jvm.options' to 2GB"
+  lineinfile:
+    path: "/usr/local/etc/vsh-opensearch1/config/jvm.options"
+    regexp: '^-Xmx'
+    line: "-Xmx2g"
+  notify: "brew | vsh-opensearch1 | restarted"

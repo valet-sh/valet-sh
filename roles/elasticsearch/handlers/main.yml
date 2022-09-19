@@ -183,3 +183,16 @@
     name: elasticsearch8
     state: restarted
   become: true
+
+
+- name: brew | vsh-elasticsearch5 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch5"
+
+- name: brew | vsh-elasticsearch6 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch6"
+
+- name: brew | vsh-elasticsearch7 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch7"
+
+- name: brew | vsh-elasticsearch8 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch8"

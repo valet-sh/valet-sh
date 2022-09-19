@@ -42,3 +42,6 @@
     name: opensearch1
     state: restarted
   become: true
+
+- name: brew | vsh-opensearch1 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch1"
