@@ -1,0 +1,185 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "fail when os is not ubuntu 20.04 or 22.04"
+  fail:
+    msg: "only Ubuntu 20.04 and 22.04 is supported for XPS15 9500!"
+  when:
+    - ansible_distribution_release != "focal"
+    - ansible_distribution_release != "jammy"
+
+- name: ensure universe repository is enabled
+  shell: "add-apt-repository -y universe"
+  become: true
+
+- name: Update all packages to the latest version
+  apt:
+    update_cache: yes
+    upgrade: dist
+  become: true
+
+- name: install power management packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - thermald
+      - powertop
+  become: true
+
+- name: ensure tlp packages are not installed
+  apt:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+      - tlp
+      - tlp-rdw
+  become: true
+
+- name: ensure tlp config does not exist
+  file:
+    path: "{{ ubuntu_tlp_config_item }}"
+    state: absent
+  become: true
+  with_items:
+    - /etc/tlp.conf
+    - /etc/default/tlp
+    - /etc/tlp.d
+  loop_control:
+    loop_var: ubuntu_tlp_config_item
+
+- name: "disable graphic drivers ppa"
+  apt_repository:
+    repo: ppa:graphics-drivers/ppa
+    update_cache: yes
+    state: absent
+  become: true
+
+- name: ensure nvidia driver is installed
+  apt:
+    name: "nvidia-driver-515"
+    state: present
+  become: true
+
+- name: install video codec packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - ubuntu-restricted-extras
+      - va-driver-all
+      - vainfo
+      - libva2
+      - gstreamer1.0-libav
+      - gstreamer1.0-vaapi
+  become: true
+
+- apt_repository:
+    repo: ppa:eh5/pulseaudio-a2dp
+    update_cache: yes
+    state: absent
+  become: true
+
+- name: install intel microcode updates
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - intel-microcode
+  become: true
+
+- include_tasks: "hardware-related/bbswitch.yml"
+
+- name: enable fan speed with lm-sensors
+  lineinfile:
+    path: /etc/modprobe.d/dell-smm-hwmon.conf
+    line: 'options dell-smm-hwmon restricted=0 force=1'
+    create: true
+  become: true
+
+- name: enable dell specific module
+  lineinfile:
+    path: /etc/modules
+    line: 'dell-smm-hwmon'
+  become: true
+
+- name: ensure psmouse module is blacklisted
+  copy:
+    content: 'blacklist psmouse'
+    dest: "/etc/modprobe.d/psmouse.conf"
+  become: true
+
+- name: "run update-initramfs -u"
+  shell: "update-initramfs -u"
+  become: true
+
+- name: "switch to intel gpu"
+  shell: "prime-select intel"
+  become: true
+
+- name: "ensure backport-iwlwifi-dkms package is NOT installed on focal"
+  apt:
+    name: "backport-iwlwifi-dkms"
+    state: absent
+  become: true
+
+#- name: update grub config
+#  lineinfile:
+#    path: /etc/default/grub
+#    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
+#    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 nouveau.modeset=0 pcie_aspm=force mem_sleep_default=deep"'
+#  become: true
+
+#- name: "run update-grub"
+#  shell: "update-grub"
+#  become: true
+
+- name: disable gnome tracker apps
+  systemd:
+    masked: yes
+    name: "{{ ubuntu_gnome_tracker_apps_item }}"
+  with_items:
+    - tracker-extract.desktop
+    - tracker-miner-apps.desktop
+    - tracker-miner-fs.desktop
+    - tracker-store.desktop
+  become: true
+  loop_control:
+    loop_var: ubuntu_gnome_tracker_apps_item
+
+- name: add dell repository key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: "{{ ubuntu_dell_repository_key }}"
+  become: true
+
+- name: add ubuntu dell repositories
+  apt_repository:
+    repo: "{{ ubuntu_dell_repositories_item }}"
+    state: present
+    filename: ubuntu_dell
+  with_items: "{{ ubuntu_dell_repositories }}"
+  loop_control:
+    loop_var: ubuntu_dell_repositories_item
+  become: true
+
+- name: "ensure fingerprint driver is installed"
+  apt:
+    name: ['oem-somerville-melisa-meta', 'libfprint-2-tod1-goodix', 'oem-somerville-meta']
+    state: present
+  become: true
