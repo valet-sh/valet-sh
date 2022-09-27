@@ -76,10 +76,16 @@ ubuntu_hwe_packages:
   - "linux-generic-hwe-{{ ansible_distribution_version }}"
   - "xserver-xorg-hwe-{{ ansible_distribution_version }}"
 
-ubuntu_dell_repositories:
+ubuntu_dell_repositories_default:
   - "deb http://dell.archive.canonical.com/updates/ {{ ansible_distribution_release }}-dell public"
   - "deb http://dell.archive.canonical.com/updates/ {{ ansible_distribution_release }}-oem public"
   - "deb http://dell.archive.canonical.com/updates/ {{ ansible_distribution_release }}-somerville public"
   - "deb http://dell.archive.canonical.com/updates/ {{ ansible_distribution_release }}-somerville-melisa public"
+
+ubuntu_dell_repositories_jammy:
+  - "deb http://dell.archive.canonical.com/updates/ focal-dell public"
+  - "deb http://dell.archive.canonical.com/updates/ {{ ansible_distribution_release }}-somerville public"
+
+ubuntu_dell_repositories: "{{ lookup('vars', 'ubuntu_dell_repositories'+'_'+ansible_distribution_release, default=ubuntu_dell_repositories_default) }}"
 
 ubuntu_dell_repository_key: "F9FDA6BED73CDC22"
