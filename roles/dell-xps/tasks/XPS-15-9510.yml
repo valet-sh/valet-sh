@@ -183,3 +183,17 @@
     name: ['oem-somerville-melisa-meta', 'libfprint-2-tod1-goodix', 'oem-somerville-meta']
     state: present
   become: true
+
+- name: "ensure fingerprint driver is installed"
+  apt:
+    name: ['oem-somerville-melisa-meta', 'libfprint-2-tod1-goodix', 'oem-somerville-meta']
+    state: present
+  become: true
+  when: ansible_distribution_release == "focal"
+
+- name: "ensure fingerprint driver is installed"
+  apt:
+    name: ['libfprint-2-tod1-goodix', 'oem-somerville-meta']
+    state: present
+  become: true
+  when: ansible_distribution_release == "jammy"
