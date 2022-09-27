@@ -193,7 +193,7 @@
 
 - name: "ensure fingerprint driver is installed"
   apt:
-    name: ['libfprint-2-tod1-goodix', 'oem-somerville-meta']
+    name: ['libfprint-2-tod1', 'oem-somerville-meta']
     state: present
   become: true
   when: ansible_distribution_release == "jammy"
