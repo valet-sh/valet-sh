@@ -14,7 +14,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/valet-sh/install/master/inst
 At the moment valet.sh on Apple m1 requires rosetta2:
 ```bash
 /usr/sbin/softwareupdate --install-rosetta --agree-to-license
-arch -x86_64 bash <(curl -fsSL https://raw.githubusercontent.com/valet-sh/install/master/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/valet-sh/install/master/install.sh)
 ```
 
 ## Usage
