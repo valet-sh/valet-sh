@@ -31,6 +31,10 @@ php_multi:
           value: "{{ mailhog_bin_target }} sendmail test@test"
         - conf: "memory_limit"
           value: "8192M"
+        - conf: "memory_limit"
+          value: "8192M"
+        - conf: "error_reporting"
+          value: "32767"
       php_fpm_settings:
         - conf: "date.timezone"
           value: "Europe/Berlin"
@@ -48,6 +52,8 @@ php_multi:
           value: "10000"
         - conf: "sendmail_path"
           value: "{{ mailhog_bin_target }} sendmail test@test"
+        - conf: "error_reporting"
+          value: "32767"
       php_modules:
         - "xmlrpc"
         - "xml"
@@ -83,6 +89,8 @@ php_multi:
           value: "{{ mailhog_bin_target }} sendmail test@test"
         - conf: "memory_limit"
           value: "8192M"
+        - conf: "error_reporting"
+          value: "32767"
       php_fpm_settings:
         - conf: "date.timezone"
           value: "Europe/Berlin"
@@ -100,6 +108,8 @@ php_multi:
           value: "10000"
         - conf: "sendmail_path"
           value: "{{ mailhog_bin_target }} sendmail test@test"
+        - conf: "error_reporting"
+          value: "32767"
       php_modules:
         - "xmlrpc"
         - "xml"
@@ -135,6 +145,8 @@ php_multi:
           value: "{{ mailhog_bin_target }} sendmail test@test"
         - conf: "memory_limit"
           value: "8192M"
+        - conf: "error_reporting"
+          value: "32767"
       php_fpm_settings:
         - conf: "date.timezone"
           value: "Europe/Berlin"
@@ -151,7 +163,9 @@ php_multi:
         - conf: "max_input_vars"
           value: "10000"
         - conf: "sendmail_path"
-          value: "{{ mailhog_bin_target }} sendmail test@test"
+          value: "{{ mailhog_bin_target }} sendmail test@test"#
+        - conf: "error_reporting"
+          value: "32767"
       php_modules:
         - "xmlrpc"
         - "xml"
@@ -183,6 +197,8 @@ php_multi:
           value: "{{ mailhog_bin_target }} sendmail test@test"
         - conf: "memory_limit"
           value: "8192M"
+        - conf: "error_reporting"
+          value: "32767"
       php_fpm_settings:
         - conf: "date.timezone"
           value: "Europe/Berlin"
@@ -200,6 +216,8 @@ php_multi:
           value: "10000"
         - conf: "sendmail_path"
           value: "{{ mailhog_bin_target }} sendmail test@test"
+        - conf: "error_reporting"
+          value: "32767"
       php_modules:
         - "xmlrpc"
         - "xml"
@@ -230,6 +248,8 @@ php_multi:
           value: "{{ mailhog_bin_target }} sendmail test@test"
         - conf: "memory_limit"
           value: "8192M"
+        - conf: "error_reporting"
+          value: "32767"
       php_fpm_settings:
         - conf: "date.timezone"
           value: "Europe/Berlin"
@@ -247,6 +267,8 @@ php_multi:
           value: "10000"
         - conf: "sendmail_path"
           value: "{{ mailhog_bin_target }} sendmail test@test"
+        - conf: "error_reporting"
+          value: "32767"
       php_modules:
         - "xmlrpc"
         - "xml"
@@ -308,6 +330,8 @@ php_cli_settings_default:
     value: "{{ mailhog_bin_target }} sendmail test@test"
   - conf: "memory_limit"
     value: "8192M"
+  - conf: "error_reporting"
+    value: "32767"
 
 
 php_cli_settings_additional_default: []
@@ -342,6 +366,8 @@ php_fpm_settings_default:
     value: "10000"
   - conf: "sendmail_path"
     value: "{{ mailhog_bin_target }} sendmail test@test"
+  - conf: "error_reporting"
+    value: "32767"
 
 ## mac os specific settings
 php_fpm_settings_default_macos:
@@ -361,6 +387,8 @@ php_fpm_settings_default_macos:
     value: "10000"
   - conf: "sendmail_path"
     value: "{{ mailhog_bin_target }} sendmail test@test"
+  - conf: "error_reporting"
+    value: "32767"
 
 php_fpm_settings_additional_default: []
 
