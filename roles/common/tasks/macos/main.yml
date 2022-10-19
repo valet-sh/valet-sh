@@ -65,4 +65,4 @@
   shell: "launchctl load -w /Library/LaunchDaemons/limit.maxfiles.plist"
 
 - name: ensure service tap is installed
-  shell: '{{ valet_sh_homebrew_bin }} service list'
+  shell: '{{ valet_sh_homebrew_bin }} services list'
