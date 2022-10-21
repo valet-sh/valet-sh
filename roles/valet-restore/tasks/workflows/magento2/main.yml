@@ -1,4 +1,4 @@
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2022 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
     ansible_host: "{{ valet_sh_hub_host }}"
     ansible_port: "{{ valet_sh_hub_port }}"
     ansible_user: "{{ valet_sh_hub_user }}"
+    ansible_python_interpreter: /usr/bin/python3
     ansible_ssh_pipelining: 1
 
 - name: "workflows » magento2 | get ssh fingerprint for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}'"
