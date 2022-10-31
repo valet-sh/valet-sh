@@ -17,6 +17,7 @@
 
 template_found: False
 neos_template_found: false
+shopware6_template_found: false
 
 php_default_version_string: "php72"
 
