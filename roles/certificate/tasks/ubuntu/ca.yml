@@ -64,7 +64,7 @@
   when: copy_ca_to_trusted_root_ca_path_obj is changed
 
 - name:  search for cert9.db files in users's home directory
-  shell: "find {{ current_home }}/ -name 'cert9.db' 2>/dev/null"
+  shell: "find {{ current_home }}/ -maxdepth 4 -name 'cert9.db' 2>/dev/null"
   register: available_cert9_files_obj
   become: true
 
@@ -73,3 +73,21 @@
   with_items: "{{ available_cert9_files_obj.stdout_lines }}"
   loop_control:
     loop_var: current_cert9_file_item
+
+- name: "check if directory '{{ current_home }}/snap' exists"
+  stat:
+    path: "{{ current_home }}/snap"
+  register: snap_directory_obj
+
+- block:
+    - name: "search for cert9.db files '{{ current_home }}/snap/'"
+      shell: "find {{ current_home }}/snap/ -maxdepth 7 -name 'cert9.db' 2>/dev/null"
+      register: available_cert9_files_snap_obj
+      become: true
+
+    - name: run certutil for every cert9 file
+      shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ available_cert9_files_snap_item | dirname }}'
+      with_items: "{{ available_cert9_files_snap_obj.stdout_lines }}"
+      loop_control:
+        loop_var: available_cert9_files_snap_item
+  when: snap_directory_obj.stat.exists|bool
