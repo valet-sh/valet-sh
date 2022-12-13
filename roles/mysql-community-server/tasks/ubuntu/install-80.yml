@@ -187,6 +187,7 @@
       get_url:
         url: "{{ mysql_community_server_80.package_url }}"
         dest: "/tmp/{{ mysql_community_server_80.package_url | basename }}"
+        http_agent: "valet.sh"
 
     - name: Extract mysql archive
       unarchive:
