@@ -29,12 +29,12 @@ mysql_community_server:
 mysql_community_server_default_root_password: "root"
 
 mysql_community_server_57:
-  package_url: "https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.30-linux-glibc2.12-x86_64.tar.gz"
+  package_url: "https://mirror.valet.sh/mysql-5.7.30-linux-glibc2.12-x86_64.tar.gz"
   package_signature: 5f10808b3bcd4c6844572f57f0a897bc86d3e6f9de67d52167401686fff27746
   port: 3307
 
 mysql_community_server_80:
-  package_url: "https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.23-linux-glibc2.12-x86_64.tar.xz"
+  package_url: "https://mirror.valet.sh/mysql-8.0.23-linux-glibc2.12-x86_64.tar.xz"
   package_signature: 7a328851d0857942c454492dcae469d690be6958a3bca082a9a69146fceb3fc5
   port: 3308
 
