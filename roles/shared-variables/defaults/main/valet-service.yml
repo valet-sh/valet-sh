@@ -50,6 +50,7 @@ valet_sh_service_defaultable_services_default:
       - php74
       - php80
       - php81
+      - php82
   - scope: mysql
     default: mysql57
     values:
@@ -88,6 +89,7 @@ valet_sh_service_defaultable_services_mac:
       - php74
       - php80
       - php81
+      - php82
   - scope: mysql
     default: mysql57
     values:
@@ -122,6 +124,7 @@ valet_sh_service_state_preset_default:
   - php74: true
   - php80: false
   - php81: false
+  - php82: false
   - mysql57: true
   - mysql80: false
   - mariadb104: false
@@ -144,6 +147,7 @@ valet_sh_service_state_preset_mac:
   - php74: true
   - php80: false
   - php81: false
+  - php82: false
   - mysql57: true
   - mysql80: false
   - mariadb104: false
@@ -169,6 +173,7 @@ valet_sh_service_privileged_services_default:
   - php74
   - php80
   - php81
+  - php82
   - mysql57
   - mysql80
   - mariadb104
@@ -221,6 +226,11 @@ valet_sh_service_fuzzy_alias_mapping:
       - "PHP8.1"
       - "php8.1"
       - "PHP81"
+  - target: php82
+    aliases:
+      - "PHP8.2"
+      - "php8.2"
+      - "PHP82"
   - target: mysql57
     aliases:
       - "MYSQL5.7"
@@ -246,6 +256,7 @@ valet_sh_service_alias_mapping_default:
   php74: "php7.4-fpm"
   php80: "php8.0-fpm"
   php81: "php8.1-fpm"
+  php82: "php8.2-fpm"
   rabbitmq: "rabbitmq-server"
   redis: "redis-server"
 valet_sh_service_alias_mapping_mac:
@@ -260,6 +271,7 @@ valet_sh_service_alias_mapping_mac:
   php74: "vsh-php74"
   php80: "vsh-php80"
   php81: "vsh-php81"
+  php82: "vsh-php82"
   elasticsearch1: "vsh-elasticsearch1"
   elasticsearch2: "vsh-elasticsearch2"
   elasticsearch5: "vsh-elasticsearch5"
@@ -284,6 +296,7 @@ valet_sh_service_rosetta2_emulation:
   php74: true
   php80: true
   php81: true
+  php82: true
   elasticsearch1: true
   elasticsearch2: true
   elasticsearch5: true
