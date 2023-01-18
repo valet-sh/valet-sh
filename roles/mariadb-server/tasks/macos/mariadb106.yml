@@ -15,63 +15,63 @@
 ##
 ---
 
-- name: "ensure vsh-mariadb104 is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install vsh-mariadb104"
+- name: "ensure vsh-mariadb106 is installed"
+  shell: "{{ valet_sh_homebrew_bin }} install vsh-mariadb106"
 
 - name: "provide .my.cnf configuration file"
   template:
-    src: "{{ mariadb104_template_dot_my }}"
-    dest: "{{ current_home }}/.my10.4.cnf"
+    src: "{{ mariadb106_template_dot_my }}"
+    dest: "{{ current_home }}/.my10.6.cnf"
     mode: '0644'
   with_first_found:
-    - "macos/mariadb104/.my.cnf.j2"
+    - "macos/mariadb106/.my.cnf.j2"
   loop_control:
-    loop_var: mariadb104_template_dot_my
+    loop_var: mariadb106_template_dot_my
 
 - name: "provide mysql.cnf configuration file"
   template:
-    src: "{{ mariadb104_template_mysql }}"
-    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb104/conf.d/mysql.cnf"
+    src: "{{ mariadb106_template_mysql }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb106/conf.d/mysql.cnf"
     mode: '0644'
   with_first_found:
-    - "macos/mariadb104/mysql.cnf.j2"
+    - "macos/mariadb106/mysql.cnf.j2"
   loop_control:
-    loop_var: mariadb104_template_mysql
+    loop_var: mariadb106_template_mysql
 
 - name: "provide mysqldump.cnf configuration file"
   template:
-    src: "{{ mariadb104_template_mysqldump }}"
-    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb104/conf.d/mysqldump.cnf"
+    src: "{{ mariadb106_template_mysqldump }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb106/conf.d/mysqldump.cnf"
     mode: '0644'
   with_first_found:
-    - "macos/mariadb104/mysqldump.cnf.j2"
-    - "mariadb104/mysqldump.cnf.j2"
+    - "macos/mariadb106/mysqldump.cnf.j2"
+    - "mariadb106/mysqldump.cnf.j2"
   loop_control:
-    loop_var: mariadb104_template_mysqldump
+    loop_var: mariadb106_template_mysqldump
 
 - name: "provide mysqld.cnf configuration file"
   template:
-    src: "{{ mariadb104_template_mysqld }}"
-    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb104/conf.d/mysqld.cnf"
+    src: "{{ mariadb106_template_mysqld }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb106/conf.d/mysqld.cnf"
     mode: '0644'
   with_first_found:
-    - "macos/mariadb104/mysqld.cnf.j2"
-    - "mariadb104/mysqld.cnf.j2"
+    - "macos/mariadb106/mysqld.cnf.j2"
+    - "mariadb106/mysqld.cnf.j2"
   loop_control:
-    loop_var: mariadb104_template_mysqld
+    loop_var: mariadb106_template_mysqld
 
-- name: brew | vsh-mariadb104 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb104"
+- name: brew | vsh-mariadb106 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb106"
 
-- name: wait for mariadb104 to start
+- name: wait for mariadb106 to start
   wait_for:
-    port: "{{ mariadb_server_104.port }}"
+    port: "{{ mariadb_server_106.port }}"
     delay: 5
 
 - name: Set root password
   mysql_user:
     login_host: 127.0.0.1
-    login_port: "{{ mariadb_server_104.port }}"
+    login_port: "{{ mariadb_server_106.port }}"
     login_user: root
     login_password: "{{ mariadb_server_default_root_password }}"
     config_file: "/tmp/noexistent.cnf"

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,3 +18,5 @@
 - include_tasks: base.yml
 
 - include_tasks: install-104.yml
+
+- include_tasks: install-106.yml
