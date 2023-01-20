@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ valet_sh_service_defaultable_services_default:
       - elasticsearch7
       - elasticsearch8
       - opensearch1
+      - opensearch2
   - scope: php
     default: php73
     values:
@@ -77,6 +78,7 @@ valet_sh_service_defaultable_services_mac:
       - elasticsearch7
       - elasticsearch8
       - opensearch1
+      - opensearch2
   - scope: php
     default: php73
     values:
@@ -114,6 +116,7 @@ valet_sh_service_state_preset_default:
   - elasticsearch7: false
   - elasticsearch8: false
   - opensearch1: false
+  - opensearch2: false
   - php56: false
   - php70: false
   - php71: false
@@ -136,6 +139,7 @@ valet_sh_service_state_preset_mac:
   - elasticsearch7: false
   - elasticsearch8: false
   - opensearch1: false
+  - opensearch2: false
   - php56: false
   - php70: false
   - php71: false
@@ -161,6 +165,7 @@ valet_sh_service_privileged_services_default:
   - elasticsearch7
   - elasticsearch8
   - opensearch1
+  - opensearch2
   - php56
   - php70
   - php71
@@ -267,6 +272,7 @@ valet_sh_service_alias_mapping_mac:
   elasticsearch7: "vsh-elasticsearch7"
   elasticsearch8: "vsh-elasticsearch8"
   opensearch1: "vsh-opensearch1"
+  opensearch2: "vsh-opensearch2"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
 
 valet_sh_service_rosetta2_emulation:
@@ -290,3 +296,5 @@ valet_sh_service_rosetta2_emulation:
   elasticsearch6: true
   elasticsearch7: true
   elasticsearch8: true
+  opensearch1: true
+  opensearch2: true

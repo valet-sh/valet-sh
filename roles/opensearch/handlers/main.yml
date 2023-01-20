@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -45,3 +45,34 @@
 
 - name: brew | vsh-opensearch1 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch1"
+
+- name: systemd | opensearch2 | started
+  systemd:
+    daemon_reload: yes
+    name: opensearch2
+    state: started
+  become: true
+
+- name: systemd | opensearch2 | stopped
+  systemd:
+    daemon_reload: yes
+    name: opensearch2
+    state: stopped
+  become: true
+
+- name: systemd | opensearch2 | restarted
+  systemd:
+    daemon_reload: yes
+    name: opensearch2
+    state: restarted
+  become: true
+
+- name: systemd | opensearch2 | reloaded
+  systemd:
+    daemon_reload: yes
+    name: opensearch2
+    state: restarted
+  become: true
+
+- name: brew | vsh-opensearch2 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"

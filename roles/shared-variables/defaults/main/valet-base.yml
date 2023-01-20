@@ -159,6 +159,7 @@ valet_sh_elasticsearch_ports: "{{ lookup('vars', 'valet_sh_elasticsearch_ports'+
 
 valet_sh_opensearch_ports_default:
   1: 9221
+  2: 9222
 valet_sh_opensearch_ports: "{{ lookup('vars', 'valet_sh_opensearch_ports'+'_'+current_os, default=valet_sh_opensearch_ports_default) }}"
 
 valet_sh_php_sockets_default:
