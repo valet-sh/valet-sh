@@ -67,6 +67,15 @@
       - valet_sh_project_vars.services.mariadb.version is defined
       - valet_sh_project_vars.services.mariadb.version == 10.4
 
+  - name: "workflows » neos » project-env | override neos 'valet_sh_neos_db_host' var"
+    set_fact:
+      valet_sh_neos_db_host: "{{ valet_sh_service_mysql_host_presets.mariadb106 }}"
+    when:
+      - valet_sh_project_vars.services is defined
+      - valet_sh_project_vars.services.mariadb is defined
+      - valet_sh_project_vars.services.mariadb.version is defined
+      - valet_sh_project_vars.services.mariadb.version == 10.6
+
   - name: "workflows » neos » project-env | provide Settings.generated.yaml for project"
     template:
       src: "templates/Settings.generated.yaml.j2"
