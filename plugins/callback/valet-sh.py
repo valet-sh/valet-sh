@@ -134,12 +134,32 @@ class CallbackModule(CallbackModule_default):
                 print(BLUE + "ℹ " + "check /usr/local/valet-sh/valet-sh/log/debug.log" + RESET + CURSOR_SHOW, end="\n")
         super(CallbackModule, self).v2_runner_on_failed(result, ignore_errors)
 
+    def v2_runner_on_unreachable(self, result):
+        if not self._debug_enabled():
+            vsh_msg = ''
+            if 'msg' in result._result:
+                vsh_msg = '%s' % (result._result['msg'])
+            if 'results' in result._result:
+                if result._result['results'][0]:
+                    if 'msg' in result._result['results'][0]:
+                        vsh_msg = '%s' % (result._result['results'][0]['msg'])
+                    if 'stderr' in result._result['results'][0]:
+                        vsh_msg += '\n%s' % (result._result['results'][0]['stderr'])
+                    if 'module_stderr' in result._result['results'][0]:
+                        vsh_msg += '\n%s' % (result._result['results'][0]['module_stderr'])
+
+            print(FLUSH)
+            print(RED + "✘ " + vsh_msg + RESET, end="\n")
+            print(BLUE + "ℹ " + "check /usr/local/valet-sh/valet-sh/log/debug.log" + RESET + CURSOR_SHOW, end="\n")
+        super(CallbackModule, self).v2_runner_on_unreachable(result)
+
     def v2_playbook_on_stats(self, stats):
+        # noinspection PyInterpreter
         if not self._debug_enabled():
             hosts = sorted(stats.processed.keys())
             for h in hosts:
                 t = stats.summarize(h)
-                if (t['failures'] == 0) & (self._output == 1):
+                if (t['failures'] == 0) & (t['unreachable'] == 0) & (self._output == 1):
                     self._output = 0
                     print(FLUSH)
                     print(GREEN + "✔ done" + RESET + CURSOR_SHOW, end="\n")
