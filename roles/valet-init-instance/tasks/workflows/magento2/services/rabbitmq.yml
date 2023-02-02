@@ -27,13 +27,30 @@
         port: 5672
         delay: 5
 
+    - block:
+        - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost is absent"
+          rabbitmq_vhost:
+            name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+            state: absent
+          become: true
+
+        - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user is absent"
+          rabbitmq_user:
+            user: "{{ valet_sh_service_rabbitmq_user }}"
+            password: "{{ valet_sh_service_rabbitmq_password }}"
+            vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+            tags: "administrator"
+            state: absent
+          become: true
+      when: valet_opt_flag_clean is defined and valet_opt_flag_clean|bool
+
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
       rabbitmq_vhost:
         name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
         state: present
       become: true
 
-    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
+    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user exists"
       rabbitmq_user:
         user: "{{ valet_sh_service_rabbitmq_user }}"
         password: "{{ valet_sh_service_rabbitmq_password }}"
@@ -63,6 +80,23 @@
       wait_for:
         port: 5672
         delay: 5
+
+    - block:
+        - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost is absent"
+          rabbitmq_vhost:
+            name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+            node: "rabbit@localhost"
+            state: absent
+
+        - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user is absent"
+          rabbitmq_user:
+            user: "{{ valet_sh_service_rabbitmq_user }}"
+            password: "{{ valet_sh_service_rabbitmq_password }}"
+            vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+            node: "rabbit@localhost"
+            tags: "administrator"
+            state: absent
+      when: valet_opt_flag_clean is defined and valet_opt_flag_clean|bool
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
       rabbitmq_vhost:

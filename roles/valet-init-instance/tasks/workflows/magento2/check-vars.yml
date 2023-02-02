@@ -15,6 +15,11 @@
 ##
 ---
 
+- name: "workflows » magento2 » check-opts | check if '--clean' opt is set"
+  set_fact:
+    valet_opt_flag_clean: true
+  when: "'--clean' in valet_cli_opts"
+
 - name: "workflows » magento2 » check-vars | set path to composer1 (default)"
   set_fact:
     composer_bin: "{{ composer1_bin }}"
