@@ -17,7 +17,7 @@
 
 - name: set current opensearch base path
   set_fact:
-    current_opensearch_base_path: "{{ opensearch_base_path }}1"
+    current_opensearch_base_path: "{{ opensearch_base_path }}2"
     current_opensearch_key: "opensearch2"
 
 - name: "get stats for dir {{ current_opensearch_base_path }}"
