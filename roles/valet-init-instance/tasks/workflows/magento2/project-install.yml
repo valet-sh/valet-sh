@@ -28,6 +28,7 @@
         - "var/generation/"
         - "var/view_preprocessed/"
         - "pub/static/"
+        - "vendor"
       loop_control:
         loop_var: current_project_cache_path_item
   when: valet_opt_flag_clean is defined and valet_opt_flag_clean|bool
