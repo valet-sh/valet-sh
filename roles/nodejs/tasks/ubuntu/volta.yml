@@ -1,0 +1,56 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: check if .zshrc exists in home directory
+  stat:
+    path: "{{ current_home }}/.zshrc"
+  register: zsh_rc_file_obj
+
+- name: "ensure nvm is not enabled in '{{ current_home }}/.zshrc'"
+  blockinfile:
+    path: "{{ current_home }}/.zshrc"
+    marker: "# {mark} ANSIBLE NVM MANAGED BLOCK"
+    state: absent
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  when: zsh_rc_file_obj.stat.exists
+
+- name: "ensure 'volta' is installed"
+  shell: "curl https://get.volta.sh | bash -s -- --skip-setup"
+  args:
+    creates: "{{ current_home }}/.volta/bin/volta"
+  register: volta_installation_obj
+
+- name: ensure volta will be loaded with zsh
+  blockinfile:
+    path: "{{ current_home }}/.zshrc"
+    marker: "# {mark} ANSIBLE VOLTA MANAGED BLOCK"
+    block: |
+      export VOLTA_HOME="$HOME/.volta"
+      export PATH="$VOLTA_HOME/bin:$PATH"
+  when: zsh_rc_file_obj.stat.exists
+
+- name: "ensure 'node@{{ node_version }}' is installed"
+  shell: 'PATH="$HOME/.volta/bin:$PATH" volta install node@{{ node_version }}'
+  args:
+    executable: /bin/bash
+  environment:
+    VOLTA_HOME: "$HOME/.volta"
+    PATH: "$HOME/.volta/bin:$PATH"
+
