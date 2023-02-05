@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,6 +14,24 @@
 #   limitations under the License.
 ##
 ---
+
+- block:
+    - name: "workflows » magento2 » project-install | clear cache folders"
+      file:
+        path: "{{ valet_sh_project_src_path }}/{{ current_project_cache_path_item }}"
+        state: absent
+      with_items:
+        - "var/full_page_cache/"
+        - "var/cache/"
+        - "var/page_cache/"
+        - "generated/"
+        - "var/generation/"
+        - "var/view_preprocessed/"
+        - "pub/static/"
+        - "vendor"
+      loop_control:
+        loop_var: current_project_cache_path_item
+  when: valet_opt_flag_clean is defined and valet_opt_flag_clean|bool
 
 - name: "workflows » magento2 » project-install | run composer install in project source path when defined in .valet-sh.yml"
   command: "{{ php_bin }} {{ composer_bin }} install -n"
