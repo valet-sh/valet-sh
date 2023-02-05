@@ -241,6 +241,112 @@
     state: reloaded
   become: true
 
+- name: "systemd | php8.2-fpm | started"
+  systemd:
+    name: "php8.2-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php8.2-fpm | stopped"
+  systemd:
+    name: "php8.2-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php8.2-fpm | restarted"
+  systemd:
+    name: "php8.2-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php8.2-fpm | reloaded"
+  systemd:
+    name: "php8.2-fpm"
+    state: reloaded
+  become: true
+
+- name: brew | vsh-php56 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
+
+- name: brew | vsh-php56 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php56"
+
+- name: brew | vsh-php56 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php56"
+
+- name: brew | vsh-php70 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php70"
+
+- name: brew | vsh-php70 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php70"
+
+- name: brew | vsh-php70 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php70"
+
+- name: brew | vsh-php71 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php71"
+
+- name: brew | vsh-php71 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php71"
+
+- name: brew | vsh-php71 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php71"
+
+- name: brew | vsh-php72 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php72"
+
+- name: brew | vsh-php72 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php72"
+
+- name: brew | vsh-php72 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php72"
+
+- name: brew | vsh-php73 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php73"
+
+- name: brew | vsh-php73 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php73"
+
+- name: brew | vsh-php73 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php73"
+
+- name: brew | vsh-php74 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php74"
+
+- name: brew | vsh-php74 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php74"
+
+- name: brew | vsh-php74 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php74"
+
+- name: brew | vsh-php80 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php80"
+
+- name: brew | vsh-php80 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php80"
+
+- name: brew | vsh-php80 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php80"
+
+- name: brew | vsh-php81 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php81"
+
+- name: brew | vsh-php81 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php81"
+
+- name: brew | vsh-php81 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php81"
+
+- name: brew | vsh-php82 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php82"
+
+- name: brew | vsh-php82 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php82"
+
+- name: brew | vsh-php82 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php82"
+
+
 - name: "brew | nginx | restarted"
   command: "{{ valet_sh_homebrew_bin }} services restart nginx"
   become: true
@@ -252,66 +358,3 @@
 - name: "brew | nginx | started"
   command: "{{ valet_sh_homebrew_bin }} services start nginx"
   become: true
-
-- name: "brew | vsh-php70 | restarted"
-  command: "{{ valet_sh_homebrew_bin }} services restart vsh-php70"
-
-- name: "brew | vsh-php70 | stopped"
-  command: "{{ valet_sh_homebrew_bin }} services stop vsh-php70"
-
-- name: "brew | vsh-php70 | started"
-  command: "{{ valet_sh_homebrew_bin }} services start vsh-php70"
-
-- name: "brew | vsh-php71 | restarted"
-  command: "{{ valet_sh_homebrew_bin }} services restart vsh-php71"
-
-- name: "brew | vsh-php71 | stopped"
-  command: "{{ valet_sh_homebrew_bin }} services stop vsh-php71"
-
-- name: "brew | vsh-php71 | started"
-  command: "{{ valet_sh_homebrew_bin }} services start vsh-php71"
-
-- name: "brew | vsh-php72 | restarted"
-  command: "{{ valet_sh_homebrew_bin }} services restart vsh-php72"
-
-- name: "brew | vsh-php72 | stopped"
-  command: "{{ valet_sh_homebrew_bin }} services stop vsh-php72"
-
-- name: "brew | vsh-php72 | started"
-  command: "{{ valet_sh_homebrew_bin }} services start vsh-php72"
-
-- name: "brew | vsh-php73 | restarted"
-  command: "{{ valet_sh_homebrew_bin }} services restart vsh-php73"
-
-- name: "brew | vsh-php73 | stopped"
-  command: "{{ valet_sh_homebrew_bin }} services stop vsh-php73"
-
-- name: "brew | vsh-php73 | started"
-  command: "{{ valet_sh_homebrew_bin }} services start vsh-php73"
-
-- name: "brew | vsh-php74 | restarted"
-  command: "{{ valet_sh_homebrew_bin }} services restart vsh-php74"
-
-- name: "brew | vsh-php74 | stopped"
-  command: "{{ valet_sh_homebrew_bin }} services stop vsh-php74"
-
-- name: "brew | vsh-php74 | started"
-  command: "{{ valet_sh_homebrew_bin }} services start vsh-php74"
-
-- name: brew | vsh-php80 | restarted
-  command: "{{ valet_sh_homebrew_bin }} services restart vsh-php80"
-
-- name: brew | vsh-php80 | stopped
-  command: "{{ valet_sh_homebrew_bin }} services stop vsh-php80"
-
-- name: brew | vsh-php80 | started
-  command: "{{ valet_sh_homebrew_bin }} services start vsh-php80"
-
-- name: brew | vsh-php81 | restarted
-  command: "{{ valet_sh_homebrew_bin }} services restart vsh-php81"
-
-- name: brew | vsh-php81 | stopped
-  command: "{{ valet_sh_homebrew_bin }} services stop vsh-php81"
-
-- name: brew | vsh-php81 | started
-  command: "{{ valet_sh_homebrew_bin }} services start vsh-php81"
