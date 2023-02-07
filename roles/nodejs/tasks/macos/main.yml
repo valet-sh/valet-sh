@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,46 +15,61 @@
 ##
 ---
 
-- name: ensure nvm home dir exists
-  file:
-    path: "{{ current_home }}/.nvm"
-    state: directory
-    mode: '0755'
+- name: "gather package facts"
+  package_facts:
+    manager: "auto"
+
+- name: "set default value if npm is installed from repo"
+  set_fact:
+    nodejs_npm_is_installed_from_repo: false
+
+- name: "check if npm is installed from repo"
+  set_fact:
+    nodejs_npm_is_installed_from_repo: true
+  when: "'npm' in ansible_facts.packages"
+
+- name: "ensure 'gulp' and 'n' is not installed globally"
+  npm:
+    name: "{{ nvm_uninstall_global_packages_item }}"
+    global: yes
+    state: absent
+  with_items:
+    - "n"
+    - "gulp"
+  loop_control:
+    loop_var: nvm_uninstall_global_packages_item
+  when: nodejs_npm_is_installed_from_repo
+
+- name: ensure nodejs and npm is not installed
+  apt:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+      - nodejs
+      - npm
+  become: true
 
 - name: check if .zshrc exists in home directory
   stat:
     path: "{{ current_home }}/.zshrc"
   register: zsh_rc_file_obj
 
-- name: "ensure 'nvm' is installed"
-  shell: >
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash
-  args:
-    creates: "{{ current_home }}/.nvm/nvm.sh"
-  register: nvm_installation_obj
-
-- name: check if .zshrc exists in home directory
-  stat:
-    path: "{{ current_home }}/.zshrc"
-  register: zsh_rc_file_obj
-
-- name: ensure nvm will be loaded with zsh
+- name: "ensure nvm blockinfile is removed from '{{ current_home }}/.zshrc'"
   blockinfile:
     path: "{{ current_home }}/.zshrc"
+    state: absent
     block: |
       export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
   when: zsh_rc_file_obj.stat.exists
 
-- name: "install default node version"
-  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ node_version }}"
-  args:
-    executable: /bin/zsh
-  when: nvm_installation_obj.changed
+- include_tasks: nvm.yml
+  when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"
 
-- name: "install default node version"
-  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ node_version }}"
-  args:
-    executable: /bin/zsh
-  when: nvm_installation_obj.changed
+- include_tasks: volta.yml
+  when:
+    - valet_sh_config.default_nvm is defined
+    - valet_sh_config.default_nvm == "volta"
+
