@@ -15,20 +15,32 @@
 ##
 ---
 
-- name: check if .zshrc exists in home directory
-  stat:
-    path: "{{ current_home }}/.zshrc"
-  register: zsh_rc_file_obj
+- name: check for .bashrc or .zshrc file
+  set_fact:
+    shellrc_file: ".zshrc"
+  when: valet_sh_config.default_shell is not defined or valet_sh_config.default_shell != "bash"
 
-- name: "ensure nvm blockinfile is removed from '{{ current_home }}/.zshrc'"
+- name: check for .bashrc or .zshrc file
+  set_fact:
+    shellrc_file: ".bashrc"
+  when:
+    - valet_sh_config.default_shell is defined
+    - valet_sh_config.default_shell == "bash"
+
+- name: "check if '{{ shellrc_file }}' exists in home directory"
+  stat:
+    path: "{{ current_home }}/{{ shellrc_file }}"
+  register: shellrc_file_obj
+
+- name: "ensure nvm blockinfile is removed from '{{ current_home }}/{{ shellrc_file }}'"
   blockinfile:
-    path: "{{ current_home }}/.zshrc"
+    path: "{{ current_home }}/{{ shellrc_file }}"
     state: absent
     block: |
       export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  when: zsh_rc_file_obj.stat.exists
+  when: shellrc_file_obj.stat.exists
 
 - include_tasks: nvm.yml
   when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"

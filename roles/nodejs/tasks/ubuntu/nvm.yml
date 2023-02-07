@@ -34,30 +34,25 @@
     creates: "{{ current_home }}/.nvm/nvm.sh"
   register: nvm_installation_obj
 
-- name: check if .zshrc exists in home directory
-  stat:
-    path: "{{ current_home }}/.zshrc"
-  register: zsh_rc_file_obj
-
-- name: ensure volta is absent in .zshrc
+- name: "ensure volta is absent in '{{ current_home }}/{{ shellrc_file }}'"
   blockinfile:
-    path: "{{ current_home }}/.zshrc"
+    path: "{{ current_home }}/{{ shellrc_file }}"
     marker: "# {mark} ANSIBLE VOLTA MANAGED BLOCK"
     state: absent
     block: |
       export VOLTA_HOME="$HOME/.volta"
       export PATH="$VOLTA_HOME/bin:$PATH"
-  when: zsh_rc_file_obj.stat.exists
+  when: shellrc_file_obj.stat.exists
 
-- name: ensure nvm will be loaded with zsh
+- name: "ensure nvm will be loaded"
   blockinfile:
-    path: "{{ current_home }}/.zshrc"
+    path: "{{ current_home }}/{{ shellrc_file }}"
     marker: "# {mark} ANSIBLE NVM MANAGED BLOCK"
     block: |
       export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  when: zsh_rc_file_obj.stat.exists
+  when: shellrc_file_obj.stat.exists
 
 - name: "install default node version"
   shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ node_version }}"

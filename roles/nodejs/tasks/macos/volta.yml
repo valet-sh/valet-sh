@@ -15,21 +15,16 @@
 ##
 ---
 
-- name: check if .zshrc exists in home directory
-  stat:
-    path: "{{ current_home }}/.zshrc"
-  register: zsh_rc_file_obj
-
-- name: "ensure nvm is not enabled in '{{ current_home }}/.zshrc'"
+- name: "ensure nvm is not enabled in '{{ current_home }}/{{ shellrc_file }}'"
   blockinfile:
-    path: "{{ current_home }}/.zshrc"
+    path: "{{ current_home }}/{{ shellrc_file }}"
     marker: "# {mark} ANSIBLE NVM MANAGED BLOCK"
     state: absent
     block: |
       export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  when: zsh_rc_file_obj.stat.exists
+  when: shellrc_file_obj.stat.exists
 
 - name: "ensure 'volta' is installed"
   shell: "curl https://get.volta.sh | bash -s -- --skip-setup"
@@ -37,20 +32,20 @@
     creates: "{{ current_home }}/.volta/bin/volta"
   register: volta_installation_obj
 
-- name: ensure volta will be loaded with zsh
+- name: ensure volta will be loaded
   blockinfile:
-    path: "{{ current_home }}/.zshrc"
+    path: "{{ current_home }}/{{ shellrc_file }}"
     marker: "# {mark} ANSIBLE VOLTA MANAGED BLOCK"
     block: |
       export VOLTA_HOME="$HOME/.volta"
       export PATH="$VOLTA_HOME/bin:$PATH"
-  when: zsh_rc_file_obj.stat.exists
+  when: shellrc_file_obj.stat.exists
 
 - name: "ensure 'node@{{ node_version }}' is installed"
-  shell: 'PATH="$HOME/.volta/bin:$PATH" volta install node@{{ node_version }}'
+  shell: '{{ current_home }}/.volta/bin/volta install node@{{ node_version }}'
   args:
     executable: /bin/bash
+    chdir: "{{ current_home }}"
   environment:
-    VOLTA_HOME: "$HOME/.volta"
-    PATH: "$HOME/.volta/bin:$PATH"
-
+    VOLTA_HOME: "{{ current_home }}/.volta"
+    PATH: "{{ current_home }}/.volta/bin:$PATH"
