@@ -46,17 +46,38 @@
     chdir: "{{ valet_current_path }}"
     removes: "composer.json"
 
-- name: "workflows » magento2 » project-install | run npm install in current dir"
-  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && /usr/bin/env npm install"
-  args:
-    chdir: "{{ valet_current_path }}"
-    executable: /bin/bash
-    removes: "package.json"
+- block:
+    - name: "workflows » magento2 » project-install | run npm install in current dir"
+      shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && /usr/bin/env npm install"
+      args:
+        chdir: "{{ valet_current_path }}"
+        executable: /bin/bash
+        removes: "package.json"
 
-- name: "workflows » magento2 » project-install | run npm install in project source path when defined in .valet-sh.yml"
-  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && /usr/bin/env npm install"
-  args:
-    chdir: "{{ valet_sh_project_src_path }}"
-    executable: /bin/bash
-    removes: "package.json"
-  when: valet_current_path != valet_sh_project_src_path
+    - name: "workflows » magento2 » project-install | run npm install in project source path when defined in .valet-sh.yml"
+      shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && /usr/bin/env npm install"
+      args:
+        chdir: "{{ valet_sh_project_src_path }}"
+        executable: /bin/bash
+        removes: "package.json"
+      when: valet_current_path != valet_sh_project_src_path
+  when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"
+
+- block:
+    - name: "workflows » magento2 » project-install | run npm install in current dir"
+      shell: "{{ current_home }}/.volta/bin/npm install"
+      args:
+        chdir: "{{ valet_current_path }}"
+        executable: /bin/bash
+        removes: "package.json"
+
+    - name: "workflows » magento2 » project-install | run npm install in project source path when defined in .valet-sh.yml"
+      shell: "{{ current_home }}/.volta/bin/npm install"
+      args:
+        chdir: "{{ valet_sh_project_src_path }}"
+        executable: /bin/bash
+        removes: "package.json"
+      when: valet_current_path != valet_sh_project_src_path
+  when:
+    - valet_sh_config.default_nvm is defined
+    - valet_sh_config.default_nvm == "volta"
