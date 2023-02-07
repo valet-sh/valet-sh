@@ -65,10 +65,10 @@
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
   when: zsh_rc_file_obj.stat.exists
 
-- include_tasks: ubuntu/nvm.yml
+- include_tasks: nvm.yml
   when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"
 
-- include_tasks: ubuntu/volta.yml
+- include_tasks: volta.yml
   when:
     - valet_sh_config.default_nvm is defined
     - valet_sh_config.default_nvm == "volta"
