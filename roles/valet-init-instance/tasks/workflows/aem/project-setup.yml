@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,21 +15,45 @@
 ##
 ---
 
-- name: "running restore commmand"
-  include_role:
-    name: valet-restore
+- name: "workflows » aem » project-setup | remove old installations"
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ author_dir }}"
+    - "{{ publish_dir }}"
+    #@TODO add dispatcher
 
-- set_fact:
-    valet_link_php_target_version: "php{{ php_version_number | replace('.','') }}"
+- name: "workflows » aem » project-setup | create runtime directory structure"
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ author_dir }}"
+    - "{{ author_dir }}/crx-quickstart"
+    - "{{ publish_dir }}"
+    - "{{ publish_dir }}/crx-quickstart"
+    - "{{ dispatcher_dir}}"
+
+- name: "workflows » aem » project-setup | get cached aem quickstart"
+  stat:
+    path: "{{cache_dir}}/{{ quickstart_file_name }}"
+  register: cached_aem_quickstart
+
+# @TODO this is only a dummy implementation
+- name: "workflows » aem » project-setup | download new aem version"
+  copy:
+    src: "/tmp/remote/aem/{{ quickstart_file_name }}"
+    dest: "{{ cache_dir }}"
   when:
-    - php_version_number is defined
-    - php_version_number|length > 0
+    - not cached_aem_quickstart.stat.exists
 
-- name: "running link command"
-  include_role:
-    name: valet-link
-  vars:
-    valet_action: relink
-    link_name: "{{ valet_sh_project_vars.instance.key }}"
-    valet_current_path: "{{ valet_sh_project_src_path }}"
-    php_version: "{{ valet_link_php_target_version | default() }}"
+- name: "workflows » aem » project-setup | setup author"
+  copy:
+    src: "/tmp/remote/aem/{{ quickstart_file_name }}"
+    dest: "{{ author_dir }}/aem-author-p4502.jar"
+
+- name: "workflows » aem » project-setup | setup publish"
+  copy:
+    src: "/tmp/remote/aem/{{ quickstart_file_name }}"
+    dest: "{{ publish_dir }}/aem-publish-p4503.jar"

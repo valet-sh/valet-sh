@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,70 +15,46 @@
 ##
 ---
 
-- block:
-  - name: "workflows » neos » project-env | copy Settings.generated.yaml"
-    copy:
-      src: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.processed_config }}"
-      dest: "{{ valet_sh_project_src_path }}/Configuration/Settings.generated.yaml"
-      remote_src: yes
-    when: neos_env_php_obj.stat.exists|bool
-  when: valet_sh_project_vars.instance.processed_config is defined
+- name: "workflows » aem » check-vars | read aem.sdk.api from pom.xml"
+  community.general.xml:
 
-- block:
-  - name: "workflows » neos » project-env | set neos related variables"
-    set_fact:
-      valet_sh_neos_key: "{{ valet_sh_project_vars.instance.key }}"
+    path: "{{ valet_sh_project_src_path }}/pom.xml"
+    namespaces:
+      ns: "http://maven.apache.org/POM/4.0.0"
+    xpath: "/ns:project/ns:properties/ns:aem.sdk.api"
+    content: text
+  register: aem_sdk_api_xml_node
 
-  - name: "workflows » neos » project-env | set neos related variables"
-    set_fact:
-      valet_sh_neos_db_name: "{{ valet_sh_project_vars.services.mysql.database }}"
-    when:
-      - valet_sh_project_vars.services is defined
-      - valet_sh_project_vars.services.mysql is defined
-      - valet_sh_project_vars.services.mysql.database is defined
+- name: "workflows » aem » check-vars | set target version"
+  set_fact:
+    target_version: "{{ aem_sdk_api_xml_node.matches[0].values()|first }}"
 
-  - name: "workflows » neos » project-env | set neos related variables"
-    set_fact:
-      valet_sh_neos_db_name: "{{ valet_sh_project_vars.services.mariadb.database }}"
-    when:
-      - valet_sh_project_vars.services is defined
-      - valet_sh_project_vars.services.mariadb is defined
-      - valet_sh_project_vars.services.mariadb.database is defined
+- debug:
+    msg: "{{ target_version }}"
 
-  - name: "workflows » neos » project-env | set neos 'valet_sh_neos_db_host' var"
-    set_fact:
-      valet_sh_neos_db_host: "{{ valet_sh_service_mysql_host_presets.mysql57 }}"
+- name: "workflows » aem » project-setup | populate runtime dir"
+  set_fact:
+    runtime_dir: "{{ valet_current_path }}/.runtime"
 
-  - name: "workflows » neos » project-env | override neos 'valet_sh_neos_db_host' var"
-    set_fact:
-      valet_sh_neos_db_host: "{{ valet_sh_service_mysql_host_presets.mysql80 }}"
-    when:
-      - valet_sh_project_vars.services is defined
-      - valet_sh_project_vars.services.mysql is defined
-      - valet_sh_project_vars.services.mysql.version is defined
-      - valet_sh_project_vars.services.mysql.version == 8.0
+- name: "workflows » aem » project-setup | populate instance dirs"
+  set_fact:
+    author_dir: "{{ runtime_dir }}/author"
+    publish_dir: "{{ runtime_dir }}/publish"
+    dispatcher_dir: "{{ runtime_dir }}/dispatcher"
+    installed_version_file_name: "installed_version.txt"
+    cache_dir: "/tmp/aem"
+    quickstart_file_name: "aem-sdk-quickstart-{{target_version}}.jar"
 
-  - name: "workflows » neos » project-env | override neos 'valet_sh_neos_db_host' var"
-    set_fact:
-      valet_sh_neos_db_host: "{{ valet_sh_service_mysql_host_presets.mariadb104 }}"
-    when:
-      - valet_sh_project_vars.services is defined
-      - valet_sh_project_vars.services.mariadb is defined
-      - valet_sh_project_vars.services.mariadb.version is defined
-      - valet_sh_project_vars.services.mariadb.version == 10.4
+- name: "workflows » aem » project-setup | get previous installed version file"
+  stat:
+    path: "{{ author_dir }}/installed_version.txt"
+  register: installed_version_file
 
-  - name: "workflows » neos » project-env | override neos 'valet_sh_neos_db_host' var"
-    set_fact:
-      valet_sh_neos_db_host: "{{ valet_sh_service_mysql_host_presets.mariadb106 }}"
-    when:
-      - valet_sh_project_vars.services is defined
-      - valet_sh_project_vars.services.mariadb is defined
-      - valet_sh_project_vars.services.mariadb.version is defined
-      - valet_sh_project_vars.services.mariadb.version == 10.6
+- name: "workflows » aem » project-setup | get previous installed version"
+  set_fact:
+    installed_version: "{{ lookup('file', author_dir + '/' + installed_version_file_name) }}"
+  when: installed_version_file.stat.exists
 
-  - name: "workflows » neos » project-env | provide Settings.generated.yaml for project"
-    template:
-      src: "templates/Settings.generated.yaml.j2"
-      dest: "{{ valet_sh_project_src_path }}/Configuration/Settings.generated.yaml"
-
-  when: valet_sh_project_vars.instance.processed_config is not defined
+- name: "workflows » aem » project-setup | determine whether aem needs to be re-installed"
+  set_fact:
+    have_to_reinstall: (installed_version is not defined) or (target_version != installed_version)

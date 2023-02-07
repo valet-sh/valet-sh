@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: "partials » load-project-workflow | fail when project_type was not found"
+- name: "partials » load-project-workflow | fail when project_type was not found asdf"
   fail:
     msg: "could not find project_type"
   when: valet_sh_project_vars.instance.type is not defined
@@ -28,5 +28,8 @@
 
 - include_tasks: "workflows/neos/main.yml"
   when: valet_sh_project_vars.instance.type == "neos"
+
+- include_tasks: "workflows/aem/main.yml"
+  when: valet_sh_project_vars.instance.type == "aem"
 
 # @TODO: fail when no project workflow was included
