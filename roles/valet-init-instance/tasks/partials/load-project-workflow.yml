@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: "partials » load-project-workflow | fail when project_type was not found asdf"
+- name: "partials » load-project-workflow | fail when project_type was not found"
   fail:
     msg: "could not find project_type"
   when: valet_sh_project_vars.instance.type is not defined
