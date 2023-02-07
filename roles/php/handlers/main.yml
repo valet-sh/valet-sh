@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -208,6 +208,30 @@
     state: reloaded
   become: true
 
+- name: "systemd | php8.2-fpm | started"
+  systemd:
+    name: "php8.2-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php8.2-fpm | stopped"
+  systemd:
+    name: "php8.2-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php8.2-fpm | restarted"
+  systemd:
+    name: "php8.2-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php8.2-fpm | reloaded"
+  systemd:
+    name: "php8.2-fpm"
+    state: reloaded
+  become: true
+
 - name: brew | vsh-php56 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
 
@@ -279,3 +303,12 @@
 
 - name: brew | vsh-php81 | started
   shell: "{{ valet_sh_homebrew_bin }} services start vsh-php81"
+
+- name: brew | vsh-php82 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php82"
+
+- name: brew | vsh-php82 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php82"
+
+- name: brew | vsh-php82 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php82"

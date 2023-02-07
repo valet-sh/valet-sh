@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -31,5 +31,6 @@
     - vsh-php74
     - vsh-php80
     - vsh-php81
+    - vsh-php82
   loop_control:
     loop_var: valet_sh_php_version_item

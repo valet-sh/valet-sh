@@ -41,23 +41,23 @@
     state: restarted
   become: true
 
-- name: systemd | mariadb105 | started
+- name: systemd | mariadb106 | started
   systemd:
-    name: mariadb105
+    name: mariadb106
     daemon_reload: true
     state: started
   become: true
 
-- name: systemd | mariadb105 | stopped
+- name: systemd | mariadb106 | stopped
   systemd:
-    name: mariadb105
+    name: mariadb106
     daemon_reload: true
     state: stopped
   become: true
 
-- name: systemd | mariadb105 | restarted
+- name: systemd | mariadb106 | restarted
   systemd:
-    name: mariadb105
+    name: mariadb106
     daemon_reload: true
     state: restarted
   become: true
@@ -71,11 +71,11 @@
 - name: brew | vsh-mariadb104 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb104"
 
-- name: brew | vsh-mariadb105 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb105"
+- name: brew | vsh-mariadb106 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb106"
 
-- name: brew | vsh-mariadb105 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb105"
+- name: brew | vsh-mariadb106 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb106"
 
-- name: brew | vsh-mariadb105 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb105"
+- name: brew | vsh-mariadb106 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb106"
