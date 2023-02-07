@@ -15,41 +15,6 @@
 ##
 ---
 
-- name: "gather package facts"
-  package_facts:
-    manager: "auto"
-
-- name: "set default value if npm is installed from repo"
-  set_fact:
-    nodejs_npm_is_installed_from_repo: false
-
-- name: "check if npm is installed from repo"
-  set_fact:
-    nodejs_npm_is_installed_from_repo: true
-  when: "'npm' in ansible_facts.packages"
-
-- name: "ensure 'gulp' and 'n' is not installed globally"
-  npm:
-    name: "{{ nvm_uninstall_global_packages_item }}"
-    global: yes
-    state: absent
-  with_items:
-    - "n"
-    - "gulp"
-  loop_control:
-    loop_var: nvm_uninstall_global_packages_item
-  when: nodejs_npm_is_installed_from_repo
-
-- name: ensure nodejs and npm is not installed
-  apt:
-    name: "{{ packages }}"
-    state: absent
-  vars:
-    packages:
-      - nodejs
-      - npm
-  become: true
-
 - name: check if .zshrc exists in home directory
   stat:
     path: "{{ current_home }}/.zshrc"
@@ -72,4 +37,3 @@
   when:
     - valet_sh_config.default_nvm is defined
     - valet_sh_config.default_nvm == "volta"
-

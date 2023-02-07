@@ -15,6 +15,12 @@
 ##
 ---
 
+- name: ensure nvm home dir exists
+  file:
+    path: "{{ current_home }}/.nvm"
+    state: directory
+    mode: '0755'
+
 - name: check if nvm.sh already exists
   stat:
     path: "{{ current_home }}/.nvm/nvm.sh"
