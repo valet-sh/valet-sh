@@ -149,12 +149,13 @@
 
 - name: "link | find a matching application template"
   block:
-    - include_tasks: macos/templates/magento2.yml
-    - include_tasks: macos/templates/neos.yml
-    - include_tasks: macos/templates/typo3.yml
-    - include_tasks: macos/templates/shopware6.yml
-    - include_tasks: macos/templates/magento1.yml
-    - include_tasks: macos/templates/fallback.yml
+    - include_tasks: templates/magento2.yml
+    - include_tasks: templates/neos.yml
+    - include_tasks: templates/typo3.yml
+    - include_tasks: templates/aem.yml
+    - include_tasks: templates/shopware6.yml
+    - include_tasks: templates/magento1.yml
+    - include_tasks: templates/fallback.yml
   when: not template_found
 
 - name: "link | create new valet_link variable"

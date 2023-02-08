@@ -47,7 +47,7 @@
 
 - name: "workflows » aem » project-setup | get previous installed version file"
   stat:
-    path: "{{ author_dir }}/installed_version.txt"
+    path: "{{ author_dir }}/{{ installed_version_file_name }}"
   register: installed_version_file
 
 - name: "workflows » aem » project-setup | get previous installed version"
