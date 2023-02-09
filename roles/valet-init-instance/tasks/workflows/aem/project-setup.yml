@@ -15,6 +15,20 @@
 ##
 ---
 
+#@TODO: stop dispatcher service
+
+- name: "workflows » aem » project-setup | stop author instance"
+  shell: "{{ author_dir }}/crx-quickstart/bin/stop"
+  args:
+    chdir: "{{ author_dir }}"
+  ignore_errors: true
+
+- name: "workflows » aem » project-setup | stop publish instance"
+  shell: "{{ publish_dir }}/crx-quickstart/bin/stop"
+  args:
+    chdir: "{{ publish_dir }}"
+  ignore_errors: true
+
 - name: "workflows » aem » project-setup | remove old installations"
   file:
     path: "{{ item }}"
@@ -22,38 +36,125 @@
   loop:
     - "{{ author_dir }}"
     - "{{ publish_dir }}"
+    - "{{ runtime_tmp_dir }}"
     #@TODO add dispatcher
+
+- name: "workflows » aem » project-setup | ensure local cache directory '{{ valet_sh_aem_local_cache_dir }}' exists"
+  file:
+    path: "{{ valet_sh_aem_local_cache_dir }}"
+    state: directory
 
 - name: "workflows » aem » project-setup | create runtime directory structure"
   file:
     path: "{{ item }}"
     state: directory
   loop:
+    - "{{ runtime_dir }}"
     - "{{ author_dir }}"
-    - "{{ author_dir }}/crx-quickstart"
     - "{{ publish_dir }}"
-    - "{{ publish_dir }}/crx-quickstart"
-    - "{{ dispatcher_dir}}"
+    - "{{ dispatcher_dir }}"
+    - "{{ runtime_tmp_dir }}"
 
-- name: "workflows » aem » project-setup | get cached aem quickstart"
+- name: "workflows » aem » project-setup | check if aem target version '{{ target_version }}' is in cache"
   stat:
-    path: "{{cache_dir}}/{{ quickstart_file_name }}"
-  register: cached_aem_quickstart
+    path: "{{ valet_sh_aem_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
+  register: aem_target_version_cache_file_obj
 
-# @TODO this is only a dummy implementation
-- name: "workflows » aem » project-setup | download new aem version"
-  copy:
-    src: "/tmp/remote/aem/{{ quickstart_file_name }}"
-    dest: "{{ cache_dir }}"
-  when:
-    - not cached_aem_quickstart.stat.exists
+- block:
+    - name: "workflows » aem » project-setup | register hub host"
+      add_host:
+        hostname: hub
+        ansible_host: "{{ valet_sh_hub_host }}"
+        ansible_port: "{{ valet_sh_hub_port }}"
+        ansible_user: "{{ valet_sh_hub_user }}"
+        ansible_python_interpreter: /usr/bin/python3
+        ansible_ssh_pipelining: 1
 
-- name: "workflows » aem » project-setup | setup author"
-  copy:
-    src: "/tmp/remote/aem/{{ quickstart_file_name }}"
-    dest: "{{ author_dir }}/aem-author-p4502.jar"
+    - name: "workflows » aem » project-setup | get ssh fingerprint for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}'"
+      shell: "ssh-keyscan -tecdsa -p {{ valet_sh_hub_port|string }} {{ valet_sh_hub_host }}"
+      register: valet_sh_hub_host_ssh_fingerprint_obj
 
-- name: "workflows » aem » project-setup | setup publish"
+    - name: "workflows » aem » project-setup | set known_host hash field name'"
+      set_fact:
+        valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
+      when: valet_sh_hub_port != 22 or valet_sh_hub_port != "22"
+
+    - name: "workflows » aem » project-setup | set known_host hash field name'"
+      set_fact:
+        valet_sh_known_host_hashed_name: "{{ valet_sh_hub_host }}"
+      when: valet_sh_hub_port == 22 or valet_sh_hub_port == "22"
+
+    - name: "workflows » aem » project-setup | ensure ssh-key for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}' is in known_hosts"
+      known_hosts:
+        name: "{{ valet_sh_known_host_hashed_name }}"
+        key: "{{ valet_sh_hub_host_ssh_fingerprint_obj.stdout }}"
+        path: "~/.ssh/known_hosts"
+        state: present
+
+    - name: "workflows » aem » project-setup | check if '{{ valet_sh_project_vars.hub.common_path }}/.aem/aem-sdk-{{ target_version }}.zip' is available on hub"
+      stat:
+        path: "{{ valet_sh_project_vars.hub.common_path }}/.aem/aem-sdk-{{ target_version }}.zip"
+      register: aem_target_version_remote_file_obj
+      delegate_to: hub
+
+    - name: "workflows » aem » project-setup | fail when 'aem-sdk-{{ target_version }}.zip' was not found on hub"
+      fail:
+        msg: "AEM target version '{{ target_version }}' is not available!"
+      when: not aem_target_version_remote_file_obj.stat.exists
+
+    - name: "workflows » aem » project-setup | synchronize aem release 'aem-sdk-{{ target_version }}.zip'"
+      shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.common_path }}/.aem/aem-sdk-{{ target_version }}.zip {{ valet_sh_aem_local_cache_dir }}/aem-sdk-{{ target_version }}.zip" # noqa 204
+  when: not aem_target_version_cache_file_obj.stat.exists|bool
+
+- name: "workflows » aem » project-setup | extract 'aem-sdk-{{ target_version }}.zip' to '{{ runtime_tmp_dir }}'"
+  unarchive:
+    src: "{{ valet_sh_aem_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
+    dest: "{{ runtime_tmp_dir }}"
+
+- name: "workflows » aem » project-setup | copy 'aem-sdk-quickstart-{{ target_version }}.jar' to '{{ author_dir }}/aem-author-p{{ valet_sh_project_vars.instance.author_port }}.jar'"
   copy:
-    src: "/tmp/remote/aem/{{ quickstart_file_name }}"
-    dest: "{{ publish_dir }}/aem-publish-p4503.jar"
+    src: "{{ runtime_tmp_dir }}/aem-sdk-quickstart-{{ target_version }}.jar"
+    dest: "{{ author_dir }}/aem-author-p{{ valet_sh_project_vars.instance.author_port }}.jar"
+
+- name: "workflows » aem » project-setup | unpack aem author instance"
+  shell: "{{ java_bin }} -jar aem-author-p{{ valet_sh_project_vars.instance.author_port }}.jar -unpack"
+  args:
+    chdir: "{{ author_dir }}"
+
+- name: "workflows » aem » project-setup | replace tcp port in startup script for author instance"
+  replace:
+    path: "{{ author_dir }}/crx-quickstart/bin/start"
+    regexp: '4502'
+    replace: "{{ valet_sh_project_vars.instance.author_port }}"
+
+- name: "workflows » aem » project-setup | start author instance"
+  shell: "{{ author_dir }}/crx-quickstart/bin/start"
+  args:
+    chdir: "{{ author_dir }}"
+
+- name: "workflows » aem » project-setup | copy 'aem-sdk-quickstart-{{ target_version }}.jar' to '{{ publish_dir }}/aem-publish-p{{ valet_sh_project_vars.instance.publish_port }}.jar'"
+  copy:
+    src: "{{ runtime_tmp_dir }}/aem-sdk-quickstart-{{ target_version }}.jar"
+    dest: "{{ publish_dir }}/aem-publish-p{{ valet_sh_project_vars.instance.publish_port }}.jar"
+
+- name: "workflows » aem » project-setup | unpack aem publish instance"
+  shell: "{{ java_bin }} -jar aem-publish-p{{ valet_sh_project_vars.instance.publish_port }}.jar -unpack"
+  args:
+    chdir: "{{ publish_dir }}"
+
+- name: "workflows » aem » project-setup | replace tcp port in startup script for publish instance"
+  replace:
+    path: "{{ publish_dir }}/crx-quickstart/bin/start"
+    regexp: '4502'
+    replace: "{{ valet_sh_project_vars.instance.publish_port }}"
+
+- name: "workflows » aem » project-setup | replace runmode 'author' with 'publish' in startup script for publish instance"
+  replace:
+    path: "{{ publish_dir }}/crx-quickstart/bin/start"
+    regexp: 'author'
+    replace: "publish"
+
+- name: "workflows » aem » project-setup | start publish instance"
+  shell: "{{ publish_dir }}/crx-quickstart/bin/start"
+  args:
+    chdir: "{{ publish_dir }}"

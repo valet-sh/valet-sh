@@ -38,21 +38,22 @@
 
 - name: "workflows » aem » project-setup | populate instance dirs"
   set_fact:
+    java_bin: "java" #FIXME: eval absolute path to specified java version!
     author_dir: "{{ runtime_dir }}/author"
     publish_dir: "{{ runtime_dir }}/publish"
     dispatcher_dir: "{{ runtime_dir }}/dispatcher"
+    runtime_tmp_dir: "{{ runtime_dir }}/tmp"
     installed_version_file_name: "installed_version.txt"
-    cache_dir: "/tmp/aem"
     quickstart_file_name: "aem-sdk-quickstart-{{target_version}}.jar"
 
 - name: "workflows » aem » project-setup | get previous installed version file"
   stat:
-    path: "{{ author_dir }}/{{ installed_version_file_name }}"
+    path: "{{ runtime_dir }}/{{ installed_version_file_name }}"
   register: installed_version_file
 
 - name: "workflows » aem » project-setup | get previous installed version"
   set_fact:
-    installed_version: "{{ lookup('file', author_dir + '/' + installed_version_file_name) }}"
+    installed_version: "{{ lookup('file', runtime_dir + '/' + installed_version_file_name) }}"
   when: installed_version_file.stat.exists
 
 - name: "workflows » aem » project-setup | determine whether aem needs to be re-installed"

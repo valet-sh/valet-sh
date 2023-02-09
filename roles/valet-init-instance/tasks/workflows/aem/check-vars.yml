@@ -26,3 +26,37 @@
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.path is defined
 
+- name: "workflows » aem » check-vars | set hub port"
+  set_fact:
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+  when: valet_sh_project_vars.hub.port is defined
+
+- name: "workflows » aem » check-vars | set hub host"
+  set_fact:
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+  when: valet_sh_project_vars.hub.host is defined
+
+- name: "workflows » aem » check-vars | set hub user"
+  set_fact:
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+  when: valet_sh_project_vars.hub.user is defined
+
+- name: "workflows » aem » check-vars | set hub data path"
+  set_fact:
+    valet_sh_hub_path: "{{ valet_sh_project_vars.hub.path | trim }}"
+  when: valet_sh_project_vars.hub.path is defined
+
+- name: "workflows » aem » check-vars | set hub port"
+  set_fact:
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+  when: valet_sh_project_vars.hub.port is defined
+
+- name: "workflows » aem » check-vars | set hub host"
+  set_fact:
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+  when: valet_sh_project_vars.hub.host is defined
+
+- name: "workflows » aem » check-vars | set hub user"
+  set_fact:
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+  when: valet_sh_project_vars.hub.user is defined
