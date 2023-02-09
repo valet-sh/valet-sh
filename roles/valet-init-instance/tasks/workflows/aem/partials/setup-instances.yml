@@ -1,0 +1,24 @@
+- name: "workflows » aem » project-setup | extract 'aem-sdk-{{ target_version }}.zip' to '{{ runtime_tmp_dir }}'"
+  unarchive:
+    src: "{{ valet_sh_aem_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
+    dest: "{{ runtime_tmp_dir }}"
+
+- name: "workflows » aem » project-setup | copy 'aem-sdk-quickstart-{{ target_version }}.jar' to '{{ author_dir }}/aem-author.jar'"
+  copy:
+    src: "{{ runtime_tmp_dir }}/aem-sdk-quickstart-{{ target_version }}.jar"
+    dest: "{{ author_dir }}/aem-author.jar"
+
+- name: "workflows » aem » project-setup | unpack aem author instance"
+  shell: "{{ java_bin }} -jar aem-author.jar -unpack"
+  args:
+    chdir: "{{ author_dir }}"
+
+- name: "workflows » aem » project-setup | copy 'aem-sdk-quickstart-{{ target_version }}.jar' to '{{ publish_dir }}/aem-publish.jar'"
+  copy:
+    src: "{{ runtime_tmp_dir }}/aem-sdk-quickstart-{{ target_version }}.jar"
+    dest: "{{ publish_dir }}/aem-publish.jar"
+
+- name: "workflows » aem » project-setup | unpack aem publish instance"
+  shell: "{{ java_bin }} -jar aem-publish.jar -unpack"
+  args:
+    chdir: "{{ publish_dir }}"

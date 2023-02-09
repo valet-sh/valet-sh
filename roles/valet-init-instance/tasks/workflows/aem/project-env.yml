@@ -29,9 +29,6 @@
   set_fact:
     target_version: "{{ aem_sdk_api_xml_node.matches[0].values()|first }}"
 
-- debug:
-    msg: "{{ target_version }}"
-
 - name: "workflows » aem » project-setup | populate runtime dir"
   set_fact:
     runtime_dir: "{{ valet_current_path }}/.runtime"
