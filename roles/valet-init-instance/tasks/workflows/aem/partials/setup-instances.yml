@@ -22,3 +22,51 @@
   shell: "{{ java_bin }} -jar aem-publish.jar -unpack"
   args:
     chdir: "{{ publish_dir }}"
+
+
+- name: "workflows » aem » project-setup | find dispatcher maskeself script"
+  find:
+    paths: "{{ runtime_tmp_dir }}"
+    patterns: "aem-sdk-dispatcher-tools-(.*)-unix.sh$"
+    use_regex: yes
+  register: dispatcher_maskeself_script_find
+
+- name: "workflows » aem » project-setup | set dispatcher_maskeself_script path"
+  set_fact:
+    dispatcher_maskeself_script: "{{ dispatcher_maskeself_script_find.files[0].path }}"
+
+- name: "workflows » aem » project-setup | set permissions on dispatcher maskeself script"
+  copy:
+    src: "{{ dispatcher_maskeself_script }}"
+    dest: "{{ dispatcher_maskeself_script }}"
+    mode: a+x
+
+- name: "workflows » aem » project-setup | execute dispatcher maskeself script"
+  shell: "{{ dispatcher_maskeself_script }}"
+  args:
+    chdir: "{{ runtime_tmp_dir }}"
+
+- name: "workflows » aem » project-setup | find dispatcher tools folder"
+  find:
+    paths: "{{ runtime_tmp_dir }}"
+    file_type: directory
+    patterns: "dispatcher-sdk-(.*)$"
+    use_regex: yes
+  register: dispatcher_tools_folder_find
+
+- name: "workflows » aem » project-setup | set dispatcher_tools path"
+  set_fact:
+    dispatcher_tools_path: "{{ dispatcher_tools_folder_find.files[0].path }}"
+
+- name: "workflows » aem » project-setup | copy dispatcher tools"
+  copy:
+    src: "{{ dispatcher_tools_path }}/"
+    dest: "{{ dispatcher_dir }}"
+    mode: preserve
+
+#@TODO ensure docker daemon is started
+
+- name: "workflows » aem » project-setup | start dispatcher tools"
+  shell: "{{ dispatcher_dir }}/bin/docker_run.sh {{ valet_sh_project_src_path }}/dispatcher/src host.docker.internal:{{ valet_sh_project_vars.instance.publish_port }} {{ valet_sh_project_vars.instance.dispatcher_port }} &> {{ dispatcher_dir }}/output.log &"
+
+#@TODO handle PID to stop the dispatcher

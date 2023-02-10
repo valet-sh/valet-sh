@@ -6,7 +6,7 @@
     - "{{ author_dir }}"
     - "{{ publish_dir }}"
     - "{{ runtime_tmp_dir }}"
-    #@TODO add dispatcher
+    - "{{ dispatcher_dir }}"
 
 - name: "workflows » aem » project-setup | ensure local cache directory '{{ valet_sh_aem_sdk_local_cache_dir }}' exists"
   file:
