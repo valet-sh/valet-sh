@@ -36,3 +36,4 @@ valet_sh_service_mysql_host_presets:
 
 valet_sh_aem_local_cache_dirname: ".aemcache"
 valet_sh_aem_local_cache_dir: "{{ current_home }}/{{ valet_sh_aem_local_cache_dirname }}"
+valet_sh_aem_sdk_local_cache_dir: "{{ valet_sh_aem_local_cache_dir }}/aem-sdk"

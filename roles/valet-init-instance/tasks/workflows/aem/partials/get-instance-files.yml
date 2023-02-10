@@ -1,6 +1,6 @@
 - name: "workflows » aem » project-setup | check if aem target version '{{ target_version }}' is in cache"
   stat:
-    path: "{{ valet_sh_aem_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
+    path: "{{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
   register: aem_target_version_cache_file_obj
 
 - block:
@@ -34,9 +34,9 @@
       path: "~/.ssh/known_hosts"
       state: present
 
-  - name: "workflows » aem » project-setup | check if '{{ valet_sh_project_vars.hub.common_path }}/.aem/aem-sdk-{{ target_version }}.zip' is available on hub"
+  - name: "workflows » aem » project-setup | check if '{{ aem_sdk_hub_path }}//aem-sdk-{{ target_version }}.zip' is available on hub"
     stat:
-      path: "{{ valet_sh_project_vars.hub.common_path }}/.aem/aem-sdk-{{ target_version }}.zip"
+      path: "{{ aem_sdk_hub_path }}/aem-sdk-{{ target_version }}.zip"
     register: aem_target_version_remote_file_obj
     delegate_to: hub
 
@@ -46,5 +46,5 @@
     when: not aem_target_version_remote_file_obj.stat.exists
 
   - name: "workflows » aem » project-setup | synchronize aem release 'aem-sdk-{{ target_version }}.zip'"
-    shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.common_path }}/.aem/aem-sdk-{{ target_version }}.zip {{ valet_sh_aem_local_cache_dir }}/aem-sdk-{{ target_version }}.zip" # noqa 204
+    shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ aem_sdk_hub_path }}/aem-sdk-{{ target_version }}.zip {{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip" # noqa 204
   when: not aem_target_version_cache_file_obj.stat.exists|bool

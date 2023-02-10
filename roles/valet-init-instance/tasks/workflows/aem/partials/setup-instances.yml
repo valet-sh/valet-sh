@@ -1,6 +1,6 @@
 - name: "workflows » aem » project-setup | extract 'aem-sdk-{{ target_version }}.zip' to '{{ runtime_tmp_dir }}'"
   unarchive:
-    src: "{{ valet_sh_aem_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
+    src: "{{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
     dest: "{{ runtime_tmp_dir }}"
 
 - name: "workflows » aem » project-setup | copy 'aem-sdk-quickstart-{{ target_version }}.jar' to '{{ author_dir }}/aem-author.jar'"

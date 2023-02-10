@@ -60,3 +60,7 @@
   set_fact:
     valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
   when: valet_sh_project_vars.hub.user is defined
+
+- name: "workflows » aem » check-vars | set aem-sdk hub path"
+  set_fact:
+    aem_sdk_hub_path: "{{ valet_sh_project_vars.hub.common_path | trim  }}/.aem/aem-sdk"
