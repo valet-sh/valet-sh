@@ -15,7 +15,13 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | remove runtime tmp dir"
-  file:
-    path: "{{ valet_sh_aem_runtime_tmp_dir }}"
-    state: absent
+- name: "partials » load-valet-sh-file | checking for '{{ valet_sh_filename }}' file in '{{ valet_current_path }}'"
+  stat:
+    path: "{{ valet_current_path }}/{{ valet_sh_filename }}"
+  register: valet_sh_file_obj
+
+- name: "partials » load-valet-sh-file | include variables from '{{ valet_sh_filename }}' file"
+  include_vars:
+    file: "{{ valet_current_path }}/{{ valet_sh_filename }}"
+    name: valet_sh_project_vars
+  when: valet_sh_file_obj.stat.exists

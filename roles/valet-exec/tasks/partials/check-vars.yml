@@ -15,7 +15,16 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | remove runtime tmp dir"
-  file:
-    path: "{{ valet_sh_aem_runtime_tmp_dir }}"
-    state: absent
+- name: "partials » check-vars | fail when valet_current_path is not defined"
+  fail:
+    msg: "valet_current_path is not defined"
+  when: valet_current_path is not defined
+
+- name: "partials » check-vars | set working dir name"
+  set_fact:
+    valet_working_dir: "{{ valet_current_path | basename }}"
+
+- name: "partials » check-vars | fail when valet_action variable is empty"
+  fail:
+    msg: "no action defined"
+  when: valet_action | length == 0

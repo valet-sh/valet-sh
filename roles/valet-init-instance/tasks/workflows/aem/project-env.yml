@@ -29,28 +29,28 @@
   set_fact:
     target_version: "{{ aem_sdk_api_xml_node.matches[0].values()|first }}"
 
-- name: "workflows » aem » project-setup | populate runtime dir"
-  set_fact:
-    runtime_dir: "{{ valet_current_path }}/.runtime"
+#- name: "workflows » aem » project-setup | populate runtime dir"
+#  set_fact:
+#    runtime_dir: "{{ valet_current_path }}/.runtime"
 
-- name: "workflows » aem » project-setup | populate instance dirs"
-  set_fact:
-    java_bin: "java" #FIXME: eval absolute path to specified java version!
-    author_dir: "{{ runtime_dir }}/author"
-    publish_dir: "{{ runtime_dir }}/publish"
-    dispatcher_dir: "{{ runtime_dir }}/dispatcher"
-    runtime_tmp_dir: "{{ runtime_dir }}/tmp"
-    installed_version_file_name: "installed_version.txt"
-    quickstart_file_name: "aem-sdk-quickstart-{{target_version}}.jar"
+#- name: "workflows » aem » project-setup | populate instance dirs"
+#  set_fact:
+#    java_bin: "java" #FIXME: eval absolute path to specified java version!
+#    author_dir: "{{ runtime_dir }}/author"
+#    publish_dir: "{{ runtime_dir }}/publish"
+#    dispatcher_dir: "{{ runtime_dir }}/dispatcher"
+#    runtime_tmp_dir: "{{ runtime_dir }}/tmp"
+#    installed_version_file_name: "installed_version.txt"
+#    quickstart_file_name: "aem-sdk-quickstart-{{target_version}}.jar"
 
 - name: "workflows » aem » project-setup | get previous installed version file"
   stat:
-    path: "{{ runtime_dir }}/{{ installed_version_file_name }}"
+    path: "{{ valet_sh_aem_runtime_dir }}/{{ valet_sh_aem_installed_version_file_name }}"
   register: installed_version_file
 
 - name: "workflows » aem » project-setup | get previous installed version"
   set_fact:
-    installed_version: "{{ lookup('file', runtime_dir + '/' + installed_version_file_name) }}"
+    installed_version: "{{ lookup('file', valet_sh_aem_runtime_dir + '/' + valet_sh_aem_installed_version_file_name) }}"
   when: installed_version_file.stat.exists
 
 - name: "workflows » aem » project-setup | determine whether aem needs to be re-installed"

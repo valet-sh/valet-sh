@@ -1,4 +1,3 @@
-##
 #   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +14,11 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | remove runtime tmp dir"
-  file:
-    path: "{{ valet_sh_aem_runtime_tmp_dir }}"
-    state: absent
+- name: "partials » load-project-workflow | fail when project_type was not found"
+  fail:
+    msg: "could not find project_type"
+  when: valet_sh_project_vars.instance.type is not defined
+
+- include_tasks: "../workflows/aem/main.yml"
+  when: valet_sh_project_vars.instance.type == "aem"
+

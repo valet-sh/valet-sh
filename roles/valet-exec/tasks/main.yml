@@ -15,7 +15,10 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | remove runtime tmp dir"
-  file:
-    path: "{{ valet_sh_aem_runtime_tmp_dir }}"
-    state: absent
+- include_tasks: partials/check-vars.yml
+
+- include_tasks: partials/load-valet-sh-file.yml
+  when: valet_sh_project_vars is not defined
+
+- include_tasks: partials/load-project-workflow.yml
+

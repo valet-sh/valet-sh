@@ -15,7 +15,22 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | remove runtime tmp dir"
-  file:
-    path: "{{ valet_sh_aem_runtime_tmp_dir }}"
-    state: absent
+dependencies:
+  - role: shared-variables
+
+galaxy_info:
+  author: dittertp
+  description: valet.sh db command
+  company: "TechDivision GmbH"
+  license: "Apache-2.0"
+  min_ansible_version: 2.10
+  platforms:
+    - name: Ubuntu
+      versions:
+        - 20.04
+        - 22.04
+    - name: MacOSX
+      versions:
+        - 11
+        - 12
+        - 13

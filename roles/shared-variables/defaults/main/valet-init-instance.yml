@@ -15,7 +15,11 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | remove runtime tmp dir"
-  file:
-    path: "{{ valet_sh_aem_runtime_tmp_dir }}"
-    state: absent
+valet_sh_aem_runtime_dir: "{{ valet_current_path }}/.runtime"
+valet_sh_aem_java_bin: "java" #FIXME: eval absolute path to specified java version!
+valet_sh_aem_author_dir: "{{ valet_sh_aem_runtime_dir }}/author"
+valet_sh_aem_publish_dir: "{{ valet_sh_aem_runtime_dir }}/publish"
+valet_sh_aem_dispatcher_dir: "{{ valet_sh_aem_runtime_dir }}/dispatcher"
+valet_sh_aem_runtime_tmp_dir: "{{ valet_sh_aem_runtime_dir }}/tmp"
+valet_sh_aem_installed_version_file_name: "installed_version.txt"
+valet_sh_aem_quickstart_file_name: "aem-sdk-quickstart-{{target_version}}.jar"

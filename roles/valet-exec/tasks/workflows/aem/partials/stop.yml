@@ -1,0 +1,81 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+# AUTHOR
+- block:
+    - name: "workflows » aem » partials » stop | maybe get running author pid"
+      set_fact:
+        author_pid: "{{ lookup('file', valet_sh_aem_author_dir + '/crx-quickstart/conf/cq.pid') }}"
+      ignore_errors: true
+
+    - name: "workflows » aem » partials » stop | maybe stop author instance"
+      shell: "{{ valet_sh_aem_author_dir }}/crx-quickstart/bin/stop"
+      args:
+        chdir: "{{ valet_sh_aem_author_dir }}"
+      ignore_errors: true
+
+    #@TODO can we force kill the instance instead?
+    - name: "workflows » aem » partials » stop | maybe wait for author to be stopped"
+      shell: "ps -p {{ author_pid }} | grep {{ author_pid }}"
+      register: response
+      retries: 30
+      delay: 3
+      until: response.stdout == ""
+      when: author_pid is defined
+      failed_when: "response.rc not in [ 0, 1 ]"
+  when: valet_action_target == "author" or valet_action_target == "all"
+
+# PUBLISH
+- block:
+    - name: "workflows » aem » partials » stop | maybe get running publish pid"
+      set_fact:
+        publish_pid: "{{ lookup('file', valet_sh_aem_publish_dir + '/crx-quickstart/conf/cq.pid') }}"
+      ignore_errors: true
+
+    - name: "workflows » aem » partials » stop | maybe stop publish instance"
+      shell: "{{ valet_sh_aem_publish_dir }}/crx-quickstart/bin/stop"
+      args:
+        chdir: "{{ valet_sh_aem_publish_dir }}"
+      ignore_errors: true
+
+    #@TODO can we force kill the instance instead?
+    - name: "workflows » aem » partials » stop | maybe wait for publish to be stopped"
+      shell: "ps -p {{ publish_pid }} | grep {{ publish_pid }}"
+      register: response
+      retries: 30
+      delay: 3
+      until: response.stdout == ""
+      when: publish_pid is defined
+      failed_when: "response.rc not in [ 0, 1 ]"
+  when: valet_action_target == "publish" or valet_action_target == "all"
+
+
+# DISPATCHER
+- block:
+    - name: "workflows » aem » partials » stop | get running dispatcher container"
+      shell: "docker container ls --format='{% raw %}{{.ID}}\t{{.Ports}}{% endraw %}' | grep {{ valet_sh_project_vars.instance.dispatcher_port }} | awk '{print $1}'"
+      register: valet_sh_aem_dispatcher_docker_container_obj
+
+    - name: "workflows » aem » partials » stop | fail when multiple containers were found"
+      fail:
+        msg: "multiple dispatcher container found"
+      when: valet_sh_aem_dispatcher_docker_container_obj.stdout_lines|length > 1
+
+    - name: "workflows » aem » partials » stop | stopping dispatcher container {{ valet_sh_aem_dispatcher_docker_container_obj.stdout }}"
+      shell: "docker container stop {{ valet_sh_aem_dispatcher_docker_container_obj.stdout }}"
+      when: valet_sh_aem_dispatcher_docker_container_obj.stdout_lines|length == 1
+  when: valet_action_target == "dispatcher" or valet_action_target == "all"
