@@ -23,3 +23,5 @@
   when: have_to_reinstall
 
 - include_tasks: project-link.yml
+
+- include_tasks: project-deployment.yml

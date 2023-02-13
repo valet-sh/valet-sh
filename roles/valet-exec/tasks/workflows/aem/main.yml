@@ -21,7 +21,7 @@
   when:
     - valet_action != "start"
     - valet_action != "stop"
-    - valet_action != "restart
+    - valet_action != "restart"
 
 - include_tasks: "partials/start.yml"
   when: valet_action == "start"
@@ -31,4 +31,3 @@
 
 - include_tasks: "partials/restart.yml"
   when: valet_action == "restart"
-
