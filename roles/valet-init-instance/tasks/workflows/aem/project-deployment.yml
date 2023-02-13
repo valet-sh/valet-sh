@@ -25,7 +25,7 @@
     status_code:
       - 200
   until: author_uri_output.status == 200
-  retries: 30
+  retries: 50
   delay: 10
   register: author_uri_output
 
@@ -39,7 +39,7 @@
     status_code:
       - 200
   until: publish_uri_output.status == 200
-  retries: 30
+  retries: 50
   delay: 10
   register: publish_uri_output
 
