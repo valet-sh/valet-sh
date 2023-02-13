@@ -15,44 +15,47 @@
 ##
 ---
 
-- name: "workflows » aem » check-vars | read aem.sdk.api from pom.xml"
-  community.general.xml:
+- name: "workflows » aem » project-env | get target aem sdk version"
+  set_fact:
+    valet_sh_aem_sdk_target_version: "{{ valet_sh_project_vars.instance.sdk_version }}"
 
+- name: "workflows » aem » project-env | ensure aem.sdk.api in pom.xml is up2date"
+  community.general.xml:
     path: "{{ valet_sh_project_src_path }}/pom.xml"
     namespaces:
       ns: "http://maven.apache.org/POM/4.0.0"
     xpath: "/ns:project/ns:properties/ns:aem.sdk.api"
-    content: text
-  register: aem_sdk_api_xml_node
+    value: "{{ valet_sh_aem_sdk_target_version }}"
+    state: present
 
-- name: "workflows » aem » check-vars | set target version"
-  set_fact:
-    target_version: "{{ aem_sdk_api_xml_node.matches[0].values()|first }}"
+- name: "workflows » aem » project-env | ensure aem.port in pom.xml is up2date"
+  community.general.xml:
+    path: "{{ valet_sh_project_src_path }}/pom.xml"
+    namespaces:
+      ns: "http://maven.apache.org/POM/4.0.0"
+    xpath: "/ns:project/ns:properties/ns:aem.port"
+    value: "{{ valet_sh_project_vars.instance.author_port }}"
+    state: present
 
-#- name: "workflows » aem » project-setup | populate runtime dir"
-#  set_fact:
-#    runtime_dir: "{{ valet_current_path }}/.runtime"
+- name: "workflows » aem » project-env | ensure aem.publish.port in pom.xml is up2date"
+  community.general.xml:
+    path: "{{ valet_sh_project_src_path }}/pom.xml"
+    namespaces:
+      ns: "http://maven.apache.org/POM/4.0.0"
+    xpath: "/ns:project/ns:properties/ns:aem.publish.port"
+    value: "{{ valet_sh_project_vars.instance.publish_port }}"
+    state: present
 
-#- name: "workflows » aem » project-setup | populate instance dirs"
-#  set_fact:
-#    java_bin: "java" #FIXME: eval absolute path to specified java version!
-#    author_dir: "{{ runtime_dir }}/author"
-#    publish_dir: "{{ runtime_dir }}/publish"
-#    dispatcher_dir: "{{ runtime_dir }}/dispatcher"
-#    runtime_tmp_dir: "{{ runtime_dir }}/tmp"
-#    installed_version_file_name: "installed_version.txt"
-#    quickstart_file_name: "aem-sdk-quickstart-{{target_version}}.jar"
-
-- name: "workflows » aem » project-setup | get previous installed version file"
+- name: "workflows » aem » project-env | get previous installed version file"
   stat:
     path: "{{ valet_sh_aem_runtime_dir }}/{{ valet_sh_aem_installed_version_file_name }}"
   register: installed_version_file
 
-- name: "workflows » aem » project-setup | get previous installed version"
+- name: "workflows » aem » project-env | get previous installed version"
   set_fact:
     installed_version: "{{ lookup('file', valet_sh_aem_runtime_dir + '/' + valet_sh_aem_installed_version_file_name) }}"
   when: installed_version_file.stat.exists
 
-- name: "workflows » aem » project-setup | determine whether aem needs to be re-installed"
+- name: "workflows » aem » project-env | determine whether aem needs to be re-installed"
   set_fact:
-    have_to_reinstall: (installed_version is not defined) or (target_version != installed_version)
+    have_to_reinstall: (installed_version is not defined) or (valet_sh_aem_sdk_target_version != installed_version)

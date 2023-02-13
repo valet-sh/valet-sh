@@ -15,10 +15,9 @@
 ##
 ---
 
-- name: "running link command"
+- name: "workflows » aem » project-link | delegate link command"
   include_role:
     name: valet-link
   vars:
     valet_action: relink
     link_name: "{{ valet_sh_project_vars.instance.key }}"
-    #valet_current_path: "{{ valet_sh_project_src_path }}"

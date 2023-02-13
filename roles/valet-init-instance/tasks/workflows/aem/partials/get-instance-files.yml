@@ -15,9 +15,9 @@
 ##
 ---
 
-- name: "workflows » aem » partials » get-instance-files | check if aem target version '{{ target_version }}' is in cache"
+- name: "workflows » aem » partials » get-instance-files | check if aem target version '{{ valet_sh_aem_sdk_target_version }}' is in cache"
   stat:
-    path: "{{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
+    path: "{{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip"
   register: aem_target_version_cache_file_obj
 
 - block:
@@ -51,17 +51,17 @@
       path: "~/.ssh/known_hosts"
       state: present
 
-  - name: "workflows » aem » partials » get-instance-files | check if '{{ aem_sdk_hub_path }}//aem-sdk-{{ target_version }}.zip' is available on hub"
+  - name: "workflows » aem » partials » get-instance-files | check if '{{ aem_sdk_hub_path }}//aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip' is available on hub"
     stat:
-      path: "{{ aem_sdk_hub_path }}/aem-sdk-{{ target_version }}.zip"
+      path: "{{ aem_sdk_hub_path }}/aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip"
     register: aem_target_version_remote_file_obj
     delegate_to: hub
 
-  - name: "workflows » aem » partials » get-instance-files | fail when 'aem-sdk-{{ target_version }}.zip' was not found on hub"
+  - name: "workflows » aem » partials » get-instance-files | fail when 'aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip' was not found on hub"
     fail:
-      msg: "AEM target version '{{ target_version }}' is not available!"
+      msg: "AEM target version '{{ valet_sh_aem_sdk_target_version }}' is not available!"
     when: not aem_target_version_remote_file_obj.stat.exists
 
-  - name: "workflows » aem » partials » get-instance-files | synchronize aem release 'aem-sdk-{{ target_version }}.zip'"
-    shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ aem_sdk_hub_path }}/aem-sdk-{{ target_version }}.zip {{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip" # noqa 204
+  - name: "workflows » aem » partials » get-instance-files | synchronize aem release 'aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip'"
+    shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ aem_sdk_hub_path }}/aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip {{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip" # noqa 204
   when: not aem_target_version_cache_file_obj.stat.exists|bool
