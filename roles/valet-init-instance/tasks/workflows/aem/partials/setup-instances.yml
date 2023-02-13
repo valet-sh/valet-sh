@@ -15,62 +15,61 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | extract 'aem-sdk-{{ target_version }}.zip' to '{{ runtime_tmp_dir }}'"
+- name: "workflows » aem » partials » setup-instances | extract 'aem-sdk-{{ target_version }}.zip' to '{{ runtime_tmp_dir }}'"
   unarchive:
     src: "{{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
     dest: "{{ valet_sh_aem_runtime_tmp_dir }}"
 
-- name: "workflows » aem » project-setup | copy 'aem-sdk-quickstart-{{ target_version }}.jar' to '{{ author_dir }}/aem-author.jar'"
+- name: "workflows » aem » partials » setup-instances | copy 'aem-sdk-quickstart-{{ target_version }}.jar' to '{{ author_dir }}/aem-author.jar'"
   copy:
     src: "{{ valet_sh_aem_runtime_tmp_dir }}/aem-sdk-quickstart-{{ target_version }}.jar"
     dest: "{{ valet_sh_aem_author_dir }}/aem-author.jar"
 
-- name: "workflows » aem » project-setup | unpack aem author instance"
+- name: "workflows » aem » partials » setup-instances | unpack aem author instance"
   shell: "{{ valet_sh_aem_java_bin }} -jar aem-author.jar -unpack"
   args:
     chdir: "{{ valet_sh_aem_author_dir }}"
 
-- name: "workflows » aem » project-setup | copy 'aem-sdk-quickstart-{{ target_version }}.jar' to '{{ publish_dir }}/aem-publish.jar'"
+- name: "workflows » aem » partials » setup-instances | copy 'aem-sdk-quickstart-{{ target_version }}.jar' to '{{ publish_dir }}/aem-publish.jar'"
   copy:
     src: "{{ valet_sh_aem_runtime_tmp_dir }}/aem-sdk-quickstart-{{ target_version }}.jar"
     dest: "{{ valet_sh_aem_publish_dir }}/aem-publish.jar"
 
-- name: "workflows » aem » project-setup | unpack aem publish instance"
+- name: "workflows » aem » partials » setup-instances | unpack aem publish instance"
   shell: "{{ valet_sh_aem_java_bin }} -jar aem-publish.jar -unpack"
   args:
     chdir: "{{ valet_sh_aem_publish_dir }}"
 
-
-- name: "workflows » aem » project-setup | find dispatcher maskeself script"
+- name: "workflows » aem » partials » setup-instances | find dispatcher maskeself script"
   find:
     paths: "{{ valet_sh_aem_runtime_tmp_dir }}"
     patterns: "aem-sdk-dispatcher-tools-(.*)-unix.sh$"
     use_regex: yes
   register: dispatcher_maskeself_script_find
 
-- name: "workflows » aem » project-setup | set dispatcher_maskeself_script path"
+- name: "workflows » aem » partials » setup-instances | set dispatcher_maskeself_script path"
   set_fact:
     dispatcher_maskeself_script: "{{ dispatcher_maskeself_script_find.files[0].path }}"
 
-- name: "workflows » aem » project-setup | set permissions on dispatcher maskeself script"
+- name: "workflows » aem » partials » setup-instances | set permissions on dispatcher maskeself script"
   file:
     path: "{{ dispatcher_maskeself_script }}"
     state: touch
     mode: a+x
 
-- name: "workflows » aem » project-setup | execute dispatcher maskeself script"
+- name: "workflows » aem » partials » setup-instances | execute dispatcher maskeself script"
   shell: "{{ dispatcher_maskeself_script }} --nox11"
   args:
     chdir: "{{ valet_sh_aem_runtime_tmp_dir }}"
   when: current_os == "ubuntu"
 
-- name: "workflows » aem » project-setup | execute dispatcher maskeself script"
+- name: "workflows » aem » partials » setup-instances | execute dispatcher maskeself script"
   shell: "{{ dispatcher_maskeself_script }}"
   args:
     chdir: "{{ valet_sh_aem_runtime_tmp_dir }}"
   when: current_os != "ubuntu"
 
-- name: "workflows » aem » project-setup | find dispatcher tools folder"
+- name: "workflows » aem » partials » setup-instances | find dispatcher tools folder"
   find:
     paths: "{{ valet_sh_aem_runtime_tmp_dir }}"
     file_type: directory
@@ -78,11 +77,11 @@
     use_regex: yes
   register: dispatcher_tools_folder_find
 
-- name: "workflows » aem » project-setup | set dispatcher_tools path"
+- name: "workflows » aem » partials » setup-instances | set dispatcher_tools path"
   set_fact:
     dispatcher_tools_path: "{{ dispatcher_tools_folder_find.files[0].path }}"
 
-- name: "workflows » aem » project-setup | copy dispatcher tools"
+- name: "workflows » aem » partials » setup-instances | copy dispatcher tools"
   copy:
     src: "{{ dispatcher_tools_path }}/"
     dest: "{{ valet_sh_aem_dispatcher_dir }}"

@@ -15,13 +15,13 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | check if aem target version '{{ target_version }}' is in cache"
+- name: "workflows » aem » partials » get-instance-files | check if aem target version '{{ target_version }}' is in cache"
   stat:
     path: "{{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip"
   register: aem_target_version_cache_file_obj
 
 - block:
-  - name: "workflows » aem » project-setup | register hub host"
+  - name: "workflows » aem » partials » get-instance-files | register hub host"
     add_host:
       hostname: hub
       ansible_host: "{{ valet_sh_hub_host }}"
@@ -30,16 +30,16 @@
       ansible_python_interpreter: /usr/bin/python3
       ansible_ssh_pipelining: 1
 
-  - name: "workflows » aem » project-setup | get ssh fingerprint for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}'"
+  - name: "workflows » aem » partials » get-instance-files | get ssh fingerprint for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}'"
     shell: "ssh-keyscan -tecdsa -p {{ valet_sh_hub_port|string }} {{ valet_sh_hub_host }}"
     register: valet_sh_hub_host_ssh_fingerprint_obj
 
-  - name: "workflows » aem » project-setup | set known_host hash field name'"
+  - name: "workflows » aem » partials » get-instance-files | set known_host hash field name'"
     set_fact:
       valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
     when: valet_sh_hub_port != 22 or valet_sh_hub_port != "22"
 
-  - name: "workflows » aem » project-setup | set known_host hash field name'"
+  - name: "workflows » aem » partials » get-instance-files | set known_host hash field name'"
     set_fact:
       valet_sh_known_host_hashed_name: "{{ valet_sh_hub_host }}"
     when: valet_sh_hub_port == 22 or valet_sh_hub_port == "22"
@@ -51,17 +51,17 @@
       path: "~/.ssh/known_hosts"
       state: present
 
-  - name: "workflows » aem » project-setup | check if '{{ aem_sdk_hub_path }}//aem-sdk-{{ target_version }}.zip' is available on hub"
+  - name: "workflows » aem » partials » get-instance-files | check if '{{ aem_sdk_hub_path }}//aem-sdk-{{ target_version }}.zip' is available on hub"
     stat:
       path: "{{ aem_sdk_hub_path }}/aem-sdk-{{ target_version }}.zip"
     register: aem_target_version_remote_file_obj
     delegate_to: hub
 
-  - name: "workflows » aem » project-setup | fail when 'aem-sdk-{{ target_version }}.zip' was not found on hub"
+  - name: "workflows » aem » partials » get-instance-files | fail when 'aem-sdk-{{ target_version }}.zip' was not found on hub"
     fail:
       msg: "AEM target version '{{ target_version }}' is not available!"
     when: not aem_target_version_remote_file_obj.stat.exists
 
-  - name: "workflows » aem » project-setup | synchronize aem release 'aem-sdk-{{ target_version }}.zip'"
+  - name: "workflows » aem » partials » get-instance-files | synchronize aem release 'aem-sdk-{{ target_version }}.zip'"
     shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ aem_sdk_hub_path }}/aem-sdk-{{ target_version }}.zip {{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip" # noqa 204
   when: not aem_target_version_cache_file_obj.stat.exists|bool

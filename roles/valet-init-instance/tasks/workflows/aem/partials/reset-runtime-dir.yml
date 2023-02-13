@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | remove old installations"
+- name: "workflows » aem » partials » reset-runtime-dir | remove old installations"
   file:
     path: "{{ item }}"
     state: absent
@@ -25,13 +25,12 @@
     - "{{ valet_sh_aem_runtime_tmp_dir }}"
     - "{{ valet_sh_aem_dispatcher_dir }}"
 
-- name: "workflows » aem » project-setup | ensure local cache directory '{{ valet_sh_aem_sdk_local_cache_dir }}' exists"
+- name: "workflows » aem » partials » reset-runtime-dir | ensure local cache directory '{{ valet_sh_aem_sdk_local_cache_dir }}' exists"
   file:
     path: "{{ valet_sh_aem_sdk_local_cache_dir }}"
     state: directory
 
-
-- name: "workflows » aem » project-setup | create runtime directory structure"
+- name: "workflows » aem » partials » reset-runtime-dir | create runtime directory structure"
   file:
     path: "{{ item }}"
     state: directory

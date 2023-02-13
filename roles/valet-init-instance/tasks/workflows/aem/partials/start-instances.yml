@@ -15,28 +15,9 @@
 ##
 ---
 
-- name: "delegate instance start"
+- name: "workflows » aem » partials » start-instances | delegate instance start"
   include_role:
     name: valet-exec
   vars:
     valet_action: start
     valet_action_target: all
-
-
-#- name: "workflows » aem » project-setup | start publish instance"
-#  shell: "{{ publish_dir }}/crx-quickstart/bin/start"
-#  args:
-#    chdir: "{{ publish_dir }}"
-#  environment:
-#    CQ_RUNMODE: "publish"
-#    CQ_PORT: "{{ valet_sh_project_vars.instance.publish_port }}"
-
-
-
-#- name: "workflows » aem » project-setup | start author instance"
-#  shell: "{{ author_dir }}/crx-quickstart/bin/start"
-#  args:
-#    chdir: "{{ author_dir }}"
-#  environment:
-#    CQ_RUNMODE: "author"
-#    CQ_PORT: "{{ valet_sh_project_vars.instance.author_port }}"

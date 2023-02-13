@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: "workflows » aem » project-setup | remove runtime tmp dir"
+- name: "workflows » aem » partials » cleanup | remove runtime tmp dir"
   file:
     path: "{{ valet_sh_aem_runtime_tmp_dir }}"
     state: absent

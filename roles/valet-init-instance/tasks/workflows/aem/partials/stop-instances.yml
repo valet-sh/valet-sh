@@ -15,59 +15,9 @@
 ##
 ---
 
-- name: "delegate instance stop"
+- name: "workflows » aem » partials » stop-instances | delegate instance stop"
   include_role:
     name: valet-exec
   vars:
     valet_action: stop
     valet_action_target: all
-
-
-# AUTHOR
-#- name: "workflows » aem » project-setup | maybe get running author pid"
-#  set_fact:
-#    author_pid: "{{ lookup('file', author_dir + '/crx-quickstart/conf/cq.pid') }}"
-#  ignore_errors: true
-
-#- name: "workflows » aem » project-setup | maybe stop author instance"
-#  shell: "{{ author_dir }}/crx-quickstart/bin/stop"
-#  args:
-#    chdir: "{{ author_dir }}"
-#  ignore_errors: true
-
-# PUBLISH
-#- name: "workflows » aem » project-setup | maybe get running publish pid"
-#  set_fact:
-#    publish_pid: "{{ lookup('file', publish_dir + '/crx-quickstart/conf/cq.pid') }}"
-#  ignore_errors: true
-
-#- name: "workflows » aem » project-setup | maybe stop publish instance"
-#  shell: "{{ publish_dir }}/crx-quickstart/bin/stop"
-#  args:
-#    chdir: "{{ publish_dir }}"
-#  ignore_errors: true
-
-# AUTHOR
-#@TODO can we force kill the instance instead?
-#- name: "workflows » aem » project-setup | maybe wait for author to be stopped"
-#  shell: "ps -p {{author_pid}} | grep {{author_pid}}"
-# register: response
-#  retries: 30
-#  delay: 3
-#  until: response.stdout == ""
-#  when: author_pid is defined
-#  failed_when: "response.rc not in [ 0, 1 ]"
-
-
-# PUBLISH
-#@TODO can we force kill the instance instead?
-#- name: "workflows » aem » project-setup | maybe wait for publish to be stopped"
-#  shell: "ps -p {{publish_pid}} | grep {{publish_pid}}"
-#  register: response
-#  retries: 30
-#  delay: 3
-#  until: response.stdout == ""
-#  when: publish_pid is defined
-#  failed_when: "response.rc not in [ 0, 1 ]"
-
-#@TODO: stop dispatcher service
