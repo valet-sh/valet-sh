@@ -28,3 +28,14 @@
   fail:
     msg: "no action defined"
   when: valet_action | length == 0
+
+- name: "workflows » aem » check-vars | set default path to project source"
+  set_fact:
+    valet_sh_project_src_path: "{{ valet_current_path }}"
+
+- name: "workflows » aem » check-vars | set path to project source"
+  set_fact:
+    valet_sh_project_src_path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.path }}"
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.path is defined
