@@ -55,11 +55,11 @@
 
 - name: "workflows » aem » project-deployment | configure replication to publish"
   uri:
-    url: http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/publish/jcr:content
+    url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/publish/jcr:content"
     method: POST
     body_format: form-urlencoded
-    user: admin
-    password: admin
+    user: "{{ valet_sh_aem_author_user }}"
+    password: "{{ valet_sh_aem_author_password }}"
     body:
       "./sling:resourceType": "cq/replication/components/agent"
       "./jcr:title": "Default Agent"
@@ -67,19 +67,19 @@
       "./enabled": "true"
       "./serializationType": "durbo"
       "./retryDelay": "60000"
-      "./userId": "admin"
+      "./userId": "{{ valet_sh_aem_publish_user }}"
       "./logLevel": "info"
       "./transportUri": "http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/bin/receive?sling:authRequestLogin=1"
-      "./transportUser": "admin"
-      "./transportPassword": "admin"
+      "./transportUser": "{{ valet_sh_aem_publish_user }}"
+      "./transportPassword": "{{ valet_sh_aem_publish_password }}"
 
 - name: "workflows » aem » project-deployment | configure dispatcher cache flush agent"
   uri:
-    url: http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/flush/jcr:content
+    url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/flush/jcr:content"
     method: POST
     body_format: form-urlencoded
-    user: admin
-    password: admin
+    user: "{{ valet_sh_aem_author_user }}"
+    password: "{{ valet_sh_aem_author_password }}"
     body:
       "./sling:resourceType": "cq/replication/components/agent"
       "./jcr:title": "Dispatcher Flush"

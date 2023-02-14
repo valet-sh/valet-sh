@@ -43,5 +43,6 @@
 - name: "workflows » aem » partials » start | fix folder permissions"
   shell: "chown -R {{ current_user }}:{{ current_group }} {{ valet_sh_aem_dispatcher_dir }}/cache"
   args:
+    removes: "{{ valet_sh_aem_dispatcher_dir }}/cache"
     chdir: "{{ valet_sh_aem_dispatcher_dir }}"
   become: true
