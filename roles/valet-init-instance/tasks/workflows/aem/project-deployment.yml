@@ -52,3 +52,42 @@
   shell: "mvn clean install -T 8C -DskipTests -Dmaven.test.skip -Dmaven.javadoc.skip=true -pl -it.tests,-ui.tests -PautoInstallSinglePackagePublish"
   args:
     chdir: "{{ valet_current_path }}"
+
+- name: "workflows » aem » project-deployment | configure replication to publish"
+  uri:
+    url: http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/publish/jcr:content
+    method: POST
+    body_format: form-urlencoded
+    user: admin
+    password: admin
+    body:
+      "./sling:resourceType": "cq/replication/components/agent"
+      "./jcr:title": "Default Agent"
+      "./jcr:description": "Agent that replicates to the default publish instance."
+      "./enabled": "true"
+      "./serializationType": "durbo"
+      "./retryDelay": "60000"
+      "./userId": "admin"
+      "./logLevel": "info"
+      "./transportUri": "http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/bin/receive?sling:authRequestLogin=1"
+      "./transportUser": "admin"
+      "./transportPassword": "admin"
+
+- name: "workflows » aem » project-deployment | configure dispatcher cache flush agent"
+  uri:
+    url: http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/flush/jcr:content
+    method: POST
+    body_format: form-urlencoded
+    user: admin
+    password: admin
+    body:
+      "./sling:resourceType": "cq/replication/components/agent"
+      "./jcr:title": "Dispatcher Flush"
+      "./jcr:description": "Agent that sends flush requests to the dispatcher."
+      "./enabled": "true"
+      "./serializationType": "flush"
+      "./retryDelay": "60000"
+      "./logLevel": "error"
+      "./transportUri": "http://localhost:{{ valet_sh_project_vars.instance.dispatcher_port }}/dispatcher/invalidate.cache"
+      "./protocolHTTPMethod": "GET"
+      "./triggerOnOffTime": "true"
