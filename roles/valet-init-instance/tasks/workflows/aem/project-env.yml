@@ -63,4 +63,5 @@
 
 - name: "workflows » aem » project-env | determine whether aem needs to be re-installed"
   set_fact:
-    have_to_reinstall: (installed_version is not defined) or (valet_sh_aem_sdk_target_version != installed_version)
+    have_to_reinstall: "{{ (installed_version is not defined) or (valet_sh_aem_sdk_target_version != installed_version) }}"
+

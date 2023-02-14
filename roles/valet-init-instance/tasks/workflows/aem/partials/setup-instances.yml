@@ -86,3 +86,8 @@
     src: "{{ dispatcher_tools_path }}/"
     dest: "{{ valet_sh_aem_dispatcher_dir }}"
     mode: preserve
+
+- name: "workflows » aem » partials » setup-instances | write installed version"
+  copy:
+    dest: "{{ valet_sh_aem_runtime_dir }}/{{ valet_sh_aem_installed_version_file_name }}"
+    content: "{{ valet_sh_aem_sdk_target_version }}"
