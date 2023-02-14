@@ -5,6 +5,7 @@
 # @command: "exec"
 # @platform: macOS Ubuntu
 # @description: "<todo>"
+# @sudo: true
 # @usage: "valet.sh exec <action>"
 # @help:
 #
