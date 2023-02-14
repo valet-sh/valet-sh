@@ -36,4 +36,12 @@
 #@TODO ensure docker daemon is started
 - name: "workflows » aem » partials » start | start dispatcher tools"
   shell: "{{ valet_sh_aem_dispatcher_dir }}/bin/docker_run.sh {{ valet_sh_project_src_path }}/dispatcher/src host.docker.internal:{{ valet_sh_project_vars.instance.publish_port }} {{ valet_sh_project_vars.instance.dispatcher_port }} &> {{ valet_sh_aem_dispatcher_dir }}/output.log &"
+  args:
+    chdir: "{{ valet_sh_aem_dispatcher_dir }}"
   when: valet_action_target == "dispatcher" or valet_action_target == "all"
+
+- name: "workflows » aem » partials » start | fix folder permissions"
+  shell: "chown -R {{ current_user }}:{{ current_group }} {{ valet_sh_aem_dispatcher_dir }}/cache"
+  args:
+    chdir: "{{ valet_sh_aem_dispatcher_dir }}"
+  become: true
