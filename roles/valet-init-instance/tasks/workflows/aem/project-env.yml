@@ -46,6 +46,11 @@
     value: "{{ valet_sh_project_vars.instance.publish_port }}"
     state: present
 
+- name: "workflows » aem » project-env | ensure repo tool url is up2date"
+  copy:
+    dest: "{{ valet_sh_project_src_path }}/.repo"
+    content: "server=http://localhost:{{ valet_sh_project_vars.instance.author_port }}"
+
 - name: "workflows » aem » project-env | get previous installed version file"
   stat:
     path: "{{ valet_sh_aem_runtime_dir }}/{{ valet_sh_aem_installed_version_file_name }}"
