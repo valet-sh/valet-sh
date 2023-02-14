@@ -63,5 +63,5 @@
     when: not aem_target_version_remote_file_obj.stat.exists
 
   - name: "workflows » aem » partials » get-instance-files | synchronize aem release 'aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip'"
-    shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ aem_sdk_hub_path }}/aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip {{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ target_version }}.zip" # noqa 204
+    shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ aem_sdk_hub_path }}/aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip {{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip" # noqa 204
   when: not aem_target_version_cache_file_obj.stat.exists|bool
