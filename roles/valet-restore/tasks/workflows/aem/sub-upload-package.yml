@@ -1,0 +1,88 @@
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » aem » sub-upload-package | upload package '{{ valet_sh_aem_restore_current_packagename }}.zip'"
+  shell: "curl -u {{ valet_sh_aem_author_user }}:{{ valet_sh_aem_author_password }} -F cmd=upload -F force=true -F package=@{{ valet_sh_aem_runtime_tmp_dir }}/{{ valet_sh_aem_restore_current_packagename }}.zip http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service/exec.json"
+  args:
+    warn: false
+  register: upload_package_obj
+
+- name: "workflows » aem » sub-upload-package | check result"
+  set_fact:
+    valet_sh_aem_restore_upload_result: "{{ upload_package_obj.stdout|from_json }}"
+
+- name: "workflows » aem » sub-upload-package | fail when upload was not successful"
+  fail:
+    msg: "Upload of Package '{{ valet_sh_aem_restore_current_packagename }}.zip' failed"
+  when: valet_sh_aem_restore_upload_result.success is not defined or not valet_sh_aem_restore_upload_result.success|bool
+
+- name: "workflows » aem » sub-install-package | wait for 5 seconds"
+  command: "sleep 5"
+  args:
+    warn: false
+
+
+
+
+
+#- debug:
+#    msg: "{{ valet_sh_aem_runtime_tmp_dir }}/{{ valet_sh_aem_restore_current_packagename }}.zip"
+
+
+#- name: "workflows » aem » sub-upload-package | upload package '{{ valet_sh_aem_restore_current_packagename }}.zip'"
+#  uri:
+#    url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service/exec.json?cmd=upload"
+#    src: "{{ valet_sh_aem_runtime_tmp_dir }}/{{ valet_sh_aem_restore_current_packagename }}.zip"
+#    method: POST
+#    #body_format: "form-multipart"
+#    user: "{{ valet_sh_aem_author_user }}"
+#    password: "{{ valet_sh_aem_author_password }}"
+#    status_code: 200
+#    return_content: true
+#    headers:
+#      Content-Type: multipart/form-data
+#  register: upload_package_obj
+
+
+#- name: Call upload endpoints
+#  uri:
+#    url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service/.json"
+#    method: "POST"
+#    body_format: "form-multipart"
+#    body:
+#      cmd: 'upload'
+#      force: 'true'
+#      #package: "{{ lookup('file', valet_sh_aem_runtime_tmp_dir + '/' + valet_sh_aem_restore_current_packagename + '.zip') }}"
+#      package:
+#        filename: "{{ valet_sh_aem_runtime_tmp_dir }}/{{ valet_sh_aem_restore_current_packagename }}.zip"
+#      mime_type: application/octet-stream
+#    user: "{{ valet_sh_aem_author_user }}"
+#    password: "{{ valet_sh_aem_author_password }}"
+#    force_basic_auth: yes
+#    return_content: yes
+#    headers:
+#      Content-Type: multipart/form-data
+#  register: upload_package_obj
+
+#crx/packmgr/service/.json
+#curl -u <user>:<password> -F cmd=upload -F force=true -F package=@test.zip http://localhost:4502/crx/packmgr/service/.json
+#
+#    const url = TARGET + 'crx/packmgr/service/.json';
+#    const formData = {
+#        cmd: 'upload', force: 'true', //@TODO what does force do?
+#        package: fs.createReadStream(LOCAL_PACKAGE_PATH + restorePackage.downloadName),
+#    };
+#

@@ -15,15 +15,8 @@
 ##
 ---
 
-- include_tasks: check-vars.yml
-
-- include_tasks: project-env.yml
-
-- include_tasks: project-setup.yml
-  when: have_to_reinstall
-
-- include_tasks: project-link.yml
-
-- include_tasks: project-deployment.yml
-
-- include_tasks: project-restore.yml
+- name: "workflows » aem » project-restore | run restore command"
+  include_role:
+    name: valet-restore
+  vars:
+    valet_sh_restore_softfail: true
