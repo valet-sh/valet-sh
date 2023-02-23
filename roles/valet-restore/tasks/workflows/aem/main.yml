@@ -18,9 +18,8 @@
 
 - include_tasks: "check-opts.yml"
 
-- include_tasks: "check-vars.yml"
-
 - block:
+    - include_tasks: "check-vars.yml"
 
     - include_tasks: "register-hub.yml"
 
@@ -59,5 +58,4 @@
         path: "{{ valet_sh_aem_runtime_tmp_dir }}"
         state: absent
   when:
-    - valet_instancebackup_identifier is defined
-    - valet_instancebackup_identifier|length > 0
+    - valet_opt_flag_skip_restore is not defined or not valet_opt_flag_skip_restore|bool

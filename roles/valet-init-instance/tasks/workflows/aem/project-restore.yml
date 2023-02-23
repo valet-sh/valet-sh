@@ -18,5 +18,3 @@
 - name: "workflows » aem » project-restore | run restore command"
   include_role:
     name: valet-restore
-  vars:
-    valet_sh_restore_softfail: true

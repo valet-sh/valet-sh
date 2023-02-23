@@ -80,5 +80,4 @@
     msg: "you need to set a valid 'instancebackup-identifier' ether in your .valet-sh.yml file or as an argument"
   when:
     - valet_instancebackup_identifier is not defined or valet_instancebackup_identifier|length == 0
-    - valet_sh_restore_softfail is not defined or not valet_sh_restore_softfail|bool
 
