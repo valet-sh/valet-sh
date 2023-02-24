@@ -45,13 +45,13 @@
   delay: 10
   register: publish_uri_output
 
-- name: "workflows » aem » project-deployment | run 'mvn clean install -T 8C -DskipTests -Dmaven.test.skip -Dmaven.javadoc.skip=true -pl -it.tests,-ui.tests -PautoInstallSinglePackage'"
-  shell: "mvn clean install -T 8C -DskipTests -Dmaven.test.skip -Dmaven.javadoc.skip=true -pl -it.tests,-ui.tests -PautoInstallSinglePackage"
+- name: "workflows » aem » project-deployment | run 'install-scripts/author-all-quick-install.sh'"
+  shell: "{{ valet_sh_aem_runtime_dir }}/install-scripts/author-all-quick-install.sh"
   args:
     chdir: "{{ valet_current_path }}"
 
-- name: "workflows » aem » project-deployment | run 'mvn clean install -T 8C -DskipTests -Dmaven.test.skip -Dmaven.javadoc.skip=true -pl -it.tests,-ui.tests -PautoInstallSinglePackagePublish'"
-  shell: "mvn clean install -T 8C -DskipTests -Dmaven.test.skip -Dmaven.javadoc.skip=true -pl -it.tests,-ui.tests -PautoInstallSinglePackagePublish"
+- name: "workflows » aem » project-deployment | run 'install-scripts/publish-all-quick-install.sh'"
+  shell: "{{ valet_sh_aem_runtime_dir }}/install-scripts/publish-all-quick-install.sh"
   args:
     chdir: "{{ valet_current_path }}"
 

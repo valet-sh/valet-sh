@@ -65,3 +65,59 @@
   set_fact:
     have_to_reinstall: "{{ (installed_version is not defined) or (valet_sh_aem_sdk_target_version != installed_version) }}"
 
+- name: "workflows » aem » project-env | remove old install-scripts"
+  file:
+    path: "{{ valet_sh_aem_runtime_dir }}/install-scripts"
+    state: absent
+
+- name: "workflows » aem » project-env | ensure install-scripts folder exists"
+  file:
+    path: "{{ valet_sh_aem_runtime_dir }}/install-scripts"
+    state: directory
+
+- name: "workflows » aem » project-env | copy install-scripts"
+  copy:
+    src: "templates/install-scripts/"
+    dest: "{{ valet_sh_aem_runtime_dir }}/install-scripts"
+    mode: "a+x"
+
+- name: "workflows » aem » project-env | ensure run-configurations folder exists"
+  file:
+    path: "{{ valet_sh_project_src_path }}/.run"
+    state: directory
+
+- name: "workflows » aem » project-env | copy run-configurations"
+  copy:
+    src: "templates/run-configurations/"
+    dest: "{{ valet_sh_project_src_path }}/.run"
+
+- name: "workflows » aem » project-env | add correct debug port for author"
+  ansible.builtin.replace:
+    path: "{{ valet_sh_project_src_path }}/.run/author-debug.run.xml"
+    regexp: "5005"
+    replace: "{{ valet_sh_project_vars.instance.author_debug_port }}"
+
+- name: "workflows » aem » project-env | add correct debug port for publish"
+  ansible.builtin.replace:
+    path: "{{ valet_sh_project_src_path }}/.run/publish-debug.run.xml"
+    regexp: "5006"
+    replace: "{{ valet_sh_project_vars.instance.publish_debug_port }}"
+
+- name: "workflows » aem » project-env | get all install-scripts"
+  find:
+    paths: "{{ valet_sh_aem_runtime_dir }}/install-scripts/"
+  register: install_scripts
+
+- name: "workflows » aem » project-env | replace author port in install-scripts"
+  replace:
+    path: "{{ item.path }}"
+    regexp: 4502
+    replace: "{{ valet_sh_project_vars.instance.author_port }}"
+  with_items: "{{ install_scripts.files }}"
+
+- name: "workflows » aem » project-env | replace publish port in install-scripts"
+  replace:
+    path: "{{ item.path }}"
+    regexp: 4503
+    replace: "{{ valet_sh_project_vars.instance.publish_port }}"
+  with_items: "{{ install_scripts.files }}"
