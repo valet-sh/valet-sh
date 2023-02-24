@@ -22,6 +22,7 @@
   environment:
     CQ_RUNMODE: "publish"
     CQ_PORT: "{{ valet_sh_project_vars.instance.publish_port }}"
+    CQ_JVM_OPTS: "-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ valet_sh_project_vars.instance.publish_debug_port }}"
   when: valet_action_target == "publish" or valet_action_target == "all"
 
 - name: "workflows » aem » partials » start | start author instance"
@@ -31,6 +32,7 @@
   environment:
     CQ_RUNMODE: "author"
     CQ_PORT: "{{ valet_sh_project_vars.instance.author_port }}"
+    CQ_JVM_OPTS: "-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ valet_sh_project_vars.instance.author_debug_port }}"
   when: valet_action_target == "author" or valet_action_target == "all"
 
 #@TODO ensure docker daemon is started
