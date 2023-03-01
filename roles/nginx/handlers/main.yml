@@ -44,13 +44,10 @@
   become: true
 
 - name: brew | nginx | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart nginx"
-  become: true
+  shell: "sudo {{ valet_sh_homebrew_bin }} services restart nginx"
 
 - name: brew | nginx | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop nginx"
-  become: true
+  shell: "sudo {{ valet_sh_homebrew_bin }} services stop nginx"
 
 - name: brew | nginx | started
-  shell: "{{ valet_sh_homebrew_bin }} services start nginx"
-  become: true
+  shell: "sudo {{ valet_sh_homebrew_bin }} services start nginx"

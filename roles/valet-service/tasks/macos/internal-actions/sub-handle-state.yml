@@ -29,8 +29,7 @@
 
 
 - name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_current_service_item.key }}"
-  become: true
+  shell: "sudo {{ valet_sh_homebrew_bin }} services restart {{ valet_current_service_item.key }}"
   when:
     - valet_service_name_alias|length == 0
     - valet_current_service_item.key in valet_sh_service_privileged_services
@@ -44,8 +43,7 @@
     - valet_current_service_item.value|bool
 
 - name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_service_name_alias }}"
-  become: true
+  shell: "sudo {{ valet_sh_homebrew_bin }} services restart {{ valet_service_name_alias }}"
   when:
     - valet_service_name_alias|length > 0
     - valet_current_service_item.key in valet_sh_service_privileged_services
@@ -60,8 +58,7 @@
 
 
 - name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_current_service_item.key }}"
-  become: true
+  shell: "sudo {{ valet_sh_homebrew_bin }} services stop {{ valet_current_service_item.key }}"
   when:
     - valet_service_name_alias|length == 0
     - valet_current_service_item.key in valet_sh_service_privileged_services

@@ -37,5 +37,4 @@
   notify: brew | dnsmasq | restarted
 
 - name: brew | dnsmasq | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services  restart dnsmasq"
-  become: true
+  shell: "sudo {{ valet_sh_homebrew_bin }} services  restart dnsmasq"

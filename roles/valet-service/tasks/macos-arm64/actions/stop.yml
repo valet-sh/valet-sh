@@ -46,8 +46,7 @@
   with_dict: "{{ valet_sh_service_alias_mapping }}"
 
 - name: "actions » stop | stop {{ valet_service_name }} service (running as root)"
-  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name }}"
-  become: true
+  shell: "sudo {{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name }}"
   when: valet_service_name_alias|length == 0 and (valet_service_name in valet_sh_service_privileged_services)
 
 - name: "actions » stop | stop {{ valet_service_name }} service"
@@ -55,8 +54,7 @@
   when: valet_service_name_alias|length == 0 and (valet_service_name not in valet_sh_service_privileged_services)
 
 - name: "actions » stop | stop {{ valet_service_name }} service with alias '{{ valet_service_name_alias }}' (running as root)"
-  shell: "{{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name_alias }}"
-  become: true
+  shell: "sudo {{ valet_sh_homebrew_current_bin }} services stop {{ valet_service_name_alias }}"
   when: valet_service_name_alias|length > 0 and (valet_service_name in valet_sh_service_privileged_services)
 
 - name: "actions » stop | stop {{ valet_service_name }} service"

@@ -136,8 +136,7 @@
        restart_php_service: "vsh-{{ current_php_version }}"
 
     - name: "actions » restart | restart {{ restart_php_service }} (running as root)"
-      shell: "{{ valet_sh_homebrew_bin }} services restart {{ restart_php_service }}"
-      become: true
+      shell: "sudo {{ valet_sh_homebrew_bin }} services restart {{ restart_php_service }}"
       failed_when: false
       when: current_php_version in valet_sh_service_privileged_services
 
