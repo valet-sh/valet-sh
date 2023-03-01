@@ -15,9 +15,9 @@
 ##
 ---
 
-- name: "workflows » aem » partials » stop-instances | delegate instance stop"
+- name: "workflows » aem » project-instance-restart | restart instances"
   include_role:
     name: valet-exec
   vars:
-    valet_action: stop
+    valet_action: restart
     valet_action_target: all

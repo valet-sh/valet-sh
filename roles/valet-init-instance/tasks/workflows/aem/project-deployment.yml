@@ -15,8 +15,6 @@
 ##
 ---
 
-- include_tasks: partials/start-instances.yml
-
 - name: "workflows » aem » project-deployment | wait until author instance 'http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp' is reachable"
   uri:
     url: 'http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp'

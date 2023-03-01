@@ -24,6 +24,8 @@
 
 - include_tasks: project-link.yml
 
+- include_tasks: project-instance-restart.yml
+
 - include_tasks: project-deployment.yml
 
 - include_tasks: project-restore.yml

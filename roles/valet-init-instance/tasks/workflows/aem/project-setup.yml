@@ -15,8 +15,6 @@
 ##
 ---
 
-- include_tasks: partials/stop-instances.yml
-
 - include_tasks: partials/reset-runtime-dir.yml
 
 - include_tasks: partials/get-instance-files.yml
