@@ -348,13 +348,10 @@
 
 
 - name: "brew | nginx | restarted"
-  command: "{{ valet_sh_homebrew_bin }} services restart nginx"
-  become: true
+  command: "sudo {{ valet_sh_homebrew_bin }} services restart nginx"
 
 - name: "brew | nginx | stopped"
-  command: "{{ valet_sh_homebrew_bin }} services stop nginx"
-  become: true
+  command: "sudo {{ valet_sh_homebrew_bin }} services stop nginx"
 
 - name: "brew | nginx | started"
-  command: "{{ valet_sh_homebrew_bin }} services start nginx"
-  become: true
+  command: "sudo {{ valet_sh_homebrew_bin }} services start nginx"
