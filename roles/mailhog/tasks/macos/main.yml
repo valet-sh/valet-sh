@@ -39,5 +39,9 @@
     mode: '0644'
   notify: brew | nginx | restarted
 
+- name: "run 'codesign -f -s - {{ valet_sh_homebrew_prefix }}/mailhog/bin/MailHog'"
+  shell: "codesign -f -s - {{ valet_sh_homebrew_prefix }}/mailhog/bin/MailHog"
+  become: true
+
 - name: brew | mailhog | restart
   shell: "{{ valet_sh_homebrew_bin }} services restart mailhog"

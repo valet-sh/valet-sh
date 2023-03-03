@@ -16,7 +16,9 @@
 ---
 
 
-
+valet_sh_homebrew_prefix_default: ""
+valet_sh_homebrew_prefix_mac: "/usr/local/opt"
+valet_sh_homebrew_prefix: "{{ lookup('vars', 'valet_sh_homebrew_prefix'+'_'+current_os, default=valet_sh_homebrew_prefix_default) }}"
 
 valet_sh_prefix_default: ""
 valet_sh_prefix_mac: "/usr/local"
