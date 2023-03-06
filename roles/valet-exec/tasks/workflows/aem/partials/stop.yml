@@ -28,10 +28,6 @@
         chdir: "{{ valet_sh_aem_author_dir }}"
       ignore_errors: true
 
-    - debug:
-        msg: "{{ author_pid }}"
-
-    #@TODO can we force kill the instance instead?
     - name: "workflows » aem » partials » stop | maybe wait for author to be stopped"
       shell: "ps -p {{ author_pid }} | grep {{ author_pid }}"
       register: response
@@ -55,7 +51,6 @@
         chdir: "{{ valet_sh_aem_publish_dir }}"
       ignore_errors: true
 
-    #@TODO can we force kill the instance instead?
     - name: "workflows » aem » partials » stop | maybe wait for publish to be stopped"
       shell: "ps -p {{ publish_pid }} | grep {{ publish_pid }}"
       register: response
