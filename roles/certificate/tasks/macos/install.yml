@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,11 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
-#- name: "install | ensure openssl is installed"
-#  homebrew:
-#    name: openssl
-#    state: present
 
 - name: "install | ensure openssl is installed"
   shell: "{{ valet_sh_homebrew_bin }} install openssl"
