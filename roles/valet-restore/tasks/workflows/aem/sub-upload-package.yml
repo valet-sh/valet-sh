@@ -26,7 +26,7 @@
 
 - name: "workflows » aem » sub-upload-package | fail when upload was not successful"
   fail:
-    msg: "Upload of Package '{{ valet_sh_aem_restore_current_packagename }}.zip' failed"
+    msg: "Upload of Package '{{ valet_sh_aem_restore_current_packagename }}.zip' failed with message: '{{ valet_sh_aem_restore_upload_result.msg }}'"
   when: valet_sh_aem_restore_upload_result.success is not defined or not valet_sh_aem_restore_upload_result.success|bool
 
 - name: "workflows » aem » sub-install-package | wait for 5 seconds"
