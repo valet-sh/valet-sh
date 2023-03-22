@@ -25,11 +25,6 @@
     - "{{ valet_sh_aem_runtime_tmp_dir }}"
     - "{{ valet_sh_aem_dispatcher_dir }}"
 
-- name: "workflows » aem » partials » reset-runtime-dir | ensure local cache directory '{{ valet_sh_aem_sdk_local_cache_dir }}' exists"
-  file:
-    path: "{{ valet_sh_aem_sdk_local_cache_dir }}"
-    state: directory
-
 - name: "workflows » aem » partials » reset-runtime-dir | create runtime directory structure"
   file:
     path: "{{ item }}"

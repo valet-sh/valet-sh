@@ -1,4 +1,3 @@
-##
 #   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +13,8 @@
 #   limitations under the License.
 ##
 ---
-- name: "workflows » aem » project-setup | stop instances"
-  include_role:
-    name: valet-exec
-  vars:
-    valet_action: stop
-    valet_action_target: all
 
-- include_tasks: partials/reset-runtime-dir.yml
-
-- include_tasks: partials/get-runtime-files/get-runtime-files.yml
-
-- include_tasks: partials/setup-instances/setup-instances.yml
-
-- include_tasks: partials/cleanup.yml
+- name: "workflows » aem » check-opts | check if '--skip-restore' opt is set"
+  set_fact:
+    valet_opt_flag_force_reinstall: true
+  when: "'--force-reinstall' in valet_cli_opts"

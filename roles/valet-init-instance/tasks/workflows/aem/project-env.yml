@@ -19,6 +19,11 @@
   set_fact:
     valet_sh_aem_sdk_target_version: "{{ valet_sh_project_vars.instance.sdk_version }}"
 
+- name: "workflows » aem » project-env | get addons"
+  set_fact:
+    valet_sh_aem_addons: "{{ valet_sh_project_vars.instance.addons }}"
+  when: valet_sh_project_vars.instance.addons is defined
+
 - name: "workflows » aem » project-env | ensure aem.sdk.api in pom.xml is up2date"
   community.general.xml:
     path: "{{ valet_sh_project_src_path }}/pom.xml"
