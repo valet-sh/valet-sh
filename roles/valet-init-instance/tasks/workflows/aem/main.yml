@@ -15,12 +15,14 @@
 ##
 ---
 
+- include_tasks: check-opts.yml
+
 - include_tasks: check-vars.yml
 
 - include_tasks: project-env.yml
 
 - include_tasks: project-setup.yml
-  when: have_to_reinstall
+  when: (have_to_reinstall) or (valet_opt_flag_force_reinstall is defined and valet_opt_flag_force_reinstall|bool)
 
 - include_tasks: project-link.yml
 
