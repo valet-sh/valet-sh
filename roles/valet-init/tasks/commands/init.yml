@@ -15,19 +15,19 @@
 ##
 ---
 
-- name: "check if '.valet-sh.yml' file already exists in '{{valet_current_path}}'"
-  stat:
-    path: "{{valet_current_path}}/.valet-sh.yml"
+- name: "Check if '.valet-sh.yml' file already exists in '{{ valet_current_path }}'"
+  ansible.builtin.stat:
+    path: "{{ valet_current_path }}/.valet-sh.yml"
   register: valet_sh_file_obj
 
-- name: "fail when '.valet-sh.yml' file does exist"
-  fail:
+- name: "Fail when '.valet-sh.yml' file does exist"
+  ansible.builtin.fail:
     msg: "'.valet-sh.yml' already exists in current directory"
   when: valet_sh_file_obj.stat.exists
 
-- name: "commands » init | provide .valet-sh.yml stub file"
-  template:
+- name: "Commands » init | provide .valet-sh.yml stub file"
+  ansible.builtin.template:
     src: "valet-sh.yml.j2"
-    dest: "{{valet_current_path}}/.valet-sh.yml"
+    dest: "{{ valet_current_path }}/.valet-sh.yml"
     mode: '0644'
     force: false
