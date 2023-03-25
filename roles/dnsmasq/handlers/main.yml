@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,39 +15,39 @@
 ##
 ---
 
-- name: systemd | NetworkManager | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | NetworkManager | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: NetworkManager
     state: started
   become: true
 
-- name: systemd | NetworkManager | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | NetworkManager | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: NetworkManager
     state: stopped
   become: true
 
-- name: systemd | NetworkManager | reload
-  systemd:
-    daemon_reload: yes
+- name: Systemd | NetworkManager | reload
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: NetworkManager
     state: reloaded
   become: true
 
-- name: systemd | NetworkManager | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | NetworkManager | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: NetworkManager
     state: restarted
   become: true
 
-- name: brew | dnsmasq | restarted
-  shell: "sudo {{ valet_sh_homebrew_bin }} services restart dnsmasq"
+- name: Brew | dnsmasq | restarted
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services restart dnsmasq"
 
-- name: brew | dnsmasq | stopped
-  shell: "sudo {{ valet_sh_homebrew_bin }} services stop dnsmasq"
+- name: Brew | dnsmasq | stopped
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services stop dnsmasq"
 
-- name: brew | dnsmasq | started
-  shell: "sudo {{ valet_sh_homebrew_bin }} services start dnsmasq"
+- name: Brew | dnsmasq | started
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services start dnsmasq"

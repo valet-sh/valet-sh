@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,25 +15,26 @@
 ##
 ---
 
-- name: "enable dns resolving for .{{ dnsmasq_domain }} domain"
-  template:
+- name: "Enable dns resolving for .{{ dnsmasq_domain }} domain"
+  ansible.builtin.template:
     src: development-domain.conf.j2
     dest: "{{ dnsmasq_conf_file }}"
-  notify: systemd | NetworkManager | reload
+    mode: '0644'
+  notify: Systemd | NetworkManager | reload
   become: true
 
-- name: enable dnsmasq in NetworkManager
-  lineinfile:
+- name: Enable dnsmasq in NetworkManager
+  ansible.builtin.lineinfile:
     path: "/etc/NetworkManager/NetworkManager.conf"
     insertafter: '^\[main\]'
     line: 'dns=dnsmasq'
-  notify: systemd | NetworkManager | reload
+  notify: Systemd | NetworkManager | reload
   become: true
 
-- name: remove /run/systemd/resolve/stub-resolv.conf symlink
-  file:
+- name: Remove /run/systemd/resolve/stub-resolv.conf symlink
+  ansible.builtin.file:
     src: "/var/run/NetworkManager/resolv.conf"
     dest: "/etc/resolv.conf"
     state: link
-  notify: systemd | NetworkManager | reload
+  notify: Systemd | NetworkManager | reload
   become: true
