@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 ##
 ---
 
-- name: "create valet base dirs"
-  file:
+- name: "Create valet base dirs"
+  ansible.builtin.file:
     path: "{{ current_valet_base_dir }}"
     state: directory
     owner: "{{ current_user }}"
@@ -27,55 +27,56 @@
   loop_control:
     loop_var: current_valet_base_dir
 
-- name: "get stat for {{ valet_etc_links_file }}"
-  stat:
+- name: "Get stat for {{ valet_etc_links_file }}"
+  ansible.builtin.stat:
     path: "{{ valet_etc_links_file }}"
   register: valet_etc_links_file_obj
 
-- name: "transform object into nice yaml output"
-  set_fact:
-    valet_links_list_stub: "{{ valet_links_stub | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+- name: "Transform object into nice yaml output"
+  ansible.builtin.set_fact:
+    valet_links_list_stub: "{{ valet_links_stub | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
   when: not valet_etc_links_file_obj.stat.exists
 
-- name: "write new links.yml file"
-  copy:
+- name: "Write new links.yml file"
+  ansible.builtin.copy:
     content: "{{ valet_links_list_stub }}"
     dest: "{{ valet_etc_links_file }}"
+    mode: '0644'
   when: not valet_etc_links_file_obj.stat.exists
 
-- name: "ensure valet links file exists"
-  file:
-    dest:  "{{ valet_etc_links_file }}"
+- name: "Ensure valet links file exists"
+  ansible.builtin.file:
+    dest: "{{ valet_etc_links_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    state: "{{ 'file' if  valet_etc_links_file_obj.stat.exists else 'touch' }}"
+    state: "{{ 'file' if valet_etc_links_file_obj.stat.exists else 'touch' }}"
     mode: '0755'
   become: true
 
-- name: "get stat for {{ valet_etc_config_file }}"
-  stat:
+- name: "Get stat for {{ valet_etc_config_file }}"
+  ansible.builtin.stat:
     path: "{{ valet_etc_config_file }}"
   register: valet_etc_config_file_obj
 
-- name: "ensure valet config file exists"
-  file:
-    dest:  "{{ valet_etc_config_file }}"
+- name: "Ensure valet config file exists"
+  ansible.builtin.file:
+    dest: "{{ valet_etc_config_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    state: "{{ 'file' if  valet_etc_config_file_obj.stat.exists else 'touch' }}"
+    state: "{{ 'file' if valet_etc_config_file_obj.stat.exists else 'touch' }}"
     mode: '0755'
   become: true
 
-- name: "ensure valet services file exists"
-  template:
+- name: "Ensure valet services file exists"
+  ansible.builtin.template:
     src: "services.yml.j2"
-    dest:  "{{ valet_etc_services_file }}"
+    dest: "{{ valet_etc_services_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     force: false
     mode: '0644'
 
-- name: "include valet config file"
-  include_vars:
+- name: "Include valet config file"
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_config_file }}"
     name: valet_sh_config
