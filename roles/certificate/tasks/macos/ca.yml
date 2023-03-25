@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 ##
 ---
 
-- name: ca | ensure base directories existing
-  file:
+- name: CA | ensure base directories existing
+  ansible.builtin.file:
     path: "{{ certificate_base_path_item }}"
     state: directory
     owner: root
@@ -30,30 +30,28 @@
   loop_control:
     loop_var: certificate_base_path_item
 
-- name: ca | generate private ca key
-  shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
+- name: CA | generate private ca key
+  ansible.builtin.shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
   args:
     creates: "{{ certificate_ca_key_file }}"
   become: true
 
-- name: "ca | ensure only root can read ca key file"
-  file:
+- name: "CA | ensure only root can read ca key file"
+  ansible.builtin.file:
     path: "{{ certificate_ca_key_file }}"
     owner: root
     group: wheel
     mode: '0400'
   become: true
 
-- name: ca | generate CA Certificate
-  shell: "openssl req -subj '/CN=valet.sh Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
+- name: CA | generate CA Certificate
+  ansible.builtin.shell: "openssl req -subj '/CN=valet.sh Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
   args:
     creates: "{{ certificate_ca_cert_file }}"
   become: true
   register: generate_trusted_root_ca_obj
 
-- name: "ca | add ca certificate to keystore"
-  shell: "security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ certificate_ca_cert_file }}"
+- name: "CA | add ca certificate to keystore"
+  ansible.builtin.shell: "security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ certificate_ca_cert_file }}"
   become: true
-  when: > 
-   generate_trusted_root_ca_obj is changed or
-   update_dev_ca_force is defined and update_dev_ca_force|bool
+  when: generate_trusted_root_ca_obj is changed or update_dev_ca_force is defined and update_dev_ca_force|bool

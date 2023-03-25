@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,3 +17,15 @@
 
 dependencies:
   - role: shared-variables
+
+galaxy_info:
+  author: Philipp Dittert
+  description: valet.sh certificate implementation
+  company: "TechDivision GmbH"
+  license: "Apache-2.0"
+  standalone: true
+  min_ansible_version: "2.13"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 ##
 ---
 
-- name: server | ensure the domain base directory exists
-  file:
+- name: Server | ensure the domain base directory exists
+  ansible.builtin.file:
     path: "{{ certificate_server_domain_cert_path }}"
     state: directory
     owner: root
@@ -24,22 +24,22 @@
     mode: '0755'
   become: true
 
-- name: server | generate key file
-  shell: "openssl genrsa -out {{ certificate_server_domain_key_file }} {{ certificate_server_key_size }}"
+- name: Server | generate key file
+  ansible.builtin.shell: "openssl genrsa -out {{ certificate_server_domain_key_file }} {{ certificate_server_key_size }}"
   args:
     creates: "{{ certificate_server_domain_key_file }}"
   become: true
 
-- name: server | ensure the private key is only readable by root
-  file:
+- name: Server | ensure the private key is only readable by root
+  ansible.builtin.file:
     path: "{{ certificate_server_domain_key_file }}"
     owner: root
     group: wheel
     mode: '0400'
   become: true
 
-- name: provide req.cnf
-  template:
+- name: Server | provide req.cnf
+  ansible.builtin.template:
     src: "req.cnf.j2"
     dest: "{{ certificate_server_domain_cnf_file }}"
     owner: root
@@ -47,29 +47,29 @@
     mode: '0644'
   become: true
 
-- name: server | generate csr file
-  shell: "openssl req -new -key {{ certificate_server_domain_key_file }} -out {{ certificate_server_domain_csr_file }} -config {{ certificate_server_domain_cnf_file }}"
+- name: Server | generate csr file
+  ansible.builtin.shell: "openssl req -new -key {{ certificate_server_domain_key_file }} -out {{ certificate_server_domain_csr_file }} -config {{ certificate_server_domain_cnf_file }}"
   args:
     creates: "{{ certificate_server_domain_csr_file }}"
   become: true
 
-- name: server | sign csr with ca
-  shell: "openssl x509 -req -in {{ certificate_server_domain_csr_file }} -extfile {{ certificate_server_domain_cnf_file }} -extensions v3_req -CA {{ certificate_ca_cert_file }} -CAkey {{ certificate_ca_key_file }} -CAcreateserial -out {{ certificate_server_domain_cert_file }} -days {{ certificate_server_cert_lifetime }} -sha256"
+- name: Server | sign csr with ca
+  ansible.builtin.shell: "openssl x509 -req -in {{ certificate_server_domain_csr_file }} -extfile {{ certificate_server_domain_cnf_file }} -extensions v3_req -CA {{ certificate_ca_cert_file }} -CAkey {{ certificate_ca_key_file }} -CAcreateserial -out {{ certificate_server_domain_cert_file }} -days {{ certificate_server_cert_lifetime }} -sha256"
   args:
     creates: "{{ certificate_server_domain_cert_file }}"
   become: true
 
-- name: server | get fs information for certificate full chain file
-  stat:
+- name: Server | get fs information for certificate full chain file
+  ansible.builtin.stat:
     path: "{{ certificate_server_domain_fullchain_file }}"
   register: certificate_server_fullchain_file_obj
 
-- name: server | merge certificate and ca file into fullchain file
-  shell: "{{ certificate_server_domain_fullchain_item }}"
+- name: Server | merge certificate and ca file into fullchain file
+  ansible.builtin.shell: "{{ certificate_server_domain_fullchain_item }}"
   with_items:
     - "cat {{ certificate_server_domain_cert_file }} > {{ certificate_server_domain_fullchain_file }}"
     - "cat {{ certificate_ca_cert_file }} >> {{ certificate_server_domain_fullchain_file }}"
-  when: certificate_server_fullchain_file_obj.stat.exists == false
+  when: not certificate_server_fullchain_file_obj.stat.exists|bool
   loop_control:
     loop_var: certificate_server_domain_fullchain_item
   become: true

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,10 +15,13 @@
 ##
 ---
 
-- include_tasks: ubuntu/install.yml
+- name: "Include Install"
+  ansible.builtin.include_tasks: install.yml
 
-- include_tasks: ubuntu/ca.yml
+- name: "Include CA"
+  ansible.builtin.include_tasks: ca.yml
   when: cert_prefix is not defined
 
-- include_tasks: ubuntu/server.yml
+- name: "Include Server"
+  ansible.builtin.include_tasks: server.yml
   when: cert_prefix is defined

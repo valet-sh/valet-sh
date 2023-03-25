@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 ##
 ---
 
-- name: ca | ensure base directories existing
-  file:
+- name: CA | ensure base directories existing
+  ansible.builtin.file:
     path: "{{ certificate_base_path_item }}"
     state: directory
     owner: root
@@ -30,64 +30,65 @@
   loop_control:
     loop_var: certificate_base_path_item
 
-- name: ca | generate private ca key
-  shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
+- name: CA | generate private ca key
+  ansible.builtin.shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
   args:
     creates: "{{ certificate_ca_key_file }}"
   become: true
 
-- name: "ca | ensure only root can read ca key file"
-  file:
+- name: "CA | ensure only root can read ca key file"
+  ansible.builtin.file:
     path: "{{ certificate_ca_key_file }}"
     owner: root
     group: root
     mode: '0400'
   become: true
 
-- name: ca | generate CA Certificate
-  shell: "openssl req -subj '/CN=valet.sh Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
+- name: CA | generate CA Certificate
+  ansible.builtin.shell: "openssl req -subj '/CN=valet.sh Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
   args:
     creates: "{{ certificate_ca_cert_file }}"
   become: true
 
-- name: ca | copy CA-Certificate file
-  copy:
+- name: CA | copy CA-Certificate file
+  ansible.builtin.copy:
     src: "{{ certificate_ca_cert_file }}"
     dest: "{{ certificate_trusted_root_ca_path }}/valet-sh_development_CA.crt"
     mode: '0644'
   register: copy_ca_to_trusted_root_ca_path_obj
   become: true
 
-- name: ca | update ca certificates keystore
-  shell: "update-ca-certificates"
+- name: CA | update ca certificates keystore
+  ansible.builtin.shell: "update-ca-certificates"
   become: true
   when: copy_ca_to_trusted_root_ca_path_obj is changed
 
-- name:  search for cert9.db files in users's home directory
-  shell: "find {{ current_home }}/ -maxdepth 4 -name 'cert9.db' 2>/dev/null"
+- name: Search for cert9.db files in users's home directory
+  ansible.builtin.shell: "find {{ current_home }}/ -maxdepth 4 -name 'cert9.db' 2>/dev/null"
   register: available_cert9_files_obj
   become: true
 
-- name: run certutil for every cert9 file
-  shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ current_cert9_file_item | dirname }}'
+- name: Run certutil for every cert9 file
+  ansible.builtin.shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ current_cert9_file_item | dirname }}'
   with_items: "{{ available_cert9_files_obj.stdout_lines }}"
   loop_control:
     loop_var: current_cert9_file_item
 
-- name: "check if directory '{{ current_home }}/snap' exists"
-  stat:
+- name: "Check if directory '{{ current_home }}/snap' exists"
+  ansible.builtin.stat:
     path: "{{ current_home }}/snap"
   register: snap_directory_obj
 
-- block:
-    - name: "search for cert9.db files '{{ current_home }}/snap/'"
-      shell: "find {{ current_home }}/snap/ -maxdepth 7 -name 'cert9.db' 2>/dev/null"
+- name: "Block"
+  when: snap_directory_obj.stat.exists|bool
+  ansible.builtin.block:
+    - name: "Search for cert9.db files '{{ current_home }}/snap/'"
+      ansible.builtin.shell: "find {{ current_home }}/snap/ -maxdepth 7 -name 'cert9.db' 2>/dev/null"
       register: available_cert9_files_snap_obj
       become: true
 
     - name: run certutil for every cert9 file
-      shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ available_cert9_files_snap_item | dirname }}'
+      ansible.builtin.shell: 'Certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ available_cert9_files_snap_item | dirname }}'
       with_items: "{{ available_cert9_files_snap_obj.stdout_lines }}"
       loop_control:
         loop_var: available_cert9_files_snap_item
-  when: snap_directory_obj.stat.exists|bool
