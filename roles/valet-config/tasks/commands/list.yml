@@ -15,27 +15,27 @@
 ##
 ---
 
-- name: "commands » list | set runtime flag"
-  set_fact:
+- name: "Commands » list | set runtime flag"
+  ansible.builtin.set_fact:
     valet_config_in_command: true
 
-- name: "commands » list | include valet etc config file"
-  include_vars:
+- name: "Commands » list | include valet etc config file"
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_config_file }}"
     name: valet_etc_config_obj
 
-- name: "commands » list | set empty array 'valet_config_list'"
-  set_fact:
+- name: "Commands » list | set empty array 'valet_config_list'"
+  ansible.builtin.set_fact:
     valet_config_list: []
 
-- name: "commands » list | add config to array"
-  set_fact:
-    valet_config_list: "{{ valet_config_list + [[ item.key, item.value ]] }}"
+- name: "Commands » list | add config to array"
+  ansible.builtin.set_fact:
+    valet_config_list: "{{ valet_config_list + [[item.key, item.value]] }}"
   with_dict: "{{ valet_etc_config_obj }}"
 
-- name: "commands » list | print table based on 'valet_config_list' array"
+- name: "Commands » list | print table based on 'valet_config_list' array"
   vsh-table:
     headers: ['Key', 'Value']
     rows: "{{ valet_config_list }}"
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint
