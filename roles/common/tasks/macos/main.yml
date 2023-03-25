@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,35 +15,35 @@
 ##
 ---
 
-- name: set max_map_count to 262144
-  sysctl:
+- name: Set max_map_count to 262144
+  ansible.builtin.sysctl:
     name: vm.max_map_count
     value: "262144"
     state: present
-    reload: no
+    reload: false
   become: true
 
-- name: set fs.inotify.max_user_watches to 524288
-  sysctl:
+- name: Set fs.inotify.max_user_watches to 524288
+  ansible.builtin.sysctl:
     name: fs.inotify.max_user_watches
     value: "524288"
     state: present
-    reload: no
+    reload: false
   become: true
 
-- name: ensure homebrew is installed
-  shell: '{{ valet_sh_arch_prefix }}/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
+- name: Ensure homebrew is installed
+  ansible.builtin.shell: '{{ valet_sh_arch_prefix }}/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
   args:
     creates: "/usr/local/bin/brew"
 
-- name: ensure native homebrew is installed on apple silicon
-  shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
+- name: Ensure native homebrew is installed on apple silicon
+  ansible.builtin.shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
   args:
     creates: "/opt/homebrew/bin/brew"
   when: current_arch == "arm64"
 
-- name: ensure brew_x86 wrapper script is up2date (only on m1)
-  template:
+- name: Ensure brew_x86 wrapper script is up2date (only on m1)
+  ansible.builtin.template:
     src: "brew_x86.j2"
     dest: "/usr/local/bin/brew_x86"
     owner: "{{ current_user }}"
@@ -53,16 +53,17 @@
   when: current_arch == "arm64"
 
 - name: Ensure valet-sh tap is tapped
-  shell: '{{ valet_sh_homebrew_bin }} tap valet-sh/core'
+  ansible.builtin.shell: '{{ valet_sh_homebrew_bin }} tap valet-sh/core'
 
-- name: ensure LaunchDaemons script for maxfiles limit is deployed
-  template:
+- name: Ensure LaunchDaemons script for maxfiles limit is deployed
+  ansible.builtin.template:
     src: "limit.maxfiles.conf.j2"
     dest: "/Library/LaunchDaemons/limit.maxfiles.plist"
+    mode: '0755'
   become: true
 
-- name: ensure maxfile limit daemon is started
-  shell: "launchctl load -w /Library/LaunchDaemons/limit.maxfiles.plist"
+- name: Ensure maxfile limit daemon is started
+  ansible.builtin.shell: "launchctl load -w /Library/LaunchDaemons/limit.maxfiles.plist"
 
-- name: ensure service tap is installed
-  shell: '{{ valet_sh_homebrew_bin }} services list'
+- name: Ensure service tap is installed
+  ansible.builtin.shell: '{{ valet_sh_homebrew_bin }} services list'

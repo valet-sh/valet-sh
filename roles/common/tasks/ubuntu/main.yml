@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,25 +15,25 @@
 ##
 ---
 
-- name: install common packages
-  apt:
+- name: Install common packages
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
   become: true
   vars:
     packages:
-     - git
-     - curl
+      - git
+      - curl
 
-- name: set max_map_count to 262144
-  sysctl:
+- name: Set max_map_count to 262144
+  ansible.builtin.sysctl:
     name: vm.max_map_count
     value: "262144"
     state: present
   become: true
 
-- name: set fs.inotify.max_user_watches to 524288
-  sysctl:
+- name: Set fs.inotify.max_user_watches to 524288
+  ansible.builtin.sysctl:
     name: fs.inotify.max_user_watches
     value: "524288"
     state: present
