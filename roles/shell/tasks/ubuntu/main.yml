@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,24 +15,26 @@
 ##
 ---
 
-- name: "ensure default shell is set"
-  set_fact:
+- name: "Ensure default shell is set"
+  ansible.builtin.set_fact:
     default_shell: "{{ shell_default_shell }}"
 
-- name: "check if shell is valid"
-  fail:
+- name: "Check if shell is valid"
+  ansible.builtin.fail:
     msg: "invalid shell '{{ valet_sh_config.default_shell }}'"
   when:
     - valet_sh_config.default_shell is defined
     - valet_sh_config.default_shell not in shell_available_shells
 
-- name: "override default shell"
-  set_fact:
+- name: "Override default shell"
+  ansible.builtin.set_fact:
     default_shell: "{{ valet_sh_config.default_shell }}"
   when: valet_sh_config.default_shell is defined
 
-- include_tasks: ubuntu/bash.yml
+- name: "Install bash"
+  ansible.builtin.include_tasks: bash.yml
   when: default_shell == "bash"
 
-- include_tasks: ubuntu/zsh.yml
+- name: "Install zsh"
+  ansible.builtin.include_tasks: zsh.yml
   when: default_shell == "zsh"

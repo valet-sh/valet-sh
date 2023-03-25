@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
 ##
 ---
 
-- name: ensure default shell is 'bash'
-  user:
+- name: Ensure default shell is 'bash'
+  ansible.builtin.user:
     name: "{{ current_user }}"
     shell: /bin/bash
   become: true
-

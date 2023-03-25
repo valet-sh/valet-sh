@@ -7,3 +7,4 @@ skip_list:
   - 'fqcn[canonical]'
   - 'no-handler'
   - 'role-name'
+  - 'latest[git]'
