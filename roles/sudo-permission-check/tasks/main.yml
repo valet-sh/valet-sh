@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 ---
 
 - name: Check sudo permissions
-  command: echo "check sudo permissions"
-  become: yes
+  ansible.builtin.command: echo "check sudo permissions"
+  become: true
   changed_when: false
   failed_when: false
   register: sudo_permission_check_obj
 
-- name: fail when password was wrong
-  fail:
+- name: Fail when password was wrong
+  ansible.builtin.fail:
     msg: "invalid password!"
   when: sudo_permission_check_obj.rc != 0
