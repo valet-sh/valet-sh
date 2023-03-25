@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 ##
 ---
 
-- name: ensure redis packages are installed
-  apt:
+- name: Ensure redis packages are installed
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
   become: true
@@ -25,9 +25,9 @@
       - redis-server
       - redis-tools
 
-- name: ensure redis-server is running and enabled
-  systemd:
+- name: Ensure redis-server is running and enabled
+  ansible.builtin.systemd:
     name: redis-server
     state: started
-    enabled: yes
+    enabled: true
   become: true

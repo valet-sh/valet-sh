@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,30 +15,29 @@
 ##
 ---
 
-- name: systemd | redis-server | started
-  systemd:
+- name: Systemd | redis-server | started
+  ansible.builtin.systemd:
     name: redis-server
     state: started
   become: true
 
-- name: systemd | redis-server | stopped
-  systemd:
+- name: Systemd | redis-server | stopped
+  ansible.builtin.systemd:
     name: redis-server
     state: stopped
   become: true
 
-- name: systemd | redis-server | restarted
-  systemd:
+- name: Systemd | redis-server | restarted
+  ansible.builtin.systemd:
     name: redis-server
     state: restarted
   become: true
 
-- name: brew | redis | started
-  shell: "{{ valet_sh_homebrew_bin }} services start redis"
+- name: Brew | redis | started
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start redis"
 
-- name: brew | redis | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop redis"
+- name: Brew | redis | stopped
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop redis"
 
-- name: brew | redis | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart redis"
-
+- name: Brew | redis | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart redis"

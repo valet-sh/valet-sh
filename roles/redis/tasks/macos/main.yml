@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,12 +15,6 @@
 ##
 ---
 
-#- name: "ensure redis is installed"
-#  homebrew:
-#    name: redis
-#    state: present
-
-- name: "ensure redis is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install redis"
-  notify: brew | redis | restarted
-
+- name: "Ensure redis is installed"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install redis"
+  notify: Brew | redis | restarted
