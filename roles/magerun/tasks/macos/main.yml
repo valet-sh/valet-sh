@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,22 +15,22 @@
 ##
 ---
 
-- name: ensure that magerun1 is installed
-  get_url:
+- name: Ensure that magerun1 is installed
+  ansible.builtin.get_url:
     url: "{{ magerun1_download_url }}"
     dest: "{{ magerun1_bin_path }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: 0755
+    mode: '0755'
     force: true
   become: true
 
-- name: ensure that magerun2 is installed
-  get_url:
+- name: Ensure that magerun2 is installed
+  ansible.builtin.get_url:
     url: "{{ magerun2_download_url }}"
     dest: "{{ magerun2_bin_path }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: 0755
+    mode: '0755'
     force: true
   become: true
