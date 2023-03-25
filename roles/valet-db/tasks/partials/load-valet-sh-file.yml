@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
 ##
 ---
 
-- name: "partials » load-valet-sh-file | checking for '{{ valet_sh_filename }}' file in '{{ valet_current_path }}'"
-  stat:
+- name: "Partials » load-valet-sh-file | checking for '{{ valet_sh_filename }}' file in '{{ valet_current_path }}'"
+  ansible.builtin.stat:
     path: "{{ valet_current_path }}/{{ valet_sh_filename }}"
   register: valet_sh_file_obj
 
-- name: "partials » load-valet-sh-file | include variables from '{{ valet_sh_filename }}' file"
-  include_vars:
+- name: "Partials » load-valet-sh-file | include variables from '{{ valet_sh_filename }}' file"
+  ansible.builtin.include_vars:
     file: "{{ valet_current_path }}/{{ valet_sh_filename }}"
     name: valet_sh_project_vars
   when: valet_sh_file_obj.stat.exists

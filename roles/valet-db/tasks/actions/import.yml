@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,34 +15,35 @@
 ##
 ---
 
-- include_tasks: partials/check-db-name-var.yml
+- name: "Include 'partials/check-db-name-var.yml'"
+  ansible.builtin.include_tasks: partials/check-db-name-var.yml
 
-- name: "actions » import | override 'valet_db_name' variable if db name argument was given"
-  set_fact:
+- name: "Actions » import | override 'valet_db_name' variable if db name argument was given"
+  ansible.builtin.set_fact:
     valet_db_name: "{{ valet_arg2 }}"
   when: valet_arg2 | length > 0
 
-- name: "actions » import | fail when no filename was given"
-  fail:
+- name: "Actions » import | fail when no filename was given"
+  ansible.builtin.fail:
     msg: "no filename was given"
   when: valet_arg1 | length == 0
 
-- name: "actions » import | set filename from args"
-  set_fact:
+- name: "Actions » import | set filename from args"
+  ansible.builtin.set_fact:
     valet_db_filename: "{{ valet_arg1 }}"
 
-- name: "actions » import | set valet_db_file var"
-  set_fact:
+- name: "Actions » import | set valet_db_file var"
+  ansible.builtin.set_fact:
     valet_db_file: "{{ valet_db_filename }}"
   when: valet_db_filename[0]  == "/"
 
-- name: "actions » import | add path to 'valet_db_file' if it is not already an absolute path"
-  set_fact:
+- name: "Actions » import | add path to 'valet_db_file' if it is not already an absolute path"
+  ansible.builtin.set_fact:
     valet_db_file: "{{ valet_current_path }}/{{ valet_db_filename }}"
   when: valet_db_file is not defined
 
-- name: "actions » import | Import database {{ valet_db_file }} into database '{{ valet_db_name }}'"
-  mysql_db:
+- name: "Actions » import | Import database {{ valet_db_file }} into database '{{ valet_db_name }}'"
+  ansible.builtin.mysql_db:
     state: import
     config_file: "{{ valet_db_mysql_target_config_file }}"
     config_overrides_defaults: true

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,30 +15,32 @@
 ##
 ---
 
-- include_tasks: partials/check-db-name-var.yml
+- name: "Include 'partials/check-db-name-var.yml'"
+  ansible.builtin.include_tasks: partials/check-db-name-var.yml
 
-- name: "actions » export | override 'valet_db_name' variable if db name argument was given"
-  set_fact:
+- name: "Actions » export | override 'valet_db_name' variable if db name argument was given"
+  ansible.builtin.set_fact:
     valet_db_name: "{{ valet_arg2 }}"
   when: valet_arg2 | length > 0
 
-- name: "actions » export | set filename when arguement is not empty"
-  set_fact:
+- name: "Actions » export | set filename when arguement is not empty"
+  ansible.builtin.set_fact:
     valet_db_filename: "{{ valet_arg1 }}.sql.gz"
   when: valet_arg1 | length > 0
 
-- block:
-  - name: "actions » export | get current datetime"
-    set_fact:
-      current_datetime: "{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}" # noqa 204
-
-  - name: "actions » export | build valet_db_filename var"
-    set_fact:
-      valet_db_filename: "{{ valet_db_name }}-{{ current_datetime }}.sql.gz"
+- name: "Block"
   when: valet_db_filename is not defined
+  ansible.builtin.block:
+    - name: "Actions » export | get current datetime"
+      ansible.builtin.set_fact:
+        current_datetime: "{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}" # noqa 204
 
-- name: "actions » export | create db {{ valet_db_name }} into {{ valet_current_path }}/{{ valet_db_filename }}"
-  mysql_db:
+    - name: "Actions » export | build valet_db_filename var"
+      ansible.builtin.set_fact:
+        valet_db_filename: "{{ valet_db_name }}-{{ current_datetime }}.sql.gz"
+
+- name: "Actions » export | create db {{ valet_db_name }} into {{ valet_current_path }}/{{ valet_db_filename }}"
+  ansible.builtin.mysql_db:
     state: dump
     name: "{{ valet_db_name }}"
     config_file: "{{ valet_db_mysql_target_config_file }}"

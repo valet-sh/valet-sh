@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,26 +15,26 @@
 ##
 ---
 
-- name: "actions » ls | get list of mysql databases"
-  shell: "{{ valet_db_mysql_client_binary }} -B --disable-column-names --execute 'show databases'" # noqa 305 301
+- name: "Actions » ls | get list of mysql databases"
+  ansible.builtin.shell: "{{ valet_db_mysql_client_binary }} -B --disable-column-names --execute 'show databases'"
   register: mysql_query_show_databases_obj
 
-- name: "actions » ls | read current databases from command output"
-  set_fact:
+- name: "Actions » ls | read current databases from command output"
+  ansible.builtin.set_fact:
     valet_current_databases: "{{ mysql_query_show_databases_obj.stdout_lines | difference(valet_mysql_db_blacklist) }}"
 
-- name: "actions » ls | create empty array 'valet_list'"
-  set_fact:
+- name: "Actions » ls | create empty array 'valet_list'"
+  ansible.builtin.set_fact:
     valet_list: []
 
-- name: "actions » ls | add existing databases to array 'valet_list'"
-  set_fact:
-    valet_list: "{{ valet_list + [[ item ]] }}"
+- name: "Actions » ls | add existing databases to array 'valet_list'"
+  ansible.builtin.set_fact:
+    valet_list: "{{ valet_list + [[item]] }}"
   with_items: "{{ valet_current_databases }}"
 
-- name: "actions » ls | | show existing databases"
+- name: "Actions » ls | | show existing databases"
   vsh-table:
     headers: ['Datebase name']
     rows: "{{ valet_list }}"
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint

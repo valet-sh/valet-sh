@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,22 +15,23 @@
 ##
 ---
 
-- include_tasks: partials/check-db-name-var.yml
+- name: "Include 'partials/check-db-name-var.yml"
+  ansible.builtin.include_tasks: partials/check-db-name-var.yml
 
-- name: "actions » reset | override 'valet_db_name' variable if db name argument was given"
-  set_fact:
+- name: "Actions » reset | override 'valet_db_name' variable if db name argument was given"
+  ansible.builtin.set_fact:
     valet_db_name: "{{ valet_arg1 }}"
   when: valet_arg1 | length > 0
 
-- name: "actions » reset | drop database {{ valet_db_name }}"
-  mysql_db:
+- name: "Actions » reset | drop database {{ valet_db_name }}"
+  ansible.builtin.mysql_db:
     name: "{{ valet_db_name }}"
     config_file: "{{ valet_db_mysql_target_config_file }}"
     config_overrides_defaults: true
     state: absent
 
-- name: "actions » reset | create database {{ valet_db_name }}"
-  mysql_db:
+- name: "Actions » reset | create database {{ valet_db_name }}"
+  ansible.builtin.mysql_db:
     name: "{{ valet_db_name }}"
     config_file: "{{ valet_db_mysql_target_config_file }}"
     config_overrides_defaults: true

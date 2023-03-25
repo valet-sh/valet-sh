@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,26 +15,31 @@
 ##
 ---
 
-- name: fail when valet_action is unknown
-  fail:
+- name: Fail when valet_action is unknown
+  ansible.builtin.fail:
     msg: "unknown action '{{ valet_action }}'"
   when: valet_action not in valet_db_allowed_actions
 
-- include_tasks: ls.yml
+- name: "Include 'ls.yml'"
+  ansible.builtin.include_tasks: ls.yml
   when: valet_action == "ls"
 
-- include_tasks: create.yml
+- name: "Include 'ls.yml'"
+  ansible.builtin.include_tasks: create.yml
   when: valet_action == "create"
 
-- include_tasks: reset.yml
+- name: "Include 'ls.yml'"
+  ansible.builtin.include_tasks: reset.yml
   when: valet_action == "reset"
 
-- include_tasks: drop.yml
+- name: "Include 'ls.yml'"
+  ansible.builtin.include_tasks: drop.yml
   when: valet_action == "drop"
 
-- include_tasks: import.yml
+- name: "Include 'ls.yml'"
+  ansible.builtin.include_tasks: import.yml
   when: valet_action == "import"
 
-- include_tasks: export.yml
+- name: "Include 'ls.yml'"
+  ansible.builtin.include_tasks: export.yml
   when: valet_action == "export"
-
