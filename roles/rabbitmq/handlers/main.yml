@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,33 +15,33 @@
 ##
 ---
 
-- name: systemd | rabbitmq-server | started
-  systemd:
+- name: Systemd | rabbitmq-server | started
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: started
   become: true
 
-- name: systemd | rabbitmq-server | stopped
-  systemd:
+- name: Systemd | rabbitmq-server | stopped
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: stopped
   become: true
 
-- name: systemd | rabbitmq-server | restarted
-  systemd:
+- name: Systemd | rabbitmq-server | restarted
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: restarted
   become: true
 
-- name: systemd | rabbitmq-server | reloaded
-  systemd:
+- name: Systemd | rabbitmq-server | reloaded
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: reloaded
   become: true
 
-- name: systemd | rabbitmq-server | full-restart
-  systemd:
+- name: Systemd | rabbitmq-server | full-restart
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
   become: true
