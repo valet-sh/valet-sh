@@ -15,10 +15,19 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
+- name: "Ensure vsh-opensearch1 is stopped"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-opensearch1"
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Ensure vsh-opensearch1 is absent"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove vsh-opensearch1"
+
+- name: "Ensure 'vsh-opensearch1' files are deleted"
+  ansible.builtin.file:
+    path: "{{ valet_sh_opensearch }}"
+    state: absent
+  with_items:
+    - "/usr/local/opt/vsh-opensearch1"
+    - "/usr/local/var/vsh-opensearch1"
+    - "/usr/local/etc/vsh-opensearch1"
+  loop_control:
+    loop_var: valet_sh_opensearch

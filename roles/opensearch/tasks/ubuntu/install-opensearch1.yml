@@ -64,21 +64,21 @@
     src: "config/{{ current_opensearch_key }}.yml.j2"
     dest: "{{ current_opensearch_base_path }}/config/opensearch.yml"
     mode: '0644'
-  notify: "systemd | opensearch1 | restarted"
+  notify: "Systemd | opensearch1 | restarted"
 
 - name: "Set 'Xms' in '{{ current_opensearch_base_path }}/config/jvm.options' to 2GB"
   ansible.builtin.lineinfile:
     path: "{{ current_opensearch_base_path }}/config/jvm.options"
     regexp: '^-Xms'
     line: "-Xms2g"
-  notify: "systemd | opensearch1 | restarted"
+  notify: "Systemd | opensearch1 | restarted"
 
 - name: "Set 'Xmx' in '{{ current_opensearch_base_path }}/config/jvm.options' to 2GB"
   ansible.builtin.lineinfile:
     path: "{{ current_opensearch_base_path }}/config/jvm.options"
     regexp: '^-Xmx'
     line: "-Xmx2g"
-  notify: "systemd | opensearch1 | restarted"
+  notify: "Systemd | opensearch1 | restarted"
 
 - name: "Provide {{ current_opensearch_key }} systemd unit file"
   ansible.builtin.template:
@@ -88,4 +88,4 @@
     group: root
     mode: '0644'
   become: true
-  notify: "systemd | opensearch1 | restarted"
+  notify: "Systemd | opensearch1 | restarted"

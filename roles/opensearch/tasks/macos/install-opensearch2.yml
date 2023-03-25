@@ -1,0 +1,43 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "Ensure vsh-opensearch2 is installed"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-opensearch2"
+
+- name: "Ensure opensearch 2 plugins are installed"
+  ansible.builtin.elasticsearch_plugin:
+    name: "{{ current_opensearch_plugin }}"
+    state: present
+    plugin_bin: "/usr/local/opt/vsh-opensearch2/libexec/bin/opensearch-plugin"
+    plugin_dir: "/usr/local/opt/vsh-opensearch2/libexec/plugins"
+  with_items: "{{ opensearch_plugins }}"
+  loop_control:
+    loop_var: current_opensearch_plugin
+
+- name: "Set 'Xms' in '/usr/local/etc/vsh-opensearch2/jvm.options' to 2GB"
+  ansible.builtin.lineinfile:
+    path: "/usr/local/etc/vsh-opensearch2/jvm.options"
+    regexp: '^-Xms'
+    line: "-Xms2g"
+  notify: "Brew | vsh-opensearch2 | restarted"
+
+- name: "Set 'Xmx' in '/usr/local/etc/vsh-opensearch2/jvm.options' to 2GB"
+  ansible.builtin.lineinfile:
+    path: "/usr/local/etc/vsh-opensearch2/jvm.options"
+    regexp: '^-Xmx'
+    line: "-Xmx2g"
+  notify: "Brew | vsh-opensearch2 | restarted"

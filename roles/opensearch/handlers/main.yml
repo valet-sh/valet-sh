@@ -15,64 +15,64 @@
 ##
 ---
 
-- name: systemd | opensearch1 | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | opensearch1 | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: opensearch1
     state: started
   become: true
 
-- name: systemd | opensearch1 | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | opensearch1 | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: opensearch1
     state: stopped
   become: true
 
-- name: systemd | opensearch1 | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | opensearch1 | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: opensearch1
     state: restarted
   become: true
 
-- name: systemd | opensearch1 | reloaded
-  systemd:
-    daemon_reload: yes
+- name: Systemd | opensearch1 | reloaded
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: opensearch1
     state: restarted
   become: true
 
-- name: brew | vsh-opensearch1 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch1"
+- name: Brew | vsh-opensearch1 | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch1"
 
-- name: systemd | opensearch2 | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | opensearch2 | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: opensearch2
     state: started
   become: true
 
-- name: systemd | opensearch2 | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | opensearch2 | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: opensearch2
     state: stopped
   become: true
 
-- name: systemd | opensearch2 | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | opensearch2 | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: opensearch2
     state: restarted
   become: true
 
-- name: systemd | opensearch2 | reloaded
-  systemd:
-    daemon_reload: yes
+- name: Systemd | opensearch2 | reloaded
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: opensearch2
     state: restarted
   become: true
 
-- name: brew | vsh-opensearch2 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"
+- name: Brew | vsh-opensearch2 | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"

@@ -15,10 +15,10 @@
 ##
 ---
 
-- name: "Include ubuntu"
-  ansible.builtin.include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
+- name: "Validate version"
+  ansible.builtin.fail:
+    msg: "'{{ package_name }}' is not available"
+  when: package_name not in valet_sh.services.opensearch
 
-- name: "Include macos"
-  ansible.builtin.include_tasks: macos/main.yml
-  when: current_os == "mac"
+- name: "Include 'uninstall-{{ package_name }}.yml'"
+  ansible.builtin.include_tasks: "uninstall-{{ package_name }}.yml"

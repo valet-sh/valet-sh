@@ -15,10 +15,19 @@
 ##
 ---
 
-- name: "Include ubuntu"
-  ansible.builtin.include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
+- name: "Ensure vsh-opensearch2 is stopped"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-opensearch2"
 
-- name: "Include macos"
-  ansible.builtin.include_tasks: macos/main.yml
-  when: current_os == "mac"
+- name: "Ensure vsh-opensearch2 is absent"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove vsh-opensearch2"
+
+- name: "Ensure 'vsh-opensearch2' files are deleted"
+  ansible.builtin.file:
+    path: "{{ valet_sh_opensearch }}"
+    state: absent
+  with_items:
+    - "/usr/local/opt/vsh-opensearch2"
+    - "/usr/local/var/vsh-opensearch2"
+    - "/usr/local/etc/vsh-opensearch2"
+  loop_control:
+    loop_var: valet_sh_opensearch
