@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
+- name: "Include ubuntu"
+  ansible.builtin.include_tasks: ubuntu/main.yml
   when: current_os == "ubuntu"
 
-- include_tasks: macos/main.yml
+- name: "Include macos"
+  ansible.builtin.include_tasks: macos/main.yml
   when: current_os == "mac"

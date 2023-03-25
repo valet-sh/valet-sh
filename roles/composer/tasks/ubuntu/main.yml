@@ -15,24 +15,26 @@
 ##
 ---
 
-- include_tasks: composer1.yml
+- name: "Include composer1 installation"
+  ansible.builtin.include_tasks: composer1.yml
 
-- include_tasks: composer2.yml
+- name: "Include composer2 installation"
+  ansible.builtin.include_tasks: composer2.yml
 
-- name: ensure composer wrapper script is up2date
-  template:
+- name: Ensure composer wrapper script is up2date
+  ansible.builtin.template:
     src: "composer-wrapper.j2"
     dest: "/usr/local/bin/composer"
     mode: '0755'
   become: true
 
-- name: "get stat for '/usr/local/bin/composer-php'"
-  stat:
+- name: "Get stat for '/usr/local/bin/composer-php'"
+  ansible.builtin.stat:
     path: "/usr/local/bin/default-composer"
   register: composer_default_symlink_obj
 
-- name: "create symlink for default php"
-  file:
+- name: "Create symlink for default php"
+  ansible.builtin.file:
     src: "/usr/local/bin/composer1"
     dest: "/usr/local/bin/default-composer"
     state: link

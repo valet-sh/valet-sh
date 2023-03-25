@@ -15,8 +15,8 @@
 ##
 ---
 
-- name: "ensure composer-1 is installed"
-  get_url:
+- name: "Ensure composer-1 is installed"
+  ansible.builtin.get_url:
     url: https://getcomposer.org/composer-1.phar
     dest: "{{ composer1_phar_bin }}"
     owner: "{{ current_user }}"
@@ -25,13 +25,13 @@
     force: true
   become: true
 
-- name: "ensure composer1 script is up2date"
-  template:
+- name: "Ensure composer1 script is up2date"
+  ansible.builtin.template:
     src: "composer1.j2"
     dest: "{{ composer1_bin }}"
     mode: '0755'
     force: true
   become: true
 
-- name: install prestissimo
-  command: "/usr/bin/php7.3 /usr/local/bin/composer1 global require hirak/prestissimo -n"
+- name: Install prestissimo
+  ansible.builtin.command: "/usr/bin/php7.3 /usr/local/bin/composer1 global require hirak/prestissimo -n"

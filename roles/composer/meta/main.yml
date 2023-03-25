@@ -17,3 +17,18 @@
 
 dependencies:
   - role: shared-variables
+
+galaxy_info:
+  author: Philipp Dittert
+  description: valet.sh composer management
+  company: "TechDivision GmbH"
+  license: "Apache-2.0"
+  standalone: true
+  min_ansible_version: "2.13"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: MacOSX
+      versions:
+        - all
