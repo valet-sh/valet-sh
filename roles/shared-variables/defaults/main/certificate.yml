@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ certificate_server_domain_csr_file: "{{ certificate_server_domain_cert_path }}/{
 certificate_server_domain_cert_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_cert_filename }}"
 certificate_server_domain_fullchain_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_fullchain_filename }}"
 certificate_server_domain_cnf_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_cnf_filename }}"
-
 
 certificate_tld_default: "{{ development_tld }}"
 certificate_tld: "{{ lookup('vars', 'certificate_tld'+'_'+current_os, default=certificate_tld_default) }}"

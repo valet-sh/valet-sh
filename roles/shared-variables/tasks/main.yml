@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,65 +15,65 @@
 ##
 ---
 
-- name: "set vars 'current_user', 'current_group' and 'current_home'"
-  set_fact:
+- name: "Set vars 'current_user', 'current_group' and 'current_home'"
+  ansible.builtin.set_fact:
     current_user: "{{ lookup('env','USER') }}"
     current_home: "{{ lookup('env','HOME') }}"
 
-- name: "set 'current_group' var for ubuntu"
-  set_fact:
+- name: "Set 'current_group' var for ubuntu"
+  ansible.builtin.set_fact:
     current_group: "{{ lookup('env','USER') }}"
   when: ansible_distribution == 'Ubuntu'
 
-- name: "set 'current_group' var for ubuntu"
-  set_fact:
+- name: "Set 'current_group' var for ubuntu"
+  ansible.builtin.set_fact:
     current_group: "{{ lookup('env','USER') }}"
   when: ansible_distribution == 'Linux Mint'
 
-- name: "set 'current_group' var for macos"
-  set_fact:
+- name: "Set 'current_group' var for macos"
+  ansible.builtin.set_fact:
     current_group: "staff"
   when: ansible_distribution == 'MacOSX'
 
-- name: "set 'current_os' var"
-  set_fact:
+- name: "Set 'current_os' var"
+  ansible.builtin.set_fact:
     current_os: "ubuntu"
   when: ansible_distribution == 'Ubuntu'
 
-- name: "set 'current_os' var"
-  set_fact:
+- name: "Set 'current_os' var"
+  ansible.builtin.set_fact:
     current_os: "ubuntu"
   when: ansible_distribution == 'Linux Mint'
 
-- name: "set 'current_os' var"
-  set_fact:
+- name: "Set 'current_os' var"
+  ansible.builtin.set_fact:
     current_os: "mac"
   when: ansible_distribution == 'MacOSX'
 
-- name: "set 'current_arch' var"
-  set_fact:
+- name: "Set 'current_arch' var"
+  ansible.builtin.set_fact:
     current_arch: "{{ ansible_architecture }}"
 
-- name: "set 'os_codename' var"
-  set_fact:
+- name: "Set 'os_codename' var"
+  ansible.builtin.set_fact:
     os_codename: "{{ ansible_distribution_release }}"
 
-- name: "override 'os_codename' if OS is Linux Mint 20.x"
-  set_fact:
+- name: "Override 'os_codename' if OS is Linux Mint 20.x"
+  ansible.builtin.set_fact:
     os_codename: "focal"
   when: ansible_distribution_release == 'ulyana' or ansible_distribution_release == 'ulyssa' or ansible_distribution_release == 'uma' or ansible_distribution_release == 'una'
 
-- name: "override 'os_codename' if OS is LinuxMint 21.x"
-  set_fact:
+- name: "Override 'os_codename' if OS is LinuxMint 21.x"
+  ansible.builtin.set_fact:
     os_codename: "jammy"
   when: ansible_distribution_release == 'vanessa'
 
-- name: fail when no supported operating system was found
-  fail:
+- name: Fail when no supported operating system was found
+  ansible.builtin.fail:
     msg: "no supported operating system"
   when: current_os is not defined or current_os|length == 0
 
-- name: fail when running as root
-  fail:
+- name: Fail when running as root
+  ansible.builtin.fail:
     msg: "Do not run this project as root!"
   when: current_user == "root"

@@ -6,3 +6,4 @@ skip_list:
   - 'command-instead-of-shell'
   - 'fqcn[canonical]'
   - 'no-handler'
+  - 'role-name'

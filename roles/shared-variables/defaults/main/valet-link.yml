@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 ##
 ---
 
-template_found: False
+template_found: false
 neos_template_found: false
 shopware6_template_found: false
 
@@ -28,6 +28,5 @@ valet_link_blacklist:
 
 # do not throw an error if unlink or link is not possible when true
 valet_link_silent: false
-
 
 valet_flow_context: "Development"
