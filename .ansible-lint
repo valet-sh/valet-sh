@@ -1,0 +1,8 @@
+---
+skip_list:
+  - 'name[template]'
+  - 'no-changed-when'
+  - 'yaml[line-length]'
+  - 'command-instead-of-shell'
+  - 'fqcn[canonical]'
+  - 'no-handler'
