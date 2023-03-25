@@ -1,0 +1,92 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: Set current elasticsearch base path
+  ansible.builtin.set_fact:
+    current_elasticsearch_base_path: "{{ elasticsearch_base_path }}7"
+    current_elasticsearch_key: "elasticsearch7"
+
+- name: "Get stats for dir {{ current_elasticsearch_base_path }}"
+  ansible.builtin.stat:
+    path: "{{ current_elasticsearch_base_path }}"
+  register: current_elasticsearch_base_path_obj
+
+- name: Block
+  when: not current_elasticsearch_base_path_obj.stat.exists
+  ansible.builtin.block:
+    - name: Download ElasticSearch package
+      ansible.builtin.get_url:
+        url: "{{ elasticsearch_version_7_download_url }}"
+        dest: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
+        mode: '0644'
+
+    - name: "Create {{ current_elasticsearch_base_path }}"
+      ansible.builtin.file:
+        path: "{{ current_elasticsearch_base_path }}"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
+        mode: '0755'
+        state: directory
+      become: true
+
+    - name: Extract elasticsearch archive
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
+        dest: "{{ current_elasticsearch_base_path }}"
+        extra_opts: [--strip-components=1]
+
+    - name: "Delete elasticsearch release tar.gz"
+      ansible.builtin.file:
+        path: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
+        state: absent
+
+    - name: "Install plugins"
+      ansible.builtin.command: "{{ current_elasticsearch_base_path }}/bin/elasticsearch-plugin install {{ current_elasticsearch_plugin }}"
+      with_items: "{{ elasticsearch_plugins }}"
+      loop_control:
+        loop_var: current_elasticsearch_plugin
+
+- name: "Provide {{ current_elasticsearch_key }} configuration"
+  ansible.builtin.template:
+    src: "config/{{ current_elasticsearch_key }}.yml.j2"
+    dest: "{{ current_elasticsearch_base_path }}/config/elasticsearch.yml"
+    mode: '0644'
+  notify: "Systemd | elasticsearch7 | restarted"
+
+- name: "Set 'Xms' in '{{ current_elasticsearch_base_path }}/config/jvm.options' to 2GB"
+  ansible.builtin.lineinfile:
+    path: "{{ current_elasticsearch_base_path }}/config/jvm.options"
+    regexp: '^-Xms'
+    line: "-Xms2g"
+  notify: "Systemd | elasticsearch7 | restarted"
+
+- name: "Set 'Xmx' in '{{ current_elasticsearch_base_path }}/config/jvm.options' to 2GB"
+  ansible.builtin.lineinfile:
+    path: "{{ current_elasticsearch_base_path }}/config/jvm.options"
+    regexp: '^-Xmx'
+    line: "-Xmx2g"
+  notify: "Systemd | elasticsearch7 | restarted"
+
+- name: "Provide {{ current_elasticsearch_key }} systemd unit file"
+  ansible.builtin.template:
+    src: "systemd/{{ current_elasticsearch_key }}.service.j2"
+    dest: "/etc/systemd/system/{{ current_elasticsearch_key }}.service"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: "Systemd | elasticsearch7 | restarted"

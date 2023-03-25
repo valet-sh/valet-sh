@@ -15,15 +15,24 @@
 ##
 ---
 
-- name: "Ensure adoptopenjdk8 is absent"
-  ansible.builtin.homebrew_cask:
-    name: "homebrew/cask-versions/adoptopenjdk8"
-    state: absent
-
-- name: "Ensure temurin8 is installed"
-  ansible.builtin.homebrew_cask:
-    name: "homebrew/cask-versions/temurin8"
+- name: "Ensure openjdk8 and openjdk11 is installed"
+  ansible.builtin.apt:
+    name: "{{ packages }}"
     state: present
+  vars:
+    packages:
+      - openjdk-11-jre
+      - openjdk-8-jre
+  become: true
+
+- name: "Ensure '{{ elasticsearch_pid_path }}' is created"
+  ansible.builtin.file:
+    path: "{{ elasticsearch_pid_path }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: '0755'
+    state: directory
+  become: true
 
 - name: "Validate version"
   ansible.builtin.fail:

@@ -15,10 +15,12 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
+- name: "Ensure vsh-elasticsearch1 is installed"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-elasticsearch1"
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Ensure elasticsearch1 plugins are installed"
+  ansible.builtin.shell: "/usr/local/opt/vsh-elasticsearch1/libexec/bin/plugin --install {{ current_elasticsearch_plugin.name }} --url {{ current_elasticsearch_plugin.url }}"
+  failed_when: false
+  with_items: "{{ elasticsearch_legacy_plugins }}"
+  loop_control:
+    loop_var: current_elasticsearch_plugin

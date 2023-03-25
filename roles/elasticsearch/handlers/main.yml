@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,184 +15,183 @@
 ##
 ---
 
-- name: systemd | elasticsearch1 | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch1 | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch1
     state: started
   become: true
 
-- name: systemd | elasticsearch1 | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch1 | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch1
     state: stopped
   become: true
 
-- name: systemd | elasticsearch1 | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch1 | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch1
     state: restarted
   become: true
 
-- name: systemd | elasticsearch1 | reloaded
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch1 | reloaded
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch1
     state: restarted
   become: true
 
-- name: systemd | elasticsearch2 | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch2 | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch2
     state: started
   become: true
 
-- name: systemd | elasticsearch2 | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch2 | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch2
     state: stopped
   become: true
 
-- name: systemd | elasticsearch2 | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch2 | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch2
     state: restarted
   become: true
 
-- name: systemd | elasticsearch2 | reloaded
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch2 | reloaded
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch2
     state: restarted
   become: true
 
-- name: systemd | elasticsearch5 | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch5 | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch5
     state: started
   become: true
 
-- name: systemd | elasticsearch5 | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch5 | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch5
     state: stopped
   become: true
 
-- name: systemd | elasticsearch5 | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch5 | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch5
     state: restarted
   become: true
 
-- name: systemd | elasticsearch5 | reloaded
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch5 | reloaded
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch5
     state: restarted
   become: true
 
 
-- name: systemd | elasticsearch6 | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch6 | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch6
     state: started
   become: true
 
-- name: systemd | elasticsearch6 | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch6 | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch6
     state: stopped
   become: true
 
-- name: systemd | elasticsearch6 | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch6 | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch6
     state: restarted
   become: true
 
-- name: systemd | elasticsearch6 | reloaded
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch6 | reloaded
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch6
     state: restarted
   become: true
 
-- name: systemd | elasticsearch7 | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch7 | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch7
     state: started
   become: true
 
-- name: systemd | elasticsearch7 | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch7 | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch7
     state: stopped
   become: true
 
-- name: systemd | elasticsearch7 | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch7 | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch7
     state: restarted
   become: true
 
-- name: systemd | elasticsearch7 | reloaded
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch7 | reloaded
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch7
     state: restarted
   become: true
 
-- name: systemd | elasticsearch8 | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch8 | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch8
     state: started
   become: true
 
-- name: systemd | elasticsearch8 | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch8 | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch8
     state: stopped
   become: true
 
-- name: systemd | elasticsearch8 | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch8 | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch8
     state: restarted
   become: true
 
-- name: systemd | elasticsearch8 | reloaded
-  systemd:
-    daemon_reload: yes
+- name: Systemd | elasticsearch8 | reloaded
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch8
     state: restarted
   become: true
 
+- name: Brew | vsh-elasticsearch5 | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch5"
 
-- name: brew | vsh-elasticsearch5 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch5"
+- name: Brew | vsh-elasticsearch6 | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch6"
 
-- name: brew | vsh-elasticsearch6 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch6"
+- name: Brew | vsh-elasticsearch7 | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch7"
 
-- name: brew | vsh-elasticsearch7 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch7"
-
-- name: brew | vsh-elasticsearch8 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch8"
+- name: Brew | vsh-elasticsearch8 | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch8"

@@ -15,10 +15,19 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
+- name: "Ensure vsh-elasticsearch1 is stopped"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-elasticsearch1"
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Ensure vsh-elasticsearch1 is absent"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove vsh-elasticsearch1"
+
+- name: "Ensure 'vsh-elasticsearch1' files are deleted"
+  ansible.builtin.file:
+    path: "{{ current_elasticsearch_base_path }}"
+    state: absent
+  with_items:
+    - "/usr/local/opt/vsh-elasticsearch1"
+    - "/usr/local/var/vsh-elasticsearch1"
+    - "/usr/local/etc/vsh-elasticsearch1"
+  loop_control:
+    loop_var: valet_sh_elasticsearch
