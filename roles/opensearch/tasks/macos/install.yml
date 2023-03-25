@@ -15,19 +15,20 @@
 ##
 ---
 
-- name: "Ensure vsh-opensearch2 is stopped"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-opensearch2"
-
-- name: "Ensure vsh-opensearch2 is absent"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove vsh-opensearch2"
-
-- name: "Ensure 'vsh-opensearch2' files are deleted"
-  ansible.builtin.file:
-    path: "{{ valet_sh_opensearch }}"
+- name: "Ensure adoptopenjdk8 is absent"
+  ansible.builtin.homebrew_cask:
+    name: "homebrew/cask-versions/adoptopenjdk8"
     state: absent
-  with_items:
-    - "/usr/local/opt/vsh-opensearch2"
-    - "/usr/local/var/vsh-opensearch2"
-    - "/usr/local/etc/vsh-opensearch2"
-  loop_control:
-    loop_var: valet_sh_opensearch
+
+- name: "Ensure temurin8 is installed"
+  ansible.builtin.homebrew_cask:
+    name: "homebrew/cask-versions/temurin8"
+    state: present
+
+- name: "Validate version"
+  ansible.builtin.fail:
+    msg: "'{{ package_name }}' is not available"
+  when: package_name not in valet_sh.services.opensearch
+
+- name: "Include 'install-{{ package_name }}.yml'"
+  ansible.builtin.include_tasks: "install-{{ package_name }}.yml"

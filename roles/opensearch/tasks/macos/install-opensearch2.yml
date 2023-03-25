@@ -19,7 +19,7 @@
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-opensearch2"
 
 - name: "Ensure opensearch 2 plugins are installed"
-  ansible.builtin.elasticsearch_plugin:
+  community.general.elasticsearch_plugin:
     name: "{{ current_opensearch_plugin }}"
     state: present
     plugin_bin: "/usr/local/opt/vsh-opensearch2/libexec/bin/opensearch-plugin"
