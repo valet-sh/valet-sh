@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,28 +15,28 @@
 ##
 ---
 
-- name: "include role"
-  include_role:
+- name: "Include role"
+  ansible.builtin.include_role:
     name: "{{ valet_install_default_roles_item }}"
     public: true
   with_items: "{{ valet_install_default_roles }}"
   loop_control:
     loop_var: valet_install_default_roles_item
 
-- name: "include role"
-  include_role:
+- name: "Include role"
+  ansible.builtin.include_role:
     name: "valet-service"
   vars:
     valet_sh_service_internal_action: true
     valet_service_action: "handle"
 
-- name: "include certificate role"
-  include_role:
+- name: "Include certificate role"
+  ansible.builtin.include_role:
     name: "certificate"
     public: true
 
-- name: "ensure revision is up2date"
-  copy:
+- name: "Ensure revision is up2date"
+  ansible.builtin.copy:
     src: "{{ valet_dist_path }}/{{ valet_etc_revision_filename }}"
     dest: "{{ valet_etc_revision_file }}"
     mode: '0644'
