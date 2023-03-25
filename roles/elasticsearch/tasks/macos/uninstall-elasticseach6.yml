@@ -23,7 +23,7 @@
 
 - name: "Ensure 'vsh-elasticsearch6' files are deleted"
   ansible.builtin.file:
-    path: "{{ current_elasticsearch_base_path }}"
+    path: "{{ valet_sh_elasticsearch }}"
     state: absent
   with_items:
     - "/usr/local/opt/vsh-elasticsearch6"
