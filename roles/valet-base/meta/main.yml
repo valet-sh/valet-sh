@@ -21,7 +21,7 @@ dependencies:
   - role: shared-variables
 
 galaxy_info:
-  author: dittertp
+  author: Philipp Dittert
   description: helper role for valet.sh command roles
   company: "TechDivision GmbH"
   license: "Apache-2.0"
