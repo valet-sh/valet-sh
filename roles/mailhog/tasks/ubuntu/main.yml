@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,46 +15,46 @@
 ##
 ---
 
-- name: install mailhog
-  get_url:
+- name: Install mailhog
+  ansible.builtin.get_url:
     url: "{{ mailhog_release_url }}"
     dest: "{{ mailhog_bin_target }}"
-    force: no
-    mode: 0755
+    force: false
+    mode: '0755'
     owner: root
     group: root
   become: true
 
-- name: provide init script for mailhog
-  template:
+- name: Provide init script for mailhog
+  ansible.builtin.template:
     src: "mailhog.service.j2"
     dest: "/etc/systemd/system/mailhog.service"
     owner: root
     group: root
     mode: '0644'
-  notify: systemd | mailhog | restarted
+  notify: Systemd | mailhog | restarted
   become: true
 
-- name: "generate ssl-certificate for {{ cert_prefix }}"
-  include_role:
+- name: "Generate ssl-certificate for {{ cert_prefix }}"
+  ansible.builtin.include_role:
     name: certificate
     public: true
   vars:
     cert_prefix: mailhog
 
-- name: provide init script for mailhog
-  template:
+- name: Provide init script for mailhog
+  ansible.builtin.template:
     src: "mailhog.conf.j2"
     dest: "/etc/nginx/conf.d/mailhog.conf"
     owner: root
     group: root
     mode: '0644'
-  notify: systemd | nginx | reloaded
+  notify: Systemd | nginx | reloaded
   become: true
 
-- name: ensure mailhog is enabled and started
-  systemd:
-    daemon_reload: yes
+- name: Ensure mailhog is enabled and started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: mailhog
     enabled: true
     state: started

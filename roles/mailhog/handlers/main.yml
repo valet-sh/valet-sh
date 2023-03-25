@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,32 +15,32 @@
 ##
 ---
 
-- name: systemd | mailhog | started
-  systemd:
-    daemon_reload: yes
+- name: Systemd | mailhog | started
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: mailhog
     state: started
   become: true
 
-- name: systemd | mailhog | stopped
-  systemd:
-    daemon_reload: yes
+- name: Systemd | mailhog | stopped
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: mailhog
     state: stopped
   become: true
 
-- name: systemd | mailhog | restarted
-  systemd:
-    daemon_reload: yes
+- name: Systemd | mailhog | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: mailhog
     state: restarted
   become: true
 
-- name: brew | mailhog | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"
+- name: Brew | mailhog | stopped
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"
 
-- name: brew | mailhog | started
-  shell: "{{ valet_sh_homebrew_bin }} services start mailhog"
+- name: Brew | mailhog | started
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start mailhog"
 
-- name: brew | mailhog | restart
-  shell: "{{ valet_sh_homebrew_bin }} services restart mailhog"
+- name: Brew | mailhog | restart
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart mailhog"
