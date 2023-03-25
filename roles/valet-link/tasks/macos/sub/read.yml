@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: "sub » read | include valet links configuration"
-  include_vars:
+- name: "Sub » read | include valet links configuration"
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_links_file }}"
     name: valet_links_obj

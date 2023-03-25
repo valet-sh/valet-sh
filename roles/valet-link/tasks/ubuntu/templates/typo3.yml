@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,14 +15,16 @@
 ##
 ---
 
-- name: "templates » typo3 | check for typo3 project"
-  stat:
+- name: "Templates » typo3 | check for typo3 project"
+  ansible.builtin.stat:
     path: "{{ valet_current_path }}/config/sites"
   register: typo3_checker_obj
 
-- block:
-    - name: "templates » typo3 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
-      template:
+- name: "Block"
+  when: typo3_checker_obj.stat.exists
+- ansible.builtin.block:
+    - name: "Templates » typo3 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
+      ansible.builtin.template:
         src: "nginx/typo3.conf.j2"
         dest: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
         owner: root
@@ -31,8 +33,7 @@
       notify: systemd | nginx | restarted
       become: true
 
-    - name: "templates » typo3 | set var 'template_found' when typo3 instance was found"
-      set_fact:
+    - name: "Templates » typo3 | set var 'template_found' when typo3 instance was found"
+      ansible.builtin.set_fact:
         template_found: true
         nginx_template: "Typo3 CMS"
-  when: typo3_checker_obj.stat.exists

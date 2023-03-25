@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,48 +15,52 @@
 ##
 ---
 
-- name: "unlink | check if link_name variable is set"
-  fail:
+- name: "Unlink | check if link_name variable is set"
+  ansible.builtin.fail:
     msg: "link_name variable is not set"
   when: link_name is not defined
 
-- name: "unlink | fail when name is blacklisted"
-  fail:
+- name: "Unlink | fail when name is blacklisted"
+  ansible.builtin.fail:
     msg: "{{ link_name }} is not allowed!"
   when: "link_name in valet_link_blacklist"
 
-- include_tasks: "macos/sub/read.yml"
+- name: "Include 'sub/read.yml'"
+  ansible.builtin.include_tasks: "sub/read.yml"
 
-- name: "unlink | fail when name is not linked"
-  fail:
+- name: "Unlink | fail when name is not linked"
+  ansible.builtin.fail:
     msg: "{{ link_name }} is not linked!"
   when: "(not link_name in valet_links_obj.valet_links.links_index) and (not valet_link_silent|bool)"
 
-- block:
-    - name: "unlink | delete vhost configuration for {{ link_name }}.{{ development_tld }}"
-      file:
+- name: "Block"
+  ansible.builtin.block:
+    - name: "Unlink | delete vhost configuration for {{ link_name }}.{{ development_tld }}"
+      ansible.builtin.file:
         path: "{{ valet_sh_prefix }}/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
         state: absent
       notify: brew | nginx | restarted
 
-    - name: "unlink | set empty array 'new_valet_links'"
-      set_fact:
+    - name: "Unlink | set empty array 'new_valet_links'"
+      ansible.builtin.set_fact:
         new_valet_links: []
 
-    - name: "unlink | add existing links to 'new_valet_links' array"
-      set_fact:
+    - name: "Unlink | add existing links to 'new_valet_links' array"
+      ansible.builtin.set_fact:
         new_valet_links: "{{ new_valet_links + [item] }}"
       when: "item.name != link_name"
       with_items: "{{ valet_links_obj.valet_links.links }}"
 
-    - name: "unlink | assemble new valet_links_object"
-      set_fact:
+    - name: "Unlink | assemble new valet_links_object"
+      ansible.builtin.set_fact:
         valet_links_obj:
           valet_links:
             links_index: "{{ valet_links_obj.valet_links.links_index | difference (link_name) }}"
             links: "{{ new_valet_links }}"
   when: "link_name in valet_links_obj.valet_links.links_index"
 
-- include_tasks: "macos/partials/update-default-vhost-template.yml"
+- name: "Include 'partials/update-default-vhost-template.yml'"
+  ansible.builtin.include_tasks: "partials/update-default-vhost-template.yml"
 
-- include_tasks: "macos/sub/write.yml"
+- name: "Include 'sub/write.yml'"
+  ansible.builtin.include_tasks: "sub/write.yml"

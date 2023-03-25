@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
 ##
 ---
 
-- name: "sub » write | transform object into nice yaml output"
-  set_fact:
-    valet_links_list: "{{ valet_links_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+- name: "Sub » write | transform object into nice yaml output"
+  ansible.builtin.set_fact:
+    valet_links_list: "{{ valet_links_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
-- name: "sub » write | write new links.yml file"
-  copy:
+- name: "Sub » write | write new links.yml file"
+  ansible.builtin.copy:
     content: "{{ valet_links_list }}"
     dest: "{{ valet_etc_links_file }}"
+    mode: '0644'

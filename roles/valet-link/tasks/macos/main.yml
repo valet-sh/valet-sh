@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,15 +15,18 @@
 ##
 ---
 
-- include_tasks: macos/link.yml
+- name: "Include 'link.yml'"
+  ansible.builtin.include_tasks: link.yml
   when: valet_action == "link"
 
-- include_tasks: macos/unlink.yml
+- name: "Include 'unlink.yml'"
+  ansible.builtin.include_tasks: unlink.yml
   when: valet_action == "unlink"
 
-- include_tasks: macos/relink.yml
+- name: "Include 'relink.yml'"
+  ansible.builtin.include_tasks: relink.yml
   when: valet_action == "relink"
 
-- include_tasks: macos/links.yml
+- name: "Include 'links.yml'"
+  ansible.builtin.include_tasks: links.yml
   when: valet_action == "links"
-

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 ##
 ---
 
-- name: "templates » shopware6 | set 'shopware6_template_found' when type in .valet-sh.yml was set"
-  set_fact:
+- name: "Templates » shopware6 | set 'shopware6_template_found' when type in .valet-sh.yml was set"
+  ansible.builtin.set_fact:
     shopware6_template_found: true
   when:
     - valet_sh_project_vars is defined
@@ -24,14 +24,16 @@
     - valet_sh_project_vars.instance.type is defined
     - valet_sh_project_vars.instance.type == "shopware6"
 
-- name: "templates » shopware6 | check for shopware6 project"
-  stat:
+- name: "Templates » shopware6 | check for shopware6 project"
+  ansible.builtin.stat:
     path: "{{ valet_current_path }}/custom/plugins"
   register: shopware6_checker_obj
 
-- block:
-    - name: "templates » shopware6 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
-      template:
+- name: "Block"
+  when: shopware6_checker_obj.stat.exists or shopware6_template_found|bool
+  ansible.builtin.block:
+    - name: "Templates » shopware6 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
+      ansible.builtin.template:
         src: "nginx/shopware6.conf.j2"
         dest: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
         owner: root
@@ -40,8 +42,7 @@
       notify: systemd | nginx | restarted
       become: true
 
-    - name: "templates » shopware6 | set var 'template_found' when shopware6 instance was found"
-      set_fact:
+    - name: "Templates » shopware6 | set var 'template_found' when shopware6 instance was found"
+      ansible.builtin.set_fact:
         template_found: true
         nginx_template: "Shopware 6"
-  when: shopware6_checker_obj.stat.exists or shopware6_template_found|bool

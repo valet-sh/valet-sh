@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,22 +15,22 @@
 ##
 ---
 
-- name: "templates » magento1 | check for magento1 project"
-  stat:
+- name: "Templates » magento1 | check for magento1 project"
+  ansible.builtin.stat:
     path: "{{ valet_current_path }}/app/code/core/Mage"
   register: m1_checker_obj
 
-- block:
-    - name: "link | check for multidomain configuration in .valet-sh.yml file"
-      set_fact:
+- ansible.builtin.block:
+    - name: "Link | check for multidomain configuration in .valet-sh.yml file"
+      ansible.builtin.set_fact:
         valet_sh_project_multidomain_config: "{{ valet_sh_project_vars.instance.multidomain }}"
       when:
         - valet_sh_project_vars is defined
         - valet_sh_project_vars.instance is defined
         - valet_sh_project_vars.instance.multidomain is defined
 
-    - name: "templates » magento1 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
-      template:
+    - name: "Templates » magento1 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
+      ansible.builtin.template:
         src: "nginx/magento1.conf.j2"
         dest: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
         owner: root
@@ -39,8 +39,8 @@
       notify: systemd | nginx | restarted
       become: true
 
-    - name: "templates » magento1 | set var 'template_found' when m1 instance was found"
-      set_fact:
+    - name: "Templates » magento1 | set var 'template_found' when m1 instance was found"
+      ansible.builtin.set_fact:
         template_found: true
         nginx_template: "Magento 1"
   when: m1_checker_obj.stat.exists

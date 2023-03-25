@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
 ##
 ---
 
-- include_tasks: "ubuntu/partials/load-valet-sh-file.yml"
+- name: "Include 'partials/load-valet-sh-file.yml'"
+  ansible.builtin.include_tasks: "partials/load-valet-sh-file.yml"
   when: valet_sh_project_vars is not defined
 
-- name: "link | set 'link_name' when .valet-sh.yaml file was found"
-  set_fact:
+- name: "Link | set 'link_name' when .valet-sh.yaml file was found"
+  ansible.builtin.set_fact:
     link_name: "{{ valet_sh_project_vars.instance.key }}"
   when:
     - (link_name is not defined or link_name|length == 0)
@@ -27,58 +28,60 @@
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.key is defined
 
-- name: "link | check if link_name variable is set"
-  fail:
+- name: "Link | check if link_name variable is set"
+  ansible.builtin.fail:
     msg: "link_name variable is not set"
   when: link_name is not defined or link_name|length == 0
 
-- name: "link | check if valet_current_path variable is set"
-  fail:
+- name: "Link | check if valet_current_path variable is set"
+  ansible.builtin.fail:
     msg: "valet_current_path variable is not set"
   when: valet_current_path is not defined
 
-- name: "link | fail when name is blacklisted"
-  fail:
+- name: "Link | fail when name is blacklisted"
+  ansible.builtin.fail:
     msg: "{{ link_name }} is not allowed!"
   when: "link_name in valet_link_blacklist"
 
-- include_tasks: "ubuntu/sub/read.yml"
+- name: "Include 'sub/read.yml'"
+  ansible.builtin.include_tasks: "sub/read.yml"
 
-- block:
-    - name: "link | set empty array 'new_valet_links'"
-      set_fact:
-        new_valet_links: [ ]
+- name: "Block"
+  when: "link_name in valet_links_obj.valet_links.links_index"
+  ansible.builtin.block:
+    - name: "Link | set empty array 'new_valet_links'"
+      ansible.builtin.set_fact:
+        new_valet_links: []
 
-    - name: "link | add existing links to 'new_valet_links' array"
-      set_fact:
+    - name: "Link | add existing links to 'new_valet_links' array"
+      ansible.builtin.set_fact:
         new_valet_links: "{{ new_valet_links + [item] }}"
       when: "item.name != link_name"
       with_items: "{{ valet_links_obj.valet_links.links }}"
 
-    - name: "link | assemble new valet_links_object"
-      set_fact:
+    - name: "Link | assemble new valet_links_object"
+      ansible.builtin.set_fact:
         valet_links_obj:
           valet_links:
             links_index: "{{ valet_links_obj.valet_links.links_index | difference ([link_name]) }}"
             links: "{{ new_valet_links }}"
-  when: "link_name in valet_links_obj.valet_links.links_index"
 
-- name: "link | change 'valet_current_path' when .valet-sh.yaml file was found"
-  set_fact:
+- name: "Link | change 'valet_current_path' when .valet-sh.yaml file was found"
+  ansible.builtin.set_fact:
     valet_current_path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.path }}"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.path is defined
 
-- name: "link | check selected php version"
-  set_fact:
+- name: "Link | check selected php version"
+  ansible.builtin.set_fact:
     current_php_version: "{{ php_version }}"
   when: (php_version is defined) and (php_version | length > 0)
 
-- name: "link | check for php version in .valet-sh.yml file"
-  set_fact:
-    current_php_version: "php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
+- name: "Link | check for php version in .valet-sh.yml file"
+  ansible.builtin.set_fact:
+    current_php_version: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.services is defined
@@ -86,13 +89,14 @@
     - valet_sh_project_vars.services.php.version is defined
     - current_php_version is not defined
 
-- block:
-    - name: "link | include valet services file"
-      include_vars:
+- name: "Block"
+  ansible.builtin.block:
+    - name: "Link | include valet services file"
+      ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
-    - name: "link | check for system default php version in services.yml file"
-      set_fact:
+    - name: "Link | check for system default php version in services.yml file"
+      ansible.builtin.set_fact:
         current_php_version: "{{ valet_sh_services_obj.defaults.php }}"
       when:
         - valet_sh_services_obj is defined
@@ -100,14 +104,15 @@
         - valet_sh_services_obj.defaults.php is defined
   when: current_php_version is not defined or current_php_version|length==0
 
-- name: "link | set default php version"
-  set_fact:
+- name: "Link | set default php version"
+  ansible.builtin.set_fact:
     current_php_version: "{{ php_default_version_string }}"
   when: (current_php_version is undefined) or (current_php_version | length == 0)
 
-- block:
-    - name: "link | check if php_version string mapped to origin"
-      set_fact:
+- name: "Block"
+  ansible.builtin.block:
+    - name: "Link | check if php_version string mapped to origin"
+      ansible.builtin.set_fact:
         current_php_version: "{{ valet_sh_available_php_versions_alias_mapping_item.0.origin }}"
       when: current_php_version in valet_sh_available_php_versions_alias_mapping_item.1
       with_subelements:
@@ -117,49 +122,56 @@
         loop_var: valet_sh_available_php_versions_alias_mapping_item
   when: "current_php_version not in available_php_versions"
 
-- name: "link | fail when php_version is unknown"
-  fail:
+- name: "Link | fail when php_version is unknown"
+  ansible.builtin.fail:
     msg: "unknown php version '{{ current_php_version }}'"
   when: "current_php_version not in available_php_versions"
 
-- name: "link | generate ssl-certificate for {{ link_name }}"
-  include_role:
+- name: "Link | generate ssl-certificate for {{ link_name }}"
+  ansible.builtin.include_role:
     name: certificate
     public: true
   vars:
     cert_prefix: "{{ link_name }}"
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: Set fact for restart_php_service
-      set_fact:
+      ansible.builtin.set_fact:
         restart_php_service: "{{ current_php_version[:3] }}{{ current_php_version[-2:] | join('.') }}-fpm"
 
-    - name: "actions » restart | restart {{ restart_php_service }} (running as root)"
+    - name: "Actions » restart | restart {{ restart_php_service }} (running as root)"
       systemd:
         name: "{{ restart_php_service }}"
       become: true
       failed_when: false
       when: current_php_version in valet_sh_service_privileged_services
 
-    - name: "actions » restart | restart {{ restart_php_service }}"
-      systemd:
+    - name: "Actions » restart | restart {{ restart_php_service }}"
+      ansible.builtin.systemd:
         name: "{{ restart_php_service }}"
       failed_when: false
       when: current_php_version not in valet_sh_service_privileged_services
   when: current_php_version is defined
 
-- name: "link | find a matching application template"
-  block:
-    - include_tasks: ubuntu/templates/magento2.yml
-    - include_tasks: ubuntu/templates/neos.yml
-    - include_tasks: macos/templates/typo3.yml
-    - include_tasks: ubuntu/templates/shopware6.yml
-    - include_tasks: ubuntu/templates/magento1.yml
-    - include_tasks: ubuntu/templates/fallback.yml
+- name: "Link | find a matching application template"
+  ansible.builtin.block:
+    - name: "Include 'templates/magento2.yml'"
+      include_tasks: templates/magento2.yml
+    - name: "Include 'templates/neos.yml'"
+      include_tasks: templates/neos.yml
+    - name: "Include 'templates/typo3.yml'"
+      include_tasks: templates/typo3.yml
+    - name: "Include 'templates/shopware6.yml'"
+      include_tasks: templates/shopware6.yml
+    - name: "Include 'templates/magento1.yml'"
+      include_tasks: templates/magento1.yml
+    - name: "Include templates/fallback.yml"
+      include_tasks: templates/fallback.yml
   when: not template_found
 
-- name: "link | create new valet_link variable"
-  set_fact:
+- name: "Link | create new valet_link variable"
+  ansible.builtin.set_fact:
     new_valet_link:
       - name: "{{ link_name }}"
         path: "{{ valet_current_path }}"
@@ -167,13 +179,15 @@
         phpVersion: "{{ current_php_version }}"
         template: "{{ nginx_template }}"
 
-- name: "link | assemble new valet_links_object"
-  set_fact:
+- name: "Link | assemble new valet_links_object"
+  ansible.builtin.set_fact:
     valet_links_obj:
       valet_links:
         links_index: "{{ valet_links_obj.valet_links.links_index + [link_name] }}"
         links: "{{ valet_links_obj.valet_links.links + new_valet_link }}"
 
-- include_tasks: "ubuntu/partials/update-default-vhost-template.yml"
+- name: "Include 'partials/update-default-vhost-template.yml'"
+  ansible.builtin.include_tasks: "partials/update-default-vhost-template.yml"
 
-- include_tasks: "ubuntu/sub/write.yml"
+- name: "Include 'sub/write.yml'"
+  ansible.builtin.include_tasks: "sub/write.yml"

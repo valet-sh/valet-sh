@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
 ##
 ---
 
-- name: "templates » neos | change 'valet_flow_context' when .valet-sh.yaml file was found"
-  set_fact:
+- name: "Templates » neos | change 'valet_flow_context' when .valet-sh.yaml file was found"
+  ansible.builtin.set_fact:
     valet_flow_context: "{{ valet_sh_project_vars.instance.flow_context }}"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.flow_context is defined
 
-- name: "templates » neos | set 'neos_template_found' when type in .valet-sh.yml was set"
-  set_fact:
+- name: "Templates » neos | set 'neos_template_found' when type in .valet-sh.yml was set"
+  ansible.builtin.set_fact:
     neos_template_found: true
   when:
     - valet_sh_project_vars is defined
@@ -32,14 +32,16 @@
     - valet_sh_project_vars.instance.type is defined
     - valet_sh_project_vars.instance.type == "neos"
 
-- name: "templates » neos | check for neos project"
-  stat:
+- name: "Templates » neos | check for neos project"
+  ansible.builtin.stat:
     path: "{{ valet_current_path }}/flow"
   register: neos_checker_obj
 
-- block:
-    - name: "templates » neos | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
-      template:
+- name: "Block"
+  when: neos_checker_obj.stat.exists or neos_template_found|bool
+- ansible.builtin.block:
+    - name: "Templates » neos | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
+      ansible.builtin.template:
         src: "nginx/neos.conf.j2"
         dest: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
         owner: root
@@ -48,8 +50,7 @@
       notify: systemd | nginx | restarted
       become: true
 
-    - name: "templates » neos | set var 'template_found' when neos instance was found"
-      set_fact:
+    - name: "Templates » neos | set var 'template_found' when neos instance was found"
+      ansible.builtin.set_fact:
         template_found: true
         nginx_template: "Neos CMS"
-  when: neos_checker_obj.stat.exists or neos_template_found|bool

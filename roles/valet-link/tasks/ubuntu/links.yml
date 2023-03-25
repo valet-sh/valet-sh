@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,20 +15,21 @@
 ##
 ---
 
-- include_tasks: "sub/read.yml"
+- name: "Include 'sub/read.yml'"
+  ansible.builtin.include_tasks: "sub/read.yml"
 
-- name: "links | set empty array 'valet_list'"
-  set_fact:
+- name: "Links | set empty array 'valet_list'"
+  ansible.builtin.set_fact:
     valet_list: []
 
-- name: "links | add available links to array"
-  set_fact:
-    valet_list: "{{ valet_list + [[ item.name, item.path, item.ssl, item.phpVersion | default(''), item.template | default('') ]] }}"
+- name: "Links | add available links to array"
+  ansible.builtin.set_fact:
+    valet_list: "{{ valet_list + [[item.name, item.path, item.ssl, item.phpVersion | default(''), item.template | default('')]] }}"
   with_items: "{{ valet_links_obj.valet_links.links }}"
 
-- name: "links | print table based on 'valet_list' array"
+- name: "Links | print table based on 'valet_list' array"
   vsh-table:
     headers: ['Name', 'Path', 'SSL', 'PHP-Version', 'Application']
     rows: "{{ valet_list }}"
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint
