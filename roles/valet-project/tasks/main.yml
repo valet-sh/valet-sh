@@ -1,4 +1,4 @@
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
 ##
 ---
 
-- include_tasks: partials/check-vars.yml
+- name: "Include 'partials/check-vars.yml'"
+  ansible.builtin.include_tasks: partials/check-vars.yml
 
-- include_tasks: partials/load-valet-sh-file.yml
+- name: "Include 'partials/load-valet-sh-file.yml'"
+  ansible.builtin.include_tasks: partials/load-valet-sh-file.yml
 
-- include_tasks: partials/load-project-workflow.yml
+- name: "Include 'partials/load-project-workflow.yml'"
+  ansible.builtin.include_tasks: partials/load-project-workflow.yml

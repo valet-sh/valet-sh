@@ -1,4 +1,4 @@
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,14 +14,17 @@
 ##
 ---
 
-- include_tasks: workflows/magento2/check-vars.yml
+- name: "Include 'workflows/magento2/check-vars.yml'"
+  ansible.builtin.include_tasks: workflows/magento2/check-vars.yml
 
-- include_tasks: workflows/magento2/env.yml
+- name: "Include 'workflows/magento2/env.yml'"
+  ansible.builtin.include_tasks: workflows/magento2/env.yml
   when:
     - valet_project_action is defined
     - valet_project_action == "env"
 
-- include_tasks: workflows/magento2/cc.yml
+- name: "Include 'workflows/magento2/cc.yml'"
+  ansible.builtin.include_tasks: workflows/magento2/cc.yml
   when:
     - valet_project_action is defined
     - valet_project_action == "cc"

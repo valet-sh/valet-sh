@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
 ##
 ---
 
-- name: "workflows » magento2 » check-vars | set default path to project source"
-  set_fact:
+- name: "Workflows » magento2 » check-vars | set default path to project source"
+  ansible.builtin.set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}"
 
-- name: "workflows » magento2 » check-vars | set path to project source"
-  set_fact:
+- name: "Workflows » magento2 » check-vars | set path to project source"
+  ansible.builtin.set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.path }}"
   when:
     - valet_sh_project_vars.instance is defined

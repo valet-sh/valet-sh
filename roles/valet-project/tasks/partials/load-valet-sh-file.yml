@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,30 +15,30 @@
 ##
 ---
 
-- name: "partials » load-valet-sh-file | checking for '{{ valet_sh_filename }}' file in '{{ valet_current_path }}'"
-  stat:
+- name: "Partials » load-valet-sh-file | checking for '{{ valet_sh_filename }}' file in '{{ valet_current_path }}'"
+  ansible.builtin.stat:
     path: "{{ valet_current_path }}/{{ valet_sh_filename }}"
   register: valet_sh_file_obj
 
-- name: "partials » load-valet-sh-file | include variables from '{{ valet_sh_filename }}' file"
-  include_vars:
+- name: "Partials » load-valet-sh-file | include variables from '{{ valet_sh_filename }}' file"
+  ansible.builtin.include_vars:
     file: "{{ valet_current_path }}/{{ valet_sh_filename }}"
     name: valet_sh_project_vars
   when: valet_sh_file_obj.stat.exists
 
-- name: "partials » load-valet-sh-file | checking for '{{ valet_sh_filename }}' file in parent directory '{{ valet_current_path | dirname }}'"
-  stat:
+- name: "Partials » load-valet-sh-file | checking for '{{ valet_sh_filename }}' file in parent directory '{{ valet_current_path | dirname }}'"
+  ansible.builtin.stat:
     path: "{{ valet_current_path | dirname }}/{{ valet_sh_filename }}"
   when: not valet_sh_file_obj.stat.exists
   register: valet_sh_project_vars_parent
 
-- name: change current path to parent
-  set_fact:
+- name: "Partials » load-valet-sh-file | change current path to parent"
+  ansible.builtin.set_fact:
     valet_current_path: "{{ valet_current_path | dirname }}"
   when: not valet_sh_file_obj.stat.exists and valet_sh_project_vars_parent.stat.exists
 
-- name: "partials » load-valet-sh-file | include variables from '{{ valet_sh_filename }}' file"
-  include_vars:
+- name: "Partials » load-valet-sh-file | include variables from '{{ valet_sh_filename }}' file"
+  ansible.builtin.include_vars:
     file: "{{ valet_current_path }}/{{ valet_sh_filename }}"
     name: valet_sh_project_vars
   when: not valet_sh_file_obj.stat.exists and valet_sh_project_vars_parent.stat.exists

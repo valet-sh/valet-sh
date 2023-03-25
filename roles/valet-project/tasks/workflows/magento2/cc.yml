@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 ##
 ---
 
-- name: "workflows » magento2 » project-cc | clear cache folders"
-  file:
+- name: "Workflows » magento2 » project-cc | clear cache folders"
+  ansible.builtin.file:
     path: "{{ valet_sh_project_src_path }}/{{ current_project_cache_path_item }}"
     state: absent
   with_items:
@@ -30,6 +30,6 @@
   loop_control:
     loop_var: current_project_cache_path_item
 
-- name: "workflows » magento2 » project-cc | flush redis"
-  shell: "redis-cli flushall"
+- name: "Workflows » magento2 » project-cc | flush redis"
+  ansible.builtin.shell: "redis-cli flushall"
   failed_when: false

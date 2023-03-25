@@ -1,4 +1,4 @@
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,17 +18,15 @@ dependencies:
   - role: shared-variables
 
 galaxy_info:
-  author: dittertp
-  description: valet.sh restore command role
+  author: Philipp Dittert
+  description: valet.sh project commands roles
   company: "TechDivision GmbH"
   license: "Apache-2.0"
-  min_ansible_version: 2.8
+  min_ansible_version: "2.13"
   platforms:
     - name: Ubuntu
       versions:
-        - 18.04
-        - 20.04
+        - all
     - name: MacOSX
       versions:
-        - 10.14
-        - 10.15
+        - all
