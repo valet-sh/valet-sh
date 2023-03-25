@@ -15,33 +15,32 @@
 ##
 ---
 
-- name: ensure nvm home dir exists
-  file:
+- name: Ensure nvm home dir exists
+  ansible.builtin.file:
     path: "{{ current_home }}/.nvm"
     state: directory
     mode: '0755'
 
-- name: check if nvm.sh already exists
-  stat:
+- name: Check if nvm.sh already exists
+  ansible.builtin.stat:
     path: "{{ current_home }}/.nvm/nvm.sh"
   register: nodejs_nvm_sh_file_obj
 
 - name: Check if npm is installed
-  shell: "source {{ current_home }}/.nvm/nvm.sh && which npm"
+  ansible.builtin.shell: "source {{ current_home }}/.nvm/nvm.sh && which npm"
   args:
     executable: /bin/bash
   register: nodejs_nvm_executable_path_obj
   when: nodejs_nvm_sh_file_obj.stat.exists
 
-- name: "ensure 'nvm' is installed"
-  shell: >
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash
+- name: "Ensure 'nvm' is installed"
+  ansible.builtin.shell: set -o pipefail && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash
   args:
     creates: "{{ current_home }}/.nvm/nvm.sh"
   register: nvm_installation_obj
 
-- name: ensure volta is absent
-  blockinfile:
+- name: Ensure volta is absent
+  ansible.builtin.blockinfile:
     path: "{{ current_home }}/{{ shellrc_file }}"
     marker: "# {mark} ANSIBLE VOLTA MANAGED BLOCK"
     state: absent
@@ -50,8 +49,8 @@
       export PATH="$VOLTA_HOME/bin:$PATH"
   when: shellrc_file_obj.stat.exists
 
-- name: ensure nvm will be loaded
-  blockinfile:
+- name: Ensure nvm will be loaded
+  ansible.builtin.blockinfile:
     path: "{{ current_home }}/{{ shellrc_file }}"
     marker: "# {mark} ANSIBLE NVM MANAGED BLOCK"
     block: |
@@ -60,15 +59,14 @@
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
   when: shellrc_file_obj.stat.exists
 
-- name: "install default node version"
-  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ node_version }}"
+- name: "Install default node version"
+  ansible.builtin.shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ node_version }}"
   args:
     executable: /bin/bash
   when: nvm_installation_obj.changed
 
-- name: "install default node version"
-  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ node_version }}"
+- name: "Install default node version"
+  ansible.builtin.shell: "source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ node_version }}"
   args:
     executable: /bin/bash
   when: nvm_installation_obj.changed
-

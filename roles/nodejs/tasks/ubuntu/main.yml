@@ -15,23 +15,23 @@
 ##
 ---
 
-- name: "gather package facts"
-  package_facts:
+- name: "Gather package facts"
+  ansible.builtin.package_facts:
     manager: "auto"
 
-- name: "set default value if npm is installed from repo"
-  set_fact:
+- name: "Set default value if npm is installed from repo"
+  ansible.builtin.set_fact:
     nodejs_npm_is_installed_from_repo: false
 
-- name: "check if npm is installed from repo"
-  set_fact:
+- name: "Check if npm is installed from repo"
+  ansible.builtin.set_fact:
     nodejs_npm_is_installed_from_repo: true
   when: "'npm' in ansible_facts.packages"
 
-- name: "ensure 'gulp' and 'n' is not installed globally"
-  npm:
+- name: "Ensure 'gulp' and 'n' is not installed globally"
+  ansible.builtin.npm:
     name: "{{ nvm_uninstall_global_packages_item }}"
-    global: yes
+    global: true
     state: absent
   with_items:
     - "n"
@@ -40,8 +40,8 @@
     loop_var: nvm_uninstall_global_packages_item
   when: nodejs_npm_is_installed_from_repo
 
-- name: ensure nodejs and npm is not installed
-  apt:
+- name: Ensure nodejs and npm is not installed
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: absent
   vars:
@@ -50,25 +50,25 @@
       - npm
   become: true
 
-- name: check for .bashrc or .zshrc file
-  set_fact:
+- name: Check for .bashrc or .zshrc file
+  ansible.builtin.set_fact:
     shellrc_file: ".zshrc"
   when: valet_sh_config.default_shell is not defined or valet_sh_config.default_shell != "bash"
 
-- name: check for .bashrc or .zshrc file
-  set_fact:
+- name: Check for .bashrc or .zshrc file
+  ansible.builtin.set_fact:
     shellrc_file: ".bashrc"
   when:
     - valet_sh_config.default_shell is defined
     - valet_sh_config.default_shell == "bash"
 
-- name: "check if '{{ shellrc_file }}' exists in home directory"
-  stat:
+- name: "Check if '{{ shellrc_file }}' exists in home directory"
+  ansible.builtin.stat:
     path: "{{ current_home }}/{{ shellrc_file }}"
   register: shellrc_file_obj
 
-- name: "ensure nvm blockinfile is removed from '{{ current_home }}/{{ shellrc_file }}'"
-  blockinfile:
+- name: "Ensure nvm blockinfile is removed from '{{ current_home }}/{{ shellrc_file }}'"
+  ansible.builtin.blockinfile:
     path: "{{ current_home }}/{{ shellrc_file }}"
     state: absent
     block: |
@@ -77,11 +77,12 @@
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
   when: shellrc_file_obj.stat.exists
 
-- include_tasks: nvm.yml
+- name: "Include nvm installation"
+  ansible.builtin.include_tasks: nvm.yml
   when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"
 
-- include_tasks: volta.yml
+- name: "Include volta installation"
+  ansible.builtin.include_tasks: volta.yml
   when:
     - valet_sh_config.default_nvm is defined
     - valet_sh_config.default_nvm == "volta"
-

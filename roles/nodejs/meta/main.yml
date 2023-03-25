@@ -15,10 +15,20 @@
 ##
 ---
 
-- name: "Include ubuntu"
-  ansible.builtin.include_tasks: ubuntu/main.yml
-  when: current_os == "ubuntu"
+dependencies:
+  - role: shared-variables
 
-- name: "Include macos"
-  ansible.builtin.include_tasks: macos/main.yml
-  when: current_os == "mac"
+galaxy_info:
+  author: Philipp Dittert
+  description: valet.sh nodejs implementation
+  company: "TechDivision GmbH"
+  license: "Apache-2.0"
+  standalone: true
+  min_ansible_version: "2.13"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: MacOSX
+      versions:
+        - all
