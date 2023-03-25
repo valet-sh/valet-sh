@@ -14,40 +14,40 @@
 ##
 ---
 
-- name: "on | include valet services file"
-  include_vars:
+- name: "On | include valet services file"
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_services_file }}"
     name: valet_sh_services_obj
 
-- name: "on | set default xdebug version to 3"
-  set_fact:
+- name: "On | set default xdebug version to 3"
+  ansible.builtin.set_fact:
     xdebug_preferred_version: "xdebug3"
 
-- name: "on | read preferred xdebug version"
-  set_fact:
+- name: "On | read preferred xdebug version"
+  ansible.builtin.set_fact:
     xdebug_preferred_version: "{{ valet_sh_services_obj.defaults.xdebug }}"
   when:
     - valet_sh_services_obj.defaults is defined
     - valet_sh_services_obj.defaults.xdebug is defined
 
-- name: "on | create symlink for xdebug cli/fpm configuration"
-  file:
+- name: "On | create symlink for xdebug cli/fpm configuration"
+  ansible.builtin.file:
     src: "{{ item }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/conf.d/20-xdebug.ini"
     state: link
-  notify: "brew | vsh-php{{ php_version_number }} | restarted"
+  notify: "Brew | vsh-php{{ php_version_number }} | restarted"
   with_first_found:
     - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug3.ini"
     - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug2-compiled.ini"
     - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug2.ini"
   when: xdebug_preferred_version == "xdebug3"
 
-- name: "on | create symlink for xdebug cli/fpm configuration"
-  file:
+- name: "On | create symlink for xdebug cli/fpm configuration"
+  ansible.builtin.file:
     src: "{{ item }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/conf.d/20-xdebug.ini"
     state: link
-  notify: "brew | vsh-php{{ php_version_number }} | restarted"
+  notify: "Brew | vsh-php{{ php_version_number }} | restarted"
   with_first_found:
     - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug2-compiled.ini"
     - "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/mods-available/xdebug2.ini"

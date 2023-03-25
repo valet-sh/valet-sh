@@ -15,21 +15,22 @@
 ---
 
 - name: "check if valet_action variable is set"
-  fail:
+  ansible.builtin.fail:
     msg: "valet_action variable is not set"
   when: valet_action is not defined or valet_action|length==0
 
 - name: "check if valet_action has a valid value"
-  fail:
+  ansible.builtin.fail:
     msg: "invalid action '{{ valet_action }}' - please use 'on' or 'off'"
   when: valet_action != "on" and valet_action != "off"
 
-- block:
-    - include_tasks: "ubuntu/partials/load-valet-sh-file.yml"
+- name: "Block"
+  ansible.builtin.block:
+    - ansible.builtin.include_tasks: "ubuntu/partials/load-valet-sh-file.yml"
       when: valet_sh_project_vars is not defined
 
     - name: "check for php version in .valet-sh.yml file"
-      set_fact:
+      ansible.builtin.set_fact:
         php_version: "{{ valet_sh_project_vars.services.php.version }}"
       when:
         - valet_sh_project_vars is defined
@@ -39,13 +40,14 @@
   when: php_version is not defined or php_version|length==0
 
 - name: "check if php_version variable is set"
-  fail:
+  ansible.builtin.fail:
     msg: "php_version variable is not set"
   when: php_version is not defined or php_version|length==0
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "check if php_version string mapped to origin"
-      set_fact:
+      ansible.builtin.set_fact:
         php_version: "{{ valet_sh_available_php_versions_alias_mapping_item.0.origin }}"
       when: php_version in valet_sh_available_php_versions_alias_mapping_item.1
       with_subelements:
@@ -56,16 +58,18 @@
   when: "not php_version in available_php_versions"
 
 - name: "fail when php version is not available"
-  fail:
+  ansible.builtin.fail:
     msg: "requested PHP version {{ php_version }} is not available!"
   when: "not php_version in available_php_versions"
 
 - name: set php_version_number
-  set_fact:
+  ansible.builtin.set_fact:
     php_version_number: "{{ php_version[-2:-1] }}.{{ php_version[-1] }}"
 
-- include_tasks: on.yml
+- name: "Include 'on.yml'"
+  ansible.builtin.include_tasks: on.yml
   when: valet_action == "on"
 
-- include_tasks: off.yml
+- name: "Include 'off.yml'"
+  ansible.builtin.include_tasks: off.yml
   when: valet_action == "off"

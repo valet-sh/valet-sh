@@ -8,3 +8,4 @@ skip_list:
   - 'no-handler'
   - 'role-name'
   - 'latest[git]'
+  - 'name[casing]'

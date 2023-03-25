@@ -14,14 +14,14 @@
 ##
 ---
 
-- name: "off | get stat for xdebug configuration file"
-  stat:
+- name: "Off | get stat for xdebug configuration file"
+  ansible.builtin.stat:
     path: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/conf.d/20-xdebug.ini"
   register: php_xdebug_config_obj
 
-- name: "off | delete xdebug configuration symlink if exists"
-  file:
+- name: "Off | delete xdebug configuration symlink if exists"
+  ansible.builtin.file:
     path: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/conf.d/20-xdebug.ini"
     state: absent
   when: php_xdebug_config_obj.stat is defined and php_xdebug_config_obj.stat.islnk is defined
-  notify: "brew | vsh-php{{ php_version_number }} | restarted"
+  notify: "Brew | vsh-php{{ php_version_number }} | restarted"

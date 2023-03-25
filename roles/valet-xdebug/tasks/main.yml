@@ -15,8 +15,10 @@
 ##
 ---
 
-- include_tasks: ubuntu/main.yml
+- name: "Include 'ubuntu/main.yml'"
+  ansible.builtin.include_tasks: ubuntu/main.yml
   when: current_os == "ubuntu"
 
-- include_tasks: macos/main.yml
+- name: "Include 'macos/main.yml'"
+  ansible.builtin.include_tasks: macos/main.yml
   when: current_os == "mac"
