@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,38 +16,38 @@
 ---
 
 - name: systemd | nginx | started
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: nginx
     state: started
   become: true
 
 - name: systemd | nginx | stopped
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: nginx
     state: stopped
   become: true
 
 - name: systemd | nginx | restarted
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: nginx
     state: restarted
   become: true
 
 - name: systemd | nginx | reloaded
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: nginx
     state: reloaded
   become: true
 
 - name: brew | nginx | restarted
-  shell: "sudo {{ valet_sh_homebrew_bin }} services restart nginx"
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services restart nginx"
 
 - name: brew | nginx | stopped
-  shell: "sudo {{ valet_sh_homebrew_bin }} services stop nginx"
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services stop nginx"
 
 - name: brew | nginx | started
-  shell: "sudo {{ valet_sh_homebrew_bin }} services start nginx"
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services start nginx"
