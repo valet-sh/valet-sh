@@ -20,7 +20,7 @@
     valet_service_name_version: "{{ valet_service_name[-2:-1] }}.{{ valet_service_name[-1] }}"
 
 - name: "set default php cli version to php{{ valet_service_name_version }}"
-  ansible.builtin.alternatives:
+  community.general.alternatives:
     name: php
     path: "/usr/bin/php{{ valet_service_name_version }}"
   become: true

@@ -23,7 +23,7 @@
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
 - name: "actions » stop | set default homebrew bin"
-  ansible.builtin.:
+  ansible.builtin.set_fact:
     valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin }}"
 
 - name: "actions » stop | override homebrew bin path if service is rabbitmq"
