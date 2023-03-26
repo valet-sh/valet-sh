@@ -44,7 +44,7 @@
   become: true
 
 - name: "set default php cli version"
-  ansible.builtin.alternatives:
+  community.general.alternatives:
     name: php
     path: "/usr/bin/php{{ item.version }}"
   with_items: "{{ php_multi }}"
