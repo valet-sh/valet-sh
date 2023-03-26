@@ -1,0 +1,75 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: Check for .bashrc or .zshrc file
+  ansible.builtin.set_fact:
+    shellrc_file: ".zshrc"
+  when: valet_sh_config.default_shell is not defined or valet_sh_config.default_shell != "bash"
+
+- name: Check for .bashrc or .zshrc file
+  ansible.builtin.set_fact:
+    shellrc_file: ".bashrc"
+  when:
+    - valet_sh_config.default_shell is defined
+    - valet_sh_config.default_shell == "bash"
+
+- name: "Check if '{{ shellrc_file }}' exists in home directory"
+  ansible.builtin.stat:
+    path: "{{ current_home }}/{{ shellrc_file }}"
+  register: shellrc_file_obj
+
+- name: "Ensure nvm is not enabled in '{{ current_home }}/{{ shellrc_file }}'"
+  ansible.builtin.blockinfile:
+    path: "{{ current_home }}/{{ shellrc_file }}"
+    marker: "# {mark} ANSIBLE NVM MANAGED BLOCK"
+    state: absent
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+- name: "Ensure volta segment is absent in '{{ current_home }}/{{ shellrc_file }}'"
+  ansible.builtin.blockinfile:
+    path: "{{ current_home }}/{{ shellrc_file }}"
+    marker: "# {mark} ANSIBLE VOLTA MANAGED BLOCK"
+    state: absent
+    block: |
+      export VOLTA_HOME="$HOME/.volta"
+      export PATH="$VOLTA_HOME/bin:$PATH"
+  when: shellrc_file_obj.stat.exists
+
+- name: "Ensure nvm will be loaded"
+  ansible.builtin.blockinfile:
+    path: "{{ current_home }}/{{ shellrc_file }}"
+    marker: "# {mark} ANSIBLE NVM MANAGED BLOCK"
+    state: absent
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  when: shellrc_file_obj.stat.exists
+
+- name: "ensure node related files are absent"
+  ansible.builtin.file:
+    path: "{{ valet_sh_service_node_item }}"
+    state: absent
+  become: true
+  with_items:
+    - "{{ current_home }}/.volta"
+    - "{{ current_home }}/.nvm"
+  loop_control:
+    loop_var: valet_sh_service_node_item
