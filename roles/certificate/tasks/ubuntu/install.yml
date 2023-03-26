@@ -15,13 +15,13 @@
 ##
 ---
 
-- name: Install | ensure essential packages are installed
-  ansible.builtin.apt:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-      - openssl
-      - ca-certificates
-      - libnss3-tools
-  become: true
+- name: "Include Install"
+  ansible.builtin.include_tasks: sub-install.yml
+
+- name: "Include CA"
+  ansible.builtin.include_tasks: sub-ca.yml
+  when: cert_prefix is not defined
+
+- name: "Include Server"
+  ansible.builtin.include_tasks: sub-server.yml
+  when: cert_prefix is defined

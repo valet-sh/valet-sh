@@ -15,10 +15,12 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
-
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: ensure base directories are absent
+  ansible.builtin.file:
+    path: "{{ certificate_base_path_item }}"
+    state: absent
+  with_items:
+    - "{{ certificate_base_path }}"
+  become: true
+  loop_control:
+    loop_var: certificate_base_path_item

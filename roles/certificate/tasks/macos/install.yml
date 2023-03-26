@@ -15,5 +15,13 @@
 ##
 ---
 
-- name: "Install | ensure openssl is installed"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install openssl"
+- name: "Include install"
+  ansible.builtin.include_tasks: sub-install.yml
+
+- name: "Include ca"
+  ansible.builtin.include_tasks: sub-ca.yml
+  when: cert_prefix is not defined
+
+- name: "Include server"
+  ansible.builtin.include_tasks: sub-server.yml
+  when: cert_prefix is defined
