@@ -15,17 +15,15 @@
 ##
 ---
 
-- name: "Include 'migrations/main.yml'"
-  ansible.builtin.include_tasks: migrations/main.yml
+- name: "Include install.yml"
+  ansible.builtin.include_tasks: install.yml
+  when: package_action == "install"
 
-- name: "Include 'base.yml'"
-  ansible.builtin.include_tasks: base.yml
+- name: "Include uninstall.yml"
+  ansible.builtin.include_tasks: uninstall.yml
+  when: package_action == "uninstall"
 
-- name: "Include 'install-57.yml'"
-  ansible.builtin.include_tasks: install-57.yml
-
-- name: "Include 'install-80.yml'"
-  ansible.builtin.include_tasks: install-80.yml
+# @todo move to other role
 
 - name: ensure mysql wrapper script is up2date
   ansible.builtin.template:
