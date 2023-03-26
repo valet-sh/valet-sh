@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -163,7 +163,7 @@ php_multi:
         - conf: "max_input_vars"
           value: "10000"
         - conf: "sendmail_path"
-          value: "{{ mailhog_bin_target }} sendmail test@test"#
+          value: "{{ mailhog_bin_target }} sendmail test@test"
         - conf: "error_reporting"
           value: "32767"
       php_modules:

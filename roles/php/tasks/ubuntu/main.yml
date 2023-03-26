@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,43 +15,44 @@
 ##
 ---
 
-- include_tasks: "migrations/main.yml"
+- name: "include migrations"
+  ansible.builtin.include_tasks: "migrations/main.yml"
 
 - name: ensure apt-transport-https is installed
-  apt:
+  ansible.builtin.apt:
     name: apt-transport-https
     state: present
   become: true
 
 - name: use php ppa (Ubuntu)
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: 'ppa:ondrej/php'
     codename: "{{ os_codename }}"
   become: true
 
 - name: "install defined php versions"
-  include_tasks: install-php.yml
+  ansible.builtin.include_tasks: install-php.yml
     current_php="{{ php_multi_item }}"
   with_items: "{{ php_multi }}"
   loop_control:
     loop_var: php_multi_item
 
 - name: "install php-imagick"
-  apt:
+  ansible.builtin.apt:
     name: php-imagick
     state: present
   become: true
 
 - name: "set default php cli version"
-  alternatives:
+  ansible.builtin.alternatives:
     name: php
     path: "/usr/bin/php{{ item.version }}"
   with_items: "{{ php_multi }}"
-  when: (item.default is defined) and (item.default == true)
+  when: (item.default is defined) and (item.default|bool)
   become: true
 
 - name: ensure php wrapper script is up2date
-  copy:
+  ansible.builtin.copy:
     src: "ubuntu/php-wrapper"
     dest: "/usr/local/bin/php"
     mode: '0755'

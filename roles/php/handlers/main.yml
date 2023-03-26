@@ -16,299 +16,299 @@
 ---
 
 - name: "systemd | php5.6-fpm | started"
-  systemd:
+  ansible.builtin.systemd:
     name: "php5.6-fpm"
     state: started
   become: true
 
 - name: "systemd | php5.6-fpm | stopped"
-  systemd:
+  ansible.builtin.systemd:
     name: "php5.6-fpm"
     state: stopped
   become: true
 
 - name: "systemd | php5.6-fpm | restarted"
-  systemd:
+  ansible.builtin.systemd:
     name: "php5.6-fpm"
     state: restarted
   become: true
 
 - name: "systemd | php5.6-fpm | reloaded"
-  systemd:
+  ansible.builtin.systemd:
     name: "php5.6-fpm"
     state: reloaded
   become: true
 
 - name: "systemd | php7.0-fpm | started"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.0-fpm"
     state: started
   become: true
 
 - name: "systemd | php7.0-fpm | stopped"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.0-fpm"
     state: stopped
   become: true
 
 - name: "systemd | php7.0-fpm | restarted"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.0-fpm"
     state: restarted
   become: true
 
 - name: "systemd | php7.0-fpm | reloaded"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.0-fpm"
     state: reloaded
   become: true
 
 - name: "systemd | php7.1-fpm | started"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.1-fpm"
     state: started
   become: true
 
 - name: "systemd | php7.1-fpm | stopped"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.1-fpm"
     state: stopped
   become: true
 
 - name: "systemd | php7.1-fpm | restarted"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.1-fpm"
     state: restarted
   become: true
 
 - name: "systemd | php7.1-fpm | reloaded"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.1-fpm"
     state: reloaded
   become: true
 
 - name: "systemd | php7.2-fpm | started"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.2-fpm"
     state: started
   become: true
 
 - name: "systemd | php7.2-fpm | stopped"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.2-fpm"
     state: stopped
   become: true
 
 - name: "systemd | php7.2-fpm | restarted"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.2-fpm"
     state: restarted
   become: true
 
 - name: "systemd | php7.2-fpm | reloaded"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.2-fpm"
     state: reloaded
   become: true
 
 - name: "systemd | php7.3-fpm | started"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.3-fpm"
     state: started
   become: true
 
 - name: "systemd | php7.3-fpm | stopped"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.3-fpm"
     state: stopped
   become: true
 
 - name: "systemd | php7.3-fpm | restarted"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.3-fpm"
     state: restarted
   become: true
 
 - name: "systemd | php7.3-fpm | reloaded"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.3-fpm"
     state: reloaded
   become: true
 
 
 - name: "systemd | php7.4-fpm | started"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.4-fpm"
     state: started
   become: true
 
 - name: "systemd | php7.4-fpm | stopped"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.4-fpm"
     state: stopped
   become: true
 
 - name: "systemd | php7.4-fpm | restarted"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.4-fpm"
     state: restarted
   become: true
 
 - name: "systemd | php7.4-fpm | reloaded"
-  systemd:
+  ansible.builtin.systemd:
     name: "php7.4-fpm"
     state: reloaded
   become: true
 
 - name: "systemd | php8.0-fpm | started"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.0-fpm"
     state: started
   become: true
 
 - name: "systemd | php8.0-fpm | stopped"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.0-fpm"
     state: stopped
   become: true
 
 - name: "systemd | php8.0-fpm | restarted"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.0-fpm"
     state: restarted
   become: true
 
 - name: "systemd | php8.0-fpm | reloaded"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.0-fpm"
     state: reloaded
   become: true
 
 - name: "systemd | php8.1-fpm | started"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.1-fpm"
     state: started
   become: true
 
 - name: "systemd | php8.1-fpm | stopped"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.1-fpm"
     state: stopped
   become: true
 
 - name: "systemd | php8.1-fpm | restarted"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.1-fpm"
     state: restarted
   become: true
 
 - name: "systemd | php8.1-fpm | reloaded"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.1-fpm"
     state: reloaded
   become: true
 
 - name: "systemd | php8.2-fpm | started"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.2-fpm"
     state: started
   become: true
 
 - name: "systemd | php8.2-fpm | stopped"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.2-fpm"
     state: stopped
   become: true
 
 - name: "systemd | php8.2-fpm | restarted"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.2-fpm"
     state: restarted
   become: true
 
 - name: "systemd | php8.2-fpm | reloaded"
-  systemd:
+  ansible.builtin.systemd:
     name: "php8.2-fpm"
     state: reloaded
   become: true
 
 - name: brew | vsh-php56 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
 
 - name: brew | vsh-php56 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php56"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php56"
 
 - name: brew | vsh-php56 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php56"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php56"
 
 - name: brew | vsh-php70 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php70"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php70"
 
 - name: brew | vsh-php70 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php70"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php70"
 
 - name: brew | vsh-php70 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php70"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php70"
 
 - name: brew | vsh-php71 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php71"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php71"
 
 - name: brew | vsh-php71 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php71"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php71"
 
 - name: brew | vsh-php71 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php71"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php71"
 
 - name: brew | vsh-php72 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php72"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php72"
 
 - name: brew | vsh-php72 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php72"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php72"
 
 - name: brew | vsh-php72 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php72"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php72"
 
 - name: brew | vsh-php73 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php73"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php73"
 
 - name: brew | vsh-php73 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php73"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php73"
 
 - name: brew | vsh-php73 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php73"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php73"
 
 - name: brew | vsh-php74 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php74"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php74"
 
 - name: brew | vsh-php74 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php74"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php74"
 
 - name: brew | vsh-php74 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php74"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php74"
 
 - name: brew | vsh-php80 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php80"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php80"
 
 - name: brew | vsh-php80 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php80"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php80"
 
 - name: brew | vsh-php80 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php80"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php80"
 
 - name: brew | vsh-php81 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php81"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php81"
 
 - name: brew | vsh-php81 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php81"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php81"
 
 - name: brew | vsh-php81 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php81"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php81"
 
 - name: brew | vsh-php82 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php82"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php82"
 
 - name: brew | vsh-php82 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php82"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php82"
 
 - name: brew | vsh-php82 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php82"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php82"

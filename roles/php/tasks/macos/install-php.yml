@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,97 +16,99 @@
 ---
 
 - name: "set php_version variable"
-  set_fact:
+  ansible.builtin.set_fact:
     php_version: "{{ current_php[-2:-1] }}.{{ current_php[-1] }}"
 
 - name: "ensure {{ current_php }} is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install {{ current_php }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install {{ current_php }}"
 
 - name: "ensure directory '{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available' exists"
-  file:
+  ansible.builtin.file:
     path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available"
     state: directory
+    mode: '0755'
 
 - name: ensure xdebug.ini configuration is deleted
-  file:
+  ansible.builtin.file:
     path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug.ini"
     state: absent
   become: true
 
 - name: ensure xdebug2 config is deployed
-  template:
+  ansible.builtin.template:
     src: "macos/xdebug2.ini.j2"
     dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug2.ini"
     mode: '0644'
   when: 'php_version in native_xdebug2_versions'
 
 - name: ensure xdebug3 config is deployed
-  template:
+  ansible.builtin.template:
     src: "macos/xdebug3.ini.j2"
     dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug3.ini"
     mode: '0644'
   when: 'php_version in native_xdebug3_versions'
 
 - name: ensure compiled xdebug2 config is deployed
-  template:
+  ansible.builtin.template:
     src: "macos/xdebug2-compiled.ini.j2"
     dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug2.ini"
     mode: '0644'
   when: 'php_version in compiled_xdebug2_versions'
 
 - name: "ensure imagick config file exists"
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/imagick.ini"
     line: 'extension=imagick.so'
+    mode: '0644'
     create: true
 
 - name: "ensure imagick module is enabled"
-  file:
+  ansible.builtin.file:
     src: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/imagick.ini"
     dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/conf.d/imagick.ini"
     state: link
   notify: "brew | {{ current_php }} | restarted"
 
 - name: get stat for error.log file
-  stat:
+  ansible.builtin.stat:
     path: "{{ php_error_log_path }}"
   register: php_error_log_file_obj
 
 - name: create php_errors.log file
-  file:
-    dest:  "{{ php_error_log_path }}"
-    state: "{{ 'file' if  php_error_log_file_obj.stat.exists else 'touch' }}"
+  ansible.builtin.file:
+    dest: "{{ php_error_log_path }}"
+    state: "{{ 'file' if php_error_log_file_obj.stat.exists else 'touch' }}"
     mode: '0755'
   become: true
 
 - name: set PATH env variable
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/php-fpm.d/www.conf"
     regexp: ';env[PATH] = /usr/local/bin:/usr/bin:/bin'
     line: "env[PATH] = /usr/local/bin:/usr/bin:/bin"
   when: current_php != "vsh-php56"
 
 - name: set PATH env variable for php5.6
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/php-fpm.conf"
     regexp: ';env[PATH] = /usr/local/bin:/usr/bin:/bin'
     line: "env[PATH] = /usr/local/bin:/usr/bin:/bin"
   when: current_php == "vsh-php56"
 
 - name: ensure php configuration is up2date
-  template:
+  ansible.builtin.template:
     src: "macos/valet-sh.conf.j2"
     dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/conf.d/95-valet-sh.ini"
     mode: '0644'
   notify: "brew | {{ current_php }} | restarted"
 
 - name: "get stat for '/usr/local/bin/default-php'"
-  stat:
+  ansible.builtin.stat:
     path: "/usr/local/bin/default-php"
   register: php_default_symlink_obj
 
 - name: "create symlink for default php"
-  file:
+  ansible.builtin.file:
     src: "/usr/local/bin/php7.3"
     dest: "/usr/local/bin/default-php"
     state: link
@@ -114,7 +116,7 @@
   when: php_default_symlink_obj.stat.islnk is not defined
 
 - name: ensure php wrapper script is up2date
-  copy:
+  ansible.builtin.copy:
     src: "macos/php-wrapper"
     dest: "{{ valet_sh_prefix }}/bin/php"
     mode: '0755'
