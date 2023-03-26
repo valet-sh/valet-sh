@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,20 +15,21 @@
 ##
 ---
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » neos » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
-      systemd:
+      ansible.builtin.systemd:
         name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
         state: started
       become: true
 
     - name: "workflows » neos » services » elasticsearch | wait for elasticsearch to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
         delay: 5
 
     - name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_elasticsearch_version' var"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_neos_elasticsearch_version: "{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
   when:
@@ -37,17 +38,18 @@
     - valet_sh_project_vars.services.elasticsearch is defined
     - valet_sh_project_vars.services.elasticsearch.version is defined
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » neos » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
-      shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
     - name: "workflows » neos » services » elasticsearch | wait for elasticsearch to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
         delay: 5
 
     - name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_elasticsearch_version' var"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_neos_elasticsearch_version: "{{ valet_sh_project_vars.services.elasticsearch.version | int }}"
 
   when:

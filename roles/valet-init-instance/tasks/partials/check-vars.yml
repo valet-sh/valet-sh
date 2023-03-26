@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 ---
 
 - name: "partials » check-vars | fail when valet_current_path is not defined"
-  fail:
+  ansible.builtin.fail:
     msg: "valet_current_path is not defined"
   when: valet_current_path is not defined
 
 - name: overrride default project name and branch
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_default_project_name: "{{  valet_git_project_name.split('@')[0] | lower }}"
     valet_sh_default_project_branch: "{{  valet_git_project_name.split('@')[1] | lower | default() }}"
   when:

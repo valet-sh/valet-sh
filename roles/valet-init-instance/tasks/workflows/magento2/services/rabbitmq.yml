@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,27 +15,28 @@
 ##
 ---
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      systemd:
+      ansible.builtin.systemd:
         name: rabbitmq-server
         state: restarted
       become: true
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: 5672
         delay: 5
 
-    - block:
+    - ansible.builtin.block:
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost is absent"
-          rabbitmq_vhost:
+          ansible.builtin.rabbitmq_vhost:
             name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
             state: absent
           become: true
 
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user is absent"
-          rabbitmq_user:
+          ansible.builtin.rabbitmq_user:
             user: "{{ valet_sh_service_rabbitmq_user }}"
             password: "{{ valet_sh_service_rabbitmq_password }}"
             vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
@@ -45,13 +46,13 @@
       when: valet_opt_flag_clean is defined and valet_opt_flag_clean|bool
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
-      rabbitmq_vhost:
+      ansible.builtin.rabbitmq_vhost:
         name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
         state: present
       become: true
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user exists"
-      rabbitmq_user:
+      ansible.builtin.rabbitmq_user:
         user: "{{ valet_sh_service_rabbitmq_user }}"
         password: "{{ valet_sh_service_rabbitmq_password }}"
         vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
@@ -67,29 +68,30 @@
     - valet_sh_project_vars.services.rabbitmq is defined
     - valet_sh_project_vars.services.rabbitmq.vhost is defined
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      shell: "{{ valet_sh_homebrew_bin_x86 }} services start rabbitmq"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_x86 }} services start rabbitmq"
       when: current_arch != "arm64"
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      shell: "{{ valet_sh_homebrew_bin_arm64 }} services start rabbitmq"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_arm64 }} services start rabbitmq"
       when: current_arch == "arm64"
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: 5672
         delay: 5
 
-    - block:
+    - ansible.builtin.block:
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost is absent"
-          rabbitmq_vhost:
+          ansible.builtin.rabbitmq_vhost:
             name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
             node: "rabbit@localhost"
             state: absent
 
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user is absent"
-          rabbitmq_user:
+          ansible.builtin.rabbitmq_user:
             user: "{{ valet_sh_service_rabbitmq_user }}"
             password: "{{ valet_sh_service_rabbitmq_password }}"
             vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
@@ -99,13 +101,13 @@
       when: valet_opt_flag_clean is defined and valet_opt_flag_clean|bool
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
-      rabbitmq_vhost:
+      ansible.builtin.rabbitmq_vhost:
         name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
         node: "rabbit@localhost"
         state: present
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user exists"
-      rabbitmq_user:
+      ansible.builtin.rabbitmq_user:
         user: "{{ valet_sh_service_rabbitmq_user }}"
         password: "{{ valet_sh_service_rabbitmq_password }}"
         vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,20 +15,20 @@
 ##
 ---
 
-- block:
-
-    - name:  "workflows » neos » services » mysql | set var 'valet_sh_service_mysql_current_name'"
-      set_fact:
-        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}"
+- name: "Block"
+  ansible.builtin.block:
+    - name: "workflows » neos » services » mysql | set var 'valet_sh_service_mysql_current_name'"
+      ansible.builtin.set_fact:
+        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » neos » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ valet_sh_service_mysql_current_name }}"
         state: started
       become: true
 
     - name: "workflows » neos » services » mysql | wait for mysql to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mysql_current_name] }}"
         delay: 5
   when:
@@ -37,20 +37,20 @@
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.version is defined
 
-- block:
-
-    - name:  "workflows » neos » services » mariadb | set var 'valet_sh_service_mysql_current_name'"
-      set_fact:
-        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}"
+- name: "Block"
+  ansible.builtin.block:
+    - name: "workflows » neos » services » mariadb | set var 'valet_sh_service_mysql_current_name'"
+      ansible.builtin.set_fact:
+        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » neos » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ valet_sh_service_mariadb_current_name }}"
         state: started
       become: true
 
     - name: "workflows » neos » services » mariadb | wait for mariadb to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
         delay: 5
   when:
@@ -59,17 +59,17 @@
     - valet_sh_project_vars.services.mariadb is defined
     - valet_sh_project_vars.services.mariadb.version is defined
 
-- block:
-
-    - name:  "workflows » neos » services » mysql | set var 'valet_sh_service_mysql_current_name'"
-      set_fact:
-        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}"
+- name: "Block"
+  ansible.builtin.block:
+    - name: "workflows » neos » services » mysql | set var 'valet_sh_service_mysql_current_name'"
+      ansible.builtin.set_fact:
+        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » neos » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
-      shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
 
     - name: "workflows » neos » services » mysql | wait for mysql to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mysql_current_name] }}"
         delay: 5
   when:
@@ -78,17 +78,17 @@
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.version is defined
 
-- block:
-
-    - name:  "workflows » neos » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
-      set_fact:
-        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}"
+- name: "Block"
+  ansible.builtin.block:
+    - name: "workflows » neos » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
+      ansible.builtin.set_fact:
+        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » neos » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
-      shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mariadb_current_name }}"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mariadb_current_name }}"
 
     - name: "workflows » neos » services » mariadb | wait for mariadb to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
         delay: 5
   when:

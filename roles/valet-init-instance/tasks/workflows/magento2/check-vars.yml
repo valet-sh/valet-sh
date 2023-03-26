@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 ---
 
 - name: "workflows » magento2 » check-opts | check if '--clean' opt is set"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_opt_flag_clean: true
   when: "'--clean' in valet_cli_opts"
 
 - name: "workflows » magento2 » check-vars | set path to composer1 (default)"
-  set_fact:
+  ansible.builtin.set_fact:
     composer_bin: "{{ composer1_bin }}"
 
 - name: "workflows » magento2 » check-vars | read composer1 version from .valet-sh.yml"
-  set_fact:
+  ansible.builtin.set_fact:
     composer_bin: "{{ composer1_bin }}"
   when:
     - valet_sh_project_vars.services is defined
@@ -34,7 +34,7 @@
     - valet_sh_project_vars.services.composer.version == 1
 
 - name: "workflows » magento2 » check-vars | read composer2 version from .valet-sh.yml"
-  set_fact:
+  ansible.builtin.set_fact:
     composer_bin: "{{ composer2_bin }}"
   when:
     - valet_sh_project_vars.services is defined
@@ -43,11 +43,11 @@
     - valet_sh_project_vars.services.composer.version == 2
 
 - name: "workflows » magento2 » check-vars | set default php binary name"
-  set_fact:
+  ansible.builtin.set_fact:
     php_bin_name: "php"
 
 - name: "workflows » magento2 » check-vars | read configured php version in valet-sh.yml"
-  set_fact:
+  ansible.builtin.set_fact:
     php_version_number: "{{ valet_sh_project_vars.services.php.version }}"
   when:
     - valet_sh_project_vars.services is defined
@@ -55,31 +55,31 @@
     - valet_sh_project_vars.services.php.version is defined
 
 - name: "workflows » magento2 » check-vars | add suffix to php binary when configured in valet-sh.yml"
-  set_fact:
+  ansible.builtin.set_fact:
     php_bin_name: "php{{ php_version_number }}"
   when:
     - php_version_number is defined
     - php_version_number|length > 0
 
 - name: "workflows » magento2 » check-vars | get path of php binary"
-  shell: "which {{ php_bin_name }}"  # noqa 305 301
+  ansible.builtin.shell: "which {{ php_bin_name }}"
   register: php_bin_obj
 
 - name: "workflows » magento2 » check-vars | fail when no php binary could be found"
-  fail:
+  ansible.builtin.fail:
     msg: "could not find php binary '{{ php_bin_name }}'"
   when: php_bin_obj.stdout | length == 0
 
 - name: "workflows » magento2 » check-vars | set php_bin variable"
-  set_fact:
+  ansible.builtin.set_fact:
     php_bin: "{{ php_bin_obj.stdout }}"
 
 - name: "workflows » magento2 » check-vars | set default path to project source"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}"
 
 - name: "workflows » magento2 » check-vars | set path to project source"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.path }}"
   when:
     - valet_sh_project_vars.instance is defined

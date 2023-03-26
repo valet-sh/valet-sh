@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,12 +15,17 @@
 ##
 ---
 
-- include_tasks: check-vars.yml
+- name: "workflows » magento2 | include 'check-vars.yml'"
+  ansible.builtin.include_tasks: check-vars.yml
 
-- include_tasks: service-install.yml
+- name: "workflows » magento2 | include 'service-install.yml'"
+  ansible.builtin.include_tasks: service-install.yml
 
-- include_tasks: project-install.yml
+- name: "workflows » magento2 | include 'project-install.yml'"
+  ansible.builtin.include_tasks: project-install.yml
 
-- include_tasks: project-env.yml
+- name: "workflows » magento2 | include 'project-env.yml'"
+  ansible.builtin.include_tasks: project-env.yml
 
-- include_tasks: project-setup.yml
+- name: "workflows » magento2 | include 'project-setup.yml'"
+  ansible.builtin.include_tasks: project-setup.yml

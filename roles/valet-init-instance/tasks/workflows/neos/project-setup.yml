@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 ---
 
 - name: "running restore commmand"
-  include_role:
+  ansible.builtin.include_role:
     name: valet-restore
 
-- set_fact:
-    valet_link_php_target_version: "php{{ php_version_number | replace('.','') }}"
+- name: "set php version var"
+  ansible.builtin.set_fact:
+    valet_link_php_target_version: "php{{ php_version_number | replace('.', '') }}"
   when:
     - php_version_number is defined
     - php_version_number|length > 0
 
 - name: "running link command"
-  include_role:
+  ansible.builtin.include_role:
     name: valet-link
   vars:
     valet_action: relink

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 ---
 
 valet_sh_default_project_name: "{{ valet_sh_config.hub_project }}"
-#valet_sh_default_project_branch: "master"
+
 valet_sh_project_hub_fqdn: "gitlab.{{ valet_project_name }}.{{ valet_sh_config.hub_domain }}"
 
 valet_sh_default_project_git_clone_command: "ssh://git@{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_config.hub_gitlab_ssh_port }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}.git"

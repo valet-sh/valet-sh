@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,28 +16,29 @@
 ---
 
 - name: "workflows » neos » project-install | run composer install in project source path when defined in .valet-sh.yml"
-  command: "{{ php_bin }} {{ composer_bin }} install -n"
+  ansible.builtin.command: "{{ php_bin }} {{ composer_bin }} install -n"
   args:
     chdir: "{{ valet_sh_project_src_path }}"
     removes: "composer.json"
   when: valet_current_path != valet_sh_project_src_path
 
 - name: "workflows » neos » project-install | run composer install in current dir"
-  command: "{{ php_bin }} {{ composer_bin }} install -n"
+  ansible.builtin.command: "{{ php_bin }} {{ composer_bin }} install -n"
   args:
     chdir: "{{ valet_current_path }}"
     removes: "composer.json"
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » neos » project-install | run npm install in current dir"
-      shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && /usr/bin/env npm install"
+      ansible.builtin.shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && /usr/bin/env npm install"
       args:
         chdir: "{{ valet_current_path }}"
         executable: /bin/bash
         removes: "package.json"
 
     - name: "workflows » neos » project-install | run npm install in project source path when defined in .valet-sh.yml"
-      shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && /usr/bin/env npm install"
+      ansible.builtin.shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && /usr/bin/env npm install"
       args:
         chdir: "{{ valet_sh_project_src_path }}"
         executable: /bin/bash
@@ -45,16 +46,17 @@
       when: valet_current_path != valet_sh_project_src_path
   when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » neos » project-install | run npm install in current dir"
-      shell: "{{ current_home }}/.volta/bin/npm install"
+      ansible.builtin.shell: "{{ current_home }}/.volta/bin/npm install"
       args:
         chdir: "{{ valet_current_path }}"
         executable: /bin/bash
         removes: "package.json"
 
     - name: "workflows » neos » project-install | run npm install in project source path when defined in .valet-sh.yml"
-      shell: "{{ current_home }}/.volta/bin/npm install"
+      ansible.builtin.shell: "{{ current_home }}/.volta/bin/npm install"
       args:
         chdir: "{{ valet_sh_project_src_path }}"
         executable: /bin/bash

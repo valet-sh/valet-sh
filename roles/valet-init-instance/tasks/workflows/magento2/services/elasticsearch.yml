@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,15 +15,16 @@
 ##
 ---
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
-      systemd:
+      ansible.builtin.systemd:
         name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
         state: started
       become: true
 
     - name: "workflows » magento2 » services » elasticsearch | wait for elasticsearch to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
         delay: 5
   when:
@@ -32,15 +33,16 @@
     - valet_sh_project_vars.services.elasticsearch is defined
     - valet_sh_project_vars.services.elasticsearch.version is defined
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » magento2 » services » elasticsearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started"
-      systemd:
+      ansible.builtin.systemd:
         name: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
         state: started
       become: true
 
     - name: "workflows » magento2 » services » elasticsearch | wait for opensearch to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_opensearch_ports[valet_sh_project_vars.services.opensearch.version] }}"
         delay: 5
   when:
@@ -49,13 +51,13 @@
     - valet_sh_project_vars.services.opensearch is defined
     - valet_sh_project_vars.services.opensearch.version is defined
 
-
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
-      shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
     - name: "workflows » magento2 » services » elasticsearch | wait for elasticsearch to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
         delay: 5
   when:
@@ -64,12 +66,13 @@
     - valet_sh_project_vars.services.elasticsearch is defined
     - valet_sh_project_vars.services.elasticsearch.version is defined
 
-- block:
+- name: "Block"
+  ansible.builtin.block:
     - name: "workflows » magento2 » services » elasticsearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started"
-      shell: "{{ valet_sh_homebrew_bin }} services start vsh-opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
 
     - name: "workflows » magento2 » services » elasticsearch | wait for opensearch to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_opensearch_ports[valet_sh_project_vars.services.opensearch.version] }}"
         delay: 5
   when:

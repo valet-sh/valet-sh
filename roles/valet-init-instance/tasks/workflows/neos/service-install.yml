@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,10 +15,14 @@
 ##
 ---
 
-- include_tasks: services/elasticsearch.yml
+- name: "workflows » neos » service-install | include 'services/elasticsearch.yml'"
+  ansible.builtin.include_tasks: services/elasticsearch.yml
 
-- include_tasks: services/php.yml
+- name: "workflows » neos » service-install | include 'services/php.yml'"
+  ansible.builtin.include_tasks: services/php.yml
 
-- include_tasks: services/mysql.yml
+- name: "workflows » neos » service-install | include 'services/mysql.yml'"
+  ansible.builtin.include_tasks: services/mysql.yml
 
-- include_tasks: services/node.yml
+- name: "workflows » neos » service-install | include 'services/node.yml'"
+  ansible.builtin.include_tasks: services/node.yml
