@@ -1,0 +1,40 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: set current mariadb base path
+  ansible.builtin.set_fact:
+    current_mariadb_base_path: "{{ mariadb_server.base_path }}106"
+    current_mariadb_version_key: "10.6"
+    current_mariadb_key: "mariadb106"
+
+- name: "ensure {{ current_mariadb_key }} is stopped"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-{{ current_mariadb_key }}"
+
+- name: "ensure {{ current_mariadb_key }} related files are absent"
+  ansible.builtin.file:
+    path: "{{ valet_sh_service_mariadb_item }}"
+    state: absent
+  become: true
+  with_items:
+    - "{{ valet_sh_prefix }}/etc/vsh-{{ current_mariadb_key }}"
+    - "{{ valet_sh_prefix }}/var/vsh-{{ current_mariadb_key }}"
+    - "{{ current_home }}/.my{{ current_mariadb_version_key }}.cnf"
+    - "/usr/local/bin/mariadb{{ current_mariadb_version_key }}"
+    - "/usr/local/bin/mariadump{{ current_mariadb_version_key }}"
+    - "/usr/local/bin/mariaadmin{{ current_mariadb_version_key }}"
+  loop_control:
+    loop_var: valet_sh_service_mariadb_item

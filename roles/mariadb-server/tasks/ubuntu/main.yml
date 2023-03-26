@@ -15,11 +15,10 @@
 ##
 ---
 
-- name: "Include base.yml"
-  ansible.builtin.include_tasks: base.yml
+- name: "Include install.yml"
+  ansible.builtin.include_tasks: install.yml
+  when: package_action == "install"
 
-- name: "Include install-104.yml"
-  ansible.builtin.include_tasks: install-104.yml
-
-- name: "Include install-106.yml"
-  ansible.builtin.include_tasks: install-106.yml
+- name: "Include uninstall.yml"
+  ansible.builtin.include_tasks: uninstall.yml
+  when: package_action == "uninstall"
