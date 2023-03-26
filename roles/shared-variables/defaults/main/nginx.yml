@@ -16,11 +16,11 @@
 ---
 
 nginx_dhparams_file_default: "{{ valet_sh_prefix }}/etc/nginx/dhparam.pem"
-nginx_dhparams_file: "{{ lookup('vars', 'nginx_dhparams_file'+'_'+current_os, default=nginx_dhparams_file_default) }}"
+nginx_dhparams_file: "{{ lookup('vars', 'nginx_dhparams_file' + '_' + current_os, default=nginx_dhparams_file_default) }}"
 
 nginx_dhparams_keysize_default: 2048
-nginx_dhparams_keysize: "{{ lookup('vars', 'nginx_dhparams_keysize'+'_'+current_os, default=nginx_dhparams_keysize_default) }}"
+nginx_dhparams_keysize: "{{ lookup('vars', 'nginx_dhparams_keysize' + '_' + current_os, default=nginx_dhparams_keysize_default) }}"
 
 nginx_pid_path_default: "{{ valet_sh_prefix }}/run/nginx.pid"
 nginx_pid_path_mac: "{{ valet_sh_prefix }}/var/run/nginx.pid"
-nginx_pid_path: "{{ lookup('vars', 'nginx_pid_path'+'_'+current_os, default=nginx_pid_path_default) }}"
+nginx_pid_path: "{{ lookup('vars', 'nginx_pid_path' + '_' + current_os, default=nginx_pid_path_default) }}"

@@ -32,7 +32,6 @@ valet_install_default_roles_default:
   - magerun
   - rabbitmq
   - composer
-  - google-chrome
 valet_install_default_roles_mac:
   - common
   - certificate
@@ -50,4 +49,4 @@ valet_install_default_roles_mac:
   - magerun
   - rabbitmq
   - composer
-valet_install_default_roles: "{{ lookup('vars', 'valet_install_default_roles'+'_'+current_os, default=valet_install_default_roles_default) }}"
+valet_install_default_roles: "{{ lookup('vars', 'valet_install_default_roles' + '_' + current_os, default=valet_install_default_roles_default) }}"

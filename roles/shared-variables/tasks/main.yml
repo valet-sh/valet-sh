@@ -17,17 +17,17 @@
 
 - name: "Set vars 'current_user', 'current_group' and 'current_home'"
   ansible.builtin.set_fact:
-    current_user: "{{ lookup('env','USER') }}"
-    current_home: "{{ lookup('env','HOME') }}"
+    current_user: "{{ lookup('env', 'USER') }}"
+    current_home: "{{ lookup('env', 'HOME') }}"
 
 - name: "Set 'current_group' var for ubuntu"
   ansible.builtin.set_fact:
-    current_group: "{{ lookup('env','USER') }}"
+    current_group: "{{ lookup('env', 'USER') }}"
   when: ansible_distribution == 'Ubuntu'
 
 - name: "Set 'current_group' var for ubuntu"
   ansible.builtin.set_fact:
-    current_group: "{{ lookup('env','USER') }}"
+    current_group: "{{ lookup('env', 'USER') }}"
   when: ansible_distribution == 'Linux Mint'
 
 - name: "Set 'current_group' var for macos"

@@ -16,25 +16,25 @@
 ---
 
 certificate_server_key_size_default: 2048
-certificate_server_key_size: "{{ lookup('vars', 'certificate_server_key_size'+'_'+current_os, default=certificate_server_key_size_default) }}"
+certificate_server_key_size: "{{ lookup('vars', 'certificate_server_key_size' + '_' + current_os, default=certificate_server_key_size_default) }}"
 
 certificate_server_cert_lifetime_default: 800
-certificate_server_cert_lifetime: "{{ lookup('vars', 'certificate_server_cert_lifetime'+'_'+current_os, default=certificate_server_cert_lifetime_default) }}"
+certificate_server_cert_lifetime: "{{ lookup('vars', 'certificate_server_cert_lifetime' + '_' + current_os, default=certificate_server_cert_lifetime_default) }}"
 
 certificate_server_key_filename_default: privkey.pem
-certificate_server_key_filename: "{{ lookup('vars', 'certificate_server_key_filename'+'_'+current_os, default=certificate_server_key_filename_default) }}"
+certificate_server_key_filename: "{{ lookup('vars', 'certificate_server_key_filename' + '_' + current_os, default=certificate_server_key_filename_default) }}"
 
 certificate_server_csr_filename_default: csr.pem
-certificate_server_csr_filename: "{{ lookup('vars', 'certificate_server_csr_filename'+'_'+current_os, default=certificate_server_csr_filename_default) }}"
+certificate_server_csr_filename: "{{ lookup('vars', 'certificate_server_csr_filename' + '_' + current_os, default=certificate_server_csr_filename_default) }}"
 
 certificate_server_cert_filename_default: cert.pem
-certificate_server_cert_filename: "{{ lookup('vars', 'certificate_server_cert_filename'+'_'+current_os, default=certificate_server_cert_filename_default) }}"
+certificate_server_cert_filename: "{{ lookup('vars', 'certificate_server_cert_filename' + '_' + current_os, default=certificate_server_cert_filename_default) }}"
 
 certificate_server_fullchain_filename_default: fullchain.pem
-certificate_server_fullchain_filename: "{{ lookup('vars', 'certificate_server_fullchain_filename'+'_'+current_os, default=certificate_server_fullchain_filename_default) }}"
+certificate_server_fullchain_filename: "{{ lookup('vars', 'certificate_server_fullchain_filename' + '_' + current_os, default=certificate_server_fullchain_filename_default) }}"
 
 certificate_server_cnf_filename_default: req.cnf
-certificate_server_cnf_filename: "{{ lookup('vars', 'certificate_server_cnf_filename'+'_'+current_os, default=certificate_server_cnf_filename_default) }}"
+certificate_server_cnf_filename: "{{ lookup('vars', 'certificate_server_cnf_filename' + '_' + current_os, default=certificate_server_cnf_filename_default) }}"
 
 certificate_server_domain_cert_path: "{{ certificate_server_cert_path }}/{{ cert_prefix }}.{{ development_tld }}"
 certificate_server_domain_key_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_key_filename }}"
@@ -44,28 +44,28 @@ certificate_server_domain_fullchain_file: "{{ certificate_server_domain_cert_pat
 certificate_server_domain_cnf_file: "{{ certificate_server_domain_cert_path }}/{{ certificate_server_cnf_filename }}"
 
 certificate_tld_default: "{{ development_tld }}"
-certificate_tld: "{{ lookup('vars', 'certificate_tld'+'_'+current_os, default=certificate_tld_default) }}"
+certificate_tld: "{{ lookup('vars', 'certificate_tld' + '_' + current_os, default=certificate_tld_default) }}"
 
 certificate_base_path_default: "{{ valet_sh_prefix }}/etc/ssl-self-signed"
-certificate_base_path: "{{ lookup('vars', 'certificate_base_path'+'_'+current_os, default=certificate_base_path_default) }}"
+certificate_base_path: "{{ lookup('vars', 'certificate_base_path' + '_' + current_os, default=certificate_base_path_default) }}"
 
 certificate_server_cert_path_default: "{{ certificate_base_path }}/server"
-certificate_server_cert_path: "{{ lookup('vars', 'certificate_server_cert_path'+'_'+current_os, default=certificate_server_cert_path_default) }}"
+certificate_server_cert_path: "{{ lookup('vars', 'certificate_server_cert_path' + '_' + current_os, default=certificate_server_cert_path_default) }}"
 
 certificate_ca_cert_path_default: "{{ certificate_base_path }}/ca"
-certificate_ca_cert_path: "{{ lookup('vars', 'certificate_ca_cert_path'+'_'+current_os, default=certificate_ca_cert_path_default) }}"
+certificate_ca_cert_path: "{{ lookup('vars', 'certificate_ca_cert_path' + '_' + current_os, default=certificate_ca_cert_path_default) }}"
 
 certificate_ca_cert_file_default: "{{ certificate_ca_cert_path }}/cacert.pem"
-certificate_ca_cert_file: "{{ lookup('vars', 'certificate_ca_cert_file'+'_'+current_os, default=certificate_ca_cert_file_default) }}"
+certificate_ca_cert_file: "{{ lookup('vars', 'certificate_ca_cert_file' + '_' + current_os, default=certificate_ca_cert_file_default) }}"
 
 certificate_ca_key_file_default: "{{ certificate_ca_cert_path }}/privkey.pem"
-certificate_ca_key_file: "{{ lookup('vars', 'certificate_ca_key_file'+'_'+current_os, default=certificate_ca_key_file_default) }}"
+certificate_ca_key_file: "{{ lookup('vars', 'certificate_ca_key_file' + '_' + current_os, default=certificate_ca_key_file_default) }}"
 
 certificate_ca_key_size_default: 2048
-certificate_ca_key_size: "{{ lookup('vars', 'certificate_ca_key_size'+'_'+current_os, default=certificate_ca_key_size_default) }}"
+certificate_ca_key_size: "{{ lookup('vars', 'certificate_ca_key_size' + '_' + current_os, default=certificate_ca_key_size_default) }}"
 
 certificate_ca_lifetime_default: 1100
-certificate_ca_lifetime: "{{ lookup('vars', 'certificate_ca_lifetime'+'_'+current_os, default=certificate_ca_lifetime_default) }}"
+certificate_ca_lifetime: "{{ lookup('vars', 'certificate_ca_lifetime' + '_' + current_os, default=certificate_ca_lifetime_default) }}"
 
 certificate_trusted_root_ca_path_default: "/usr/local/share/ca-certificates"
-certificate_trusted_root_ca_path: "{{ lookup('vars', 'certificate_trusted_root_ca_path'+'_'+current_os, default=certificate_trusted_root_ca_path_default) }}"
+certificate_trusted_root_ca_path: "{{ lookup('vars', 'certificate_trusted_root_ca_path' + '_' + current_os, default=certificate_trusted_root_ca_path_default) }}"

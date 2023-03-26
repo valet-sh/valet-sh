@@ -26,7 +26,7 @@ valet_sh_service_allowed_actions_default:
   - stop
   - default
   - list
-valet_sh_service_allowed_actions: "{{ lookup('vars', 'valet_sh_service_allowed_actions'+'_'+current_os, default=valet_sh_service_allowed_actions_default) }}"
+valet_sh_service_allowed_actions: "{{ lookup('vars', 'valet_sh_service_allowed_actions' + '_' + current_os, default=valet_sh_service_allowed_actions_default) }}"
 
 valet_sh_service_defaultable_services_default:
   - scope: elasticsearch
@@ -110,7 +110,7 @@ valet_sh_service_defaultable_services_mac:
     values:
       - composer1
       - composer2
-valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services'+'_'+current_os, default=valet_sh_service_defaultable_services_default) }}"
+valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services' + '_' + current_os, default=valet_sh_service_defaultable_services_default) }}"
 
 valet_sh_service_state_preset_default:
   - elasticsearch1: false
@@ -163,7 +163,7 @@ valet_sh_service_state_preset_mac:
   - redis: true
   - nginx: true
   - dnsmasq: true
-valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
+valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset' + '_' + current_os, default=valet_sh_service_state_preset_default) }}"
 
 valet_sh_service_privileged_services_default:
   - elasticsearch1
@@ -193,7 +193,7 @@ valet_sh_service_privileged_services_default:
 valet_sh_service_privileged_services_mac:
   - nginx
   - dnsmasq
-valet_sh_service_privileged_services: "{{ lookup('vars', 'valet_sh_service_privileged_services'+'_'+current_os, default=valet_sh_service_privileged_services_default) }}"
+valet_sh_service_privileged_services: "{{ lookup('vars', 'valet_sh_service_privileged_services' + '_' + current_os, default=valet_sh_service_privileged_services_default) }}"
 
 valet_sh_service_fuzzy_alias_mapping:
   - target: php56
@@ -296,7 +296,7 @@ valet_sh_service_alias_mapping_mac:
   elasticsearch8: "vsh-elasticsearch8"
   opensearch1: "vsh-opensearch1"
   opensearch2: "vsh-opensearch2"
-valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
+valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping' + '_' + current_os, default=valet_sh_service_alias_mapping_default) }}"
 
 valet_sh_service_rosetta2_emulation:
   rabbitmq: false

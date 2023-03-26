@@ -16,10 +16,10 @@
 ---
 
 elasticsearch_base_path_default: "{{ valet_packages_path }}/elasticsearch"
-elasticsearch_base_path: "{{ lookup('vars', 'elasticsearch_base_path'+current_os, default=elasticsearch_base_path_default) }}"
+elasticsearch_base_path: "{{ lookup('vars', 'elasticsearch_pid_path' + '_' + current_os, default=elasticsearch_base_path_default) }}"
 
 elasticsearch_pid_path_default: "/var/run/elasticsearch"
-elasticsearch_pid_path: "{{ lookup('vars', 'elasticsearch_pid_path'+'_'+current_os, default=elasticsearch_pid_path_default) }}"
+elasticsearch_pid_path: "{{ lookup('vars', 'elasticsearch_pid_path' + '_' + current_os, default=elasticsearch_pid_path_default) }}"
 
 elasticsearch_version_1_download_url: "https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.5.tar.gz"
 elasticsearch_version_2_download_url: "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.6/elasticsearch-2.4.6.tar.gz"
@@ -33,11 +33,11 @@ elasticsearch_use_plugins: true
 elasticsearch_plugins_default:
     - analysis-phonetic
     - analysis-icu
-elasticsearch_plugins: "{{ lookup('vars', 'elasticsearch_plugins'+'_'+current_os, default=elasticsearch_plugins_default) }}"
+elasticsearch_plugins: "{{ lookup('vars', 'elasticsearch_plugins' + '_' + current_os, default=elasticsearch_plugins_default) }}"
 
 elasticsearch_legacy_plugins_default:
     - name: "analysis-phonetic"
       url: "https://download.elasticsearch.org/elasticsearch/elasticsearch-analysis-phonetic/elasticsearch-analysis-phonetic-2.7.0.zip"
     - name: "analysis-icu"
       url: "https://download.elasticsearch.org/elasticsearch/elasticsearch-analysis-icu/elasticsearch-analysis-icu-2.7.0.zip"
-elasticsearch_legacy_plugins: "{{ lookup('vars', 'elasticsearch_legacy_plugins'+'_'+current_os, default=elasticsearch_legacy_plugins_default) }}"
+elasticsearch_legacy_plugins: "{{ lookup('vars', 'elasticsearch_legacy_plugins' + '_' + current_os, default=elasticsearch_legacy_plugins_default) }}"
