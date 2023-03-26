@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 ---
 
 - name: "internal-actions » sub-handle-defaults | set new service default item"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_service_new_service_default_item: "{ '{{ valet_sh_service_current_service_item.scope }}': '{{ valet_sh_service_current_service_item.default }}' }"
 
 - name: "internal-actions » sub-handle-defaults | add defaults to dict 'valet_sh_service_default_services'"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_service_default_services: "{{ valet_sh_service_default_services | combine(valet_sh_service_new_service_default_item) }}"
-

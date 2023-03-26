@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,12 +15,21 @@
 ##
 ---
 
+- name: "set default homebrew bin"
+  ansible.builtin.set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin }}"
+
+- name: "override homebrew bin path if service is rabbitmq"
+  ansible.builtin.set_fact:
+    valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin_arm64 }}"
+  when: valet_current_service_item.key == "rabbitmq"
+
 - name: "internal-actions » sub-handle-state | reset valet_service_name_alias variable"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_service_name_alias: ""
 
 - name: "internal-actions » sub-handle-state | check for alias service name"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_service_name_alias: "{{ valet_sh_service_alias_mapping_item.value }}"
   when: valet_sh_service_alias_mapping_item.key == valet_current_service_item.key
   with_dict: "{{ valet_sh_service_alias_mapping }}"
@@ -29,28 +38,28 @@
 
 
 - name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
-  shell: "sudo {{ valet_sh_homebrew_bin }} services restart {{ valet_current_service_item.key }}"
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services restart {{ valet_current_service_item.key }}"
   when:
     - valet_service_name_alias|length == 0
     - valet_current_service_item.key in valet_sh_service_privileged_services
     - valet_current_service_item.value|bool
 
 - name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_current_service_item.key }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_current_service_item.key }}"
   when:
     - valet_service_name_alias|length == 0
     - valet_current_service_item.key not in valet_sh_service_privileged_services
     - valet_current_service_item.value|bool
 
 - name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
-  shell: "sudo {{ valet_sh_homebrew_bin }} services restart {{ valet_service_name_alias }}"
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services restart {{ valet_service_name_alias }}"
   when:
     - valet_service_name_alias|length > 0
     - valet_current_service_item.key in valet_sh_service_privileged_services
     - valet_current_service_item.value|bool
 
 - name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_service_name_alias }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_service_name_alias }}"
   when:
     - valet_service_name_alias|length > 0
     - valet_current_service_item.key not in valet_sh_service_privileged_services
@@ -58,7 +67,7 @@
 
 
 - name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
-  shell: "sudo {{ valet_sh_homebrew_bin }} services stop {{ valet_current_service_item.key }}"
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services stop {{ valet_current_service_item.key }}"
   when:
     - valet_service_name_alias|length == 0
     - valet_current_service_item.key in valet_sh_service_privileged_services
@@ -66,7 +75,7 @@
   failed_when: false
 
 - name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_current_service_item.key }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_current_service_item.key }}"
   when:
     - valet_service_name_alias|length == 0
     - valet_current_service_item.key not in valet_sh_service_privileged_services
@@ -74,7 +83,7 @@
   failed_when: false
 
 - name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_service_name_alias }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_service_name_alias }}"
   become: true
   when:
     - valet_service_name_alias|length > 0
@@ -83,7 +92,7 @@
   failed_when: false
 
 - name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
-  shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_service_name_alias }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_service_name_alias }}"
   when:
     - valet_service_name_alias|length > 0
     - valet_current_service_item.key not in valet_sh_service_privileged_services

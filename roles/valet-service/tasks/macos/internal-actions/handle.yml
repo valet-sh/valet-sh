@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,19 +19,19 @@
 ## start handle service states
 
 - name: "internal-actions » handle | flush handlers"
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: "internal-actions » handle | include valet services file"
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_services_file }}"
     name: valet_sh_services_obj
 
 - name: "internal-actions » handle | update service object"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_service_target_states: "{{ valet_sh_service_state_preset | combine(valet_sh_services_obj.states) }}"
 
 - name: "internal-actions » handle | handle state for each service"
-  include_tasks: sub-handle-state.yml
+  ansible.builtin.include_tasks: sub-handle-state.yml
   vars:
     valet_current_service_item: "{{ valet_sh_service_state_target_item }}"
   with_dict: "{{ valet_sh_service_target_states }}"
@@ -45,22 +45,22 @@
 ## start handle defaults
 
 - name: "internal-actions » handle | create dict 'valet_sh_service_default_services'"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_service_default_services: {}
 
 - name: "internal-actions » handle | handle defaults for each service"
-  include_tasks: sub-handle-defaults.yml
+  ansible.builtin.include_tasks: sub-handle-defaults.yml
     valet_sh_service_current_service_item="{{ valet_sh_service_defaultable_services_loop_var }}"
   with_items: "{{ valet_sh_service_defaultable_services }}"
   loop_control:
     loop_var: valet_sh_service_defaultable_services_loop_var
 
 - name: "internal-actions » handle | update service defaults object"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_service_target_defaults: "{{ valet_sh_service_default_services | combine(valet_sh_services_obj.defaults) }}"
 
-- include_tasks: "macos/actions/default.yml"
-  vars:
+- include_tasks: "actions/default.yml"
+  ansible.builtin.vars:
     valet_service_name: "{{ valet_sh_service_defaults_target_item.value }}"
   with_dict: "{{ valet_sh_service_target_defaults }}"
   loop_control:

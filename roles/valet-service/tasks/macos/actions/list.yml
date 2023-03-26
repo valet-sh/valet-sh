@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@
 ---
 
 - name: "actions » list | include valet services file"
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_services_file }}"
     name: valet_sh_services_obj
 
 - name: "actions » list | include valet services file"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_services_current_states: "{{ valet_sh_service_state_preset | combine(valet_sh_services_obj.states) }}"
 
 - name: "actions » list | set empty array 'valet_sh_service_state_list'"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_service_state_list: []
 
 - name: "actions » list | add services to array"
-  set_fact:
-    valet_sh_service_state_list: "{{ valet_sh_service_state_list + [[ valet_sh_services_current_states_item.key, valet_sh_services_current_states_item.value ]] }}"
+  ansible.builtin.set_fact:
+    valet_sh_service_state_list: "{{ valet_sh_service_state_list + [[valet_sh_services_current_states_item.key, valet_sh_services_current_states_item.value]] }}"
   with_dict: "{{ valet_sh_services_current_states }}"
   loop_control:
     loop_var: valet_sh_services_current_states_item
@@ -40,19 +40,19 @@
     headers: ['Service', 'State']
     rows: "{{ valet_sh_service_state_list }}"
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint
 
 - name: "actions » list | get service defaults"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_services_current_defaults: "{{ valet_sh_services_obj.defaults }}"
 
 - name: "actions » list | set empty array 'valet_sh_service_defaults_list'"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_service_defaults_list: []
 
 - name: "actions » list | add services to array"
-  set_fact:
-    valet_sh_service_defaults_list: "{{ valet_sh_service_defaults_list + [[ valet_sh_services_current_defaults_item.value ]] }}"
+  ansible.builtin.set_fact:
+    valet_sh_service_defaults_list: "{{ valet_sh_service_defaults_list + [[valet_sh_services_current_defaults_item.value]] }}"
   with_dict: "{{ valet_sh_services_current_defaults }}"
   loop_control:
     loop_var: valet_sh_services_current_defaults_item
@@ -62,4 +62,4 @@
     headers: ['Default-Service']
     rows: "{{ valet_sh_service_defaults_list }}"
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint

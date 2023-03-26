@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,15 +15,12 @@
 ##
 ---
 
-- debug:
-    msg: "{{ valet_current_service_item }}"
-
 - name: "set 'valet_current_service_name' var"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_current_service_name: "{{ valet_current_service_item.key }}"
 
 - name: "actions » restart | check fuzzy service names"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_current_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
   when: valet_current_service_name in valet_sh_available_php_versions_alias_mapping_item.1
   with_subelements:
@@ -33,40 +30,41 @@
     loop_var: valet_sh_available_php_versions_alias_mapping_item
 
 - name: "actions » restart | reset valet_service_name_alias variable"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_current_service_name_alias: ""
 
 - name: "actions » restart | check for alias service name"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_current_service_name_alias: "{{ item.value }}"
   when: item.key == valet_current_service_name
   with_dict: "{{ valet_sh_service_alias_mapping }}"
 
-- block:
-  - name: "actions » restart | stop {{ valet_current_service_name }} service"
-    systemd:
-      name: "{{ valet_current_service_name }}"
-      state: stopped
-    become: true
-
-  - name: "actions » restart | start {{ valet_current_service_name }} service"
-    systemd:
-      name: "{{ valet_current_service_name }}"
-      state: started
-    become: true
+- name: "Block"
   when: valet_current_service_name_alias|length == 0
+  ansible.builtin.block:
+    - name: "actions » restart | stop {{ valet_current_service_name }} service"
+      ansible.builtin.systemd:
+        name: "{{ valet_current_service_name }}"
+        state: stopped
+      become: true
 
-- block:
-  - name: "actions » restart | stop {{ valet_current_service_name }} service"
-    systemd:
-      name: "{{ valet_current_service_name_alias }}"
-      state: stopped
-    become: true
+    - name: "actions » restart | start {{ valet_current_service_name }} service"
+      ansible.builtin.systemd:
+        name: "{{ valet_current_service_name }}"
+        state: started
+      become: true
 
-  - name: "actions » restart | start {{ valet_current_service_name }} service"
-    systemd:
-      name: "{{ valet_current_service_name_alias }}"
-      state: started
-    become: true
+- name: "Block"
   when: valet_current_service_name_alias|length > 0
+  ansible.builtin.block:
+    - name: "actions » restart | stop {{ valet_current_service_name }} service"
+      ansible.builtin.systemd:
+        name: "{{ valet_current_service_name_alias }}"
+        state: stopped
+      become: true
 
+    - name: "actions » restart | start {{ valet_current_service_name }} service"
+      ansible.builtin.systemd:
+        name: "{{ valet_current_service_name_alias }}"
+        state: started
+      become: true

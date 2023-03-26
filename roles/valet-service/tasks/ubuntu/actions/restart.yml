@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,22 +16,21 @@
 ---
 
 - name: "actions » restart | fail when no service name was given"
-  fail:
+  ansible.builtin.fail:
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
-- block:
+- name: "Block"
+  when: valet_service_name == "all"
+  ansible.builtin.block:
     - name: "actions » restart all | include valet services file"
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
 
     - name: "actions » restart all | merge service states"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_current_states: "{{ valet_sh_service_state_preset | combine(valet_sh_services_obj.states) }}"
-
-    - debug:
-        msg: "{{ valet_sh_services_current_states }}"
 
     - debug:
         msg: "{{ valet_sh_services_current_states_item }}"
@@ -40,21 +39,19 @@
         loop_var: valet_sh_services_current_states_item
       when: valet_sh_services_current_states_item.value|bool
 
-#    - pause:
-#        seconds: 30
-
-    - include_tasks: "ubuntu/actions/sub-restart-all.yml"
+    - ansible.builtin.include_tasks: "ubuntu/actions/sub-restart-all.yml"
       vars:
         valet_current_service_item: "{{ valet_sh_services_current_states_item }}"
       with_dict: "{{ valet_sh_services_current_states }}"
       loop_control:
         loop_var: valet_sh_services_current_states_item
       when: valet_sh_services_current_states_item.value|bool
-  when: valet_service_name == "all"
 
-- block:
+- name: "Block"
+  when: valet_service_name != "all"
+  ansible.builtin.block:
     - name: "actions » restart | check fuzzy service names"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
       when: valet_service_name in valet_sh_available_php_versions_alias_mapping_item.1
       with_subelements:
@@ -64,22 +61,21 @@
         loop_var: valet_sh_available_php_versions_alias_mapping_item
 
     - name: "actions » restart | check for alias service name"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_service_name_alias: "{{ item.value }}"
       when: item.key == valet_service_name
       with_dict: "{{ valet_sh_service_alias_mapping }}"
 
     - name: "actions » restart | restart {{ valet_service_name }} service"
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ valet_service_name }}"
         state: restarted
       become: true
       when: valet_service_name_alias|length == 0
 
     - name: "actions » restart | restart {{ valet_service_name }} service"
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ valet_service_name_alias }}"
         state: restarted
       become: true
       when: valet_service_name_alias|length > 0
-  when: valet_service_name != "all"

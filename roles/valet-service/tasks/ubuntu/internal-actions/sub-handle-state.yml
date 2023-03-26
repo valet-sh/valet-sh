@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 ---
 
 - name: "internal-actions » sub-handle-state | reset valet_service_name_alias variable"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_service_name_alias: ""
 
 - name: "internal-actions » sub-handle-state | check for alias service name"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_service_name_alias: "{{ valet_sh_service_alias_mapping_item.value }}"
   when: valet_sh_service_alias_mapping_item.key == valet_current_service_item.key
   with_dict: "{{ valet_sh_service_alias_mapping }}"
@@ -28,33 +28,33 @@
     loop_var: valet_sh_service_alias_mapping_item
 
 - name: "internal-actions » sub-handle-state | enable {{ valet_current_service_item.key }} service"
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ valet_current_service_item.key }}"
-    enabled: yes
+    enabled: true
     state: restarted
   become: true
   when: valet_service_name_alias|length == 0 and valet_current_service_item.value|bool
 
 - name: "internal-actions » sub-handle-state | enable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}'"
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ valet_service_name_alias }}"
-    enabled: yes
+    enabled: true
     state: restarted
   become: true
   when: valet_service_name_alias|length > 0 and valet_current_service_item.value|bool
 
 - name: "internal-actions » sub-handle-state | disable {{ valet_current_service_item.key }} service"
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ valet_current_service_item.key }}"
-    enabled: no
+    enabled: false
     state: stopped
   become: true
   when: valet_service_name_alias|length == 0 and not valet_current_service_item.value|bool
 
 - name: "internal-actions » sub-handle-state | disable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}'"
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ valet_service_name_alias }}"
-    enabled: no
+    enabled: false
     state: stopped
   become: true
   when: valet_service_name_alias|length > 0 and not valet_current_service_item.value|bool

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,14 +15,18 @@
 ##
 ---
 
-- include_tasks: "macos/internal-actions/migrations.yml"
+- name: "Include 'internal-actions/migrations.yml'"
+  ansible.builtin.include_tasks: "internal-actions/migrations.yml"
   when: valet_sh_service_internal_action|bool
 
-- include_tasks: "macos/internal-actions/{{ valet_service_action }}.yml"
+- name: "Include 'internal-actions/{{ valet_service_action }}.yml'"
+  ansible.builtin.include_tasks: "internal-actions/{{ valet_service_action }}.yml"
   when: valet_sh_service_internal_action|bool
 
-- include_tasks: macos/check-vars.yml
+- name: "Include 'check-vars.yml'"
+  ansible.builtin.include_tasks: "check-vars.yml"
   when: not valet_sh_service_internal_action|bool
 
-- include_tasks: "macos/actions/{{ valet_service_action }}.yml"
+- name: "Include 'actions/{{ valet_service_action }}.yml'"
+  ansible.builtin.include_tasks: "actions/{{ valet_service_action }}.yml"
   when: not valet_sh_service_internal_action|bool

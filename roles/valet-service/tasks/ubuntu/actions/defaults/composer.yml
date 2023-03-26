@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 ---
 
 - name: set valet_service_name version
-  set_fact:
+  ansible.builtin.set_fact:
     valet_service_name_version: "{{ valet_service_name[-1] }}"
 
 - name: "create symlink for default composer"
-  file:
+  ansible.builtin.file:
     src: "/usr/local/bin/composer{{ valet_service_name_version }}"
     dest: "/usr/local/bin/default-composer"
     owner: "{{ current_user }}"

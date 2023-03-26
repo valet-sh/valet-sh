@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 ---
 
 - name: set valet_service_name version
-  set_fact:
+  ansible.builtin.set_fact:
     valet_service_name_version: "{{ valet_service_name[-2:-1] }}.{{ valet_service_name[-1] }}"
 
 - name: "set default php cli version to php{{ valet_service_name_version }}"
-  alternatives:
+  ansible.builtin.alternatives:
     name: php
     path: "/usr/bin/php{{ valet_service_name_version }}"
   become: true
