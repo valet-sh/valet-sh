@@ -16,20 +16,20 @@
 ---
 
 - name: set current mariadb base path
-  set_fact:
+  ansible.builtin.set_fact:
     current_mariadb_base_path: "{{ mariadb_server.base_path }}106"
     current_mariadb_version_key: "10.6"
     current_mariadb_key: "mariadb106"
 
 - name: set curent dist path
-  set_fact:
+  ansible.builtin.set_fact:
     current_mariadb_dist_path: "{{ current_mariadb_base_path }}/dist"
     current_mariadb_etc_path: "{{ current_mariadb_base_path }}/etc"
     current_mariadb_etc_conf_path: "{{ current_mariadb_base_path }}/etc/conf.d"
     current_mariadb_data_path: "{{ current_mariadb_base_path }}/data"
 
 - name: "create basic directories"
-  file:
+  ansible.builtin.file:
     path: "{{ current_mariadb_base_directory }}"
     owner: "{{ mariadb_server.default_user }}"
     group: "{{ mariadb_server.default_group }}"
@@ -45,7 +45,7 @@
     loop_var: current_mariadb_base_directory
 
 - name: "create data directory '{{ current_mariadb_data_path }}'"
-  file:
+  ansible.builtin.file:
     path: "{{ current_mariadb_data_path }}"
     owner: "{{ mariadb_server.default_user }}"
     group: "{{ mariadb_server.default_group }}"
@@ -54,13 +54,13 @@
   become: true
 
 - name: "provide .my.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "ubuntu/mariadb106/.my.cnf.j2"
     dest: "{{ current_home }}/.my10.6.cnf"
     mode: '0644'
 
 - name: "provide my.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "ubuntu/mariadb106/my.cnf.j2"
     dest: "{{ current_mariadb_etc_path }}/my.cnf"
     owner: "{{ mariadb_server.default_user }}"
@@ -70,7 +70,7 @@
   notify: "systemd | {{ current_mariadb_key }} | restarted"
 
 - name: "provide mysql.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "ubuntu/mariadb106/mysql.cnf.j2"
     dest: "{{ current_mariadb_etc_conf_path }}/mysql.cnf"
     owner: "{{ mariadb_server.default_user }}"
@@ -79,7 +79,7 @@
   become: true
 
 - name: "provide mysqldump.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "ubuntu/mariadb106/mysqldump.cnf.j2"
     dest: "{{ current_mariadb_etc_conf_path }}/mysqldump.cnf"
     owner: "{{ mariadb_server.default_user }}"
@@ -88,7 +88,7 @@
   become: true
 
 - name: "provide mysqld.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "ubuntu/mariadb106/mysqld.cnf.j2"
     dest: "{{ current_mariadb_etc_conf_path }}/mysqld.cnf"
     owner: "{{ mariadb_server.default_user }}"
@@ -98,7 +98,7 @@
   notify: "systemd | {{ current_mariadb_key }} | restarted"
 
 - name: "provide {{ current_mariadb_key }} systemd unit file"
-  template:
+  ansible.builtin.template:
     src: "ubuntu/systemd/{{ current_mariadb_key }}.service.j2"
     dest: "/etc/systemd/system/{{ current_mariadb_key }}.service"
     owner: root
@@ -108,7 +108,7 @@
   notify: "systemd | {{ current_mariadb_key }} | restarted"
 
 - name: "provide {{ current_mariadb_key }} mysql client"
-  template:
+  ansible.builtin.template:
     src: "wrapper/mariadb.j2"
     dest: "/usr/local/bin/mariadb{{ current_mariadb_version_key }}"
     owner: root
@@ -117,7 +117,7 @@
   become: true
 
 - name: "provide mariadump{{ current_mariadb_version_key }} client"
-  template:
+  ansible.builtin.template:
     src: "wrapper/mariadump.j2"
     dest: "/usr/local/bin/mariadump{{ current_mariadb_version_key }}"
     owner: root
@@ -126,7 +126,7 @@
   become: true
 
 - name: "provide mariaadmin{{ current_mariadb_version_key }} client"
-  template:
+  ansible.builtin.template:
     src: "wrapper/mariaadmin.j2"
     dest: "/usr/local/bin/mariaadmin{{ current_mariadb_version_key }}"
     owner: root
@@ -139,41 +139,44 @@
 ###
 
 - name: set default value for var 'current_mariadb_dist_is_latest'
-  set_fact:
+  ansible.builtin.set_fact:
     current_mariadb_dist_is_latest: false
 
 - name: "get stats for dir '{{ current_mariadb_dist_path }}/package.sig'"
-  stat:
+  ansible.builtin.stat:
     path: "{{ current_mariadb_dist_path }}/package.sig"
   register: current_mariadb_package_sig_status_obj
 
-- block:
+- name: "Block"
+  when: current_mariadb_package_sig_status_obj.stat.exists
+  ansible.builtin.block:
     - name: "read package.sig file"
-      slurp:
+      ansible.builtin.slurp:
         src: "{{ current_mariadb_dist_path }}/package.sig"
       register: current_mariadb_package_sig_obj
 
     - name: override value for 'current_mariadb_dist_is_latest'
-      set_fact:
+      ansible.builtin.set_fact:
         current_mariadb_dist_is_latest: true
       when: (current_mariadb_package_sig_obj['content'] | b64decode) == mariadb_server_106.package_signature
-  when: current_mariadb_package_sig_status_obj.stat.exists
 
-- block:
+- name: "Block"
+  when: not current_mariadb_dist_is_latest|bool
+  ansible.builtin.block:
     - name: "ensure '{{ current_mariadb_key }}' is stopped"
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ current_mariadb_key }}"
         state: stopped
       become: true
 
     - name: "ensure dist folder '{{ current_mariadb_dist_path }}' is deleted"
-      file:
+      ansible.builtin.file:
         path: "{{ current_mariadb_dist_path }}"
         state: absent
       become: true
 
     - name: "ensure dist folder '{{ current_mariadb_dist_path }}' is created"
-      file:
+      ansible.builtin.file:
         path: "{{ current_mariadb_dist_path }}"
         owner: "{{ mariadb_server.default_user }}"
         group: "{{ mariadb_server.default_group }}"
@@ -182,12 +185,12 @@
       become: true
 
     - name: Download Mysql package
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ mariadb_server_106.package_url }}"
         dest: "/tmp/{{ mariadb_server_106.package_url | basename }}"
 
     - name: Extract mysql archive
-      unarchive:
+      ansible.builtin.unarchive:
         src: "/tmp/{{ mariadb_server_106.package_url | basename }}"
         dest: "{{ current_mariadb_dist_path }}"
         extra_opts: [--strip-components=1]
@@ -195,53 +198,53 @@
       become_user: "{{ mariadb_server.default_user }}"
 
     - name: "delete mysql release tar.gz"
-      file:
+      ansible.builtin.file:
         path: "/tmp/{{ mariadb_server_106.package_url | basename }}"
         state: absent
 
     - name: "ensure {{ current_mariadb_key }} enabled"
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ current_mariadb_key }}"
-        enabled: yes
-        daemon_reload: yes
+        enabled: true
+        daemon_reload: true
       become: true
 
     - name: "persist package signing key"
-      copy:
+      ansible.builtin.copy:
         content: "{{ mariadb_server_106.package_signature }}"
         dest: "{{ current_mariadb_dist_path }}/package.sig"
         mode: '0755'
       become: true
       become_user: "{{ mariadb_server.default_user }}"
 
-  when: not current_mariadb_dist_is_latest|bool
-
 - name: "check if '{{ current_mariadb_data_path }}' is empty"
-  find:
+  ansible.builtin.find:
     path: '{{ current_mariadb_data_path }}'
   register: current_mariadb_data_dir_status_obj
   become: true
 
-- block:
+- name: "Block"
+  when: current_mariadb_data_dir_status_obj.matched == 0
+  ansible.builtin.block:
     - name: create dummy mysql-client configuration file
-      tempfile:
+      ansible.builtin.tempfile:
         state: file
         suffix: temp
       register: mariadb_client_dummy_config_file_obj
 
     - name: run mariadb initialize command
-      shell: "{{ current_mariadb_dist_path }}/scripts/mysql_install_db --auth-root-authentication-method=normal --defaults-file={{ current_mariadb_etc_path }}/my.cnf --datadir={{ current_mariadb_data_path }} --pid-file=/run/mysqld/{{ current_mariadb_key }}.pid"
+      ansible.builtin.shell: "{{ current_mariadb_dist_path }}/scripts/mysql_install_db --auth-root-authentication-method=normal --defaults-file={{ current_mariadb_etc_path }}/my.cnf --datadir={{ current_mariadb_data_path }} --pid-file=/run/mysqld/{{ current_mariadb_key }}.pid"
       become: true
 
     - name: ensure mariadb 10.6 is restarted
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ current_mariadb_key }}"
         daemon_reload: true
         state: restarted
       become: true
 
     - name: Deletes anonymous MySQL server user for ansible_fqdn
-      mysql_user:
+      ansible.builtin.mysql_user:
         login_host: 127.0.0.1
         login_port: "{{ mariadb_server_106.port }}"
         login_user: root
@@ -252,7 +255,7 @@
         state: "absent"
 
     - name: Deletes anonymous MySQL server user for localhost
-      mysql_user:
+      ansible.builtin.mysql_user:
         login_host: 127.0.0.1
         login_port: "{{ mariadb_server_106.port }}"
         login_user: root
@@ -262,7 +265,7 @@
         state: "absent"
 
     - name: Removes the MySQL test database
-      mysql_db:
+      ansible.builtin.mysql_db:
         login_host: 127.0.0.1
         login_port: "{{ mariadb_server_106.port }}"
         login_user: root
@@ -272,7 +275,7 @@
         state: absent
 
     - name: Set root password
-      mysql_user:
+      ansible.builtin.mysql_user:
         login_host: 127.0.0.1
         login_port: "{{ mariadb_server_106.port }}"
         login_user: root
@@ -283,8 +286,6 @@
         state: present
 
     - name: ensure dummy mysql-client configuration file is deleted
-      file:
+      ansible.builtin.file:
         path: "{{ mariadb_client_dummy_config_file_obj.path }}"
         state: absent
-  when:
-    - current_mariadb_data_dir_status_obj.matched == 0

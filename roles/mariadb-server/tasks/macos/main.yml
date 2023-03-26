@@ -15,6 +15,8 @@
 ##
 ---
 
-- include_tasks: mariadb104.yml
+- name: "Include mariadb104.yml"
+  ansible.builtin.include_tasks: mariadb104.yml
 
-- include_tasks: mariadb106.yml
+- name: "Include mariadb106.yml"
+  ansible.builtin.include_tasks: mariadb106.yml

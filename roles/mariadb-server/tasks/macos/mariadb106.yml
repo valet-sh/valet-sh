@@ -16,10 +16,10 @@
 ---
 
 - name: "ensure vsh-mariadb106 is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install vsh-mariadb106"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-mariadb106"
 
 - name: "provide .my.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mariadb106_template_dot_my }}"
     dest: "{{ current_home }}/.my10.6.cnf"
     mode: '0644'
@@ -29,7 +29,7 @@
     loop_var: mariadb106_template_dot_my
 
 - name: "provide mysql.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mariadb106_template_mysql }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb106/conf.d/mysql.cnf"
     mode: '0644'
@@ -39,7 +39,7 @@
     loop_var: mariadb106_template_mysql
 
 - name: "provide mysqldump.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mariadb106_template_mysqldump }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb106/conf.d/mysqldump.cnf"
     mode: '0644'
@@ -50,7 +50,7 @@
     loop_var: mariadb106_template_mysqldump
 
 - name: "provide mysqld.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mariadb106_template_mysqld }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb106/conf.d/mysqld.cnf"
     mode: '0644'
@@ -61,15 +61,15 @@
     loop_var: mariadb106_template_mysqld
 
 - name: brew | vsh-mariadb106 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb106"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb106"
 
 - name: wait for mariadb106 to start
-  wait_for:
+  ansible.builtin.wait_for:
     port: "{{ mariadb_server_106.port }}"
     delay: 5
 
 - name: Set root password
-  mysql_user:
+  ansible.builtin.mysql_user:
     login_host: 127.0.0.1
     login_port: "{{ mariadb_server_106.port }}"
     login_user: root
@@ -77,5 +77,5 @@
     config_file: "/tmp/noexistent.cnf"
     name: "root"
     password: "{{ mariadb_server_default_root_password }}"
-    check_implicit_admin: yes
+    check_implicit_admin: true
     state: present
