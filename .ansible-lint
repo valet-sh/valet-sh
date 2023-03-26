@@ -9,3 +9,4 @@ skip_list:
   - 'role-name'
   - 'latest[git]'
   - 'name[casing]'
+  - 'command-instead-of-module'
