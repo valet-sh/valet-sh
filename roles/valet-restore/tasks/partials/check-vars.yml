@@ -1,4 +1,4 @@
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
 ##
 ---
 
-- name: "partials » check-vars | fail when valet_current_path is not defined"
-  fail:
+- name: "Partials » check-vars | fail when valet_current_path is not defined"
+  ansible.builtin.fail:
     msg: "valet_current_path is not defined"
   when: valet_current_path is not defined
 
-- name: "partials » check-vars | set working dir name"
-  set_fact:
+- name: "Partials » check-vars | set working dir name"
+  ansible.builtin.set_fact:
     valet_working_dir: "{{ valet_current_path | basename }}"

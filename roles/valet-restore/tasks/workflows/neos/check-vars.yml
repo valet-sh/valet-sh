@@ -1,4 +1,4 @@
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,59 +14,60 @@
 ##
 ---
 
-- name: "workflows » neos » check-vars | set value for valet_project_src_dir"
-  set_fact:
+- name: "Workflows » neos » check-vars | set value for valet_project_src_dir"
+  ansible.builtin.set_fact:
     valet_project_src_dir: "{{ valet_sh_project_vars.instance.path }}"
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.path is defined
 
-- name: "workflows » neos » check-vars | set fallback value for valet_project_src_dir"
-  set_fact:
+- name: "Workflows » neos » check-vars | set fallback value for valet_project_src_dir"
+  ansible.builtin.set_fact:
     valet_project_src_dir: "{{ valet_project_default_src_dir }}"
   when: not valet_project_src_dir
 
-- name: "workflows » neos » check-vars | set default value for valet_restore_db_identifier if not set"
-  set_fact:
+- name: "Workflows » neos » check-vars | set default value for valet_restore_db_identifier if not set"
+  ansible.builtin.set_fact:
     valet_restore_db_identifier: "{{ valet_restore_default_db_identifier }}"
   when: (valet_restore_db_identifier is not defined) or (valet_restore_db_identifier|length == 0)
 
-- name: "workflows » neos » check-vars | ensure valet_restore_db_identifier has allowed value"
-  fail:
+- name: "Workflows » neos » check-vars | ensure valet_restore_db_identifier has allowed value"
+  ansible.builtin.fail:
     msg: "not allowed value {{ valet_restore_db_identifier }} for var 'valet_restore_db_identifier'"
   when: (valet_restore_db_identifier != "latest") and (valet_restore_db_identifier != "previous")
 
 - name: set filename for instance db
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_instance_db_filename: "{{ valet_restore_db_identifier }}.sql.gz"
 
-- name: "workflows » neos » check-vars | set current tmp directory var"
-  set_fact:
+- name: "Workflows » neos » check-vars | set current tmp directory var"
+  ansible.builtin.set_fact:
     current_tmp_dir: "{{ valet_current_path }}/tmp"
 
-- name: "workflows » neos » check-vars | ensure tmp directory exists"
-  file:
+- name: "Workflows » neos » check-vars | ensure tmp directory exists"
+  ansible.builtin.file:
     path: "{{ current_tmp_dir }}"
     state: directory
+    mode: '0755'
 
-- name: "workflows » neos » check-vars | set default mysql client configuration"
-  set_fact:
+- name: "Workflows » neos » check-vars | set default mysql client configuration"
+  ansible.builtin.set_fact:
     valet_sh_project_mysql_client_configuration: "{{ current_home }}/.my.cnf"
 
-- name: "workflows » neos » check-vars | override mysql client configuration"
-  set_fact:
+- name: "Workflows » neos » check-vars | override mysql client configuration"
+  ansible.builtin.set_fact:
     valet_sh_project_mysql_client_configuration: "{{ current_home }}/.my{{ valet_sh_project_vars.services.mysql.version }}.cnf"
   when:
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.version is defined
 
-- name: "workflows » neos » check-vars | set default mysql server port configuration"
-  set_fact:
+- name: "Workflows » neos » check-vars | set default mysql server port configuration"
+  ansible.builtin.set_fact:
     valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mysql57 }}"
 
-- name: "workflows » neos » check-vars | override mysql server port configuration"
-  set_fact:
+- name: "Workflows » neos » check-vars | override mysql server port configuration"
+  ansible.builtin.set_fact:
     valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mysql80 }}"
   when:
     - valet_sh_project_vars.services is defined
@@ -74,8 +75,8 @@
     - valet_sh_project_vars.services.mysql.version is defined
     - valet_sh_project_vars.services.mysql.version == 8.0
 
-- name: "workflows » neos » check-vars | override mysql server port configuration"
-  set_fact:
+- name: "Workflows » neos » check-vars | override mysql server port configuration"
+  ansible.builtin.set_fact:
     valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mariadb104 }}"
   when:
     - valet_sh_project_vars.services is defined
@@ -83,8 +84,8 @@
     - valet_sh_project_vars.services.mariadb.version is defined
     - valet_sh_project_vars.services.mariadb.version == 10.4
 
-- name: "workflows » neos » check-vars | override mysql server port configuration"
-  set_fact:
+- name: "Workflows » neos » check-vars | override mysql server port configuration"
+  ansible.builtin.set_fact:
     valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mariadb106 }}"
   when:
     - valet_sh_project_vars.services is defined
@@ -92,100 +93,100 @@
     - valet_sh_project_vars.services.mariadb.version is defined
     - valet_sh_project_vars.services.mariadb.version == 10.6
 
-- name: "workflows » neos » check-vars | default database name based on current working dir"
-  set_fact:
+- name: "Workflows » neos » check-vars | default database name based on current working dir"
+  ansible.builtin.set_fact:
     valet_sh_project_database_name: "{{ valet_working_dir }}"
 
-- name: "workflows » neos » check-vars | override database name when defined in valet-sh.yml file"
-  set_fact:
-    valet_sh_project_database_name: "{{ valet_sh_project_vars.services.mysql.database | trim  }}"
+- name: "Workflows » neos » check-vars | override database name when defined in valet-sh.yml file"
+  ansible.builtin.set_fact:
+    valet_sh_project_database_name: "{{ valet_sh_project_vars.services.mysql.database | trim }}"
   when:
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.database is defined
 
-- name: "workflows » neos » check-vars | override database name when defined in valet-sh.yml file"
-  set_fact:
-    valet_sh_project_database_name: "{{ valet_sh_project_vars.services.mariadb.database | trim  }}"
+- name: "Workflows » neos » check-vars | override database name when defined in valet-sh.yml file"
+  ansible.builtin.set_fact:
+    valet_sh_project_database_name: "{{ valet_sh_project_vars.services.mariadb.database | trim }}"
   when:
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mariadb is defined
     - valet_sh_project_vars.services.mariadb.database is defined
 
-- name: "workflows » neos » check-vars | set hub port"
-  set_fact:
-    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+- name: "Workflows » neos » check-vars | set hub port"
+  ansible.builtin.set_fact:
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim }}"
   when: valet_sh_project_vars.hub.port is defined
 
-- name: "workflows » neos » check-vars | set hub host"
-  set_fact:
-    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+- name: "Workflows » neos » check-vars | set hub host"
+  ansible.builtin.set_fact:
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim }}"
   when: valet_sh_project_vars.hub.host is defined
 
-- name: "workflows » neos » check-vars | set hub user"
-  set_fact:
-    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+- name: "Workflows » neos » check-vars | set hub user"
+  ansible.builtin.set_fact:
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim }}"
   when: valet_sh_project_vars.hub.user is defined
 
-- name: "workflows » neos » check-vars | set hub data path"
-  set_fact:
+- name: "Workflows » neos » check-vars | set hub data path"
+  ansible.builtin.set_fact:
     valet_sh_hub_path: "{{ valet_sh_project_vars.hub.path | trim }}"
   when: valet_sh_project_vars.hub.path is defined
 
-- name: "workflows » neos » check-vars | set current tmp directory var"
-  set_fact:
+- name: "Workflows » neos » check-vars | set current tmp directory var"
+  ansible.builtin.set_fact:
     current_tmp_dir: "{{ valet_current_path }}/tmp"
 
-- name: "workflows » neos » check-vars | ensure tmp directory exists"
-  file:
+- name: "Workflows » neos » check-vars | ensure tmp directory exists"
+  ansible.builtin.file:
     path: "{{ current_tmp_dir }}"
 
-- name: "workflows » neos » check-vars | set hub port"
-  set_fact:
-    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+- name: "Workflows » neos » check-vars | set hub port"
+  ansible.builtin.set_fact:
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim }}"
   when: valet_sh_project_vars.hub.port is defined
 
-- name: "workflows » neos » check-vars | set hub host"
-  set_fact:
-    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+- name: "Workflows » neos » check-vars | set hub host"
+  ansible.builtin.set_fact:
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim }}"
   when: valet_sh_project_vars.hub.host is defined
 
-- name: "workflows » neos » check-vars | set hub user"
-  set_fact:
-    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+- name: "Workflows » neos » check-vars | set hub user"
+  ansible.builtin.set_fact:
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim }}"
   when: valet_sh_project_vars.hub.user is defined
 
-- name: "workflows » neos » check-vars | set valet_instancebackup_identifier when defined"
-  set_fact:
-    valet_instancebackup_identifier: "{{ valet_sh_project_vars.instance.sync.identifier | trim  }}"
+- name: "Workflows » neos » check-vars | set valet_instancebackup_identifier when defined"
+  ansible.builtin.set_fact:
+    valet_instancebackup_identifier: "{{ valet_sh_project_vars.instance.sync.identifier | trim }}"
   when:
     - (valet_instancebackup_identifier is not defined) or valet_instancebackup_identifier|length == 0
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.sync is defined
     - valet_sh_project_vars.instance.sync.identifier is defined
 
-- name: "workflows » neos » check-vars | override valet_instancebackup_identifier with valet_opt_instance_identifier when set"
-  set_fact:
-    valet_instancebackup_identifier: "{{ valet_opt_instance_identifier | trim  }}"
+- name: "Workflows » neos » check-vars | override valet_instancebackup_identifier with valet_opt_instance_identifier when set"
+  ansible.builtin.set_fact:
+    valet_instancebackup_identifier: "{{ valet_opt_instance_identifier | trim }}"
   when:
     - valet_opt_instance_identifier is defined
     - valet_opt_instance_identifier|length>0
 
-- name: "workflows » neos » check-vars | ensure valet_instancebackup_identifier has a value"
-  fail:
+- name: "Workflows » neos » check-vars | ensure valet_instancebackup_identifier has a value"
+  ansible.builtin.fail:
     msg: "you need to set a valid 'instancebackup-identifier' ether in your .valet-sh.yml file or as an argument"
   when: not valet_instancebackup_identifier
 
-- name: "workflows » neos » check-vars | set default restore commands"
-  set_fact:
+- name: "Workflows » neos » check-vars | set default restore commands"
+  ansible.builtin.set_fact:
     valet_restore_post_restore_commands: "{{ valet_restore_workflow.post_restore_commands }}"
 
-- name: "workflows » neos » check-vars | set empty list for custom restore commands"
-  set_fact:
+- name: "Workflows » neos » check-vars | set empty list for custom restore commands"
+  ansible.builtin.set_fact:
     valet_restore_custom_post_restore_commands: []
 
-- name: "workflows » neos » check-vars | set custom restore commands from .valet-sh.yml file"
-  set_fact:
+- name: "Workflows » neos » check-vars | set custom restore commands from .valet-sh.yml file"
+  ansible.builtin.set_fact:
     valet_restore_custom_post_restore_commands: "{{ valet_sh_project_vars.instance.sync.post_restore_actions.commands }}"
   when:
     - valet_sh_project_vars.instance is defined
@@ -193,12 +194,12 @@
     - valet_sh_project_vars.instance.sync.post_restore_actions is defined
     - valet_sh_project_vars.instance.sync.post_restore_actions.commands is defined
 
-- name: "workflows » neos » check-vars | set default php cli bin"
-  set_fact:
+- name: "Workflows » neos » check-vars | set default php cli bin"
+  ansible.builtin.set_fact:
     php_bin: "php"
 
-- name: "workflows » neos » check-vars | override php cli bin"
-  set_fact:
+- name: "Workflows » neos » check-vars | override php cli bin"
+  ansible.builtin.set_fact:
     php_bin: "php{{ valet_sh_project_vars.services.php.version }}"
   when:
     - valet_sh_project_vars.services is defined

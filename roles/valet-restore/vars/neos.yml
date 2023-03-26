@@ -1,4 +1,4 @@
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,6 +16,6 @@
 
 valet_restore_workflow:
   post_restore_commands:
-  - "flow flow:cache:flush"
-  - "flow doctrine:migrate"
-  - "flow resource:publish"
+    - "flow flow:cache:flush"
+    - "flow doctrine:migrate"
+    - "flow resource:publish"

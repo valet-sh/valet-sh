@@ -1,4 +1,4 @@
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,6 +20,6 @@ valet_restore_skip_db: false
 
 valet_restore_workflow:
   post_restore_commands:
-  - "bin/magento cache:flush"
-  - "bin/magento app:config:import -n"
-  - "bin/magento setup:upgrade"
+    - "bin/magento cache:flush"
+    - "bin/magento app:config:import -n"
+    - "bin/magento setup:upgrade"

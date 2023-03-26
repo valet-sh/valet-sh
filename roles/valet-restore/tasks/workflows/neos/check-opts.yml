@@ -1,4 +1,4 @@
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 ##
 ---
 
-- name: "workflows » magento2 » check-opts | check if '--identifier' opt is set"
-  set_fact:
+- name: "Workflows » magento2 » check-opts | check if '--identifier' opt is set"
+  ansible.builtin.set_fact:
     valet_opt_instance_identifier: "{{ valet_cli_opts_item | regex_search('identifier=(.+)', '\\1') }}"
   with_items: "{{ valet_cli_opts }}"
   when: valet_opt_instance_identifier is not defined or valet_opt_instance_identifier|length==0
   loop_control:
     loop_var: valet_cli_opts_item
 
-- name: "workflows » magento2 » check-opts | normalize variable 'valet_opt_instance_identifier'"
-  set_fact:
+- name: "Workflows » magento2 » check-opts | normalize variable 'valet_opt_instance_identifier'"
+  ansible.builtin.set_fact:
     valet_opt_instance_identifier: "{{ valet_opt_instance_identifier | first }}"
   when: valet_opt_instance_identifier is defined and valet_opt_instance_identifier|length>0

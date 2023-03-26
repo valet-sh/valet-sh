@@ -1,4 +1,4 @@
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,18 +14,17 @@
 ##
 ---
 
-- name: "partials » load-project-workflow | fail when project_type was not found"
-  fail:
+- name: "Partials » load-project-workflow | fail when project_type was not found"
+  ansible.builtin.fail:
     msg: "could not find project_type"
   when: valet_sh_project_vars.instance.type is not defined
 
-- include_tasks: "workflows/magento1/main.yml"
-  when: valet_sh_project_vars.instance.type == "magento1"
-
-- include_tasks: "workflows/magento2/main.yml"
+- name: "Partials » load-project-workflow | include 'workflows/magento2/main.yml'"
+  ansible.builtin.include_tasks: "workflows/magento2/main.yml"
   when: valet_sh_project_vars.instance.type == "magento2"
 
-- include_tasks: "workflows/neos/main.yml"
+- name: "Partials » load-project-workflow | include 'workflows/neos/main.yml'"
+  ansible.builtin.include_tasks: "workflows/neos/main.yml"
   when: valet_sh_project_vars.instance.type == "neos"
 
 # @TODO: fail when no project workflow was included
