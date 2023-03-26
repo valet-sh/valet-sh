@@ -14,7 +14,7 @@
 
 - name: "project:cc"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars:
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
     valet_project_action: cc

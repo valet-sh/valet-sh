@@ -22,7 +22,7 @@
 ---
 - name: "link"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars:
     valet_action: link
     link_name: "{{ cli.args[0] | default() }}"

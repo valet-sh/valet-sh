@@ -16,7 +16,7 @@
 ---
 - name: "links"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars:
     valet_action: links
   roles:

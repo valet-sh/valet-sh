@@ -16,7 +16,7 @@
 ---
 - name: "unlink"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars:
     valet_action: unlink
     link_name: "{{ cli.args[0] }}"

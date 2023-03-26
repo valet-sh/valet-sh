@@ -15,7 +15,7 @@
 
 - name: "phpstorm"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars:
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
   roles:

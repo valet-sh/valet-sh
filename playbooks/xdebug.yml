@@ -21,7 +21,7 @@
 ---
 - name: "xdebug"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars:
     valet_action: "{{ cli.args[0] | default() }}"
     php_version: "{{ cli.args[1] | default() }}"

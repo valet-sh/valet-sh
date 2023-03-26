@@ -33,7 +33,7 @@
 ---
 - name: "service"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars:
     valet_service_action: "{{ cli.args[0] | default() }}"
     valet_service_name: "{{ cli.args[1] | default() }}"
