@@ -1,8 +1,0 @@
----
-- name: Converge
-  hosts: all
-  vars:
-    xps_model: "XPS 13 9380"
-
-  roles:
-     - {role: dell-xps }
