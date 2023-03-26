@@ -15,10 +15,16 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
+- name: "Ensure rabbitmq is restarted"
+  ansible.builtin.shell: "/usr/local/bin/brew services stop rabbitmq"
+  when: current_arch != "arm64"
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Ensure rabbitmq is restarted"
+  ansible.builtin.shell: "/opt/homebrew/bin/brew services stop rabbitmq"
+  when: current_arch == "arm64"
+
+- name: ensure nginx vhost configuration for rabbitmq is absent
+  ansible.builtin.file:
+    path: "{{ valet_sh_prefix }}/etc/nginx/conf.d/rabbitmq.conf"
+    state: absent
+  notify: Brew | nginx | restarted

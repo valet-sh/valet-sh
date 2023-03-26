@@ -15,10 +15,10 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
+- name: "Validate version"
+  ansible.builtin.fail:
+    msg: "'{{ package_name }}' is not available"
+  when: package_name not in valet_sh.services.rabbitmq
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Include 'install-{{ package_name }}.yml'"
+  ansible.builtin.include_tasks: "install-{{ package_name }}.yml"

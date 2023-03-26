@@ -15,10 +15,22 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
+- name: Ensure rabbitmq-server purged
+  ansible.builtin.apt:
+    name: rabbitmq-server
+    state: absent
+    purge: true
+  become: true
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Ensure systemd rabbitmq-server config directory is absent"
+  ansible.builtin.file:
+    path: "/etc/systemd/system/rabbitmq-server.service.d/"
+    state: absent
+  become: true
+
+- name: ensure rabbitmq nginx config is absent
+  ansible.builtin.file:
+    path: "/etc/nginx/conf.d/rabbitmq.conf"
+    state: absent
+  notify: Systemd | nginx | reloaded
+  become: true

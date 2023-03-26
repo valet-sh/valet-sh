@@ -1,0 +1,71 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: Ensure rabbitmq-server is installed
+  ansible.builtin.apt:
+    name: rabbitmq-server
+    state: present
+  become: true
+
+- name: Ensure rabbitmq-server is running and enabled
+  ansible.builtin.systemd:
+    name: rabbitmq-server
+    state: started
+    enabled: true
+  become: true
+
+- name: Ensure the rabbitmq_management plugin is enabled
+  ansible.builtin.rabbitmq_plugin:
+    names: rabbitmq_management
+    state: enabled
+  become: true
+
+- name: "Ensure systemd rabbitmq-server config directory exists"
+  ansible.builtin.file:
+    path: "/etc/systemd/system/rabbitmq-server.service.d/"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+- name: Ensure rabbitmq-server.service override.conf is up2date
+  ansible.builtin.template:
+    src: "rabbitmq-server.service.j2"
+    dest: "/etc/systemd/system/rabbitmq-server.service.d/override.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Systemd | rabbitmq-server | full-restart
+  become: true
+
+- name: "Generate ssl-certificate for rabbitmq.{{ development_tld }}"
+  ansible.builtin.include_role:
+    name: certificate
+    public: true
+  vars:
+    cert_prefix: rabbitmq
+
+- name: Provide nginx vhost configuration for rabbitmq management plugin
+  ansible.builtin.template:
+    src: "rabbitmq.conf.j2"
+    dest: "/etc/nginx/conf.d/rabbitmq.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Systemd | nginx | reloaded
+  become: true
