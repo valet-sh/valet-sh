@@ -1,0 +1,98 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "ensure nginx is installed"
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+  become: true
+
+- name: "ensure nginx is enabled"
+  ansible.builtin.systemd:
+    name: nginx
+    enabled: true
+  become: true
+
+- name: Generate dhparams file
+  ansible.builtin.shell: "openssl dhparam -out {{ nginx_dhparams_file }} {{ nginx_dhparams_keysize }}"
+  args:
+    creates: "{{ nginx_dhparams_file }}"
+  become: true
+
+- name: Override default config
+  ansible.builtin.template:
+    src: "nginx.conf.j2"
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | nginx | reloaded
+  become: true
+
+- name: Create nginx conf.d dir
+  ansible.builtin.file:
+    path: /etc/nginx/conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+- name: Create nginx stream.d dir
+  ansible.builtin.file:
+    path: /etc/nginx/stream.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+- name: "ensure vhost directory '{{ valet_sh_default_vhost_root }}' exists"
+  ansible.builtin.file:
+    path: "{{ valet_sh_default_vhost_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+- name: "provide default vhost template"
+  ansible.builtin.template:
+    src: "default-vhost-index.html.j2"
+    dest: "{{ valet_sh_default_vhost_root }}/index.html"
+    owner: root
+    group: root
+    mode: '0644'
+    force: false
+  become: true
+
+- name: "generate ssl-certificate for {{ valet_sh_default_vhost_domain }}"
+  ansible.builtin.include_role:
+    name: certificate
+    public: true
+  vars:
+    cert_prefix: "{{ valet_sh_default_vhost_domain }}"
+
+- name: "provide default vhost"
+  ansible.builtin.template:
+    src: "default-vhost.conf.j2"
+    dest: "/etc/nginx/conf.d/{{ valet_sh_default_vhost_domain }}.{{ development_tld }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | nginx | reloaded
+  become: true
