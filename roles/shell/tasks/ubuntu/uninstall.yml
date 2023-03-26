@@ -15,10 +15,4 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
-
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+# do nothing

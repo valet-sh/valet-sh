@@ -15,26 +15,10 @@
 ##
 ---
 
-- name: "Ensure default shell is set"
-  ansible.builtin.set_fact:
-    default_shell: "{{ shell_default_shell }}"
+- name: "Include install.yml"
+  ansible.builtin.include_tasks: install.yml
+  when: package_action == "install"
 
-- name: "Check if shell is valid"
-  ansible.builtin.fail:
-    msg: "invalid shell '{{ valet_sh_config.default_shell }}'"
-  when:
-    - valet_sh_config.default_shell is defined
-    - valet_sh_config.default_shell not in shell_available_shells
-
-- name: "Override default shell"
-  ansible.builtin.set_fact:
-    default_shell: "{{ valet_sh_config.default_shell }}"
-  when: valet_sh_config.default_shell is defined
-
-- name: "Install bash"
-  ansible.builtin.include_tasks: bash.yml
-  when: default_shell == "bash"
-
-- name: "Install zsh"
-  ansible.builtin.include_tasks: zsh.yml
-  when: default_shell == "zsh"
+- name: "Include uninstall.yml"
+  ansible.builtin.include_tasks: uninstall.yml
+  when: package_action == "uninstall"
