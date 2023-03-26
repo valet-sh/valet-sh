@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,29 +15,10 @@
 ##
 ---
 
-- name: "Include composer1 installation"
-  ansible.builtin.include_tasks: composer1.yml
+- name: "Include install.yml"
+  ansible.builtin.include_tasks: install.yml
+  when: package_action == "install"
 
-- name: "Include composer2 installation"
-  ansible.builtin.include_tasks: composer2.yml
-
-- name: Ensure composer wrapper script is up2date
-  ansible.builtin.template:
-    src: "composer-wrapper.j2"
-    dest: "/usr/local/bin/composer"
-    mode: '0755'
-  become: true
-
-- name: "Get stat for '/usr/local/bin/composer-php'"
-  ansible.builtin.stat:
-    path: "/usr/local/bin/default-composer"
-  register: composer_default_symlink_obj
-
-- name: "Create symlink for default php"
-  ansible.builtin.file:
-    src: "/usr/local/bin/composer1"
-    dest: "/usr/local/bin/default-composer"
-    state: link
-    force: true
-  become: true
-  when: composer_default_symlink_obj.stat.islnk is not defined
+- name: "Include uninstall.yml"
+  ansible.builtin.include_tasks: uninstall.yml
+  when: package_action == "uninstall"
