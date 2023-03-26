@@ -16,5 +16,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run ansible-lint
-        uses: ansible/ansible-lint-action@main
+      - name: Installing dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-setuptools git
+          sudo pip3 install -r requirements.txt
+          ansible-galaxy collection install -r requirements.yml -p ./collections/
+
+      - name: Run Ansible-Lint
+        run: ansible-lint playbooks/
