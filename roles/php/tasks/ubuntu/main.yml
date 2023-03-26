@@ -30,7 +30,7 @@
   become: true
 
 - name: "install defined php versions"
-  include: install-php.yml
+  include_tasks: install-php.yml
     current_php="{{ php_multi_item }}"
   with_items: "{{ php_multi }}"
   loop_control:
