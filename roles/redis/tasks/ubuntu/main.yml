@@ -15,19 +15,10 @@
 ##
 ---
 
-- name: Ensure redis packages are installed
-  ansible.builtin.apt:
-    name: "{{ packages }}"
-    state: present
-  become: true
-  vars:
-    packages:
-      - redis-server
-      - redis-tools
+- name: "Include install.yml"
+  ansible.builtin.include_tasks: install.yml
+  when: package_action == "install"
 
-- name: Ensure redis-server is running and enabled
-  ansible.builtin.systemd:
-    name: redis-server
-    state: started
-    enabled: true
-  become: true
+- name: "Include uninstall.yml"
+  ansible.builtin.include_tasks: uninstall.yml
+  when: package_action == "uninstall"

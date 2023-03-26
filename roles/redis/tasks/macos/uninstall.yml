@@ -15,10 +15,8 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
+- name: "Ensure redis is stopped"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop redis"
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Ensure redis is uninstalled"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove redis"
