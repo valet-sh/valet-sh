@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,16 +15,11 @@
 ##
 ---
 
-#- name: "ensure vsh-mysql57 is installed"
-#  homebrew:
-#    name: vsh-mysql57
-#    state: present
-
 - name: "ensure vsh-mysql57 is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql57"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql57"
 
 - name: "provide .my.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql57_template_dot_my }}"
     dest: "{{ current_home }}/.my5.7.cnf"
     mode: '0644'
@@ -35,7 +30,7 @@
     loop_var: mysql57_template_dot_my
 
 - name: "provide mysql.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql57_template_mysql }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql57/conf.d/mysql.cnf"
     mode: '0644'
@@ -46,7 +41,7 @@
     loop_var: mysql57_template_mysql
 
 - name: "provide mysqldump.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql57_template_mysqldump }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql57/conf.d/mysqldump.cnf"
     mode: '0644'
@@ -57,7 +52,7 @@
     loop_var: mysql57_template_mysqldump
 
 - name: "provide mysqld.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql57_template_mysqld }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql57/conf.d/mysqld.cnf"
     mode: '0644'
@@ -68,15 +63,15 @@
     loop_var: mysql57_template_mysqld
 
 - name: brew | vsh-mysql57 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql57"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql57"
 
 - name: wait for mysql57 to start
-  wait_for:
+  ansible.builtin.wait_for:
     port: 3307
     delay: 5
 
 - name: Set root password
-  mysql_user:
+  ansible.builtin.mysql_user:
     login_host: 127.0.0.1
     login_port: "{{ mysql_community_server_57.port }}"
     login_user: root
@@ -84,21 +79,16 @@
     config_file: "/tmp/noexistent.cnf"
     name: "root"
     password: "{{ mysql_community_server_default_root_password }}"
-    check_implicit_admin: yes
+    check_implicit_admin: true
     state: present
 
 ##### start mysql8.0 installation
 
-#- name: "ensure vsh-mysql80 is installed"
-#  homebrew:
-#    name: vsh-mysql80
-#    state: present
-
 - name: "ensure vsh-mysql80 is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql80"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql80"
 
 - name: "provide .my.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql80_template_dot_my }}"
     dest: "{{ current_home }}/.my8.0.cnf"
     mode: '0644'
@@ -109,7 +99,7 @@
     loop_var: mysql80_template_dot_my
 
 - name: "provide mysql.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql80_template_mysql }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql80/conf.d/mysql.cnf"
     mode: '0644'
@@ -120,7 +110,7 @@
     loop_var: mysql80_template_mysql
 
 - name: "provide mysqldump.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql80_template_mysqldump }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql80/conf.d/mysqldump.cnf"
     mode: '0644'
@@ -131,7 +121,7 @@
     loop_var: mysql80_template_mysqldump
 
 - name: "provide mysqld.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql80_template_mysqld }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql80/conf.d/mysqld.cnf"
     mode: '0644'
@@ -142,15 +132,15 @@
     loop_var: mysql80_template_mysqld
 
 - name: brew | vsh-mysql80 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql80"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql80"
 
 - name: wait for mysql80 to start
-  wait_for:
+  ansible.builtin.wait_for:
     port: 3308
     delay: 5
 
 - name: Set root password
-  mysql_user:
+  ansible.builtin.mysql_user:
     login_host: 127.0.0.1
     login_port: "{{ mysql_community_server_80.port }}"
     login_user: root
@@ -158,23 +148,23 @@
     config_file: "/tmp/noexistent.cnf"
     name: "root"
     password: "{{ mysql_community_server_default_root_password }}"
-    check_implicit_admin: yes
+    check_implicit_admin: true
     state: present
 
 - name: ensure mysql wrapper script is up2date
-  template:
+  ansible.builtin.template:
     src: "wrapper/mysql-wrapper.j2"
     dest: "/usr/local/bin/mysql"
     mode: '0755'
 
 - name: ensure mysqladmin wrapper script is up2date
-  template:
+  ansible.builtin.template:
     src: "wrapper/mysqladmin-wrapper.j2"
     dest: "/usr/local/bin/mysqladmin"
     mode: '0755'
 
 - name: ensure mysqldump wrapper script is up2date
-  template:
+  ansible.builtin.template:
     src: "wrapper/mysqldump-wrapper.j2"
     dest: "/usr/local/bin/mysqldump"
     mode: '0755'

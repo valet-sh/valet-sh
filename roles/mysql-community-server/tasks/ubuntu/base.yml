@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,19 +16,19 @@
 ---
 
 - name: install base packages
-  apt:
-   name: "{{ mysql_community_server.base_packages }}"
-   state: present
+  ansible.builtin.apt:
+    name: "{{ mysql_community_server.base_packages }}"
+    state: present
   become: true
 
 - name: add mysql group
-  group:
+  ansible.builtin.group:
     name: mysql
     state: present
   become: true
 
 - name: add mysql user
-  user:
+  ansible.builtin.user:
     name: mysql
     shell: /bin/false
     home: /nonexistent
@@ -36,7 +36,7 @@
   become: true
 
 - name: "ensure mysql log directory is created"
-  file:
+  ansible.builtin.file:
     path: "/var/log/mysql"
     owner: "{{ mysql_community_server.default_user }}"
     group: "{{ mysql_community_server.default_group }}"

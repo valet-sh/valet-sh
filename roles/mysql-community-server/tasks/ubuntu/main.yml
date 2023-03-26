@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,30 +15,34 @@
 ##
 ---
 
-- include_tasks: migrations/main.yml
+- name: "Include 'migrations/main.yml'"
+  ansible.builtin.include_tasks: migrations/main.yml
 
-- include_tasks: base.yml
+- name: "Include 'base.yml'"
+  ansible.builtin.include_tasks: base.yml
 
-- include_tasks: install-57.yml
+- name: "Include 'install-57.yml'"
+  ansible.builtin.include_tasks: install-57.yml
 
-- include_tasks: install-80.yml
+- name: "Include 'install-80.yml'"
+  ansible.builtin.include_tasks: install-80.yml
 
 - name: ensure mysql wrapper script is up2date
-  template:
+  ansible.builtin.template:
     src: "wrapper/mysql-wrapper.j2"
     dest: "/usr/local/bin/mysql"
     mode: '0755'
   become: true
 
 - name: ensure mysqladmin wrapper script is up2date
-  template:
+  ansible.builtin.template:
     src: "wrapper/mysqladmin-wrapper.j2"
     dest: "/usr/local/bin/mysqladmin"
     mode: '0755'
   become: true
 
 - name: ensure mysqldump wrapper script is up2date
-  template:
+  ansible.builtin.template:
     src: "wrapper/mysqldump-wrapper.j2"
     dest: "/usr/local/bin/mysqldump"
     mode: '0755'

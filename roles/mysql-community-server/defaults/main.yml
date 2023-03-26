@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -37,4 +37,3 @@ mysql_community_server_80:
   package_url: "https://mirror.valet.sh/mysql-8.0.23-linux-glibc2.12-x86_64.tar.xz"
   package_signature: 7a328851d0857942c454492dcae469d690be6958a3bca082a9a69146fceb3fc5
   port: 3308
-

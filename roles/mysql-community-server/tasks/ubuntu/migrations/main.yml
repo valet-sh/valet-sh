@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 ---
 
 - name: ensure mysql process is stopped and disabled
-  systemd:
+  ansible.builtin.systemd:
     name: mysql
     state: stopped
-    enabled: no
-    masked: yes
+    enabled: false
+    masked: true
   become: true
   failed_when: false
