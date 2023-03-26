@@ -1,6 +1,6 @@
 testresources==2.0.1
-ansible
-ansible-lint
+ansible==6.*
+ansible-lint==6.13.*
 beautifultable==1.1.0
 PyMySQL==1.0.2
 cryptography==39.*
