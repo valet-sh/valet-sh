@@ -15,47 +15,10 @@
 ##
 ---
 
-- name: Install mailhog
-  ansible.builtin.get_url:
-    url: "{{ mailhog_release_url }}"
-    dest: "{{ mailhog_bin_target }}"
-    force: false
-    mode: '0755'
-    owner: root
-    group: root
-  become: true
+- name: "Include install.yml"
+  ansible.builtin.include_tasks: install.yml
+  when: package_action == "install"
 
-- name: Provide init script for mailhog
-  ansible.builtin.template:
-    src: "mailhog.service.j2"
-    dest: "/etc/systemd/system/mailhog.service"
-    owner: root
-    group: root
-    mode: '0644'
-  notify: Systemd | mailhog | restarted
-  become: true
-
-- name: "Generate ssl-certificate for {{ cert_prefix }}"
-  ansible.builtin.include_role:
-    name: certificate
-    public: true
-  vars:
-    cert_prefix: mailhog
-
-- name: Provide init script for mailhog
-  ansible.builtin.template:
-    src: "mailhog.conf.j2"
-    dest: "/etc/nginx/conf.d/mailhog.conf"
-    owner: root
-    group: root
-    mode: '0644'
-  notify: Systemd | nginx | reloaded
-  become: true
-
-- name: Ensure mailhog is enabled and started
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: mailhog
-    enabled: true
-    state: started
-  become: true
+- name: "Include uninstall.yml"
+  ansible.builtin.include_tasks: uninstall.yml
+  when: package_action == "uninstall"

@@ -15,10 +15,18 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
+- name: Ensure Mailhog is stooped
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Ensure mailhog is absent"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove mailhog"
+
+- name: "ensure mailhog related files are absent"
+  ansible.builtin.file:
+    path: "{{ valet_sh_service_mailhog_item }}"
+    state: absent
+  become: true
+  with_items:
+    - "{{ valet_sh_prefix }}/etc/nginx/conf.d/mailhog.conf"
+  loop_control:
+    loop_var: valet_sh_service_mailhog_item
