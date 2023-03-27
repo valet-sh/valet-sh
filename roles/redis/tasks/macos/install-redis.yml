@@ -15,10 +15,6 @@
 ##
 ---
 
-- name: "Validate version"
-  ansible.builtin.fail:
-    msg: "'{{ package_name }}' is not available"
-  when: package_name not in valet_sh.services.rabbitmq
-
-- name: "Include 'install-{{ package_name }}.yml'"
-  ansible.builtin.include_tasks: "install-{{ package_name }}.yml"
+- name: "Ensure redis is installed"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install redis"
+  notify: Brew | redis | restarted

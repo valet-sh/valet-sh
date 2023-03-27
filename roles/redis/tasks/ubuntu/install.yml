@@ -15,19 +15,10 @@
 ##
 ---
 
-- name: Ensure redis packages are installed
-  ansible.builtin.apt:
-    name: "{{ packages }}"
-    state: present
-  become: true
-  vars:
-    packages:
-      - redis-server
-      - redis-tools
+- name: "Validate version"
+  ansible.builtin.fail:
+    msg: "'{{ package_name }}' is not available"
+  when: package_name not in valet_sh.services.rabbitmq
 
-- name: Ensure redis-server is running and enabled
-  ansible.builtin.systemd:
-    name: redis-server
-    state: started
-    enabled: true
-  become: true
+- name: "Include 'install-{{ package_name }}.yml'"
+  ansible.builtin.include_tasks: "install-{{ package_name }}.yml"

@@ -15,8 +15,10 @@
 ##
 ---
 
-- name: "Ensure redis is stopped"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop redis"
+- name: "Validate version"
+  ansible.builtin.fail:
+    msg: "'{{ package_name }}' is not available"
+  when: package_name not in valet_sh.services.rabbitmq
 
-- name: "Ensure redis is uninstalled"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove redis"
+- name: "Include 'uninstall-{{ package_name }}.yml'"
+  ansible.builtin.include_tasks: "uninstall-{{ package_name }}.yml"
