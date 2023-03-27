@@ -16,7 +16,7 @@
 ---
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » neos » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
       ansible.builtin.systemd:
         name: "php{{ valet_sh_project_vars.services.php.version }}-fpm"
@@ -34,7 +34,7 @@
     - valet_sh_project_vars.services.php.version is defined
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » neos » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
 

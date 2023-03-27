@@ -149,7 +149,7 @@
 
 - name: "Block"
   when: current_mariadb_package_sig_status_obj.stat.exists
-  ansible.builtin.block:
+  block:
     - name: "read package.sig file"
       ansible.builtin.slurp:
         src: "{{ current_mariadb_dist_path }}/package.sig"
@@ -162,7 +162,7 @@
 
 - name: "Block"
   when: not current_mariadb_dist_is_latest|bool
-  ansible.builtin.block:
+  block:
     - name: "ensure '{{ current_mariadb_key }}' is stopped"
       ansible.builtin.systemd:
         name: "{{ current_mariadb_key }}"
@@ -225,7 +225,7 @@
 
 - name: "Block"
   when: current_mariadb_data_dir_status_obj.matched == 0
-  ansible.builtin.block:
+  block:
     - name: create dummy mysql-client configuration file
       ansible.builtin.tempfile:
         state: file

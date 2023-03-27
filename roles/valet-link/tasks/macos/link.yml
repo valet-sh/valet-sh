@@ -47,7 +47,7 @@
   ansible.builtin.include_tasks: "sub/read.yml"
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "Link | set empty array 'new_valet_links'"
       ansible.builtin.set_fact:
         new_valet_links: []
@@ -90,7 +90,7 @@
     - current_php_version is not defined
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "Link | include valet services file"
       ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
@@ -110,7 +110,7 @@
   when: (current_php_version is undefined) or (current_php_version | length == 0)
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "Link | check if php_version string mapped to origin"
       ansible.builtin.set_fact:
         current_php_version: "{{ valet_sh_available_php_versions_alias_mapping_item.0.origin }}"
@@ -135,7 +135,7 @@
     cert_prefix: "{{ link_name }}"
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: Set fact for restart_php_service
       ansible.builtin.set_fact:
         restart_php_service: "vsh-{{ current_php_version }}"
@@ -152,7 +152,7 @@
   when: current_php_version is defined
 
 - name: "Link | find a matching application template"
-  ansible.builtin.block:
+  block:
     - name: "Include 'templates/magento2.yml'"
       include_tasks: templates/magento2.yml
     - name: "Include 'templates/neos.yml'"

@@ -16,7 +16,7 @@
 ---
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
       ansible.builtin.set_fact:
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
@@ -38,7 +38,7 @@
     - valet_sh_project_vars.services.mysql.version is defined
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
       ansible.builtin.set_fact:
         valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
@@ -60,7 +60,7 @@
     - valet_sh_project_vars.services.mariadb.version is defined
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
       ansible.builtin.set_fact:
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
@@ -79,7 +79,7 @@
     - valet_sh_project_vars.services.mysql.version is defined
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
       ansible.builtin.set_fact:
         valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"

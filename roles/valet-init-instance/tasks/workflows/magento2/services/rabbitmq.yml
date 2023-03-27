@@ -16,7 +16,7 @@
 ---
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
       ansible.builtin.systemd:
         name: rabbitmq-server
@@ -28,7 +28,7 @@
         port: 5672
         delay: 5
 
-    - ansible.builtin.block:
+    - block:
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost is absent"
           ansible.builtin.rabbitmq_vhost:
             name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
@@ -69,7 +69,7 @@
     - valet_sh_project_vars.services.rabbitmq.vhost is defined
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin_x86 }} services start rabbitmq"
       when: current_arch != "arm64"
@@ -83,7 +83,7 @@
         port: 5672
         delay: 5
 
-    - ansible.builtin.block:
+    - block:
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost is absent"
           ansible.builtin.rabbitmq_vhost:
             name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"

@@ -20,7 +20,7 @@
     path: "{{ valet_current_path }}/app/code/core/Mage"
   register: m1_checker_obj
 
-- ansible.builtin.block:
+- block:
     - name: "Link | check for multidomain configuration in .valet-sh.yml file"
       ansible.builtin.set_fact:
         valet_sh_project_multidomain_config: "{{ valet_sh_project_vars.instance.multidomain }}"

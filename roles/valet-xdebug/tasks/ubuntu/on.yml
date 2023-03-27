@@ -32,7 +32,7 @@
 
 - name: "Block"
   when: xdebug_preferred_version == "xdebug3"
-  ansible.builtin.block:
+  block:
     - name: "On | create symlink for xdebug cli configuration"
       ansible.builtin.file:
         src: "{{ item }}"
@@ -58,7 +58,7 @@
 
 - name: "Block"
   when: xdebug_preferred_version == "xdebug2"
-  ansible.builtin.block:
+  block:
     - name: "On | create symlink for xdebug cli configuration"
       ansible.builtin.file:
         src: "{{ item }}"

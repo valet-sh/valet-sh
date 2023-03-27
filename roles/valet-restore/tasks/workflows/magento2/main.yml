@@ -43,7 +43,7 @@
     path: "~/.ssh/known_hosts"
     state: present
 
-- ansible.builtin.block:
+- block:
     - name: "workflows » magento2 | check if instancebackup '{{ valet_sh_instance_db_filename }}' for identifier '{{ valet_instancebackup_identifier }}'"
       ansible.builtin.stat:
         path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
@@ -77,7 +77,7 @@
         state: import
   when: not valet_restore_skip_db|bool and (valet_opt_flag_skip_db is not defined or not valet_opt_flag_skip_db|bool)
 
-- ansible.builtin.block:
+- block:
     - name: "workflows » magento2 | check if instancebackup '{{ valet_sh_instance_db_filename }}' for identifier '{{ valet_instancebackup_identifier }}'"
       ansible.builtin.stat:
         path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
@@ -158,7 +158,7 @@
     loop_var: valet_sh_restore_current_custom_post_command
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 | run full reindex when defined in .valet-sh.yml"
       ansible.builtin.shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/bin/magento indexer:reindex"
       when:

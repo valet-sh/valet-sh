@@ -17,7 +17,7 @@
 
 - name: "Block"
   when: valet_sh_project_vars.instance.processed_config is defined
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » project-env | check existence of '{{ valet_sh_project_vars.instance.processed_config }}'"
       ansible.builtin.stat:
         path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.processed_config }}"
@@ -37,7 +37,7 @@
 
 - name: "Block"
   when: valet_sh_project_vars.instance.processed_config is not defined
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » project-env | set magento2 related variables"
       ansible.builtin.set_fact:
         valet_sh_magento2_key: "{{ valet_sh_project_vars.instance.key }}"

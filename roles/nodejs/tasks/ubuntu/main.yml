@@ -16,9 +16,9 @@
 ---
 
 - name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
+  ansible.builtin.include_tasks: ubuntu/install.yml
   when: package_action == "install"
 
 - name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
+  ansible.builtin.include_tasks: ubuntu/uninstall.yml
   when: package_action == "uninstall"

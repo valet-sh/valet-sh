@@ -27,7 +27,7 @@
 
 - name: "Block"
   when: not current_elasticsearch_base_path_obj.stat.exists
-  ansible.builtin.block:
+  block:
     - name: Download ElasticSearch package
       ansible.builtin.get_url:
         url: "{{ elasticsearch_version_6_download_url }}"

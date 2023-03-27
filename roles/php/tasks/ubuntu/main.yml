@@ -15,46 +15,10 @@
 ##
 ---
 
-- name: "include migrations"
-  ansible.builtin.include_tasks: "migrations/main.yml"
+- name: "Include install.yml"
+  ansible.builtin.include_tasks: ubuntu/install.yml
+  when: package_action == "install"
 
-- name: ensure apt-transport-https is installed
-  ansible.builtin.apt:
-    name: apt-transport-https
-    state: present
-  become: true
-
-- name: use php ppa (Ubuntu)
-  ansible.builtin.apt_repository:
-    repo: 'ppa:ondrej/php'
-    codename: "{{ os_codename }}"
-  become: true
-
-- name: "install defined php versions"
-  ansible.builtin.include_tasks: install-php.yml
-    current_php="{{ php_multi_item }}"
-  with_items: "{{ php_multi }}"
-  loop_control:
-    loop_var: php_multi_item
-
-- name: "install php-imagick"
-  ansible.builtin.apt:
-    name: php-imagick
-    state: present
-  become: true
-
-- name: "set default php cli version"
-  community.general.alternatives:
-    name: php
-    path: "/usr/bin/php{{ item.version }}"
-  with_items: "{{ php_multi }}"
-  when: (item.default is defined) and (item.default|bool)
-  become: true
-
-- name: ensure php wrapper script is up2date
-  ansible.builtin.copy:
-    src: "ubuntu/php-wrapper"
-    dest: "/usr/local/bin/php"
-    mode: '0755'
-    force: true
-  become: true
+- name: "Include uninstall.yml"
+  ansible.builtin.include_tasks: ubuntu/uninstall.yml
+  when: package_action == "uninstall"

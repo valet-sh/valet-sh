@@ -15,6 +15,18 @@
 ##
 ---
 
+- name: "php versions fixme"
+  set_fact:
+    - vsh-php56
+    - vsh-php70
+    - vsh-php71
+    - vsh-php72
+    - vsh-php73
+    - vsh-php74
+    - vsh-php80
+    - vsh-php81
+    - vsh-php82
+
 - name: "set php_version variable"
   ansible.builtin.set_fact:
     php_version: "{{ current_php[-2:-1] }}.{{ current_php[-1] }}"

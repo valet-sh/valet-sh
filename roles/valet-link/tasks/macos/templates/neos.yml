@@ -39,7 +39,7 @@
 
 - name: "Block"
   when: neos_checker_obj.stat.exists or neos_template_found|bool
-  ansible.builtin.block:
+  block:
     - name: "Templates » neos | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
       ansible.builtin.template:
         src: "nginx/neos.conf.j2"

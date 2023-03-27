@@ -323,3 +323,14 @@ valet_sh_service_rosetta2_emulation:
   elasticsearch8: true
   opensearch1: true
   opensearch2: true
+
+
+valet_sh:
+  services:
+    elasticsearch:
+      - elasticsearch1
+      - elasticsearch2
+      - elasticsearch5
+      - elasticsearch6
+      - elasticsearch7
+      - elasticsearch8

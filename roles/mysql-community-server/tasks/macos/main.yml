@@ -16,11 +16,11 @@
 ---
 
 - name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
+  ansible.builtin.include_tasks: macos/install.yml
   when: package_action == "install"
 
 - name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
+  ansible.builtin.include_tasks: macos/uninstall.yml
   when: package_action == "uninstall"
 
 # @todo move to other role

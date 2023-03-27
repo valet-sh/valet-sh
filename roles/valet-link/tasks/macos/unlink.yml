@@ -34,7 +34,7 @@
   when: "(not link_name in valet_links_obj.valet_links.links_index) and (not valet_link_silent|bool)"
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "Unlink | delete vhost configuration for {{ link_name }}.{{ development_tld }}"
       ansible.builtin.file:
         path: "{{ valet_sh_prefix }}/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"

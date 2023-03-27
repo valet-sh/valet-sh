@@ -18,7 +18,7 @@
 - name: Set current elasticsearch base path
   ansible.builtin.set_fact:
     current_elasticsearch_base_path: "{{ elasticsearch_base_path }}1"
-    current_elasticsearch_key: "elasticsearch7"
+    current_elasticsearch_key: "elasticsearch1"
 
 - name: "Ensure '{{ current_elasticsearch_key }}' is stopped"
   ansible.builtin.systemd:
@@ -26,6 +26,7 @@
     name: "{{ current_elasticsearch_key }}"
     state: stopped
   become: true
+  ignore_errors: true
 
 - name: "Ensure '{{ current_elasticsearch_base_path }}' is deleted"
   ansible.builtin.file:
@@ -36,6 +37,7 @@
   ansible.builtin.file:
     path: "/etc/systemd/system/{{ current_elasticsearch_key }}.service"
     state: absent
+  become: true
 
 - name: "Reload systemd config"
   ansible.builtin.systemd:

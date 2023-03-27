@@ -41,7 +41,7 @@
 
 - name: "Block"
   when: valet_service_base_name == "mysql"
-  ansible.builtin.block:
+  block:
     - name: "create symlinks for default mysql"
       ansible.builtin.file:
         src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ valet_service_name_version }}"
@@ -65,7 +65,7 @@
 
 - name: "Block"
   when: valet_service_base_name == "mariadb"
-  ansible.builtin.block:
+  block:
     - name: "create symlinks for default mysql"
       ansible.builtin.file:
         src: "/usr/local/bin/mariadb{{ valet_service_name_version }}"

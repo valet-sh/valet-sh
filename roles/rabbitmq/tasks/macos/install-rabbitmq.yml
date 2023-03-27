@@ -17,7 +17,7 @@
 
 - name: "Block"
   when: current_arch != "arm64"
-  ansible.builtin.block:
+  block:
     - name: "Ensure rabbitmq is installed"
       ansible.builtin.shell: "/usr/local/bin/brew install rabbitmq"
 
@@ -26,7 +26,7 @@
 
 - name: Block
   when: current_arch == "arm64"
-  ansible.builtin.block:
+  block:
     - name: "Ensure rabbitmq is installed"
       ansible.builtin.shell: "/opt/homebrew/bin/brew install rabbitmq"
 

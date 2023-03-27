@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,10 +15,16 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: macos/install.yml
-  when: package_action == "install"
+- name: "define path to php error log"
+  ansible.builtin.set_fact:
+    php_error_log_path: "/tmp/php_errors.log"
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: macos/uninstall.yml
-  when: package_action == "uninstall"
+- name: "Validate version"
+  ansible.builtin.fail:
+    msg: "'{{ package_name }}' is not available"
+  when: package_name not in valet_sh.services.php
+
+- name: "install defined php versions"
+  ansible.builtin.include_tasks: install-php.yml
+  vars:
+    current_php: "{{ package_name }}"

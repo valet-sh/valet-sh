@@ -30,7 +30,7 @@
 
 - name: "Block"
   when: valet_db_filename is not defined
-  ansible.builtin.block:
+  block:
     - name: "Actions » export | get current datetime"
       ansible.builtin.set_fact:
         current_datetime: "{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}" # noqa 204

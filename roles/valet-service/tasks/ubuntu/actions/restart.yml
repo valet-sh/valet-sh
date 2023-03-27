@@ -22,7 +22,7 @@
 
 - name: "Block"
   when: valet_service_name == "all"
-  ansible.builtin.block:
+  block:
     - name: "actions » restart all | include valet services file"
       ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
@@ -49,7 +49,7 @@
 
 - name: "Block"
   when: valet_service_name != "all"
-  ansible.builtin.block:
+  block:
     - name: "actions » restart | check fuzzy service names"
       ansible.builtin.set_fact:
         valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"

@@ -29,7 +29,7 @@
     removes: "composer.json"
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » neos » project-install | run npm install in current dir"
       ansible.builtin.shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && /usr/bin/env npm install"
       args:
@@ -47,7 +47,7 @@
   when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » neos » project-install | run npm install in current dir"
       ansible.builtin.shell: "{{ current_home }}/.volta/bin/npm install"
       args:

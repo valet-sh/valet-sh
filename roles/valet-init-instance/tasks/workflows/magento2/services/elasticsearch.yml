@@ -16,7 +16,7 @@
 ---
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
       ansible.builtin.systemd:
         name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
@@ -34,7 +34,7 @@
     - valet_sh_project_vars.services.elasticsearch.version is defined
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » elasticsearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started"
       ansible.builtin.systemd:
         name: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
@@ -52,7 +52,7 @@
     - valet_sh_project_vars.services.opensearch.version is defined
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
@@ -67,7 +67,7 @@
     - valet_sh_project_vars.services.elasticsearch.version is defined
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "workflows » magento2 » services » elasticsearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
 

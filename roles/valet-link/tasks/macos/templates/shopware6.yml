@@ -31,7 +31,7 @@
 
 - name: "Block"
   when: shopware6_checker_obj.stat.exists or shopware6_template_found|bool
-  ansible.builtin.block:
+  block:
     - name: "Templates » shopware6 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
       ansible.builtin.template:
         src: "nginx/shopware6.conf.j2"

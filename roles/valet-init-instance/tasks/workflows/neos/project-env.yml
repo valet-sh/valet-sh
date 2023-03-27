@@ -17,7 +17,7 @@
 
 - name: "Block"
   when: valet_sh_project_vars.instance.processed_config is defined
-  ansible.builtin.block:
+  block:
     - name: "workflows » neos » project-env | copy Settings.generated.yaml"
       ansible.builtin.copy:
         src: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.processed_config }}"
@@ -27,7 +27,7 @@
 
 - name: "Block"
   when: valet_sh_project_vars.instance.processed_config is not defined
-  ansible.builtin.block:
+  block:
     - name: "workflows » neos » project-env | set neos related variables"
       ansible.builtin.set_fact:
         valet_sh_neos_key: "{{ valet_sh_project_vars.instance.key }}"

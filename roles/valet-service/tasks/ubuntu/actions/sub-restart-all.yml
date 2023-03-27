@@ -41,7 +41,7 @@
 
 - name: "Block"
   when: valet_current_service_name_alias|length == 0
-  ansible.builtin.block:
+  block:
     - name: "actions » restart | stop {{ valet_current_service_name }} service"
       ansible.builtin.systemd:
         name: "{{ valet_current_service_name }}"
@@ -56,7 +56,7 @@
 
 - name: "Block"
   when: valet_current_service_name_alias|length > 0
-  ansible.builtin.block:
+  block:
     - name: "actions » restart | stop {{ valet_current_service_name }} service"
       ansible.builtin.systemd:
         name: "{{ valet_current_service_name_alias }}"

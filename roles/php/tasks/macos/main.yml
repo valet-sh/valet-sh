@@ -15,22 +15,10 @@
 ##
 ---
 
-- name: "define path to php error log"
-  ansible.builtin.set_fact:
-    php_error_log_path: "/tmp/php_errors.log"
+- name: "Include install.yml"
+  ansible.builtin.include_tasks: macos/install.yml
+  when: package_action == "install"
 
-- name: "install defined php versions"
-  ansible.builtin.include_tasks: macos/install-php.yml
-    current_php="{{ valet_sh_php_version_item }}"
-  with_items:
-    - vsh-php56
-    - vsh-php70
-    - vsh-php71
-    - vsh-php72
-    - vsh-php73
-    - vsh-php74
-    - vsh-php80
-    - vsh-php81
-    - vsh-php82
-  loop_control:
-    loop_var: valet_sh_php_version_item
+- name: "Include uninstall.yml"
+  ansible.builtin.include_tasks: macos/uninstall.yml
+  when: package_action == "uninstall"

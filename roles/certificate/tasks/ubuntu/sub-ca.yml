@@ -81,7 +81,7 @@
 
 - name: "Block"
   when: snap_directory_obj.stat.exists|bool
-  ansible.builtin.block:
+  block:
     - name: "Search for cert9.db files '{{ current_home }}/snap/'"
       ansible.builtin.shell: "find {{ current_home }}/snap/ -maxdepth 7 -name 'cert9.db' 2>/dev/null"
       register: available_cert9_files_snap_obj

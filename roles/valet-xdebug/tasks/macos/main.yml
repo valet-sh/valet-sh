@@ -25,7 +25,7 @@
   when: valet_action != "on" and valet_action != "off"
 
 - name: "Block"
-  ansible.builtin.block:
+  block:
     - name: "Include 'partials/load-valet-sh-file.yml'"
       ansible.builtin.include_tasks: "partials/load-valet-sh-file.yml"
       when: valet_sh_project_vars is not defined
@@ -45,7 +45,7 @@
     msg: "php_version variable is not set"
   when: php_version is not defined or php_version|length==0
 
-- ansible.builtin.block:
+- block:
     - name: "Check if php_version string mapped to origin"
       ansible.builtin.set_fact:
         php_version: "{{ valet_sh_available_php_versions_alias_mapping_item.0.origin }}"
