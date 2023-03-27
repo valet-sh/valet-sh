@@ -15,10 +15,19 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
+- name: ensure dnsmasq is stopped
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services  stop dnsmasq"
 
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Ensure dnsmasq is uninstalled"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove dnsmasq"
+
+- name: "Ensure dnsmasq config files are absent"
+  ansible.builtin.file:
+    path: "{{ valet_sh_dnsmasq_conf_item }}"
+    state: absent
+  with_items:
+    - "/etc/resolver/{{ dnsmasq_domain }}"
+    - "/usr/local/etc/dnsmasq.d"
+  loop_control:
+    valet_sh_dnsmasq_conf_item
+  become: true

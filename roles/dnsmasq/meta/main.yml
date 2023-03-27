@@ -20,7 +20,7 @@ dependencies:
 
 galaxy_info:
   author: Philipp Dittert
-  description: valet.sh certificate implementation
+  description: valet.sh dnsmasq implementation
   company: "TechDivision GmbH"
   license: "Apache-2.0"
   standalone: true

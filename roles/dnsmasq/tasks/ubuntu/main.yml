@@ -15,26 +15,10 @@
 ##
 ---
 
-- name: "Enable dns resolving for .{{ dnsmasq_domain }} domain"
-  ansible.builtin.template:
-    src: development-domain.conf.j2
-    dest: "{{ dnsmasq_conf_file }}"
-    mode: '0644'
-  notify: Systemd | NetworkManager | reload
-  become: true
+- name: "Include install.yml"
+  ansible.builtin.include_tasks: install.yml
+  when: package_action == "install"
 
-- name: Enable dnsmasq in NetworkManager
-  ansible.builtin.lineinfile:
-    path: "/etc/NetworkManager/NetworkManager.conf"
-    insertafter: '^\[main\]'
-    line: 'dns=dnsmasq'
-  notify: Systemd | NetworkManager | reload
-  become: true
-
-- name: Remove /run/systemd/resolve/stub-resolv.conf symlink
-  ansible.builtin.file:
-    src: "/var/run/NetworkManager/resolv.conf"
-    dest: "/etc/resolv.conf"
-    state: link
-  notify: Systemd | NetworkManager | reload
-  become: true
+- name: "Include uninstall.yml"
+  ansible.builtin.include_tasks: uninstall.yml
+  when: package_action == "uninstall"
