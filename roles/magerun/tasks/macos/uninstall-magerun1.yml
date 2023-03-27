@@ -15,10 +15,8 @@
 ##
 ---
 
-- name: "Include install.yml"
-  ansible.builtin.include_tasks: install.yml
-  when: package_action == "install"
-
-- name: "Include uninstall.yml"
-  ansible.builtin.include_tasks: uninstall.yml
-  when: package_action == "uninstall"
+- name: "Ensure magerun1 is absent"
+  ansible.builtin.file:
+    path: "{{ magerun1_bin_path }}"
+    state: absent
+  become: true
