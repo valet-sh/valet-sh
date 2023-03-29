@@ -67,10 +67,22 @@
     mode: '0755'
   become: true
 
+- name: include migrate.yml file
+  include_tasks: migrate.yml
+
 - name: "Ensure valet services file exists"
   ansible.builtin.template:
     src: "services.yml.j2"
     dest: "{{ valet_etc_services_file }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    force: false
+    mode: '0644'
+
+- name: "Ensure valet defaults file exists"
+  ansible.builtin.template:
+    src: "defaults.yml.j2"
+    dest: "{{ valet_etc_defaults_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     force: false
