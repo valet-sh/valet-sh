@@ -20,6 +20,9 @@
     - name: "ansible_become_pass"
       prompt: "[sudo] Password"
       private: true
+  vars:
+    vsh_install_packages: "{{ cli.args | default() }}"
+    valet_cli_opts: "{{ cli.opts | default([]) }}"
   roles:
     - sudo-permission-check
     - valet-install
