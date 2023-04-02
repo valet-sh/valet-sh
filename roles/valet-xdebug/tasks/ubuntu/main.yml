@@ -25,8 +25,10 @@
   when: valet_action != "on" and valet_action != "off"
 
 - name: "Block"
+  when: php_version is not defined or php_version|length==0
   block:
-    - ansible.builtin.include_tasks: "ubuntu/partials/load-valet-sh-file.yml"
+    - name: "Include 'ubuntu/partials/load-valet-sh-file.yml'"
+      ansible.builtin.include_tasks: "ubuntu/partials/load-valet-sh-file.yml"
       when: valet_sh_project_vars is not defined
 
     - name: "check for php version in .valet-sh.yml file"
@@ -37,7 +39,6 @@
         - valet_sh_project_vars.services is defined
         - valet_sh_project_vars.services.php is defined
         - valet_sh_project_vars.services.php.version is defined
-  when: php_version is not defined or php_version|length==0
 
 - name: "check if php_version variable is set"
   ansible.builtin.fail:
@@ -45,6 +46,7 @@
   when: php_version is not defined or php_version|length==0
 
 - name: "Block"
+  when: "not php_version in available_php_versions"
   block:
     - name: "check if php_version string mapped to origin"
       ansible.builtin.set_fact:
@@ -55,7 +57,6 @@
         - aliases
       loop_control:
         loop_var: valet_sh_available_php_versions_alias_mapping_item
-  when: "not php_version in available_php_versions"
 
 - name: "fail when php version is not available"
   ansible.builtin.fail:

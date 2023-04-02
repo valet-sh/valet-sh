@@ -38,3 +38,8 @@
 - name: "Install zsh"
   ansible.builtin.include_tasks: zsh.yml
   when: default_shell == "zsh"
+
+- name: "persist shell package state"
+  vsh_service:
+    name: "shell"
+    state: installed

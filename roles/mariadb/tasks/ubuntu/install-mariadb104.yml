@@ -156,7 +156,7 @@
       register: current_mariadb_package_sig_obj
 
     - name: override value for 'current_mariadb_dist_is_latest'
-      set_fact:
+      ansible.builtin.set_fact:
         current_mariadb_dist_is_latest: true
       when: (current_mariadb_package_sig_obj['content'] | b64decode) == mariadb_server_104.package_signature
 
@@ -188,6 +188,7 @@
       ansible.builtin.get_url:
         url: "{{ mariadb_server_104.package_url }}"
         dest: "/tmp/{{ mariadb_server_104.package_url | basename }}"
+        mode: '0755'
 
     - name: Extract mysql archive
       ansible.builtin.unarchive:
@@ -286,7 +287,7 @@
         state: present
 
     - name: ensure dummy mysql-client configuration file is deleted
-      file:
+      ansible.builtin.file:
         path: "{{ mariadb_client_dummy_config_file_obj.path }}"
         state: absent
 

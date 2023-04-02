@@ -188,6 +188,7 @@
       ansible.builtin.get_url:
         url: "{{ mariadb_server_106.package_url }}"
         dest: "/tmp/{{ mariadb_server_106.package_url | basename }}"
+        mode: '0755'
 
     - name: Extract mysql archive
       ansible.builtin.unarchive:

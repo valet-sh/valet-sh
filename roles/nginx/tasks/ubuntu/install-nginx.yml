@@ -96,3 +96,9 @@
     mode: '0644'
   notify: systemd | nginx | reloaded
   become: true
+
+- name: "persist nginx service state"
+  vsh_service:
+    name: "nginx"
+    state: installed
+    enabled: true

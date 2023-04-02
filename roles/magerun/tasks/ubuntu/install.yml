@@ -18,7 +18,7 @@
 - name: "Validate version"
   ansible.builtin.fail:
     msg: "'{{ package_name }}' is not available"
-  when: package_name not in valet_sh.services.magerun
+  when: package_name not in valet_sh.services.magerun.variants
 
 - name: "Include 'install-{{ package_name }}.yml'"
   ansible.builtin.include_tasks: "install-{{ package_name }}.yml"

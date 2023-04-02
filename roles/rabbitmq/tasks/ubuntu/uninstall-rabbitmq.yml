@@ -34,3 +34,8 @@
     state: absent
   notify: Systemd | nginx | reloaded
   become: true
+
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: absent

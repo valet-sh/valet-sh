@@ -25,3 +25,8 @@
 - name: "Include Server"
   ansible.builtin.include_tasks: sub-server.yml
   when: cert_prefix is defined
+
+- name: "persist certificate package state"
+  vsh_service:
+    name: "certificate"
+    state: installed

@@ -135,6 +135,8 @@ valet_etc_config_file: "{{ valet_etc_path }}/config.yml"
 
 valet_etc_services_file: "{{ valet_etc_path }}/services.yml"
 
+valet_etc_defaults_file: "{{ valet_etc_path }}/defaults.yml"
+
 valet_etc_revision_filename: "REVISION"
 valet_etc_revision_file: "{{ valet_etc_path }}/{{ valet_etc_revision_filename }}"
 

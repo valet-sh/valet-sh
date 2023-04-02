@@ -157,17 +157,17 @@
 - name: "Link | find a matching application template"
   block:
     - name: "Include 'templates/magento2.yml'"
-      include_tasks: templates/magento2.yml
+      ansible.builtin.include_tasks: templates/magento2.yml
     - name: "Include 'templates/neos.yml'"
-      include_tasks: templates/neos.yml
+      ansible.builtin.include_tasks: templates/neos.yml
     - name: "Include 'templates/typo3.yml'"
-      include_tasks: templates/typo3.yml
+      ansible.builtin.include_tasks: templates/typo3.yml
     - name: "Include 'templates/shopware6.yml'"
-      include_tasks: templates/shopware6.yml
+      ansible.builtin.include_tasks: templates/shopware6.yml
     - name: "Include 'templates/magento1.yml'"
-      include_tasks: templates/magento1.yml
+      ansible.builtin.include_tasks: templates/magento1.yml
     - name: "Include templates/fallback.yml"
-      include_tasks: templates/fallback.yml
+      ansible.builtin.include_tasks: templates/fallback.yml
   when: not template_found
 
 - name: "Link | create new valet_link variable"

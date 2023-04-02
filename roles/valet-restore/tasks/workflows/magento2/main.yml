@@ -43,7 +43,9 @@
     path: "~/.ssh/known_hosts"
     state: present
 
-- block:
+- name: "Block"
+  when: not valet_restore_skip_db|bool and (valet_opt_flag_skip_db is not defined or not valet_opt_flag_skip_db|bool)
+  block:
     - name: "workflows » magento2 | check if instancebackup '{{ valet_sh_instance_db_filename }}' for identifier '{{ valet_instancebackup_identifier }}'"
       ansible.builtin.stat:
         path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
@@ -75,9 +77,10 @@
         login_port: "{{ valet_sh_project_mysql_server_port }}"
         encoding: "utf8"
         state: import
-  when: not valet_restore_skip_db|bool and (valet_opt_flag_skip_db is not defined or not valet_opt_flag_skip_db|bool)
 
-- block:
+- name: "Block"
+  when: valet_opt_flag_skip_fs is not defined or not valet_opt_flag_skip_fs|bool
+  block:
     - name: "workflows » magento2 | check if instancebackup '{{ valet_sh_instance_db_filename }}' for identifier '{{ valet_instancebackup_identifier }}'"
       ansible.builtin.stat:
         path: "{{ valet_sh_project_vars.hub.path }}/auto/db/{{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
@@ -114,8 +117,6 @@
         loop_var: valet_sh_restore_current_fs
       tags:
         - skip_ansible_lint
-
-  when: valet_opt_flag_skip_fs is not defined or not valet_opt_flag_skip_fs|bool
 
 - name: "workflows » magento2 | run custom sql-queries for database '{{ valet_sh_project_database_name }}'"
   ansible.builtin.mysql_query:

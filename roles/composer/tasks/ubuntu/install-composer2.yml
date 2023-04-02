@@ -32,3 +32,8 @@
     mode: '0755'
     force: true
   become: true
+
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: installed

@@ -21,4 +21,9 @@
     state: absent
   become: true
 
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: absent
+
 # @FIXME eval if plugin 'hirak/prestissimo' should be removed

@@ -328,9 +328,245 @@ valet_sh_service_rosetta2_emulation:
 valet_sh:
   services:
     elasticsearch:
-      - elasticsearch1
-      - elasticsearch2
-      - elasticsearch5
-      - elasticsearch6
-      - elasticsearch7
-      - elasticsearch8
+      variants:
+        - elasticsearch1
+        - elasticsearch2
+        - elasticsearch5
+        - elasticsearch6
+        - elasticsearch7
+        - elasticsearch8
+    opensearch:
+      variants:
+        - opensearch1
+        - opensearch2
+    php:
+      variants:
+        - php56
+        - php70
+        - php71
+        - php72
+        - php73
+        - php74
+        - php80
+        - php81
+        - php82
+    mysql:
+      variants:
+        - mysql57
+        - mysql80
+    mariadb:
+      variants:
+        - mariadb104
+        - mariadb106
+    nginx:
+      variants:
+        - nginx
+    redis:
+      variants:
+        - redis
+    dnsmasq:
+      variants:
+        - dnsmasq
+    mailhog:
+      variants:
+        - mailhog
+    rabbitmq:
+      variants:
+        - rabbitmq
+    shell:
+      variants:
+        - shell
+    composer:
+      variants:
+        - composer1
+        - composer2
+    magerun:
+      variants:
+        - magerun1
+        - magerun2
+
+
+
+vsh_packages_default:
+  common:
+    essential: true
+    type: package
+  certificate:
+    essential: true
+    type: package
+  dnsmasq:
+    essential: true
+    service: "dnsmasq"
+    privileged: true
+    type: service
+  nginx:
+    essential: true
+    service: "nginx"
+    privileged: true
+    type: service
+  shell:
+    essential: true
+    type: package
+  mailhog:
+    essential: true
+    service: "mailhog"
+    tcp_port: 8025
+    privileged: true
+    type: service
+  nodejs:
+    essential: false
+    type: package
+  composer1:
+    family: composer
+    essential: false
+    type: package
+  composer2:
+    family: composer
+    essential: false
+    type: package
+  magerun1:
+    family: magerun
+    essential: false
+    type: package
+  magerun2:
+    family: magerun
+    essential: false
+    type: package
+  rabbitmq:
+    service: "rabbitmq-server"
+    privileged: true
+    type: service
+  redis:
+    service: "redis-server"
+    tcp_port: 6379
+    privileged: true
+    type: service
+  php56:
+    family: php
+    service: "php5.6-fpm"
+    unix_path:
+    privileged: true
+    type: service
+  php70:
+    family: php
+    service: "php7.0-fpm"
+    unix_path:
+    privileged: true
+    type: service
+  php71:
+    family: php
+    service: "php7.1-fpm"
+    unix_path:
+    privileged: true
+    type: service
+  php72:
+    family: php
+    service: "php7.2-fpm"
+    unix_path:
+    privileged: true
+    type: service
+  php73:
+    family: php
+    service: "php7.3-fpm"
+    unix_path:
+    privileged: true
+    type: service
+  php74:
+    family: php
+    service: "php7.4-fpm"
+    tcp_port:
+    unix_path:
+    privileged: true
+    type: service
+  php80:
+    family: php
+    service: "php8.0-fpm"
+    tcp_port:
+    unix_path:
+    privileged: true
+    type: service
+  php81:
+    family: php
+    service: "php8.1-fpm"
+    unix_path:
+    privileged: true
+    type: service
+  php82:
+    family: php
+    service: "php8.2-fpm"
+    unix_path:
+    privileged: true
+    type: service
+  elasticsearch1:
+    family: elasticsearch
+    service: "elasticsearch1"
+    tcp_port: 9201
+    privileged: true
+    type: service
+  elasticsearch2:
+    family: elasticsearch
+    service: "elasticsearch2"
+    tcp_port: 9202
+    privileged: true
+    type: service
+  elasticsearch5:
+    family: elasticsearch
+    service: "elasticsearch5"
+    tcp_port: 9205
+    privileged: true
+    type: service
+  elasticsearch6:
+    family: elasticsearch
+    service: "elasticsearch6"
+    tcp_port: 9206
+    privileged: true
+    type: service
+  elasticsearch7:
+    family: elasticsearch
+    service: "elasticsearch7"
+    tcp_port: 9207
+    privileged: true
+    type: service
+  elasticsearch8:
+    family: elasticsearch
+    service: "elasticsearch8"
+    tcp_port: 9208
+    privileged: true
+    type: service
+  opensearch1:
+    family: opensearch
+    service: "opensearch1"
+    tcp_port: 9221
+    privileged: true
+    type: service
+  opensearch2:
+    family: opensearch
+    service: "opensearch2"
+    tcp_port: 9222
+    privileged: true
+    type: service
+  mysql57:
+    family: mysql
+    service: "mysql57"
+    tcp_port: 3307
+    privileged: true
+    type: service
+  mysql80:
+    family: mysql
+    service: "mysql80"
+    tcp_port: 3308
+    privileged: true
+    type: service
+  mariadb104:
+    family: mariadb
+    service: "mariadb104"
+    tcp_port: 3317
+    privileged: true
+    type: service
+  mariadb106:
+    family: mariadb
+    service: "mariadb106"
+    tcp_port: 3319
+    privileged: true
+    type: service
+vsh_packages: "{{ lookup('vars', 'vsh_packages' + '_' + current_os, default=vsh_packages_default) }}"

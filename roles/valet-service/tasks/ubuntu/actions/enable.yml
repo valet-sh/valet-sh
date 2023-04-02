@@ -20,64 +20,23 @@
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
-- name: "actions » enable | check fuzzy service names"
+- name: "actions » enabled | set 'valet_current_service_name' var"
   ansible.builtin.set_fact:
-    valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
-  when: valet_service_name in valet_sh_available_php_versions_alias_mapping_item.1
-  with_subelements:
-    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
-    - aliases
-  loop_control:
-    loop_var: valet_sh_available_php_versions_alias_mapping_item
+    valet_current_service_name: "{{ valet_service_name | lower | replace('.', '') }}"
 
-- name: "actions » enable | check for alias service name"
+- name: "actions » enabled | check current package"
   ansible.builtin.set_fact:
-    valet_service_name_alias: "{{ item.value }}"
-  when: item.key == valet_service_name
-  with_dict: "{{ valet_sh_service_alias_mapping }}"
+    current_package: "{{ vsh_packages[valet_current_service_name] }}"
 
-- name: "actions » enable | enable {{ valet_service_name }} service"
+- name: "actions » enabled | enabled {{ valet_current_service_name }} service"
   ansible.builtin.systemd:
-    name: "{{ valet_service_name }}"
+    name: "{{ current_package.service }}"
     enabled: true
     state: started
-  become: true
-  when: valet_service_name_alias|length == 0
+  become: "{{ current_package.privileged | default(false) }}"
 
-- name: "actions » enable | enable {{ valet_service_name }} service"
-  ansible.builtin.systemd:
-    name: "{{ valet_service_name_alias }}"
+- name: "actions » enabled | persist {{ valet_current_service_name }} service state"
+  vsh_service:
+    name: "{{ valet_current_service_name }}"
+    state: installed
     enabled: true
-    state: started
-  become: true
-  when: valet_service_name_alias|length > 0
-
-- name: "actions » enable | include valet services file"
-  ansible.builtin.include_vars:
-    file: "{{ valet_etc_services_file }}"
-    name: valet_sh_services_obj
-
-- name: "actions » enable | prepare new config element"
-  ansible.builtin.set_fact:
-    new_service_state_element: "{ '{{ valet_service_name }}': true }"
-
-- name: "actions » enable | update service object"
-  ansible.builtin.set_fact:
-    valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
-
-- name: "actions » enable | merge objects"
-  ansible.builtin.set_fact:
-    valet_sh_services_obj:
-      states: "{{ valet_sh_services_updated_states }}"
-      defaults: "{{ valet_sh_services_obj.defaults }}"
-
-- name: "actions » enable | transform object into nice yaml output"
-  ansible.builtin.set_fact:
-    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
-
-- name: "actions » enable | write new services.yml file"
-  ansible.builtin.copy:
-    content: "{{ valet_etc_services_list }}"
-    dest: "{{ valet_etc_services_file }}"
-    mode: '0644'
-  become: true

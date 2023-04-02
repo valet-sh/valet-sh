@@ -90,3 +90,8 @@
     mode: '0644'
   become: true
   notify: "Systemd | elasticsearch8 | restarted"
+
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: installed

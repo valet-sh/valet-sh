@@ -31,6 +31,8 @@
   ansible.builtin.shell: set -o pipefail && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash
   args:
     creates: "{{ current_home }}/.nvm/nvm.sh"
+  args:
+    executable: /bin/bash
   register: nvm_installation_obj
 
 - name: "Ensure volta is absent in '{{ current_home }}/{{ shellrc_file }}'"

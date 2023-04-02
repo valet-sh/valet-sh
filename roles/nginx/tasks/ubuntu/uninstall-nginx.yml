@@ -15,6 +15,13 @@
 ##
 ---
 
+- name: "ensure nginx is stopped"
+  ansible.builtin.systemd:
+    name: "nginx"
+    state: stopped
+  become: true
+  ignore_errors: true
+
 - name: "ensure nginx is installed"
   ansible.builtin.apt:
     name: nginx
@@ -29,7 +36,6 @@
   with_items:
     - "/etc/nginx/stream.d"
     - "/etc/nginx/conf.d"
-    - "/etc/nginx/nginx.conf"
     - "{{ valet_sh_default_vhost_root }}"
   loop_control:
     loop_var: valet_sh_service_nginx_item

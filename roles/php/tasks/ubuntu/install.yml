@@ -21,26 +21,23 @@
 - name: "execute base"
   ansible.builtin.include_tasks: "base.yml"
 
-
 - name: "Validate version"
   ansible.builtin.fail:
     msg: "'{{ package_name }}' is not available"
-  when: package_name not in valet_sh.services.php
-
-#  php_multi
+  when: package_name not in valet_sh.services.php.variants
 
 - name: "install defined php versions"
   ansible.builtin.include_tasks: install-php.yml
   vars:
-    current_php: "{{ package_name }}"
+    current_php: "{{ php_versions[package_name] }}"
 
-- name: "set default php cli version"
-  community.general.alternatives:
-    name: php
-    path: "/usr/bin/php{{ item.version }}"
-  with_items: "{{ php_multi }}"
-  when: (item.default is defined) and (item.default|bool)
-  become: true
+#- name: "set default php cli version"
+#  community.general.alternatives:
+#    name: php
+#    path: "/usr/bin/php{{ item.version }}"
+#  with_items: "{{ php_multi }}"
+#  when: (item.default is defined) and (item.default|bool)
+#  become: true
 
 - name: ensure php wrapper script is up2date
   ansible.builtin.copy:

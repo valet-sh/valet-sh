@@ -59,3 +59,9 @@
     enabled: true
     state: started
   become: true
+
+- name: "persist mailhog service state"
+  vsh_service:
+    name: "mailhog"
+    state: installed
+    enabled: true

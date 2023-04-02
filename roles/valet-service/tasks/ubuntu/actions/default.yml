@@ -20,23 +20,19 @@
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
-- name: "actions » default | check fuzzy service names"
+- name: "actions » enabled | set 'valet_service_name' var"
   ansible.builtin.set_fact:
-    valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
-  when: valet_service_name in valet_sh_available_php_versions_alias_mapping_item.1
-  with_subelements:
-    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
-    - aliases
-  loop_control:
-    loop_var: valet_sh_available_php_versions_alias_mapping_item
+    valet_service_name: "{{ valet_service_name | lower | replace('.', '') }}"
 
 - name: "actions » default | reset flag var"
   ansible.builtin.set_fact:
     valet_sh_service_service_is_allowed: false
+    valet_service_family: false
 
 - name: "actions » default | check if service is allowed"
   ansible.builtin.set_fact:
     valet_sh_service_service_is_allowed: true
+    valet_service_family: "{{ item.0.scope }}"
   when: valet_service_name == item.1
   with_subelements:
     - "{{ valet_sh_service_defaultable_services }}"
@@ -47,47 +43,25 @@
     msg: "service '{{ valet_service_name }}' can not be set as default service"
   when: valet_sh_service_service_is_allowed is not defined or not valet_sh_service_service_is_allowed|bool
 
+- name: "actions » default | check current package"
+  ansible.builtin.set_fact:
+    current_package: "{{ vsh_packages[valet_service_name] }}"
+  when: valet_service_name in vsh_packages
+
 - name: "actions » default | load tasks for default action"
-  ansible.builtin.include_tasks: "defaults/{{ item.0.scope }}.yml"
-  when: valet_service_name == item.1
-  with_subelements:
-    - "{{ valet_sh_service_defaultable_services }}"
-    - values
+  ansible.builtin.include_tasks: "defaults/{{ valet_service_family }}.yml"
 
-- name: "actions » default | save service scope"
-  ansible.builtin.set_fact:
-    valet_service_name_scope: "{{ item.0.scope }}"
-  when: valet_service_name == item.1
-  with_subelements:
-    - "{{ valet_sh_service_defaultable_services }}"
-    - values
+- name: "actions » default | enable abd start {{ valet_service_name }} service"
+  ansible.builtin.systemd:
+    name: "{{ current_package.service }}"
+    enabled: true
+    state: started
+  become: "{{ current_package.privileged | default(false) }}"
+  when:
+    - current_package is defined
+    - current_package.service is defined
 
-- name: "actions » default | include valet services file"
-  ansible.builtin.include_vars:
-    file: "{{ valet_etc_services_file }}"
-    name: valet_sh_services_obj
-
-- name: "commands » set | prepare new config element"
-  ansible.builtin.set_fact:
-    new_default_service_element: "{ '{{ valet_service_name_scope }}': '{{ valet_service_name }}' }"
-
-- name: "actions » default | update service object"
-  ansible.builtin.set_fact:
-    valet_sh_services_updates_defaults: "{{ valet_sh_services_obj.defaults | combine(new_default_service_element) }}"
-
-- name: "actions » default | merge objects"
-  ansible.builtin.set_fact:
-    valet_sh_services_obj:
-      defaults: "{{ valet_sh_services_updates_defaults }}"
-      states: "{{ valet_sh_services_obj.states }}"
-
-- name: "actions » default | transform object into nice yaml output"
-  ansible.builtin.set_fact:
-    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
-
-- name: "actions » default | write new services.yml file"
-  ansible.builtin.copy:
-    content: "{{ valet_etc_services_list }}"
-    dest: "{{ valet_etc_services_file }}"
-    mode: '0644'
-  become: true
+- name: "actions » default | persist {{ valet_service_name }} service default state"
+  vsh_service_default:
+    name: "{{ valet_service_name }}"
+    family: "{{ valet_service_family }}"

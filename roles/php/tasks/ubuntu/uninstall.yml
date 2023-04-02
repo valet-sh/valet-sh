@@ -18,9 +18,12 @@
 - name: "Validate version"
   ansible.builtin.fail:
     msg: "'{{ package_name }}' is not available"
-  when: package_name not in valet_sh.services.php
+  when: package_name not in valet_sh.services.php.variants
+
+- debug:
+    msg: "{{ php_versions[package_name] }}"
 
 - name: "install defined php versions"
   ansible.builtin.include_tasks: uninstall-php.yml
   vars:
-    current_php: "{{ package_name }}"
+    current_php: "{{ php_versions[package_name] }}"

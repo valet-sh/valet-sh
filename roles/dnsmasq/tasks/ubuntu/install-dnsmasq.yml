@@ -38,3 +38,9 @@
     state: link
   notify: Systemd | NetworkManager | reload
   become: true
+
+- name: "persist dnsmasq service state"
+  vsh_service:
+    name: "dnsmasq"
+    state: installed
+    enabled: true

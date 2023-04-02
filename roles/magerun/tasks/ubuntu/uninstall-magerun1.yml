@@ -20,3 +20,8 @@
     path: "{{ magerun1_bin_path }}"
     state: absent
   become: true
+
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: absent

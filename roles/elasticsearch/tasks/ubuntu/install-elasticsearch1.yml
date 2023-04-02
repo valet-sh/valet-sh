@@ -69,10 +69,15 @@
 
 - name: "Provide {{ current_elasticsearch_key }} systemd unit file"
   ansible.builtin.template:
-    src: "Systemd/{{ current_elasticsearch_key }}.service.j2"
+    src: "systemd/{{ current_elasticsearch_key }}.service.j2"
     dest: "/etc/systemd/system/{{ current_elasticsearch_key }}.service"
     owner: root
     group: root
     mode: '0644'
   become: true
   notify: "Systemd | elasticsearch1 | restarted"
+
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: installed

@@ -26,6 +26,7 @@
     name: "{{ current_opensearch_key }}"
     state: stopped
   become: true
+  ignore_errors: true
 
 - name: "Ensure '{{ current_opensearch_base_path }}' is deleted"
   ansible.builtin.file:
@@ -36,8 +37,15 @@
   ansible.builtin.file:
     path: "/etc/systemd/system/{{ current_opensearch_key }}.service"
     state: absent
+  become: true
 
 - name: "Reload systemd config"
   ansible.builtin.systemd:
     daemon_reload: true
   become: true
+
+- name: "persist {{ current_opensearch_key }} package state"
+  vsh_service:
+    name: "{{ current_opensearch_key }}"
+    state: absent
+    enabled: false

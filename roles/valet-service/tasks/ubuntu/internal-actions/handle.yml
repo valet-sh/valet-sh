@@ -21,51 +21,36 @@
 - name: "internal-actions » handle | flush handlers"
   ansible.builtin.meta: flush_handlers
 
-- name: "internal-actions » handle | include valet services file"
-  ansible.builtin.include_vars:
-    file: "{{ valet_etc_services_file }}"
-    name: valet_sh_services_obj
-
-- name: "internal-actions » handle | update service object"
-  ansible.builtin.set_fact:
-    valet_sh_service_target_states: "{{ valet_sh_service_state_preset | combine(valet_sh_services_obj.states) }}"
+- name: "internal-actions » handle | get service information"
+  vsh_service_info:
+  register: vsh_service_information
 
 - name: "internal-actions » handle | handle state for each service"
   ansible.builtin.include_tasks: sub-handle-state.yml
   vars:
     valet_current_service_item: "{{ valet_sh_service_state_target_item }}"
-  with_dict: "{{ valet_sh_service_target_states }}"
+  with_dict: "{{ vsh_service_info }}"
   loop_control:
     loop_var: valet_sh_service_state_target_item
 
 ## end handle services states
 ########################
 
+
 #######################
 ## start handle defaults
 
-- name: "internal-actions » handle | create dict 'valet_sh_service_default_services'"
-  ansible.builtin.set_fact:
-    valet_sh_service_default_services: {}
-
-- name: "internal-actions » handle | handle defaults for each service"
-  ansible.builtin.include_tasks: sub-handle-defaults.yml
-    valet_sh_service_current_service_item="{{ valet_sh_service_defaultable_services_item }}"
-  with_items: "{{ valet_sh_service_defaultable_services }}"
-  ansible.builtin.loop_control:
-    loop_var: valet_sh_service_defaultable_services_item
-
-- name: "internal-actions » handle | update service defaults object"
-  ansible.builtin.set_fact:
-    valet_sh_service_target_defaults: "{{ valet_sh_service_default_services | combine(valet_sh_services_obj.defaults) }}"
+- name: "internal-actions » handle | get service default information"
+  vsh_service_default_info:
+  register: vsh_service_default_information
 
 - name: "Include 'actions/default.yml'"
   ansible.builtin.include_tasks: "ubuntu/actions/default.yml"
   vars:
-    valet_service_name: "{{ valet_sh_service_defaults_target_item.value }}"
-  with_dict: "{{ valet_sh_service_target_defaults }}"
+    valet_service_name: "{{ vsh_service_default_information_item.value }}"
+  with_dict: "{{ vsh_service_default_information }}"
   loop_control:
-    loop_var: valet_sh_service_defaults_target_item
+    loop_var: vsh_service_default_information_item
 
 ## end handle defaults
 ########################

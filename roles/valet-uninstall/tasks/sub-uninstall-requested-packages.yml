@@ -1,0 +1,32 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: set vars
+  ansible.builtin.set_fact:
+    vsh_request_package: "{{ vsh_packages[vsh_install_packages_item] }}"
+    package_action: "install"
+    package_name: "{{ vsh_install_packages_item }}"
+
+- name: "fail when request package was not found"
+  ansible.builtin.fail:
+    msg: "package '{{ vsh_install_packages_item }}' was not found!"
+  when: vsh_request_package is not defined or vsh_request_package | length == 0
+
+- name: "Include role"
+  ansible.builtin.include_role:
+    name: "{{ vsh_request_package.family }}"
+    public: true

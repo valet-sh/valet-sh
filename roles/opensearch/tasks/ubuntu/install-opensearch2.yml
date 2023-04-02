@@ -89,3 +89,16 @@
     mode: '0644'
   become: true
   notify: "Systemd | opensearch2 | restarted"
+
+- name: "ensure {{ current_opensearch_key }} is enabled"
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ current_opensearch_key }}"
+    enabled: "{{ vsh_service_information_obj.result.enabled | default(true) }}"
+  become: true
+
+- name: "persist {{ current_opensearch_key }} package state"
+  vsh_service:
+    name: "{{ current_opensearch_key }}"
+    state: installed
+    enabled: "{{ vsh_service_information_obj.result.enabled | default(true) }}"

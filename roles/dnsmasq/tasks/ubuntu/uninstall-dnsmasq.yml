@@ -22,7 +22,7 @@
   with_items:
     - "{{ dnsmasq_conf_file }}"
   loop_control:
-    valet_sh_dnsmasq_conf_item
+    loop_var: valet_sh_dnsmasq_conf_item
   notify: Systemd | NetworkManager | reload
   become: true
 

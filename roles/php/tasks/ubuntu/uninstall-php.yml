@@ -27,145 +27,32 @@
 - name: "override default configuration for current php"
   ansible.builtin.include_tasks: override-config.yml
 
-- name: create specific php module list
-  ansible.builtin.set_fact:
-    php_specific_modules: "{{ php_modules | map('regex_replace', '^(.*)$', php_version_string + '-\\1') | list }}"
-
-- name: ensure xdebug.ini configuration is deleted
-  ansible.builtin.file:
-    path: "/etc/php/{{ php_version }}/mods-available/xdebug.ini"
-    state: absent
+- name: "ensure '{{ php_version_string }}-fpm' is stopped"
+  ansible.builtin.systemd:
+    name: "{{ php_version_string }}-fpm"
+    state: stopped
   become: true
 
-- name: ensure xdebug php package can be installed
-  ansible.builtin.file:
-    path: "/etc/apt/preferences.d/valet-sh-php{{ php_version | replace('.', '-') }}-xdebug"
-    state: absent
-  become: true
-
-- name: "install {{ php_version_string }} modules"
+- name: "ensure '{{ php_version_string }}-common' is absent"
   ansible.builtin.apt:
-    name: "{{ php_specific_modules }}"
-    state: present
-  notify: "systemd | {{ php_version_string }}-fpm | restarted"
-  become: true
-
-- name: "include xdebug compilation tasks"
-  ansible.builtin.include_tasks: compile-xdebug.yml
-  when:
-    - current_php.compile_xdebug is defined
-    - current_php.compile_xdebug.status is defined
-    - current_php.compile_xdebug.status|bool
-
-- name: get stat for xdebug cli configuration file
-  ansible.builtin.stat:
-    path: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
-  register: php_xdebug_cli_config_obj
-
-- name: get stat for xdebug fpm configuration file
-  ansible.builtin.stat:
-    path: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
-  register: php_xdebug_fpm_config_obj
-
-- name: delete xdebug cli configuration symlink if exists
-  ansible.builtin.file:
-    path: "/etc/php/{{ php_version }}/cli/conf.d/20-xdebug.ini"
+    name: "{{ php_version_string }}-common"
+    purge: true
     state: absent
-  when: php_xdebug_cli_config_obj.stat is defined and php_xdebug_cli_config_obj.stat.islnk is defined
   become: true
 
-- name: delete xdebug fpm configuration symlink if exists
+- name: ensure php configuration is absent
   ansible.builtin.file:
-    path: "/etc/php/{{ php_version }}/fpm/conf.d/20-xdebug.ini"
+    path: "{{ php_version_path_item }}"
     state: absent
-  when: php_xdebug_fpm_config_obj.stat is defined and php_xdebug_fpm_config_obj.stat.islnk is defined
-  notify: "systemd | {{ php_version_string }}-fpm | restarted"
-  become: true
-
-- name: get stat for error.log file
-  ansible.builtin.stat:
-    path: "{{ php_error_log_path }}"
-  register: php_error_log_file_obj
-
-- name: create php_errors.log file
-  ansible.builtin.file:
-    dest: "{{ php_error_log_path }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    state: "{{ 'file' if php_error_log_file_obj.stat.exists else 'touch' }}"
-    mode: '0755'
-  become: true
-
-- name: set php cli configuration
-  ansible.builtin.template:
-    src: "{{ inside_item }}"
-    dest: "{{ php_cli_conf_path }}"
-    owner: root
-    group: root
-    mode: '0644'
-  with_first_found:
-    - "ubuntu/99-cli.conf.j2"
+  with_items:
+    - "/etc/php/{{ php_version }}"
+    - "/etc/apt/preferences.d/valet-sh-php{{ php_version | replace('.', '-') }}-xdebug"
   loop_control:
-    loop_var: inside_item
+    loop_var: php_version_path_item
   become: true
 
-- name: set php fpm configuration
-  ansible.builtin.template:
-    src: "{{ inside_item }}"
-    dest: "{{ php_fpm_conf_path }}"
-    owner: root
-    group: root
-    mode: '0644'
-  with_first_found:
-    - "ubuntu/99-fpm.conf.j2"
-  notify: "systemd | {{ php_version_string }}-fpm | restarted"
-  loop_control:
-    loop_var: inside_item
-  become: true
-
-- name: set config setting in php pool configuration
-  ansible.builtin.lineinfile:
-    path: "{{ php_fpm_pool_config }}"
-    regexp: "^{{ inside_item.conf }}="
-    line: "{{ inside_item.conf }}={{ inside_item.value }}"
-  with_items: "{{ php_fpm_pool_configuration }}"
-  loop_control:
-    loop_var: inside_item
-  notify: "systemd | {{ php_version_string }}-fpm | restarted"
-  become: true
-
-- name: ensure xdebug2 config is deployed
-  ansible.builtin.template:
-    src: "ubuntu/xdebug2.ini.j2"
-    dest: "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-  when: 'php_version in native_xdebug2_versions'
-
-- name: ensure xdebug3 config is deployed
-  ansible.builtin.template:
-    src: "ubuntu/xdebug3.ini.j2"
-    dest: "/etc/php/{{ php_version }}/mods-available/xdebug3.ini"
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-  when: 'php_version in native_xdebug3_versions'
-
-- name: ensure compiled xdebug2 config is deployed
-  ansible.builtin.template:
-    src: "ubuntu/xdebug2-compiled.ini.j2"
-    dest: "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-  when: 'php_version in compiled_xdebug2_versions'
-
-- name: "install php-imagick"
-  ansible.builtin.apt:
-    name: php-imagick
-    state: present
-  become: true
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: absent
+    enabled: false

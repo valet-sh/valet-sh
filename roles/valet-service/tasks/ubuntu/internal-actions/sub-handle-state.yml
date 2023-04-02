@@ -15,46 +15,17 @@
 ##
 ---
 
-- name: "internal-actions » sub-handle-state | reset valet_service_name_alias variable"
+- name: "internal-actions » sub-handle-state | set 'valet_current_service_name' var"
   ansible.builtin.set_fact:
-    valet_service_name_alias: ""
+    valet_current_service_name: "{{ valet_current_service_item.key }}"
 
-- name: "internal-actions » sub-handle-state | check for alias service name"
+- name: "internal-actions » sub-handle-state | check current package"
   ansible.builtin.set_fact:
-    valet_service_name_alias: "{{ valet_sh_service_alias_mapping_item.value }}"
-  when: valet_sh_service_alias_mapping_item.key == valet_current_service_item.key
-  with_dict: "{{ valet_sh_service_alias_mapping }}"
-  loop_control:
-    loop_var: valet_sh_service_alias_mapping_item
+    current_package: "{{ vsh_packages[valet_current_service_name] }}"
 
-- name: "internal-actions » sub-handle-state | enable {{ valet_current_service_item.key }} service"
+- name: "internal-actions » sub-handle-state | handle '{{ valet_current_service_name }}'   service"
   ansible.builtin.systemd:
-    name: "{{ valet_current_service_item.key }}"
-    enabled: true
-    state: restarted
-  become: true
-  when: valet_service_name_alias|length == 0 and valet_current_service_item.value|bool
-
-- name: "internal-actions » sub-handle-state | enable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}'"
-  ansible.builtin.systemd:
-    name: "{{ valet_service_name_alias }}"
-    enabled: true
-    state: restarted
-  become: true
-  when: valet_service_name_alias|length > 0 and valet_current_service_item.value|bool
-
-- name: "internal-actions » sub-handle-state | disable {{ valet_current_service_item.key }} service"
-  ansible.builtin.systemd:
-    name: "{{ valet_current_service_item.key }}"
-    enabled: false
-    state: stopped
-  become: true
-  when: valet_service_name_alias|length == 0 and not valet_current_service_item.value|bool
-
-- name: "internal-actions » sub-handle-state | disable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}'"
-  ansible.builtin.systemd:
-    name: "{{ valet_service_name_alias }}"
-    enabled: false
-    state: stopped
-  become: true
-  when: valet_service_name_alias|length > 0 and not valet_current_service_item.value|bool
+    name: "{{ current_package.service }}"
+    enabled: "{{ valet_current_service_item.enabled | default(false) }}"
+    state: "{{ 'restarted' if valet_current_service_item.enabled else 'stopped' }}"
+  become: "{{ current_package.privileged | default(false) }}"

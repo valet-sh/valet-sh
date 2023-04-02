@@ -73,3 +73,8 @@
     - "{{ current_home }}/.nvm"
   loop_control:
     loop_var: valet_sh_service_node_item
+
+- name: "persist nodejs service state"
+  vsh_service:
+    name: "nodejs"
+    state: absent

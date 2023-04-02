@@ -1,0 +1,52 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "Block"
+  block:
+    - name: "include 'sub-check-essential-packages.yml'"
+      ansible.builtin.include_tasks: sub-check-uninstallable-packages.yml
+      with_items: "{{ vsh_uninstall_packages }}"
+      loop_control:
+        loop_var: vsh_uninstall_packages_item
+
+    - name: "install requested packages"
+      ansible.builtin.include_tasks: sub-uninstall-requested-packages.yml
+      with_items: "{{ vsh_uninstall_packages }}"
+      loop_control:
+        loop_var: vsh_uninstall_packages_item
+  when:
+    - vsh_uninstall_packages is defined
+    - vsh_uninstall_packages | length > 0
+
+- name: "Block"
+  block:
+    - name: "include 'sub-install-essential-packages.yml'"
+      ansible.builtin.include_tasks: sub-install-essential-packages.yml
+      with_dict: "{{ vsh_packages }}"
+      loop_control:
+        loop_var: vsh_packages_item
+      when:
+        - vsh_packages_item.value.essential is defined
+        - vsh_packages_item.value.essential|bool
+
+    - name: "include 'sub-install-optional-packages.yml'"
+      ansible.builtin.include_tasks: sub-install-optional-packages.yml
+      with_dict: "{{ vsh_packages }}"
+      loop_control:
+        loop_var: vsh_packages_item
+      when: vsh_packages_item.value.essential is not defined or not vsh_packages_item.value.essential|bool
+  when: (vsh_install_packages is not defined) or (vsh_install_packages | length == 0)

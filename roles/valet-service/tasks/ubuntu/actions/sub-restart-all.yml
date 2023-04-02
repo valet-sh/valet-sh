@@ -17,54 +17,22 @@
 
 - name: "set 'valet_current_service_name' var"
   ansible.builtin.set_fact:
-    valet_current_service_name: "{{ valet_current_service_item.key }}"
+    valet_current_service_name: "{{ valet_current_service_item.key | lower | replace('.', '') }}"
 
-- name: "actions » restart | check fuzzy service names"
+- name: "check current package"
   ansible.builtin.set_fact:
-    valet_current_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
-  when: valet_current_service_name in valet_sh_available_php_versions_alias_mapping_item.1
-  with_subelements:
-    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
-    - aliases
-  loop_control:
-    loop_var: valet_sh_available_php_versions_alias_mapping_item
-
-- name: "actions » restart | reset valet_service_name_alias variable"
-  ansible.builtin.set_fact:
-    valet_current_service_name_alias: ""
-
-- name: "actions » restart | check for alias service name"
-  ansible.builtin.set_fact:
-    valet_current_service_name_alias: "{{ item.value }}"
-  when: item.key == valet_current_service_name
-  with_dict: "{{ valet_sh_service_alias_mapping }}"
+    current_package: "{{ vsh_packages[valet_current_service_name] }}"
 
 - name: "Block"
-  when: valet_current_service_name_alias|length == 0
   block:
     - name: "actions » restart | stop {{ valet_current_service_name }} service"
       ansible.builtin.systemd:
-        name: "{{ valet_current_service_name }}"
+        name: "{{ current_package.service }}"
         state: stopped
-      become: true
+      become: "{{ current_package.privileged | default(false) }}"
 
     - name: "actions » restart | start {{ valet_current_service_name }} service"
       ansible.builtin.systemd:
-        name: "{{ valet_current_service_name }}"
+        name: "{{ current_package.service }}"
         state: started
-      become: true
-
-- name: "Block"
-  when: valet_current_service_name_alias|length > 0
-  block:
-    - name: "actions » restart | stop {{ valet_current_service_name }} service"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name_alias }}"
-        state: stopped
-      become: true
-
-    - name: "actions » restart | start {{ valet_current_service_name }} service"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name_alias }}"
-        state: started
-      become: true
+      become: "{{ current_package.privileged | default(false) }}"
