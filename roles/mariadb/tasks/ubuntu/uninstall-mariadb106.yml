@@ -17,15 +17,16 @@
 
 - name: set current mariadb base path
   ansible.builtin.set_fact:
-    current_mysql_base_path: "{{ mysql_community_server.base_path }}80"
-    current_mysql_version_key: "8.0"
-    current_mysql_key: "mysql80"
+    current_mariadb_base_path: "{{ mariadb_server.base_path }}106"
+    current_mariadb_version_key: "10.6"
+    current_mariadb_key: "mariadb106"
 
 - name: "ensure {{ current_mariadb_key }} is stopped"
   ansible.builtin.systemd:
     name: "{{ current_mariadb_key }}"
     state: stopped
   become: true
+  ignore_errors: true
 
 - name: "ensure {{ current_mariadb_key }} related files are absent"
   ansible.builtin.file:
@@ -46,3 +47,9 @@
   ansible.builtin.systemd:
     daemon_reload: true
   become: true
+
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: absent
+    enabled: false

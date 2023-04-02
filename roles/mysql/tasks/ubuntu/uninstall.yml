@@ -18,7 +18,7 @@
 - name: "Validate version"
   ansible.builtin.fail:
     msg: "'{{ package_name }}' is not available"
-  when: package_name not in valet_sh.services.mariadb
+  when: package_name not in valet_sh.services.mysql.variants
 
 - name: "Include 'uninstall-{{ package_name }}.yml'"
   ansible.builtin.include_tasks: "uninstall-{{ package_name }}.yml"

@@ -33,8 +33,8 @@ def main():
 
     module = AnsibleModule(
         argument_spec=dict(
-            headers=dict(required=true, type='list'),
-            rows=dict(required=true, type='list')
+            headers=dict(required=True, type='list'),
+            rows=dict(required=True, type='list')
         )
     )
 
@@ -49,7 +49,7 @@ def main():
             module.fail_json(msg='row list count does not equal headers list count %s' % row)
         table.append_row(row)
     
-    module.exit_json(changed=true, vsh_stdout=str(table))
+    module.exit_json(changed=True, vsh_stdout=str(table))
 
 if __name__ == '__main__':
     main()

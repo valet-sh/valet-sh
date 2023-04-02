@@ -205,7 +205,7 @@
     - name: "ensure {{ current_mariadb_key }} enabled"
       ansible.builtin.systemd:
         name: "{{ current_mariadb_key }}"
-        enabled: true
+        enabled: "{{ vsh_service_information_obj.result.enabled | default(true) }}"
         daemon_reload: true
       become: true
 
@@ -289,3 +289,9 @@
       ansible.builtin.file:
         path: "{{ mariadb_client_dummy_config_file_obj.path }}"
         state: absent
+
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: installed
+    enabled: "{{ vsh_service_information_obj.result.enabled | default(true) }}"

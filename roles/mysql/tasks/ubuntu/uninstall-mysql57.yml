@@ -26,6 +26,7 @@
     name: "{{ current_mysql_key }}"
     state: stopped
   become: true
+  ignore_errors: true
 
 - name: "ensure {{ current_mysql_key }} related files are absent"
   ansible.builtin.file:
@@ -46,3 +47,9 @@
   ansible.builtin.systemd:
     daemon_reload: true
   become: true
+
+- name: "persist {{ package_name }} package state"
+  vsh_service:
+    name: "{{ package_name }}"
+    state: absent
+    enabled: false

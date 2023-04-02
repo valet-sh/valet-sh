@@ -15,10 +15,10 @@
 ##
 ---
 
-- name: "internal-actions » sub-handle-defaults | set new service default item"
-  ansible.builtin.set_fact:
-    valet_sh_service_new_service_default_item: "{ '{{ valet_sh_service_current_service_item.scope }}': '{{ valet_sh_service_current_service_item.default }}' }"
+- name: "Validate version"
+  ansible.builtin.fail:
+    msg: "'{{ package_name }}' is not available"
+  when: package_name not in valet_sh.services.mysql.variants
 
-- name: "internal-actions » sub-handle-defaults | add defaults to dict 'valet_sh_service_default_services'"
-  ansible.builtin.set_fact:
-    valet_sh_service_default_services: "{{ valet_sh_service_default_services | combine(valet_sh_service_new_service_default_item) }}"
+- name: "Include 'install-{{ package_name }}.yml'"
+  ansible.builtin.include_tasks: "install-{{ package_name }}.yml"
