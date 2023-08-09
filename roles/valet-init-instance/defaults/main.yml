@@ -32,3 +32,8 @@ valet_sh_service_mysql_host_presets:
   mysql80: "127.0.0.1:3308"
   mariadb104: "127.0.0.1:3317"
   mariadb106: "127.0.0.1:3319"
+
+
+valet_sh_aem_local_cache_dirname: ".aemcache"
+valet_sh_aem_local_cache_dir: "{{ current_home }}/{{ valet_sh_aem_local_cache_dirname }}"
+valet_sh_aem_sdk_local_cache_dir: "{{ valet_sh_aem_local_cache_dir }}/aem-sdk"

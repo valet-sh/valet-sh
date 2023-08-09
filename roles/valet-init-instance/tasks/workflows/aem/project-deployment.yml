@@ -1,0 +1,93 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » aem » project-deployment | wait until author instance 'http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp' is reachable"
+  uri:
+    url: 'http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp'
+    url_username: "{{ valet_sh_aem_author_user }}"
+    url_password: "{{ valet_sh_aem_author_password }}"
+    return_content: yes
+    validate_certs: no
+    status_code:
+      - 200
+  until: author_uri_output.status == 200
+  retries: 50
+  delay: 10
+  register: author_uri_output
+
+- name: "workflows » aem » project-deployment | wait until publish instance 'http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/crx/packmgr/service.jsp' is reachable"
+  uri:
+    url: 'http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/crx/packmgr/service.jsp'
+    url_username: "{{ valet_sh_aem_publish_user }}"
+    url_password: "{{ valet_sh_aem_publish_password }}"
+    return_content: yes
+    validate_certs: no
+    status_code:
+      - 200
+  until: publish_uri_output.status == 200
+  retries: 50
+  delay: 10
+  register: publish_uri_output
+
+- name: "workflows » aem » project-deployment | run 'install-scripts/author-all-quick-install.sh'"
+  shell: "{{ valet_sh_aem_runtime_dir }}/install-scripts/author-all-quick-install.sh"
+  args:
+    chdir: "{{ valet_current_path }}"
+
+- name: "workflows » aem » project-deployment | run 'install-scripts/publish-all-quick-install.sh'"
+  shell: "{{ valet_sh_aem_runtime_dir }}/install-scripts/publish-all-quick-install.sh"
+  args:
+    chdir: "{{ valet_current_path }}"
+
+- name: "workflows » aem » project-deployment | configure replication to publish"
+  uri:
+    url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/publish/jcr:content"
+    method: POST
+    body_format: form-urlencoded
+    user: "{{ valet_sh_aem_author_user }}"
+    password: "{{ valet_sh_aem_author_password }}"
+    body:
+      "./sling:resourceType": "cq/replication/components/agent"
+      "./jcr:title": "Default Agent"
+      "./jcr:description": "Agent that replicates to the default publish instance."
+      "./enabled": "true"
+      "./serializationType": "durbo"
+      "./retryDelay": "60000"
+      "./userId": "{{ valet_sh_aem_publish_user }}"
+      "./logLevel": "info"
+      "./transportUri": "http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/bin/receive?sling:authRequestLogin=1"
+      "./transportUser": "{{ valet_sh_aem_publish_user }}"
+      "./transportPassword": "{{ valet_sh_aem_publish_password }}"
+
+- name: "workflows » aem » project-deployment | configure dispatcher cache flush agent"
+  uri:
+    url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/flush/jcr:content"
+    method: POST
+    body_format: form-urlencoded
+    user: "{{ valet_sh_aem_author_user }}"
+    password: "{{ valet_sh_aem_author_password }}"
+    body:
+      "./sling:resourceType": "cq/replication/components/agent"
+      "./jcr:title": "Dispatcher Flush"
+      "./jcr:description": "Agent that sends flush requests to the dispatcher."
+      "./enabled": "true"
+      "./serializationType": "flush"
+      "./retryDelay": "60000"
+      "./logLevel": "error"
+      "./transportUri": "http://localhost:{{ valet_sh_project_vars.instance.dispatcher_port }}/dispatcher/invalidate.cache"
+      "./protocolHTTPMethod": "GET"
+      "./triggerOnOffTime": "true"

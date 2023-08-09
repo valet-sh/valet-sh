@@ -1,0 +1,50 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » aem » partials » start | start publish instance"
+  shell: "{{ valet_sh_aem_publish_dir }}/crx-quickstart/bin/start"
+  args:
+    chdir: "{{ valet_sh_aem_publish_dir }}"
+  environment:
+    CQ_RUNMODE: "publish"
+    CQ_PORT: "{{ valet_sh_project_vars.instance.publish_port }}"
+    CQ_JVM_OPTS: "-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ valet_sh_project_vars.instance.publish_debug_port }}"
+  when: valet_action_target == "publish" or valet_action_target == "all"
+
+- name: "workflows » aem » partials » start | start author instance"
+  shell: "{{ valet_sh_aem_author_dir }}/crx-quickstart/bin/start"
+  args:
+    chdir: "{{ valet_sh_aem_author_dir }}"
+  environment:
+    CQ_RUNMODE: "author"
+    CQ_PORT: "{{ valet_sh_project_vars.instance.author_port }}"
+    CQ_JVM_OPTS: "-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ valet_sh_project_vars.instance.author_debug_port }}"
+  when: valet_action_target == "author" or valet_action_target == "all"
+
+#@TODO ensure docker daemon is started
+- name: "workflows » aem » partials » start | start dispatcher tools"
+  shell: "HOT_RELOAD=true ALLOW_CACHE_INVALIDATION_GLOBALLY=true {{ valet_sh_aem_dispatcher_dir }}/bin/docker_run.sh {{ valet_sh_project_src_path }}/dispatcher/src host.docker.internal:{{ valet_sh_project_vars.instance.publish_port }} {{ valet_sh_project_vars.instance.dispatcher_port }} &> {{ valet_sh_aem_dispatcher_dir }}/output.log &"
+  args:
+    chdir: "{{ valet_sh_aem_dispatcher_dir }}"
+  when: valet_action_target == "dispatcher" or valet_action_target == "all"
+
+- name: "workflows » aem » partials » start | fix folder permissions"
+  shell: "chown -R {{ current_user }}:{{ current_group }} {{ valet_sh_aem_dispatcher_dir }}/cache"
+  args:
+    removes: "{{ valet_sh_aem_dispatcher_dir }}/cache"
+    chdir: "{{ valet_sh_aem_dispatcher_dir }}"
+  become: true

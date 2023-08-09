@@ -1,0 +1,41 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » aem » partials » setup-instances | extract 'aem-cif-addon-{{ valet_sh_aem_addons.cif }}.zip' to '{{ runtime_tmp_dir }}'"
+  unarchive:
+    src: "{{ valet_sh_aem_local_cache_dir }}/addons/cif/aem-cif-addon-{{ valet_sh_aem_addons.cif }}.zip"
+    dest: "{{ valet_sh_aem_runtime_tmp_dir }}"
+
+- name: "workflows » aem » partials » setup-instances | ensure '{{ valet_sh_aem_author_dir }}/install' exits"
+  file:
+    path: "{{ valet_sh_aem_author_dir }}/crx-quickstart/install"
+    state: directory
+
+- name: "workflows » aem » partials » setup-instances | copy 'cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-authorfar.far' to '{{ valet_sh_aem_author_dir }}/install/'"
+  copy:
+    src: "{{ valet_sh_aem_runtime_tmp_dir }}/cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-authorfar.far"
+    dest: "{{ valet_sh_aem_author_dir }}/crx-quickstart/install/"
+
+- name: "workflows » aem » partials » setup-instances | ensure '{{ valet_sh_aem_publish_dir }}/install' exits"
+  file:
+    path: "{{ valet_sh_aem_publish_dir }}/crx-quickstart/install"
+    state: directory
+
+- name: "workflows » aem » partials » setup-instances | copy 'cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-publishfar.far' to '{{ valet_sh_aem_author_dir }}/install/'"
+  copy:
+    src: "{{ valet_sh_aem_runtime_tmp_dir }}/cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-publishfar.far"
+    dest: "{{ valet_sh_aem_publish_dir }}/crx-quickstart/install/"

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,21 +14,17 @@
 #   limitations under the License.
 ##
 ---
+- name: "workflows » aem » project-setup | stop instances"
+  include_role:
+    name: valet-exec
+  vars:
+    valet_action: stop
+    valet_action_target: all
 
-template_found: False
-neos_template_found: false
-shopware6_template_found: false
-aem_template_found: false
+- include_tasks: partials/reset-runtime-dir.yml
 
-php_default_version_string: "php72"
+- include_tasks: partials/get-runtime-files/get-runtime-files.yml
 
-valet_link_blacklist:
-  - mailhog
-  - rabbitmq
-  - sites
+- include_tasks: partials/setup-instances/setup-instances.yml
 
-# do not throw an error if unlink or link is not possible when true
-valet_link_silent: false
-
-
-valet_flow_context: "Development"
+- include_tasks: partials/cleanup.yml

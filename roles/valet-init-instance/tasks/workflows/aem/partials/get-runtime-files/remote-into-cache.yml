@@ -1,0 +1,74 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » aem » partials » get-runtime-files | check if '{{ cache_dir }}/{{ file_name }}' is in cache"
+  stat:
+    path: "{{ cache_dir }}/{{ file_name }}"
+  register: cache_file_obj
+
+- block:
+    # REGISTER REMOTE HUB
+    - name: "workflows » aem » partials » get-runtime-files | register hub host"
+      add_host:
+        hostname: hub
+        ansible_host: "{{ valet_sh_hub_host }}"
+        ansible_port: "{{ valet_sh_hub_port }}"
+        ansible_user: "{{ valet_sh_hub_user }}"
+        ansible_python_interpreter: /usr/bin/python3
+        ansible_ssh_pipelining: 1
+
+    - name: "workflows » aem » partials » get-runtime-files | get ssh fingerprint for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}'"
+      shell: "ssh-keyscan -tecdsa -p {{ valet_sh_hub_port|string }} {{ valet_sh_hub_host }}"
+      register: valet_sh_hub_host_ssh_fingerprint_obj
+
+    - name: "workflows » aem » partials » get-runtime-files | set known_host hash field name'"
+      set_fact:
+        valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
+      when: valet_sh_hub_port != 22 or valet_sh_hub_port != "22"
+
+    - name: "workflows » aem » partials » get-runtime-files | set known_host hash field name'"
+      set_fact:
+        valet_sh_known_host_hashed_name: "{{ valet_sh_hub_host }}"
+      when: valet_sh_hub_port == 22 or valet_sh_hub_port == "22"
+
+    - name: "workflows » aem » partials » get-runtime-files | ensure ssh-key for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}' is in known_hosts"
+      known_hosts:
+        name: "{{ valet_sh_known_host_hashed_name }}"
+        key: "{{ valet_sh_hub_host_ssh_fingerprint_obj.stdout }}"
+        path: "~/.ssh/known_hosts"
+        state: present
+
+    # GET REMOTE FILES
+    - name: "workflows » aem » partials » get-runtime-files | check if '{{ remote_dir }}/{{ file_name }}' is available on hub"
+      stat:
+        path: "{{ remote_dir }}/{{ file_name }}"
+      register: aem_target_version_remote_file_obj
+      delegate_to: hub
+
+    - name: "workflows » aem » partials » get-runtime-files | fail when '{{ remote_dir }}/{{ file_name }}' was not found on hub"
+      fail:
+        msg: "File '{{ remote_dir }}/{{ file_name }}' is not available on the remote hub!"
+      when: not aem_target_version_remote_file_obj.stat.exists
+
+    - name: "workflows » aem » partials » get-runtime-files | ensure local cache directory '{{ cache_dir }}' exists"
+      file:
+        path: "{{ cache_dir }}"
+        state: directory
+
+    - name: "workflows » aem » partials » get-runtime-files | load '{{ remote_dir }}/{{ file_name }}' into cache"
+      shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ remote_dir }}/{{ file_name }} {{ cache_dir }}/{{ file_name }}" # noqa 204
+  when: not cache_file_obj.stat.exists|bool

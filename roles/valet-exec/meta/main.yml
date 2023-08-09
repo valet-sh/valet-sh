@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,20 +15,22 @@
 ##
 ---
 
-template_found: False
-neos_template_found: false
-shopware6_template_found: false
-aem_template_found: false
+dependencies:
+  - role: shared-variables
 
-php_default_version_string: "php72"
-
-valet_link_blacklist:
-  - mailhog
-  - rabbitmq
-  - sites
-
-# do not throw an error if unlink or link is not possible when true
-valet_link_silent: false
-
-
-valet_flow_context: "Development"
+galaxy_info:
+  author: dittertp
+  description: valet.sh db command
+  company: "TechDivision GmbH"
+  license: "Apache-2.0"
+  min_ansible_version: 2.10
+  platforms:
+    - name: Ubuntu
+      versions:
+        - 20.04
+        - 22.04
+    - name: MacOSX
+      versions:
+        - 11
+        - 12
+        - 13

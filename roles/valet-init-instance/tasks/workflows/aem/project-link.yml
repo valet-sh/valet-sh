@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,20 +15,9 @@
 ##
 ---
 
-template_found: False
-neos_template_found: false
-shopware6_template_found: false
-aem_template_found: false
-
-php_default_version_string: "php72"
-
-valet_link_blacklist:
-  - mailhog
-  - rabbitmq
-  - sites
-
-# do not throw an error if unlink or link is not possible when true
-valet_link_silent: false
-
-
-valet_flow_context: "Development"
+- name: "workflows » aem » project-link | delegate link command"
+  include_role:
+    name: valet-link
+  vars:
+    valet_action: relink
+    link_name: "{{ valet_sh_project_vars.instance.key }}"

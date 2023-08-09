@@ -1,0 +1,83 @@
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » aem » check-vars | set default value for valet_restore_db_identifier if not set"
+  set_fact:
+    valet_restore_db_identifier: "{{ valet_restore_default_db_identifier }}"
+  when: (valet_restore_db_identifier is not defined) or (valet_restore_db_identifier|length == 0)
+
+- name: "workflows » aem » check-vars | ensure valet_restore_db_identifier has allowed value"
+  fail:
+    msg: "not allowed value {{ valet_restore_db_identifier }} for var 'valet_restore_db_identifier'"
+  when: (valet_restore_db_identifier != "latest") and (valet_restore_db_identifier != "previous")
+
+- name: "workflows » aem » check-vars | set hub port"
+  set_fact:
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+  when: valet_sh_project_vars.hub.port is defined
+
+- name: "workflows » aem » check-vars | set hub host"
+  set_fact:
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+  when: valet_sh_project_vars.hub.host is defined
+
+- name: "workflows » aem » check-vars | set hub user"
+  set_fact:
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+  when: valet_sh_project_vars.hub.user is defined
+
+- name: "workflows » aem » check-vars | set hub data path"
+  set_fact:
+    valet_sh_hub_path: "{{ valet_sh_project_vars.hub.path | trim }}"
+  when: valet_sh_project_vars.hub.path is defined
+
+- name: "workflows » aem » check-vars | set hub port"
+  set_fact:
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+  when: valet_sh_project_vars.hub.port is defined
+
+- name: "workflows » aem » check-vars | set hub host"
+  set_fact:
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+  when: valet_sh_project_vars.hub.host is defined
+
+- name: "workflows » aem » check-vars | set hub user"
+  set_fact:
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+  when: valet_sh_project_vars.hub.user is defined
+
+- name: "workflows » aem » check-vars | set valet_instancebackup_identifier when defined"
+  set_fact:
+    valet_instancebackup_identifier: "{{ valet_sh_project_vars.instance.sync.identifier | trim  }}"
+  when:
+    - (valet_instancebackup_identifier is not defined) or valet_instancebackup_identifier|length == 0
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.sync is defined
+    - valet_sh_project_vars.instance.sync.identifier is defined
+
+- name: "workflows » aem » check-vars | override valet_instancebackup_identifier with valet_opt_instance_identifier when set"
+  set_fact:
+    valet_instancebackup_identifier: "{{ valet_opt_instance_identifier | trim  }}"
+  when:
+    - valet_opt_instance_identifier is defined
+    - valet_opt_instance_identifier|length>0
+
+- name: "workflows » aem » check-vars | ensure valet_instancebackup_identifier has a value"
+  fail:
+    msg: "you need to set a valid 'instancebackup-identifier' ether in your .valet-sh.yml file or as an argument"
+  when:
+    - valet_instancebackup_identifier is not defined or valet_instancebackup_identifier|length == 0
+

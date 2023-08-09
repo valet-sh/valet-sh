@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,20 +15,19 @@
 ##
 ---
 
-template_found: False
-neos_template_found: false
-shopware6_template_found: false
-aem_template_found: false
+- include_tasks: check-opts.yml
 
-php_default_version_string: "php72"
+- include_tasks: check-vars.yml
 
-valet_link_blacklist:
-  - mailhog
-  - rabbitmq
-  - sites
+- include_tasks: project-env.yml
 
-# do not throw an error if unlink or link is not possible when true
-valet_link_silent: false
+- include_tasks: project-setup.yml
+  when: (have_to_reinstall) or (valet_opt_flag_force_reinstall is defined and valet_opt_flag_force_reinstall|bool)
 
+- include_tasks: project-link.yml
 
-valet_flow_context: "Development"
+- include_tasks: project-instance-restart.yml
+
+- include_tasks: project-deployment.yml
+
+- include_tasks: project-restore.yml
