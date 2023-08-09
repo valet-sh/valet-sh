@@ -20,6 +20,36 @@
       systemd:
         name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
         state: started
+        enabled: true
+      become: true
+
+    - name: "workflows » neos » services » elasticsearch | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » neos » services » elasticsearch | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ 'elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}': true }"
+
+    - name: "workflows » neos » services » elasticsearch | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » neos » services » elasticsearch | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » neos » services » elasticsearch | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » neos » services » elasticsearch | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
       become: true
 
     - name: "workflows » neos » services » elasticsearch | wait for elasticsearch to be reachable"
@@ -40,6 +70,34 @@
 - block:
     - name: "workflows » neos » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
       shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+
+    - name: "workflows » neos » services » elasticsearch | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » neos » services » elasticsearch | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ 'elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}': true }"
+
+    - name: "workflows » neos » services » elasticsearch | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » neos » services » elasticsearch | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » neos » services » elasticsearch | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » neos » services » elasticsearch | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
 
     - name: "workflows » neos » services » elasticsearch | wait for elasticsearch to be reachable"
       wait_for:
