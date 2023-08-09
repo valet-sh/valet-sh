@@ -20,6 +20,36 @@
       systemd:
         name: rabbitmq-server
         state: restarted
+        enabled: true
+      become: true
+
+    - name: "workflows » magento2 » services » rabbitmq | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » magento2 » services » rabbitmq | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ 'rabbitmq': true }"
+
+    - name: "workflows » magento2 » services » rabbitmq | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » magento2 » services » rabbitmq | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » magento2 » services » rabbitmq | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » magento2 » services » rabbitmq | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
       become: true
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
@@ -75,6 +105,34 @@
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
       shell: "{{ valet_sh_homebrew_bin_arm64 }} services start rabbitmq"
       when: current_arch == "arm64"
+
+    - name: "workflows » magento2 » services » rabbitmq | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » magento2 » services » rabbitmq | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ 'rabbitmq': true }"
+
+    - name: "workflows » magento2 » services » rabbitmq | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » magento2 » services » rabbitmq | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » magento2 » services » rabbitmq | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » magento2 » services » rabbitmq | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
       wait_for:

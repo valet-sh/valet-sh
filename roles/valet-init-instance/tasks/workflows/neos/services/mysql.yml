@@ -25,6 +25,36 @@
       systemd:
         name: "{{ valet_sh_service_mysql_current_name }}"
         state: started
+        enabled: true
+      become: true
+
+    - name: "workflows » neos » services » mysql | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » neos » services » mysql | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ 'mysql{{ valet_sh_project_vars.services.mysql.version }}': true }"
+
+    - name: "workflows » neos » services » mysql | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » neos » services » mysql | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » neos » services » mysql | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » neos » services » mysql | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
       become: true
 
     - name: "workflows » neos » services » mysql | wait for mysql to be reachable"
@@ -47,6 +77,36 @@
       systemd:
         name: "{{ valet_sh_service_mariadb_current_name }}"
         state: started
+        enabled: true
+      become: true
+
+    - name: "workflows » neos » services » mysql | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » neos » services » mysql | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ 'mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}': true }"
+
+    - name: "workflows » neos » services » mysql | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » neos » services » mysql | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » neos » services » mysql | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » neos » services » mysql | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
       become: true
 
     - name: "workflows » neos » services » mariadb | wait for mariadb to be reachable"
@@ -68,6 +128,34 @@
     - name: "workflows » neos » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
       shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
 
+    - name: "workflows » neos » services » mysql | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » neos » services » mysql | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ '{{ valet_sh_service_mysql_current_name }}': true }"
+
+    - name: "workflows » neos » services » mysql | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » neos » services » mysql | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » neos » services » mysql | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » neos » services » mysql | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
+
     - name: "workflows » neos » services » mysql | wait for mysql to be reachable"
       wait_for:
         port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mysql_current_name] }}"
@@ -86,6 +174,34 @@
 
     - name: "workflows » neos » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
       shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mariadb_current_name }}"
+
+    - name: "workflows » neos » services » mysql | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » neos » services » mysql | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ '{{ valet_sh_service_mariadb_current_name }}': true }"
+
+    - name: "workflows » neos » services » mysql | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » neos » services » mysql | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » neos » services » mysql | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » neos » services » mysql | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
 
     - name: "workflows » neos » services » mariadb | wait for mariadb to be reachable"
       wait_for:

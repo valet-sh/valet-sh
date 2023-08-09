@@ -20,6 +20,36 @@
       systemd:
         name: "php{{ valet_sh_project_vars.services.php.version }}-fpm"
         state: started
+        enabled: true
+      become: true
+
+    - name: "workflows » neos » services » php | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » neos » services » php | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ 'php{{ valet_sh_project_vars.services.php.version | replace('.','') }}': true }"
+
+    - name: "workflows » neos » services » php | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » neos » services » php | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » neos » services » php | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » neos » services » php | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
       become: true
 
     - name: "workflows » neos » services » php | wait for php-fpm to be reachable"
@@ -35,6 +65,34 @@
 - block:
     - name: "workflows » neos » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
       shell: "{{ valet_sh_homebrew_bin }} services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
+
+    - name: "workflows » neos » services » php | include valet services file"
+      include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » neos » services » php | prepare new config element"
+      set_fact:
+        new_service_state_element: "{ 'php{{ valet_sh_project_vars.services.php.version | replace('.','') }}': true }"
+
+    - name: "workflows » neos » services » php | update service object"
+      set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » neos » services » php | merge objects"
+      set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » neos » services » php | transform object into nice yaml output"
+      set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » neos » services » php | write new services.yml file"
+      copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
 
     - name: "workflows » neos » services » php | wait for php-fpm to be reachable"
       wait_for:
