@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@
 - include_tasks: macos/install.yml
 
 - include_tasks: macos/ca.yml
+  when: cert_prefix is not defined
+
+- include_tasks: macos/cert-renew.yml
   when: cert_prefix is not defined
 
 - include_tasks: macos/server.yml
