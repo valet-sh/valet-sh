@@ -31,9 +31,6 @@
               set_fact:
                 current_cert_name: "{{ available_dev_certs_item.path|basename }}"
 
-            - debug:
-                msg: "{{ current_cert_name.split('.')[0] }}"
-
             - name: "delete current certificate '{{ available_dev_certs_item.path }}'"
               file:
                 path: "{{ available_dev_certs_item.path }}"
@@ -43,5 +40,6 @@
             - include_tasks: server.yml
               vars:
                 cert_prefix: "{{ current_cert_name.split('.')[0] }}"
+              notify: systemd | nginx | restarted
         when: current_cert_expires_check_obj.rc == 1
   when: available_dev_certs_item_cert_pem.stat.exists|bool
