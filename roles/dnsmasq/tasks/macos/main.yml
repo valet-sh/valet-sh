@@ -36,5 +36,9 @@
     dest: "/usr/local/etc/dnsmasq.d/development-domain.conf"
   notify: brew | dnsmasq | restarted
 
+- name: "run 'codesign -f -s - {{ valet_sh_homebrew_prefix }}/dnsmasq/sbin/dnsmasq'"
+  shell: "codesign -f -s - {{ valet_sh_homebrew_prefix }}/dnsmasq/sbin/dnsmasq"
+  become: true
+
 - name: brew | dnsmasq | restarted
   shell: "sudo {{ valet_sh_homebrew_bin }} services  restart dnsmasq"
