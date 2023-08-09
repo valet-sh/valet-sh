@@ -36,10 +36,10 @@
                 path: "{{ available_dev_certs_item.path }}"
                 state: absent
               become: true
+              notify: "brew | nginx | restarted"
 
             - include_tasks: server.yml
               vars:
                 cert_prefix: "{{ current_cert_name.split('.')[0] }}"
-              notify: "brew | nginx | restarted"
         when: current_cert_expires_check_obj.rc == 1
   when: available_dev_certs_item_cert_pem.stat.exists|bool
