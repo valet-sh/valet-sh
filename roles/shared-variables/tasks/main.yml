@@ -63,10 +63,10 @@
     os_codename: "focal"
   when: ansible_distribution_release == 'ulyana' or ansible_distribution_release == 'ulyssa' or ansible_distribution_release == 'uma' or ansible_distribution_release == 'una'
 
-- name: "override 'os_codename' if OS is LinuxMint 21.x"
+- name: "override 'os_codename' if OS is Linux Mint 21.x"
   set_fact:
     os_codename: "jammy"
-  when: ansible_distribution_release == 'vanessa'
+  when: ansible_distribution_release == 'vanessa' or ansible_distribution_release == 'vera' or ansible_distribution_release == 'victoria'
 
 - name: fail when no supported operating system was found
   fail:
