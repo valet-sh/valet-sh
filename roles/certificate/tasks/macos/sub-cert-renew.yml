@@ -21,6 +21,12 @@
   register: available_dev_certs_item_cert_pem
 
 - block:
+
+      - name: "check if '{{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}' is signed by current CA"
+        shell: "openssl verify -verbose -CAfile {{ certificate_ca_cert_file }} {{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}"
+        failed_when: false
+        register: current_cert_ca_chain_check_obj
+
       - name: "check if '{{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}' expires in less than 6 monath"
         shell: "openssl x509 -checkend 15552000 -noout -in {{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}"
         failed_when: false
@@ -41,5 +47,5 @@
             - include_tasks: server.yml
               vars:
                 cert_prefix: "{{ current_cert_name.split('.')[0] }}"
-        when: current_cert_expires_check_obj.rc == 1
+        when: current_cert_expires_check_obj.rc == 1 or current_cert_ca_chain_check_obj.rc != 0
   when: available_dev_certs_item_cert_pem.stat.exists|bool

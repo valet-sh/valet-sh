@@ -15,6 +15,27 @@
 ##
 ---
 
+- name: "ca | check if CA '{{ certificate_ca_cert_file }}' already exists"
+  stat:
+    path: "{{ certificate_ca_cert_file }}"
+  register: ca_cert_check_obj
+
+- name: "ca | check if CA '{{ certificate_ca_cert_file }}' expires in less than 6 months"
+  shell: "openssl x509 -checkend 15552000 -noout -in {{ certificate_ca_cert_file }}"
+  failed_when: false
+  when: ca_cert_check_obj.stat.exists|bool
+  register: ca_cert_expires_check_obj
+
+- name: "ca | delete expiring CA files"
+  file:
+    path: "{{ certificate_ca_cert_path }}"
+    state: absent
+  when:
+    - ca_cert_check_obj is defined
+    - ca_cert_check_obj.stat is defined
+    - ca_cert_check_obj.stat.exists|bool
+  become: true
+
 - name: ca | ensure base directories existing
   file:
     path: "{{ certificate_base_path_item }}"
