@@ -31,9 +31,9 @@
     path: "{{ certificate_ca_cert_path }}"
     state: absent
   when:
-    - ca_cert_check_obj is defined
-    - ca_cert_check_obj.stat is defined
-    - ca_cert_check_obj.stat.exists|bool
+    - ca_cert_expires_check_obj is defined
+    - ca_cert_expires_check_obj.rc is defined
+    - ca_cert_expires_check_obj.rc != 0
   become: true
 
 - name: "ca | ensure base directories existing"
@@ -89,6 +89,12 @@
   register: available_cert9_files_obj
   become: true
 
+- name: "include sub-check-ca"
+  include_tasks: "sub-check-ca.yml"
+  with_items: "{{ available_cert9_files_obj.stdout_lines }}"
+  loop_control:
+    loop_var: current_cert9_file_item
+
 - name: "ca | run certutil for every cert9 file"
   shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ current_cert9_file_item | dirname }}'
   with_items: "{{ available_cert9_files_obj.stdout_lines }}"
@@ -105,6 +111,12 @@
       shell: "find {{ current_home }}/snap/ -maxdepth 7 -name 'cert9.db' 2>/dev/null"
       register: available_cert9_files_snap_obj
       become: true
+
+    - name: "include sub-check-ca"
+      include_tasks: "sub-check-ca.yml"
+      with_items: "{{ available_cert9_files_snap_obj.stdout_lines }}"
+      loop_control:
+        loop_var: current_cert9_file_item
 
     - name: "ca | run certutil for every cert9 file"
       shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ available_cert9_files_snap_item | dirname }}'
