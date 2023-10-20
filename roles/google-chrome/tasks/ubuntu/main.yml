@@ -21,10 +21,18 @@
     state: present
   become: true
 
-- name: add chrome repository
+- name: ensure unsecure chrome repository is absent
   apt_repository:
     filename: "google-chrome"
     repo: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+    codename: "{{ os_codename }}"
+    state: absent
+  become: true
+
+- name: ensure chrome repository is present
+  apt_repository:
+    filename: "google-chrome"
+    repo: "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main"
     codename: "{{ os_codename }}"
   become: true
 
