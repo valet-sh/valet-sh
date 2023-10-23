@@ -114,7 +114,8 @@
 
     - name: "workflows » magento2 » services » rabbitmq | prepare new config element"
       set_fact:
-        new_service_state_element: "{ 'rabbitmq': true }"
+        new_service_state_element:
+          rabbitmq: true
 
     - name: "workflows » magento2 » services » rabbitmq | update service object"
       set_fact:
