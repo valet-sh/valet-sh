@@ -24,10 +24,6 @@ server {
 
     index index.php;
 
-    location ~ "^/_Resources" {
-        try_files $uri =404;
-    }
-
     location ~ \.php$ {
         include fastcgi_params;
         fastcgi_pass $upstream;
