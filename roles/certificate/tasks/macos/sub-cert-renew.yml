@@ -21,16 +21,28 @@
   register: available_dev_certs_item_cert_pem
 
 - block:
-
       - name: "check if '{{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}' is signed by current CA"
         shell: "openssl verify -verbose -CAfile {{ certificate_ca_cert_file }} {{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}"
         failed_when: false
         register: current_cert_ca_chain_check_obj
 
-      - name: "check if '{{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}' expires in less than 6 monath"
+      - name: "check if '{{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}' expires in less than 6 months"
         shell: "openssl x509 -checkend 15552000 -noout -in {{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}"
         failed_when: false
         register: current_cert_expires_check_obj
+
+      - name: "reset var 'current_cert_has_invalid_key_usage'"
+        set_fact:
+          current_cert_has_invalid_key_usage: false
+
+      - name: "check for invalid key usage in '{{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}'"
+        shell: "openssl x509 -noout -ext keyUsage < {{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}"
+        register: current_cert_invalid_key_usage_check_obj
+
+      - name: "set var 'current_cert_has_invalid_key_usage' to true if certificate contains invalid key usage"
+        set_fact:
+          current_cert_has_invalid_key_usage: true
+        when: "'Key Encipherment, Data Encipherment' in current_cert_invalid_key_usage_check_obj.stdout"
 
       - block:
             - name: "set 'current_cert_name' var"
@@ -46,6 +58,6 @@
 
             - include_tasks: server.yml
               vars:
-                cert_prefix: "{{ current_cert_name.split('.')[0] }}"
-        when: current_cert_expires_check_obj.rc == 1 or current_cert_ca_chain_check_obj.rc != 0
+                cert_prefix: "{{ current_cert_name.split('.')[:-1] | join('.') }}"
+        when: current_cert_expires_check_obj.rc == 1 or current_cert_ca_chain_check_obj.rc != 0 or current_cert_has_invalid_key_usage|bool
   when: available_dev_certs_item_cert_pem.stat.exists|bool
