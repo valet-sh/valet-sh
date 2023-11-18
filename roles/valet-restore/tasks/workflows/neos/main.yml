@@ -53,77 +53,81 @@
         path: "~/.ssh/known_hosts"
         state: present
 
-    - name: "workflows » neos | check if instancebackup idenfifier '{{ valet_instancebackup_identifier }}'"
-      stat:
-        path: "{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/"
-      register: instancebackup_identifier_target_obj
-      delegate_to: hub
+    - block:
+        - name: "workflows » neos | check if instancebackup idenfifier '{{ valet_instancebackup_identifier }}'"
+          stat:
+            path: "{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/"
+          register: instancebackup_identifier_target_obj
+          delegate_to: hub
 
-    - name: "workflows » neos | fail when instance identifier does not exist"
-      fail:
-        msg: "Instance-Backup identifier '{{ valet_instancebackup_identifier }}' does not exist!"
-      when: not instancebackup_identifier_target_obj.stat.exists
+        - name: "workflows » neos | fail when instance identifier does not exist"
+          fail:
+            msg: "Instance-Backup identifier '{{ valet_instancebackup_identifier }}' does not exist!"
+          when: not instancebackup_identifier_target_obj.stat.exists
 
-    - name: "workflows » neos | check if instancebackup idenfifier '{{ valet_sh_instance_db_filename }}'"
-      stat:
-        path: "{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/{{ valet_sh_instance_db_filename }}"
-      register: instancebackup_target_db_file_obj
-      delegate_to: hub
+        - name: "workflows » neos | check if instancebackup idenfifier '{{ valet_sh_instance_db_filename }}'"
+          stat:
+            path: "{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/{{ valet_sh_instance_db_filename }}"
+          register: instancebackup_target_db_file_obj
+          delegate_to: hub
 
-    - name: "workflows » neos | fail when db dump '{{ valet_sh_instance_db_filename }}' does not exist"
-      fail:
-        msg: "file '{{ valet_sh_instance_db_filename }}' does not exist!"
-      when: not instancebackup_target_db_file_obj.stat.exists
+        - name: "workflows » neos | fail when db dump '{{ valet_sh_instance_db_filename }}' does not exist"
+          fail:
+            msg: "file '{{ valet_sh_instance_db_filename }}' does not exist!"
+          when: not instancebackup_target_db_file_obj.stat.exists
 
-    - name: "workflows » neos | synchronize db dump {{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
-      shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/{{ valet_sh_instance_db_filename }} {{ current_tmp_dir }}" # noqa 204
-      tags:
-      - skip_ansible_lint
+        - name: "workflows » neos | synchronize db dump {{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
+          shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/{{ valet_sh_instance_db_filename }} {{ current_tmp_dir }}" # noqa 204
+          tags:
+          - skip_ansible_lint
 
-    - name: "workflows » neos | drop database '{{ valet_sh_project_database_name }}'"
-      mysql_db:
-        name: "{{ valet_sh_project_database_name }}"
-        config_file: "{{ valet_sh_project_mysql_client_configuration }}"
-        login_host: "127.0.0.1"
-        login_port: "{{ valet_sh_project_mysql_server_port }}"
-        state: absent
+        - name: "workflows » neos | drop database '{{ valet_sh_project_database_name }}'"
+          mysql_db:
+            name: "{{ valet_sh_project_database_name }}"
+            config_file: "{{ valet_sh_project_mysql_client_configuration }}"
+            login_host: "127.0.0.1"
+            login_port: "{{ valet_sh_project_mysql_server_port }}"
+            state: absent
 
-    - name: "workflows » neos | import db dump '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
-      mysql_db:
-        name: "{{ valet_sh_project_database_name }}"
-        target: "{{ current_tmp_dir }}/{{ valet_sh_instance_db_filename }}"
-        config_file: "{{ valet_sh_project_mysql_client_configuration }}"
-        login_host: "127.0.0.1"
-        login_port: "{{ valet_sh_project_mysql_server_port }}"
-        encoding: "utf8mb4"
-        collation: "utf8mb4_unicode_ci"
-        state: import
+        - name: "workflows » neos | import db dump '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
+          mysql_db:
+            name: "{{ valet_sh_project_database_name }}"
+            target: "{{ current_tmp_dir }}/{{ valet_sh_instance_db_filename }}"
+            config_file: "{{ valet_sh_project_mysql_client_configuration }}"
+            login_host: "127.0.0.1"
+            login_port: "{{ valet_sh_project_mysql_server_port }}"
+            encoding: "utf8mb4"
+            collation: "utf8mb4_unicode_ci"
+            state: import
+      when: not valet_restore_skip_db|bool and (valet_opt_flag_skip_db is not defined or not valet_opt_flag_skip_db|bool)
 
-    - name: "workflows » neos | ensure directories existing"
-      file:
-        path: "{{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs_prepare }}"
-        state: directory
-      with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
-      when:
-        - valet_sh_project_vars.instance is defined
-        - valet_sh_project_vars.instance.sync is defined
-        - valet_sh_project_vars.instance.sync.fs is defined
-      loop_control:
-        loop_var: valet_sh_restore_current_fs_prepare
-      tags:
-      - skip_ansible_lint
+    - block:
+        - name: "workflows » neos | ensure directories existing"
+          file:
+            path: "{{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs_prepare }}"
+            state: directory
+          with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
+          when:
+            - valet_sh_project_vars.instance is defined
+            - valet_sh_project_vars.instance.sync is defined
+            - valet_sh_project_vars.instance.sync.fs is defined
+          loop_control:
+            loop_var: valet_sh_restore_current_fs_prepare
+          tags:
+          - skip_ansible_lint
 
-    - name: "workflows » neos | synchronize filesystem"
-      shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/fs/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
-      with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
-      when:
-        - valet_sh_project_vars.instance is defined
-        - valet_sh_project_vars.instance.sync is defined
-        - valet_sh_project_vars.instance.sync.fs is defined
-      loop_control:
-        loop_var: valet_sh_restore_current_fs
-      tags:
-      - skip_ansible_lint
+        - name: "workflows » neos | synchronize filesystem"
+          shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/fs/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
+          with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
+          when:
+            - valet_sh_project_vars.instance is defined
+            - valet_sh_project_vars.instance.sync is defined
+            - valet_sh_project_vars.instance.sync.fs is defined
+          loop_control:
+            loop_var: valet_sh_restore_current_fs
+          tags:
+          - skip_ansible_lint
+      when: valet_opt_flag_skip_fs is not defined or not valet_opt_flag_skip_fs|bool
 
 - name: "workflows » neos | delete old domains when 'multi_domain' setting is present in .valet-sh.yml"
   shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/flow domain:delete '*'"

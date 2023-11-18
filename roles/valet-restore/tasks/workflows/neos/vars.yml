@@ -16,6 +16,7 @@
 
 valet_opt_flag_skip_db: false
 valet_opt_flag_skip_fs: false
+valet_restore_skip_db: false
 
 valet_restore_workflow:
   post_restore_commands:
