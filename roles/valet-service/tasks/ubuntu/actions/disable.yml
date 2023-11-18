@@ -36,7 +36,7 @@
   become: "{{ current_package.privileged | default(false) }}"
 
 - name: "actions » disable | persist {{ valet_current_service_name }} service state"
-  vsh_service:
+  vsh.core.vsh_service:
     name: "{{ valet_current_service_name }}"
     state: installed
     enabled: false

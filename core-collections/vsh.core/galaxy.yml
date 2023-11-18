@@ -1,0 +1,10 @@
+---
+namespace: vsh
+name: core
+
+version: null
+readme: README.md
+authors:
+  - Ansible (https://github.com/ansible)
+description:
+dependencies: {}

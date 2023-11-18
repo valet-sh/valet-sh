@@ -1,0 +1,9 @@
+---
+requires_ansible: '>=2.10.0'
+
+action_groups:
+  core:
+    - vsh_service
+    - vsh_service_default
+    - vsh_service_default_info
+    - vsh_service_info

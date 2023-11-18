@@ -88,6 +88,6 @@
     - valet_sh_config.default_nvm == "volta"
 
 - name: "persist nodejs service state"
-  vsh_service:
+  vsh.core.vsh_service:
     name: "nodejs"
     state: installed

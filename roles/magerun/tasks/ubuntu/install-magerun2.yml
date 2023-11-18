@@ -26,6 +26,6 @@
   become: true
 
 - name: "persist {{ package_name }} package state"
-  vsh_service:
+  vsh.core.vsh_service:
     name: "{{ package_name }}"
     state: installed

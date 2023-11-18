@@ -37,6 +37,6 @@
   ansible.builtin.command: "/usr/bin/php7.4 /usr/local/bin/composer1 global require hirak/prestissimo -n"
 
 - name: "persist {{ package_name }} package state"
-  vsh_service:
+  vsh.core.vsh_service:
     name: "{{ package_name }}"
     state: installed

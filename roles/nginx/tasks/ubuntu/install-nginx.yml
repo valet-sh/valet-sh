@@ -98,7 +98,7 @@
   become: true
 
 - name: "persist nginx service state"
-  vsh_service:
+  vsh.core.vsh_service:
     name: "nginx"
     state: installed
     enabled: true

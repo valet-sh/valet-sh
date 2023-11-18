@@ -177,7 +177,7 @@
   become: true
 
 - name: "persist {{ package_name }} package state"
-  vsh_service:
+  vsh.core.vsh_service:
     name: "{{ package_name }}"
     state: installed
     enabled: "{{ vsh_service_information_obj.result.enabled | default(true) }}"

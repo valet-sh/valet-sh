@@ -61,7 +61,7 @@
   become: true
 
 - name: "persist mailhog service state"
-  vsh_service:
+  vsh.core.vsh_service:
     name: "mailhog"
     state: installed
     enabled: true

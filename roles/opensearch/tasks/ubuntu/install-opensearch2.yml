@@ -99,7 +99,7 @@
   become: true
 
 - name: "persist {{ current_opensearch_key }} package state"
-  vsh_service:
+  vsh.core.vsh_service:
     name: "{{ current_opensearch_key }}"
     state: installed
     enabled: "{{ vsh_service_information_obj.result.enabled | default(true) }}"

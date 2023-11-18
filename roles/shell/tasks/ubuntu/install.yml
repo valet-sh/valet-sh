@@ -40,6 +40,6 @@
   when: default_shell == "zsh"
 
 - name: "persist shell package state"
-  vsh_service:
+  vsh.core.vsh_service:
     name: "shell"
     state: installed
