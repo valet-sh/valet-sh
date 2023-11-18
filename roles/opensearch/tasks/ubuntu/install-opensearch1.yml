@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@
       ansible.builtin.get_url:
         url: "{{ opensearch_version_1_download_url }}"
         dest: "/tmp/{{ current_opensearch_key }}.tar.gz"
+        mode: '0755'
 
     - name: "Create {{ current_opensearch_base_path }}"
       ansible.builtin.file:

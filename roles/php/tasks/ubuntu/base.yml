@@ -30,7 +30,7 @@
     codename: "{{ os_codename }}"
   become: true
 
-#- name: "set default php cli version"
+# - name: "set default php cli version"
 #  community.general.alternatives:
 #    name: php
 #    path: "/usr/bin/php{{ item.version }}"
@@ -38,7 +38,7 @@
 #  when: (item.default is defined) and (item.default|bool)
 #  become: true
 #
-#- name: ensure php wrapper script is up2date
+# - name: ensure php wrapper script is up2date
 #  ansible.builtin.copy:
 #    src: "ubuntu/php-wrapper"
 #    dest: "/usr/local/bin/php"

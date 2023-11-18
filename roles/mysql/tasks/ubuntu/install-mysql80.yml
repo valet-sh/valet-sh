@@ -188,6 +188,7 @@
       ansible.builtin.get_url:
         url: "{{ mysql_community_server_80.package_url }}"
         dest: "/tmp/{{ mysql_community_server_80.package_url | basename }}"
+        mode: '0755'
 
     - name: Extract mysql archive
       ansible.builtin.unarchive:

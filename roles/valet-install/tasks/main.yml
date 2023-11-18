@@ -19,6 +19,9 @@
   ansible.builtin.include_tasks: check-opts.yml
 
 - name: "Block: check essential packages and install requested packages"
+  when:
+    - vsh_install_packages is defined
+    - vsh_install_packages | length > 0
   block:
     - name: "include 'sub-check-essential-packages.yml'"
       ansible.builtin.include_tasks: sub-check-essential-packages.yml
@@ -34,11 +37,9 @@
       with_items: "{{ vsh_install_packages }}"
       loop_control:
         loop_var: vsh_install_packages_item
-  when:
-    - vsh_install_packages is defined
-    - vsh_install_packages | length > 0
 
 - name: "Block: install essential packages as not other have been requested"
+  when: (vsh_install_packages is not defined) or (vsh_install_packages | length == 0)
   block:
     - name: "include 'sub-install-essential-packages.yml'"
       ansible.builtin.include_tasks: sub-install-essential-packages.yml
@@ -55,7 +56,6 @@
       loop_control:
         loop_var: vsh_packages_item
       when: vsh_packages_item.value.essential is not defined or not vsh_packages_item.value.essential|bool
-  when: (vsh_install_packages is not defined) or (vsh_install_packages | length == 0)
 
 - name: "include 'sub-install-all-packages.yml'"
   ansible.builtin.include_tasks: sub-install-all-packages.yml
@@ -66,13 +66,9 @@
     - (vsh_install_packages is not defined) or (vsh_install_packages | length == 0)
     - vsh_opt_flag_all | bool
 
+# vsh_packages_default
 
-#vsh_packages_default
-
-
-
-
-#- name: "Include role"
+# - name: "Include role"
 #  ansible.builtin.include_role:
 #    name: "{{ valet_install_default_roles_item }}"
 #    public: true
@@ -80,19 +76,19 @@
 #  loop_control:
 #    loop_var: valet_install_default_roles_item
 
-#- name: "Include role"
+# - name: "Include role"
 #  ansible.builtin.include_role:
 #    name: "valet-service"
 #  vars:
 #    valet_sh_service_internal_action: true
 #    valet_service_action: "handle"
 
-#- name: "Include certificate role"
+# - name: "Include certificate role"
 #  ansible.builtin.include_role:
 #    name: "certificate"
 #    public: true
 
-#- name: "Ensure revision is up2date"
+# - name: "Ensure revision is up2date"
 #  ansible.builtin.copy:
 #    src: "{{ valet_dist_path }}/{{ valet_etc_revision_filename }}"
 #    dest: "{{ valet_etc_revision_file }}"

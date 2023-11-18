@@ -16,26 +16,27 @@
 ---
 
 - name: "Block"
+  when:
+    - vsh_uninstall_packages is defined
+    - vsh_uninstall_packages | length > 0
   block:
-    - name: "include 'sub-check-essential-packages.yml'"
+    - name: "Include 'sub-check-essential-packages.yml'"
       ansible.builtin.include_tasks: sub-check-uninstallable-packages.yml
       with_items: "{{ vsh_uninstall_packages }}"
       loop_control:
         loop_var: vsh_uninstall_packages_item
 
-    - name: "install requested packages"
+    - name: "Install requested packages"
       ansible.builtin.include_tasks: sub-uninstall-requested-packages.yml
       with_items: "{{ vsh_uninstall_packages }}"
       loop_control:
         loop_var: vsh_uninstall_packages_item
-  when:
-    - vsh_uninstall_packages is defined
-    - vsh_uninstall_packages | length > 0
 
 - name: "Block"
+  when: (vsh_install_packages is not defined) or (vsh_install_packages | length == 0)
   block:
-    - name: "include 'sub-install-essential-packages.yml'"
-      ansible.builtin.include_tasks: sub-install-essential-packages.yml
+    - name: "Include 'sub-uninstall-essential-packages.yml'"
+      ansible.builtin.include_tasks: sub-uninstall-essential-packages.yml
       with_dict: "{{ vsh_packages }}"
       loop_control:
         loop_var: vsh_packages_item
@@ -43,10 +44,9 @@
         - vsh_packages_item.value.essential is defined
         - vsh_packages_item.value.essential|bool
 
-    - name: "include 'sub-install-optional-packages.yml'"
-      ansible.builtin.include_tasks: sub-install-optional-packages.yml
+    - name: "Include 'sub-uninstall-optional-packages.yml'"
+      ansible.builtin.include_tasks: sub-uninstall-optional-packages.yml
       with_dict: "{{ vsh_packages }}"
       loop_control:
         loop_var: vsh_packages_item
       when: vsh_packages_item.value.essential is not defined or not vsh_packages_item.value.essential|bool
-  when: (vsh_install_packages is not defined) or (vsh_install_packages | length == 0)

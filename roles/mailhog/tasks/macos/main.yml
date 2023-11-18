@@ -19,6 +19,31 @@
   ansible.builtin.include_tasks: macos/install.yml
   when: package_action == "install"
 
+- name: "ensure mailhog is installed"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install mailhog"
+  notify: brew | mailhog | restart
+
+- name: "generate ssl-certificate for {{ cert_prefix }}"
+  ansible.builtin.include_role:
+    name: certificate
+    public: true
+  vars:
+    cert_prefix: mailhog
+
+- name: provide init script for mailhog
+  ansible.builtin.template:
+    src: "mailhog.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/mailhog.conf"
+    mode: '0644'
+  notify: brew | nginx | restarted
+
+- name: "run 'codesign -f -s - {{ valet_sh_homebrew_prefix }}/mailhog/bin/MailHog'"
+  ansible.builtin.shell: "codesign -f -s - {{ valet_sh_homebrew_prefix }}/mailhog/bin/MailHog"
+  become: true
+
+- name: brew | mailhog | restart
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart mailhog"
+
 - name: "Include uninstall.yml"
   ansible.builtin.include_tasks: macos/uninstall.yml
   when: package_action == "uninstall"

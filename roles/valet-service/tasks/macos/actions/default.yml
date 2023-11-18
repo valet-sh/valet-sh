@@ -50,7 +50,7 @@
   when: valet_sh_service_service_is_allowed is not defined or not valet_sh_service_service_is_allowed|bool
 
 - name: "actions » default | load tasks for default action"
-  ansible.builtin.include_tasks: "defaults/{{ valet_sh_service_defaultable_services_item1.0.scope }}.yml"
+  ansible.builtin.include_tasks: "defaults-command/{{ valet_sh_service_defaultable_services_item1.0.scope }}.yml"
   when: valet_service_name == valet_sh_service_defaultable_services_item1.1
   with_subelements:
     - "{{ valet_sh_service_defaultable_services }}"

@@ -10,3 +10,8 @@ skip_list:
   - 'latest[git]'
   - 'name[casing]'
   - 'command-instead-of-module'
+  - 'var-naming[non-string]'
+  - 'var-naming[no-role-prefix]'
+  - 'risky-shell-pipe'
+  - 'ignore-errors'
+  - 'no-tabs'

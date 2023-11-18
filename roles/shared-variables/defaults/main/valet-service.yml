@@ -385,8 +385,6 @@ valet_sh:
         - magerun1
         - magerun2
 
-
-
 vsh_packages_default:
   common:
     essential: true

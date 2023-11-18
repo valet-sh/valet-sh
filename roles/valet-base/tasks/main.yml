@@ -68,7 +68,7 @@
   become: true
 
 - name: include migrate.yml file
-  include_tasks: migrate.yml
+  ansible.builtin.include_tasks: migrate.yml
 
 - name: "Ensure valet services file exists"
   ansible.builtin.template:

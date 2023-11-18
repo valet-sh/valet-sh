@@ -16,69 +16,189 @@
 ---
 
 - name: "Block"
+  when:
+    - current_os == "ubuntu"
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.elasticsearch is defined
+    - valet_sh_project_vars.services.elasticsearch.version is defined
   block:
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
       ansible.builtin.systemd:
         name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
         state: started
+        enabled: true
       become: true
 
-    - name: "workflows » magento2 » services » elasticsearch | wait for elasticsearch to be reachable"
+    - name: "Workflows » magento2 » services » elasticsearch | include valet services file"
+      ansible.builtin.include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "Workflows » magento2 » services » elasticsearch | prepare new config element"
+      ansible.builtin.set_fact:
+        new_service_state_element: "{ 'elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}': true }"
+
+    - name: "workflows » magento2 » services » elasticsearch | update service object"
+      ansible.builtin.set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | merge objects"
+      ansible.builtin.set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | transform object into nice yaml output"
+      ansible.builtin.set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | write new services.yml file"
+      ansible.builtin.copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
+        mode: '0644'
+      become: true
+
+    - name: "Workflows » magento2 » services » elasticsearch | wait for elasticsearch to be reachable"
       ansible.builtin.wait_for:
         port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
         delay: 5
+
+- name: "Block"
   when:
     - current_os == "ubuntu"
     - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.elasticsearch is defined
-    - valet_sh_project_vars.services.elasticsearch.version is defined
-
-- name: "Block"
+    - valet_sh_project_vars.services.opensearch is defined
+    - valet_sh_project_vars.services.opensearch.version is defined
   block:
-    - name: "workflows » magento2 » services » elasticsearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started"
+    - name: "Workflows » magento2 » services » elasticsearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started"
       ansible.builtin.systemd:
         name: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
         state: started
+        enabled: true
       become: true
 
-    - name: "workflows » magento2 » services » elasticsearch | wait for opensearch to be reachable"
+    - name: "Workflows » magento2 » services » elasticsearch | include valet services file"
+      ansible.builtin.include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "Workflows » magento2 » services » elasticsearch | prepare new config element"
+      ansible.builtin.set_fact:
+        new_service_state_element: "{ 'opensearch{{ valet_sh_project_vars.services.opensearch.version }}': true }"
+
+    - name: "Workflows » magento2 » services » elasticsearch | update service object"
+      ansible.builtin.set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | merge objects"
+      ansible.builtin.set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | transform object into nice yaml output"
+      ansible.builtin.set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | write new services.yml file"
+      ansible.builtin.copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
+        mode: '0644'
+      become: true
+
+    - name: "Workflows » magento2 » services » elasticsearch | wait for opensearch to be reachable"
       ansible.builtin.wait_for:
         port: "{{ valet_sh_opensearch_ports[valet_sh_project_vars.services.opensearch.version] }}"
         delay: 5
-  when:
-    - current_os == "ubuntu"
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.opensearch is defined
-    - valet_sh_project_vars.services.opensearch.version is defined
 
 - name: "Block"
-  block:
-    - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
-
-    - name: "workflows » magento2 » services » elasticsearch | wait for elasticsearch to be reachable"
-      ansible.builtin.wait_for:
-        port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
-        delay: 5
   when:
     - current_os == "mac"
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.elasticsearch is defined
     - valet_sh_project_vars.services.elasticsearch.version is defined
+  block:
+    - name: "Workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | include valet services file"
+      ansible.builtin.include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "Workflows » magento2 » services » elasticsearch | prepare new config element"
+      ansible.builtin.set_fact:
+        new_service_state_element: "{ 'elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}': true }"
+
+    - name: "Workflows » magento2 » services » elasticsearch | update service object"
+      ansible.builtin.set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | merge objects"
+      ansible.builtin.set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | transform object into nice yaml output"
+      ansible.builtin.set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | write new services.yml file"
+      ansible.builtin.copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
+        mode: '0644'
+
+    - name: "Workflows » magento2 » services » elasticsearch | wait for elasticsearch to be reachable"
+      ansible.builtin.wait_for:
+        port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
+        delay: 5
 
 - name: "Block"
-  block:
-    - name: "workflows » magento2 » services » elasticsearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
-
-    - name: "workflows » magento2 » services » elasticsearch | wait for opensearch to be reachable"
-      ansible.builtin.wait_for:
-        port: "{{ valet_sh_opensearch_ports[valet_sh_project_vars.services.opensearch.version] }}"
-        delay: 5
   when:
     - current_os == "mac"
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.opensearch is defined
     - valet_sh_project_vars.services.opensearch.version is defined
+  block:
+    - name: "Workflows » magento2 » services » elasticsearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | include valet services file"
+      ansible.builtin.include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "Workflows » magento2 » services » elasticsearch | prepare new config element"
+      ansible.builtin.set_fact:
+        new_service_state_element: "{ 'opensearch{{ valet_sh_project_vars.services.opensearch.version }}': true }"
+
+    - name: "Workflows » magento2 » services » elasticsearch | update service object"
+      ansible.builtin.set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | merge objects"
+      ansible.builtin.set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | transform object into nice yaml output"
+      ansible.builtin.set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "Workflows » magento2 » services » elasticsearch | write new services.yml file"
+      ansible.builtin.copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
+        mode: '0644'
+
+    - name: "Workflows » magento2 » services » elasticsearch | wait for opensearch to be reachable"
+      ansible.builtin.wait_for:
+        port: "{{ valet_sh_opensearch_ports[valet_sh_project_vars.services.opensearch.version] }}"
+        delay: 5
 
 ## TODO: implement plugin installation for elasticsearch based on .valet-sh.yml file

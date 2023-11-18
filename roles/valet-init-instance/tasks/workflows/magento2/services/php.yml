@@ -16,34 +16,94 @@
 ---
 
 - name: "Block"
+  when:
+    - current_os == "ubuntu"
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.php is defined
+    - valet_sh_project_vars.services.php.version is defined
   block:
     - name: "workflows » magento2 » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
       ansible.builtin.systemd:
         name: "php{{ valet_sh_project_vars.services.php.version }}-fpm"
         state: started
+        enabled: true
+      become: true
+
+    - name: "workflows » magento2 » services » php | include valet services file"
+      ansible.builtin.include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » magento2 » services » php | prepare new config element"
+      ansible.builtin.set_fact:
+        new_service_state_element: "{ 'php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}': true }"
+
+    - name: "workflows » magento2 » services » php | update service object"
+      ansible.builtin.set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » magento2 » services » php | merge objects"
+      ansible.builtin.set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » magento2 » services » php | transform object into nice yaml output"
+      ansible.builtin.set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » magento2 » services » php | write new services.yml file"
+      ansible.builtin.copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
+        mode: '0644'
       become: true
 
     - name: "workflows » magento2 » services » php | wait for php-fpm to be reachable"
       ansible.builtin.wait_for:
         path: "/var/run/php/php{{ valet_sh_project_vars.services.php.version }}-fpm.sock"
         delay: 5
-  when:
-    - current_os == "ubuntu"
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.php is defined
-    - valet_sh_project_vars.services.php.version is defined
 
 - name: "Block"
-  block:
-    - name: "workflows » magento2 » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
-
-    - name: "workflows » magento2 » services » php | wait for php-fpm to be reachable"
-      ansible.builtin.wait_for:
-        path: "/tmp/vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}.sock"
-        delay: 5
   when:
     - current_os == "mac"
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.php is defined
     - valet_sh_project_vars.services.php.version is defined
+  block:
+    - name: "workflows » magento2 » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
+
+    - name: "workflows » magento2 » services » php | include valet services file"
+      ansible.builtin.include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_sh_services_obj
+
+    - name: "workflows » magento2 » services » php | prepare new config element"
+      ansible.builtin.set_fact:
+        new_service_state_element: "{ 'php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}': true }"
+
+    - name: "workflows » magento2 » services » php | update service object"
+      ansible.builtin.set_fact:
+        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
+
+    - name: "workflows » magento2 » services » php | merge objects"
+      ansible.builtin.set_fact:
+        valet_sh_services_obj:
+          states: "{{ valet_sh_services_updated_states }}"
+          defaults: "{{ valet_sh_services_obj.defaults }}"
+
+    - name: "workflows » magento2 » services » php | transform object into nice yaml output"
+      ansible.builtin.set_fact:
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
+
+    - name: "workflows » magento2 » services » php | write new services.yml file"
+      ansible.builtin.copy:
+        content: "{{ valet_etc_services_list }}"
+        dest: "{{ valet_etc_services_file }}"
+        mode: '0644'
+
+    - name: "workflows » magento2 » services » php | wait for php-fpm to be reachable"
+      ansible.builtin.wait_for:
+        path: "/tmp/vsh-php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}.sock"
+        delay: 5

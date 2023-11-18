@@ -49,7 +49,7 @@
   when: valet_service_name in vsh_packages
 
 - name: "actions » default | load tasks for default action"
-  ansible.builtin.include_tasks: "defaults/{{ valet_service_family }}.yml"
+  ansible.builtin.include_tasks: "defaults-command/{{ valet_service_family }}.yml"
 
 - name: "actions » default | enable abd start {{ valet_service_name }} service"
   ansible.builtin.systemd:

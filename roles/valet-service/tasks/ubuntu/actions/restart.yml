@@ -27,7 +27,8 @@
       vsh_service_info:
       register: vsh_service_information
 
-    - ansible.builtin.include_tasks: "ubuntu/actions/sub-restart-all.yml"
+    - name: "Include 'ubuntu/actions/sub-restart-all.yml'"
+      ansible.builtin.include_tasks: "ubuntu/actions/sub-restart-all.yml"
       vars:
         valet_current_service_item: "{{ vsh_service_information.key }}"
       with_dict: "{{ vsh_service_information.result }}"

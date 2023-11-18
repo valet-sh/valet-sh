@@ -1,8 +1,9 @@
 testresources==2.0.1
-ansible
+ansible==8.*
 ansible-lint
 beautifultable==1.1.0
 PyMySQL==1.0.2
 cryptography==39.*
 git+https://github.com/valet-sh/cli@1.4.0
 shyaml==0.6.2
+lxml

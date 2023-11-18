@@ -57,7 +57,7 @@
       ansible.builtin.set_fact:
         valet_links_obj:
           valet_links:
-            links_index: "{{ valet_links_obj.valet_links.links_index | difference (link_name) }}"
+            links_index: "{{ valet_links_obj.valet_links.links_index | difference(link_name) }}"
             links: "{{ new_valet_links }}"
 
 - name: "Include 'partials/update-default-vhost-template.yml'"

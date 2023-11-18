@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: "Include 'partials/load-valet-sh-file.yml'"
+- name: "Include 'macos/partials/load-valet-sh-file.yml'"
   ansible.builtin.include_tasks: "partials/load-valet-sh-file.yml"
   when: valet_sh_project_vars is not defined
 
@@ -43,10 +43,11 @@
     msg: "{{ link_name }} is not allowed!"
   when: "link_name in valet_link_blacklist"
 
-- name: "Include 'sub/read.yml'"
+- name: "Include 'macos/sub/read.yml'"
   ansible.builtin.include_tasks: "sub/read.yml"
 
 - name: "Block"
+  when: "link_name in valet_links_obj.valet_links.links_index"
   block:
     - name: "Link | set empty array 'new_valet_links'"
       ansible.builtin.set_fact:
@@ -62,9 +63,8 @@
       ansible.builtin.set_fact:
         valet_links_obj:
           valet_links:
-            links_index: "{{ valet_links_obj.valet_links.links_index | difference ([link_name]) }}"
+            links_index: "{{ valet_links_obj.valet_links.links_index | difference([link_name]) }}"
             links: "{{ new_valet_links }}"
-  when: "link_name in valet_links_obj.valet_links.links_index"
 
 - name: "Link | change 'valet_current_path' when .valet-sh.yaml file was found"
   ansible.builtin.set_fact:
@@ -90,6 +90,7 @@
     - current_php_version is not defined
 
 - name: "Block"
+  when: current_php_version is not defined or current_php_version|length==0
   block:
     - name: "Link | include valet services file"
       ansible.builtin.include_vars:
@@ -102,7 +103,6 @@
         - valet_sh_services_obj is defined
         - valet_sh_services_obj.defaults is defined
         - valet_sh_services_obj.defaults.php is defined
-  when: current_php_version is not defined or current_php_version|length==0
 
 - name: "Link | set default php version"
   ansible.builtin.set_fact:
@@ -110,6 +110,7 @@
   when: (current_php_version is undefined) or (current_php_version | length == 0)
 
 - name: "Block"
+  when: "current_php_version not in available_php_versions"
   block:
     - name: "Link | check if php_version string mapped to origin"
       ansible.builtin.set_fact:
@@ -120,7 +121,6 @@
         - aliases
       loop_control:
         loop_var: valet_sh_available_php_versions_alias_mapping_item
-  when: "current_php_version not in available_php_versions"
 
 - name: "Link | fail when php_version is unknown"
   ansible.builtin.fail:
@@ -135,6 +135,7 @@
     cert_prefix: "{{ link_name }}"
 
 - name: "Block"
+  when: current_php_version is defined
   block:
     - name: Set fact for restart_php_service
       ansible.builtin.set_fact:
@@ -149,23 +150,24 @@
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ restart_php_service }}"
       failed_when: false
       when: current_php_version not in valet_sh_service_privileged_services
-  when: current_php_version is defined
 
 - name: "Link | find a matching application template"
+  when: not template_found
   block:
     - name: "Include 'templates/magento2.yml'"
-      include_tasks: templates/magento2.yml
+      ansible.builtin.include_tasks: templates/magento2.yml
     - name: "Include 'templates/neos.yml'"
-      include_tasks: templates/neos.yml
+      ansible.builtin.include_tasks: templates/neos.yml
     - name: "Include 'templates/typo3.yml'"
-      include_tasks: templates/typo3.yml
+      ansible.builtin.include_tasks: templates/typo3.yml
+    - name: "Include 'templates/aem.yml'"
+      ansible.builtin.include_tasks: templates/aem.yml
     - name: "Include 'templates/shopware6.yml'"
-      include_tasks: templates/shopware6.yml
+      ansible.builtin.include_tasks: templates/shopware6.yml
     - name: "Include 'templates/magento1.yml'"
-      include_tasks: templates/magento1.yml
+      ansible.builtin.include_tasks: templates/magento1.yml
     - name: "Include templates/fallback.yml"
-      include_tasks: templates/fallback.yml
-  when: not template_found
+      ansible.builtin.include_tasks: templates/fallback.yml
 
 - name: "Link | create new valet_link variable"
   ansible.builtin.set_fact:
@@ -183,8 +185,8 @@
         links_index: "{{ valet_links_obj.valet_links.links_index + [link_name] }}"
         links: "{{ valet_links_obj.valet_links.links + new_valet_link }}"
 
-- name: "Include 'partials/update-default-vhost-template.yml'"
-  ansible.builtin.include_tasks: "partials/update-default-vhost-template.yml"
+- name: "Include 'macos/partials/update-default-vhost-template.yml'"
+  ansible.builtin.include_tasks: "macos/partials/update-default-vhost-template.yml"
 
-- name: "Include 'sub/write.yml'"
-  ansible.builtin.include_tasks: "sub/write.yml"
+- name: "Include 'macos/sub/write.yml'"
+  ansible.builtin.include_tasks: "macos/sub/write.yml"

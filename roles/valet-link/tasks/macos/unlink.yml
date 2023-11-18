@@ -34,6 +34,7 @@
   when: "(not link_name in valet_links_obj.valet_links.links_index) and (not valet_link_silent|bool)"
 
 - name: "Block"
+  when: "link_name in valet_links_obj.valet_links.links_index"
   block:
     - name: "Unlink | delete vhost configuration for {{ link_name }}.{{ development_tld }}"
       ansible.builtin.file:
@@ -55,9 +56,8 @@
       ansible.builtin.set_fact:
         valet_links_obj:
           valet_links:
-            links_index: "{{ valet_links_obj.valet_links.links_index | difference (link_name) }}"
+            links_index: "{{ valet_links_obj.valet_links.links_index | difference(link_name) }}"
             links: "{{ new_valet_links }}"
-  when: "link_name in valet_links_obj.valet_links.links_index"
 
 - name: "Include 'partials/update-default-vhost-template.yml'"
   ansible.builtin.include_tasks: "partials/update-default-vhost-template.yml"

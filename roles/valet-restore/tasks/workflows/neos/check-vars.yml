@@ -205,3 +205,12 @@
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.php is defined
     - valet_sh_project_vars.services.php.version is defined
+
+- name: "workflows » neos » check-vars | check db sync parameter from .valet-sh.yml"
+  ansible.builtin.set_fact:
+    valet_restore_skip_db: true
+  when:
+    - valet_sh_project_vars.instance is defined
+    - valet_sh_project_vars.instance.sync is defined
+    - valet_sh_project_vars.instance.sync.db is defined
+    - not valet_sh_project_vars.instance.sync.db|bool

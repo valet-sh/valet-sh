@@ -15,13 +15,22 @@
 ##
 ---
 
-- name: "Include install"
+- name: "Include 'install'"
   ansible.builtin.include_tasks: sub-install.yml
 
-- name: "Include ca"
+- name: "Include 'sub-ca'"
   ansible.builtin.include_tasks: sub-ca.yml
   when: cert_prefix is not defined
 
-- name: "Include server"
+- name: "Include 'cert-renew'"
+  ansible.builtin.include_tasks: cert-renew.yml
+  when: cert_prefix is not defined
+
+- name: "Include 'sub-server'"
   ansible.builtin.include_tasks: sub-server.yml
   when: cert_prefix is defined
+
+- name: "persist certificate package state"
+  vsh_service:
+    name: "certificate"
+    state: installed

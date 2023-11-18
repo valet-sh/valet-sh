@@ -20,9 +20,6 @@
     msg: "'{{ package_name }}' is not available"
   when: package_name not in valet_sh.services.php.variants
 
-- debug:
-    msg: "{{ php_versions[package_name] }}"
-
 - name: "install defined php versions"
   ansible.builtin.include_tasks: uninstall-php.yml
   vars:

@@ -19,6 +19,29 @@
   ansible.builtin.include_tasks: macos/install.yml
   when: package_action == "install"
 
+# @FIXME
+- name: "ensure domain '{{ dnsmasq_domain }}' is handled by local dns"
+  ansible.builtin.lineinfile:
+    path: "/etc/resolver/{{ dnsmasq_domain }}"
+    line: 'nameserver 127.0.0.1'
+    create: true
+    mode: '0644'
+  become: true
+
+- name: "ensure dns resolving for .{{ dnsmasq_domain }} domain is handled by dnsmasq"
+  ansible.builtin.template:
+    src: development-domain.conf.j2
+    dest: "/usr/local/etc/dnsmasq.d/development-domain.conf"
+    mode: '0644'
+  notify: brew | dnsmasq | restarted
+
+- name: "run 'codesign -f -s - {{ valet_sh_homebrew_prefix }}/dnsmasq/sbin/dnsmasq'"
+  ansible.builtin.shell: "codesign -f -s - {{ valet_sh_homebrew_prefix }}/dnsmasq/sbin/dnsmasq"
+  become: true
+
+- name: brew | dnsmasq | restarted
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services  restart dnsmasq"
+
 - name: "Include uninstall.yml"
   ansible.builtin.include_tasks: macos/uninstall.yml
   when: package_action == "uninstall"

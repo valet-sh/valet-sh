@@ -15,6 +15,27 @@
 ##
 ---
 
+- name: "CA | check if CA '{{ certificate_ca_cert_file }}' already exists"
+  ansible.builtin.stat:
+    path: "{{ certificate_ca_cert_file }}"
+  register: ca_cert_check_obj
+
+- name: "CA | check if CA '{{ certificate_ca_cert_file }}' expires in less than 6 months"
+  ansible.builtin.shell: "openssl x509 -checkend 15552000 -noout -in {{ certificate_ca_cert_file }}"
+  failed_when: false
+  when: ca_cert_check_obj.stat.exists|bool
+  register: ca_cert_expires_check_obj
+
+- name: "CA | delete expiring CA files"
+  ansible.builtin.file:
+    path: "{{ certificate_ca_cert_path }}"
+    state: absent
+  when:
+    - ca_cert_check_obj is defined
+    - ca_cert_check_obj.stat is defined
+    - ca_cert_check_obj.stat.exists|bool
+  become: true
+
 - name: CA | ensure base directories existing
   ansible.builtin.file:
     path: "{{ certificate_base_path_item }}"
@@ -30,7 +51,7 @@
   loop_control:
     loop_var: certificate_base_path_item
 
-- name: CA | generate private ca key
+- name: "CA | generate private ca key"
   ansible.builtin.shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
   args:
     creates: "{{ certificate_ca_key_file }}"

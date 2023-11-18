@@ -26,4 +26,3 @@
   ansible.builtin.include_role:
     name: "{{ vsh_packages_item.value.family | default(vsh_packages_item.key) }}"
     public: true
-

@@ -1,0 +1,132 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » aem » project-env | get target aem sdk version"
+  ansible.builtin.set_fact:
+    valet_sh_aem_sdk_target_version: "{{ valet_sh_project_vars.instance.sdk_version }}"
+
+- name: "workflows » aem » project-env | get addons"
+  ansible.builtin.set_fact:
+    valet_sh_aem_addons: "{{ valet_sh_project_vars.instance.addons }}"
+  when: valet_sh_project_vars.instance.addons is defined
+
+- name: "workflows » aem » project-env | ensure aem.sdk.api in pom.xml is up2date"
+  community.general.xml:
+    path: "{{ valet_sh_project_src_path }}/pom.xml"
+    namespaces:
+      ns: "http://maven.apache.org/POM/4.0.0"
+    xpath: "/ns:project/ns:properties/ns:aem.sdk.api"
+    value: "{{ valet_sh_aem_sdk_target_version }}"
+    state: present
+
+- name: "workflows » aem » project-env | ensure aem.port in pom.xml is up2date"
+  community.general.xml:
+    path: "{{ valet_sh_project_src_path }}/pom.xml"
+    namespaces:
+      ns: "http://maven.apache.org/POM/4.0.0"
+    xpath: "/ns:project/ns:properties/ns:aem.port"
+    value: "{{ valet_sh_project_vars.instance.author_port }}"
+    state: present
+
+- name: "workflows » aem » project-env | ensure aem.publish.port in pom.xml is up2date"
+  community.general.xml:
+    path: "{{ valet_sh_project_src_path }}/pom.xml"
+    namespaces:
+      ns: "http://maven.apache.org/POM/4.0.0"
+    xpath: "/ns:project/ns:properties/ns:aem.publish.port"
+    value: "{{ valet_sh_project_vars.instance.publish_port }}"
+    state: present
+
+- name: "workflows » aem » project-env | ensure repo tool url is up2date"
+  ansible.builtin.copy:
+    dest: "{{ valet_sh_project_src_path }}/.repo"
+    content: "server=http://localhost:{{ valet_sh_project_vars.instance.author_port }}"
+    mode: '0644'
+
+- name: "workflows » aem » project-env | get previous installed version file"
+  ansible.builtin.stat:
+    path: "{{ valet_sh_aem_runtime_dir }}/{{ valet_sh_aem_installed_version_file_name }}"
+  register: installed_version_file
+
+- name: "workflows » aem » project-env | get previous installed version"
+  ansible.builtin.set_fact:
+    installed_version: "{{ lookup('file', valet_sh_aem_runtime_dir + '/' + valet_sh_aem_installed_version_file_name) }}"
+  when: installed_version_file.stat.exists
+
+- name: "workflows » aem » project-env | determine whether aem needs to be re-installed"
+  ansible.builtin.set_fact:
+    have_to_reinstall: "{{ (installed_version is not defined) or (valet_sh_aem_sdk_target_version != installed_version) }}"
+
+- name: "workflows » aem » project-env | remove old install-scripts"
+  ansible.builtin.file:
+    path: "{{ valet_sh_aem_runtime_dir }}/install-scripts"
+    state: absent
+
+- name: "workflows » aem » project-env | ensure install-scripts folder exists"
+  ansible.builtin.file:
+    path: "{{ valet_sh_aem_runtime_dir }}/install-scripts"
+    mode: '0755'
+    state: directory
+
+- name: "workflows » aem » project-env | copy install-scripts"
+  ansible.builtin.copy:
+    src: "templates/install-scripts/"
+    dest: "{{ valet_sh_aem_runtime_dir }}/install-scripts"
+    mode: "a+x"
+
+- name: "workflows » aem » project-env | ensure run-configurations folder exists"
+  ansible.builtin.file:
+    path: "{{ valet_sh_project_src_path }}/.run"
+    state: directory
+    mode: '0755'
+
+- name: "workflows » aem » project-env | copy run-configurations"
+  ansible.builtin.copy:
+    src: "templates/run-configurations/"
+    dest: "{{ valet_sh_project_src_path }}/.run"
+    mode: '0755'
+
+- name: "workflows » aem » project-env | add correct debug port for author"
+  ansible.builtin.replace:
+    path: "{{ valet_sh_project_src_path }}/.run/author-debug.run.xml"
+    regexp: "5005"
+    replace: "{{ valet_sh_project_vars.instance.author_debug_port }}"
+
+- name: "workflows » aem » project-env | add correct debug port for publish"
+  ansible.builtin.replace:
+    path: "{{ valet_sh_project_src_path }}/.run/publish-debug.run.xml"
+    regexp: "5006"
+    replace: "{{ valet_sh_project_vars.instance.publish_debug_port }}"
+
+- name: "workflows » aem » project-env | get all install-scripts"
+  ansible.builtin.find:
+    paths: "{{ valet_sh_aem_runtime_dir }}/install-scripts/"
+  register: install_scripts
+
+- name: "workflows » aem » project-env | replace author port in install-scripts"
+  ansible.builtin.replace:
+    path: "{{ item.path }}"
+    regexp: '4502'
+    replace: "{{ valet_sh_project_vars.instance.author_port }}"
+  with_items: "{{ install_scripts.files }}"
+
+- name: "workflows » aem » project-env | replace publish port in install-scripts"
+  ansible.builtin.replace:
+    path: "{{ item.path }}"
+    regexp: '4503'
+    replace: "{{ valet_sh_project_vars.instance.publish_port }}"
+  with_items: "{{ install_scripts.files }}"

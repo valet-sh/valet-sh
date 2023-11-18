@@ -42,7 +42,7 @@
 
 - name: "Block"
   when: valet_service_base_name == "mysql"
-- block:
+  block:
     - name: "create symlinks for default mysql"
       ansible.builtin.file:
         src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ valet_service_name_version }}"

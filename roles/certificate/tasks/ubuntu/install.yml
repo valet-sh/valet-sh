@@ -18,11 +18,16 @@
 - name: "Include Install"
   ansible.builtin.include_tasks: sub-install.yml
 
-- name: "Include CA"
+- name: "Include 'sub-ca'"
   ansible.builtin.include_tasks: sub-ca.yml
   when: cert_prefix is not defined
 
-- name: "Include Server"
+  # @FIXME misleading file naming
+- name: "Include 'cert-renew.yml'"
+  ansible.builtin.include_tasks: cert-renew.yml
+  when: cert_prefix is not defined
+
+- name: "Include 'sub-server'"
   ansible.builtin.include_tasks: sub-server.yml
   when: cert_prefix is defined
 

@@ -28,4 +28,8 @@
   ansible.builtin.include_tasks: "workflows/neos/main.yml"
   when: valet_sh_project_vars.instance.type == "neos"
 
+- name: "partials » load-project-workflow | include 'workflows/aem/main.yml'"
+  ansible.builtin.include_tasks: "workflows/aem/main.yml"
+  when: valet_sh_project_vars.instance.type == "aem"
+
 # @TODO: fail when no project workflow was included

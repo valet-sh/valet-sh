@@ -1,0 +1,26 @@
+#
+# valet.sh | exec
+#
+# @author: "Philipp Dittert"
+# @command: "exec"
+# @platform: macOS Ubuntu
+# @description: "<todo>"
+# @sudo: true
+# @usage: "valet.sh exec <action>"
+# @help:
+#
+# all commands will be executed on the default mysql database you selected
+#
+# valet.sh exec ls
+#
+---
+
+- name: "exec"
+  hosts: local
+  gather_facts: True
+  vars:
+    valet_action: "{{ cli.args[0] | default() }}"
+    valet_current_path: "{{ lookup('env','OLDPWD') }}"
+    valet_action_target: "{{ cli.args[1] | default() }}"
+  roles:
+    - valet-exec

@@ -32,6 +32,7 @@
       ansible.builtin.copy:
         src: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.processed_config }}"
         dest: "{{ valet_sh_project_src_path }}/app/etc/env.php"
+        mode: '0644'
         remote_src: true
       when: magento2_env_php_obj.stat.exists|bool
 
@@ -132,3 +133,4 @@
       ansible.builtin.template:
         src: "templates/env.php.j2"
         dest: "{{ valet_sh_project_src_path }}/app/etc/env.php"
+        mode: '0644'
