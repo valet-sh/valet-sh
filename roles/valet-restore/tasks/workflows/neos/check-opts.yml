@@ -1,4 +1,4 @@
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,7 +14,23 @@
 ##
 ---
 
-- name: "workflows » magento2 » check-opts | check if '--identifier' opt is set"
+- name: "workflows » neos » check-opts | check if '--skip-db' opt is set"
+  set_fact:
+    valet_opt_flag_skip_db: true
+  when: "'--skip-db' in valet_cli_opts"
+
+- name: "workflows » neos » check-opts | check if '--skip-fs' opt is set"
+  set_fact:
+    valet_opt_flag_skip_fs: true
+  when: "'--skip-fs' in valet_cli_opts"
+
+- name: "workflows » neos » check-opts | check if '--skip-restore' opt is set"
+  set_fact:
+    valet_opt_flag_skip_db: true
+    valet_opt_flag_skip_fs: true
+  when: "'--skip-restore' in valet_cli_opts"
+
+- name: "workflows » neos » check-opts | check if '--identifier' opt is set"
   set_fact:
     valet_opt_instance_identifier: "{{ valet_cli_opts_item | regex_search('identifier=(.+)', '\\1') }}"
   with_items: "{{ valet_cli_opts }}"
@@ -22,7 +38,7 @@
   loop_control:
     loop_var: valet_cli_opts_item
 
-- name: "workflows » magento2 » check-opts | normalize variable 'valet_opt_instance_identifier'"
+- name: "workflows » neos » check-opts | normalize variable 'valet_opt_instance_identifier'"
   set_fact:
     valet_opt_instance_identifier: "{{ valet_opt_instance_identifier | first }}"
   when: valet_opt_instance_identifier is defined and valet_opt_instance_identifier|length>0
