@@ -24,6 +24,12 @@
     valet_opt_flag_skip_fs: true
   when: "'--skip-fs' in valet_cli_opts"
 
+- name: "workflows » neos » check-opts | check if '--skip-restore' opt is set"
+  set_fact:
+    valet_opt_flag_skip_db: true
+    valet_opt_flag_skip_fs: true
+  when: "'--skip-restore' in valet_cli_opts"
+
 - name: "workflows » neos » check-opts | check if '--identifier' opt is set"
   set_fact:
     valet_opt_instance_identifier: "{{ valet_cli_opts_item | regex_search('identifier=(.+)', '\\1') }}"
