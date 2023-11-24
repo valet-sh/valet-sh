@@ -265,6 +265,31 @@
     state: reloaded
   become: true
 
+- name: "systemd | php8.3-fpm | started"
+  systemd:
+    name: "php8.3-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php8.3-fpm | stopped"
+  systemd:
+    name: "php8.3-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php8.3-fpm | restarted"
+  systemd:
+    name: "php8.3-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php8.3-fpm | reloaded"
+  systemd:
+    name: "php8.3-fpm"
+    state: reloaded
+  become: true
+
+
 - name: brew | vsh-php56 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
 
@@ -346,6 +371,14 @@
 - name: brew | vsh-php82 | started
   shell: "{{ valet_sh_homebrew_bin }} services start vsh-php82"
 
+- name: brew | vsh-php83 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php83"
+
+- name: brew | vsh-php83 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php83"
+
+- name: brew | vsh-php83 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php83"
 
 - name: "brew | nginx | restarted"
   command: "sudo {{ valet_sh_homebrew_bin }} services restart nginx"
