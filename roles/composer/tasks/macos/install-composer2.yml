@@ -21,7 +21,7 @@
     dest: "{{ composer2_phar_bin }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: "0755"
+    mode: '0755'
     force: true
   become: true
 
