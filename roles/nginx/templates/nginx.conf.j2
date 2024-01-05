@@ -24,6 +24,7 @@ http {
     include {{ valet_sh_prefix }}/etc/nginx/mime.types;
     default_type application/octet-stream;
 
+    http2 on;
     ssl_session_cache  shared:SSL:10m;
     ssl_session_timeout  5m;
     ssl_protocols TLSv1.1 TLSv1.2;
@@ -57,10 +58,12 @@ http {
                 image/svg+xml
                 application/javascript;
 
-{% for (valet_sh_php_socket_item_key,valet_sh_php_socket_item_value) in valet_sh_php_sockets.items() %}
-    upstream {{ valet_sh_php_socket_item_key }} {
-        server unix:{{ valet_sh_php_socket_item_value }};
+{% for (vsh_packages_item_key,vsh_packages_item_value) in vsh_packages.items() %}
+{% if vsh_packages_item_value.family == "php" %}
+    upstream {{ vsh_packages_item_key }} {
+        server unix:{{ vsh_packages_item_value.unix_path }};
     }
+{% endif %}
 {% endfor %}
 
     include {{ valet_sh_prefix }}/etc/nginx/conf.d/*.conf;

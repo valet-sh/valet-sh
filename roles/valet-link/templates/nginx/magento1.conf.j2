@@ -21,7 +21,7 @@ server {
 }
 
 server {
-	listen 127.0.0.1:443 ssl http2;
+    listen 127.0.0.1:443 ssl;
 
     server_name {{ link_name }}.{{ development_tld }} *.{{ link_name }}.{{ development_tld }};
     root {{ valet_current_path }};
