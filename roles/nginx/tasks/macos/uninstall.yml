@@ -1,5 +1,5 @@
 ##
-#   Copyright 2023 TechDivision GmbH
+#   Copyright 2024 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 - name: "Validate version"
   ansible.builtin.fail:
     msg: "'{{ package_name }}' is not available"
-  when: package_name not in valet_sh.services.elasticsearch
+  when: package_name not in valet_sh.services.nginx.variants
 
 - name: "Include 'uninstall-{{ package_name }}.yml'"
   ansible.builtin.include_tasks: "uninstall-{{ package_name }}.yml"

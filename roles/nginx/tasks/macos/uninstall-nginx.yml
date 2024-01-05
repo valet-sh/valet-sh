@@ -1,5 +1,5 @@
 ##
-#   Copyright 2023 TechDivision GmbH
+#   Copyright 2024 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 
 - name: "ensure nginx is stopped"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop nginx"
+  become: true
 
 - name: "ensure nginx is removed"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove nginx"
+  ignore_errors: true
 
 - name: "ensure nginx related files are absent"
   ansible.builtin.file:
@@ -28,6 +30,7 @@
   become: true
   with_items:
     - "{{ valet_sh_prefix }}/etc/nginx"
+    - "{{ valet_sh_prefix }}/opt/nginx"
     - "{{ valet_sh_default_vhost_root }}"
   loop_control:
     loop_var: valet_sh_service_nginx_item
