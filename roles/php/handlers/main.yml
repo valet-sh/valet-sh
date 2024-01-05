@@ -232,6 +232,30 @@
     state: reloaded
   become: true
 
+- name: "systemd | php8.3-fpm | started"
+  ansible.builtin.systemd:
+    name: "php8.3-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php8.3-fpm | stopped"
+  ansible.builtin.systemd:
+    name: "php8.3-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php8.3-fpm | restarted"
+  ansible.builtin.systemd:
+    name: "php8.3-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php8.3-fpm | reloaded"
+  ansible.builtin.systemd:
+    name: "php8.3-fpm"
+    state: reloaded
+  become: true
+
 - name: brew | vsh-php56 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
 
@@ -312,3 +336,12 @@
 
 - name: brew | vsh-php82 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php82"
+
+- name: brew | vsh-php83 | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php83"
+
+- name: brew | vsh-php83 | stopped
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php83"
+
+- name: brew | vsh-php83 | started
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php83"
