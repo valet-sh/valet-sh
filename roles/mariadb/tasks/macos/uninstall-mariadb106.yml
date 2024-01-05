@@ -1,5 +1,5 @@
 ##
-#   Copyright 2023 TechDivision GmbH
+#   Copyright 2024 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@
 
 - name: "ensure {{ current_mariadb_key }} is stopped"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-{{ current_mariadb_key }}"
+
+- name: "ensure vsh-{{ current_mariadb_key }} is absent"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove vsh-{{ current_mariadb_key }}"
 
 - name: "ensure {{ current_mariadb_key }} related files are absent"
   ansible.builtin.file:
