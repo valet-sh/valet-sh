@@ -1,5 +1,5 @@
 ##
-#   Copyright 2023 TechDivision GmbH
+#   Copyright 2024 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 ---
 
 - name: ensure dnsmasq is stopped
-  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services  stop dnsmasq"
+  ansible.builtin.shell: "sudo {{ valet_sh_homebrew_bin }} services stop dnsmasq"
 
 - name: "Ensure dnsmasq is uninstalled"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} remove dnsmasq"
