@@ -1,5 +1,5 @@
 ##
-#   Copyright 2023 TechDivision GmbH
+#   Copyright 2024 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,69 +15,66 @@
 ##
 ---
 
-- name: "php versions fixme"
-  set_fact:
-    - vsh-php56
-    - vsh-php70
-    - vsh-php71
-    - vsh-php72
-    - vsh-php73
-    - vsh-php74
-    - vsh-php80
-    - vsh-php81
-    - vsh-php82
+- name: fail when php version is not set
+  ansible.builtin.fail:
+    msg: "version variable is not defined"
+  when: (current_php.version is not defined) or (current_php.version|length == 0)
+
+- name: set php_version variable
+  ansible.builtin.set_fact:
+    php_version: "{{ current_php.version }}"
 
 - name: "set php_version variable"
   ansible.builtin.set_fact:
-    php_version: "{{ current_php[-2:-1] }}.{{ current_php[-1] }}"
+    php_package_name: "vsh-php{{ php_version | replace('.', '') }}"
 
-- name: "ensure {{ current_php }} is installed"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install {{ current_php }}"
+- name: "ensure {{ php_package_name }} is installed"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install {{ php_package_name }}"
 
-- name: "ensure directory '{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available' exists"
+- name: "ensure directory '{{ valet_sh_prefix }}/etc/{{ php_package_name }}/mods-available' exists"
   ansible.builtin.file:
-    path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available"
+    path: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/mods-available"
     state: directory
     mode: '0755'
 
 - name: ensure xdebug.ini configuration is deleted
   ansible.builtin.file:
-    path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug.ini"
+    path: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/mods-available/xdebug.ini"
     state: absent
   become: true
 
 - name: ensure xdebug2 config is deployed
   ansible.builtin.template:
     src: "macos/xdebug2.ini.j2"
-    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug2.ini"
+    dest: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/mods-available/xdebug2.ini"
     mode: '0644'
   when: 'php_version in native_xdebug2_versions'
 
 - name: ensure xdebug3 config is deployed
   ansible.builtin.template:
     src: "macos/xdebug3.ini.j2"
-    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug3.ini"
+    dest: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/mods-available/xdebug3.ini"
     mode: '0644'
   when: 'php_version in native_xdebug3_versions'
 
 - name: ensure compiled xdebug2 config is deployed
   ansible.builtin.template:
     src: "macos/xdebug2-compiled.ini.j2"
-    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/xdebug2.ini"
+    dest: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/mods-available/xdebug2.ini"
     mode: '0644'
   when: 'php_version in compiled_xdebug2_versions'
 
 - name: "ensure imagick config file exists"
   ansible.builtin.lineinfile:
-    path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/imagick.ini"
+    path: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/mods-available/imagick.ini"
     line: 'extension=imagick.so'
     mode: '0644'
     create: true
 
 - name: "ensure imagick module is enabled"
   ansible.builtin.file:
-    src: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available/imagick.ini"
-    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/conf.d/imagick.ini"
+    src: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/mods-available/imagick.ini"
+    dest: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/conf.d/imagick.ini"
     state: link
   notify: "brew | {{ current_php }} | restarted"
 
@@ -95,7 +92,7 @@
 
 - name: set PATH env variable
   ansible.builtin.lineinfile:
-    path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/php-fpm.d/www.conf"
+    path: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/php-fpm.d/www.conf"
     regexp: ';env[PATH] = /usr/local/bin:/usr/bin:/bin'
     line: "env[PATH] = /usr/local/bin:/usr/bin:/bin"
   when: current_php != "vsh-php56"
@@ -110,7 +107,7 @@
 - name: ensure php configuration is up2date
   ansible.builtin.template:
     src: "macos/valet-sh.conf.j2"
-    dest: "{{ valet_sh_prefix }}/etc/{{ current_php }}/conf.d/95-valet-sh.ini"
+    dest: "{{ valet_sh_prefix }}/etc/{{ php_package_name }}/conf.d/95-valet-sh.ini"
     mode: '0644'
   notify: "brew | {{ current_php }} | restarted"
 

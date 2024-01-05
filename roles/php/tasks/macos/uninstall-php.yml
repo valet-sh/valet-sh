@@ -1,0 +1,50 @@
+##
+#   Copyright 2024 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: fail when php version is not set
+  ansible.builtin.fail:
+    msg: "version variable is not defined"
+  when: (current_php.version is not defined) or (current_php.version|length == 0)
+
+- name: set php_version variable
+  ansible.builtin.set_fact:
+    php_version: "{{ current_php.version }}"
+
+- name: "set php_version variable"
+  ansible.builtin.set_fact:
+    php_package_name: "vsh-php{{ php_version | replace('.', '') }}"
+
+- name: "ensure {{ php_package_name }} is stopped"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop {{ php_package_name }}"
+
+- name: "ensure {{ php_package_name }} is uninstalled"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} uninstall {{ php_package_name }}"
+
+- name: ensure php configuration is absent
+  ansible.builtin.file:
+    path: "{{ php_version_path_item }}"
+    state: absent
+  with_items:
+    - "{{ valet_sh_prefix }}/etc/{{ php_package_name }}"
+  loop_control:
+    loop_var: php_version_path_item
+
+- name: "persist {{ package_name }} package state"
+  vsh.core.vsh_service:
+    name: "{{ package_name }}"
+    state: absent
+    enabled: false
