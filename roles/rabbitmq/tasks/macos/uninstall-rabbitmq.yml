@@ -1,5 +1,5 @@
 ##
-#   Copyright 2023 TechDivision GmbH
+#   Copyright 2024 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,12 +15,20 @@
 ##
 ---
 
-- name: "Ensure rabbitmq is restarted"
+- name: "Ensure rabbitmq is stopped"
   ansible.builtin.shell: "/usr/local/bin/brew services stop rabbitmq"
   when: current_arch != "arm64"
 
-- name: "Ensure rabbitmq is restarted"
+- name: "Ensure rabbitmq is stopped"
   ansible.builtin.shell: "/opt/homebrew/bin/brew services stop rabbitmq"
+  when: current_arch == "arm64"
+
+- name: "Ensure rabbitmq is absent"
+  ansible.builtin.shell: "/usr/local/bin/brew remove rabbitmq"
+  when: current_arch != "arm64"
+
+- name: "Ensure rabbitmq is absent"
+  ansible.builtin.shell: "/opt/homebrew/bin/brew remove rabbitmq"
   when: current_arch == "arm64"
 
 - name: ensure nginx vhost configuration for rabbitmq is absent
