@@ -38,12 +38,30 @@
   - name: "workflows » magento2 » project-env | set magento2 related variables"
     set_fact:
       valet_sh_magento2_key: "{{ valet_sh_project_vars.instance.key }}"
-      valet_sh_magento2_crypt_key: "{{ valet_sh_project_vars.instance.crypt_key }}"
       vsh_m2_env_config_default: "{{ valet_sh_project_vars.instance.config.system.default | default([]) }}"
       vsh_m2_env_config_stores: "{{ valet_sh_project_vars.instance.config.system.stores | default([]) }}"
       vsh_m2_env_config_websites: "{{ valet_sh_project_vars.instance.config.system.websites | default([]) }}"
       valet_sh_magento2_db_charset: "{{ valet_sh_service_mysql_charset }}"
       valet_sh_magento2_db_collation_string: ""
+
+  - name: "crypt_key block"
+    when:
+      - valet_sh_project_vars.instance.crypt is defined
+      - valet_sh_project_vars.instance.crypt.key is defined
+    block:
+      - name: "workflows » magento2 » project-env | set magento2 private keys (key and jwks_key)"
+        set_fact:
+          valet_sh_magento2_crypt_key: "{{ valet_sh_project_vars.instance.crypt.key }}"
+          valet_sh_magento2_jwks_key: "{{ valet_sh_project_vars.instance.crypt.jwks_key }}"
+
+  - name: "set crypt_key block"
+    when:
+      - valet_sh_magento2_crypt_key is not defined
+      - valet_sh_project_vars.instance.crypt_key is defined
+    block:
+      - name: "workflows » magento2 » project-env | set magento2 private keys (fallback)"
+        set_fact:
+          valet_sh_magento2_crypt_key: "{{ valet_sh_project_vars.instance.crypt_key }}"
 
   - name: "workflows » magento2 » project-env | set magento2 related variables"
     set_fact:
