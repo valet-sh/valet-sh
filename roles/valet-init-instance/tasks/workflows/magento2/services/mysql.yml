@@ -35,7 +35,7 @@
 
     - name: "workflows » magento2 » services » mysql | prepare new config element"
       set_fact:
-        new_service_state_element: "{ 'mysql{{ valet_sh_project_vars.services.mysql.version }}': true }"
+        new_service_state_element: "{ '{{ valet_sh_service_mysql_current_name }}': true }"
 
     - name: "workflows » magento2 » services » mysql | update service object"
       set_fact:
@@ -87,7 +87,7 @@
 
     - name: "workflows » magento2 » services » mysql | prepare new config element"
       set_fact:
-        new_service_state_element: "{ 'mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}': true }"
+        new_service_state_element: "{ '{{ valet_sh_service_mariadb_current_name }}': true }"
 
     - name: "workflows » magento2 » services » mysql | update service object"
       set_fact:
