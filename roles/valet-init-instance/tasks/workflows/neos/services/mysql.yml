@@ -35,7 +35,7 @@
 
     - name: "workflows » neos » services » mysql | prepare new config element"
       set_fact:
-        new_service_state_element: "{ 'mysql{{ valet_sh_project_vars.services.mysql.version }}': true }"
+        new_service_state_element: "{ '{{ valet_sh_service_mysql_current_name }}': true }"
 
     - name: "workflows » neos » services » mysql | update service object"
       set_fact:
