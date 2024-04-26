@@ -18,9 +18,9 @@
 mariadb_server:
   base_path: "{{ valet_packages_path }}/mariadb"
   base_packages:
-    - "libaio1"
-    - "libncurses5"
-    - "libtinfo5"
+    - "libaio1t64"
+    - "libncurses6"
+    - "libtinfo6"
     - "python3-pymysql"
   default_root_password: "root"
   default_user: mysql

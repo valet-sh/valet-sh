@@ -24,3 +24,8 @@ nginx_dhparams_keysize: "{{ lookup('vars', 'nginx_dhparams_keysize'+'_'+current_
 nginx_pid_path_default: "{{ valet_sh_prefix }}/run/nginx.pid"
 nginx_pid_path_mac: "{{ valet_sh_prefix }}/var/run/nginx.pid"
 nginx_pid_path: "{{ lookup('vars', 'nginx_pid_path'+'_'+current_os, default=nginx_pid_path_default) }}"
+
+
+nginx_ssl_directive_default: "ssl http2"
+nginx_ssl_directive_mac: "ssl"
+nginx_ssl_directive: "{{ lookup('vars', 'nginx_ssl_directive'+'_'+current_os, default=nginx_ssl_directive_default) }}"

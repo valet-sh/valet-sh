@@ -80,3 +80,14 @@
     mode: '0644'
   notify: brew | nginx | restarted
 
+- name: "read nginx configurations in '{{ valet_sh_prefix }}/etc/nginx/conf.d/'"
+  find:
+    paths: "{{ valet_sh_prefix }}/etc/nginx/conf.d/"
+    recurse: no
+    file_type: file
+  register: nginx_vhosts_obj
+
+- include_tasks: sub-migrate-config.yml
+  with_items: "{{ nginx_vhosts_obj.files }}"
+  loop_control:
+    loop_var: nginx_vhosts_obj_item

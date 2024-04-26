@@ -18,9 +18,9 @@
 mysql_community_server:
   base_path: "{{ valet_packages_path }}/mysql"
   base_packages:
-    - "libaio1"
-    - "libncurses5"
-    - "libtinfo5"
+    - "libaio1t64"
+    - "libncurses6"
+    - "libtinfo6"
     - "python3-pymysql"
   default_root_password: "root"
   default_user: mysql
@@ -29,12 +29,12 @@ mysql_community_server:
 mysql_community_server_default_root_password: "root"
 
 mysql_community_server_57:
-  package_url: "https://mirror.valet.sh/mysql-5.7.30-linux-glibc2.12-x86_64.tar.gz"
-  package_signature: 5f10808b3bcd4c6844572f57f0a897bc86d3e6f9de67d52167401686fff27746
+  package_url: "https://mirror.valet.sh/mysql-5.7.44-linux-glibc2.12-x86_64.tar.gz"
+  package_signature: 798ff0a14cdc1ab259f8a3b6a7f683403e9bbaa85957d82e5370f82b27ba6805
   port: 3307
 
 mysql_community_server_80:
-  package_url: "https://mirror.valet.sh/mysql-8.0.23-linux-glibc2.12-x86_64.tar.xz"
-  package_signature: 7a328851d0857942c454492dcae469d690be6958a3bca082a9a69146fceb3fc5
+  package_url: "https://mirror.valet.sh/mysql-8.0.36-linux-glibc2.17-x86_64.tar.xz"
+  package_signature: 280c5106644948468f0e51c4d3397f318e49e332c74a79630d085dec62db03ee
   port: 3308
 

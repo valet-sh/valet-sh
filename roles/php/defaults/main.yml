@@ -71,9 +71,7 @@ php_multi:
         - "zip"
         - "bcmath"
         - "ldap"
-        - "xdebug"
         - "sqlite3"
-        - "imagick"
   - version: "7.3"
     compile_xdebug:
       status: true
@@ -128,8 +126,6 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "sqlite3"
-        - "imagick"
-        - "xdebug"
   - version: "7.4"
     compile_xdebug:
       status: true
@@ -184,8 +180,6 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "sqlite3"
-        - "imagick"
-        - "xdebug"
   - version: "8.0"
     config:
       php_cli_settings:
@@ -235,8 +229,6 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "sqlite3"
-        - "imagick"
-        - "xdebug"
   - version: "8.1"
     config:
       php_cli_settings:
@@ -286,8 +278,6 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "sqlite3"
-        - "imagick"
-        - "xdebug"
   - version: "8.3"
     config:
       php_cli_settings:
@@ -337,8 +327,6 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "sqlite3"
-        - "imagick"
-        - "xdebug"
   - version: "8.2"
     config:
       php_cli_settings:
@@ -388,8 +376,6 @@ php_multi:
         - "bcmath"
         - "ldap"
         - "sqlite3"
-        - "imagick"
-        - "xdebug"
 
 
 php_modules:
@@ -410,9 +396,7 @@ php_modules:
   - "bcmath"
   - "ldap"
   - "mcrypt"
-  - "xdebug"
   - "sqlite3"
-  - "imagick"
 
 
 php_error_log_path: "/tmp/php_errors.log"

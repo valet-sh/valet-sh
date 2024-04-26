@@ -35,12 +35,16 @@
   notify: systemd | mailhog | restarted
   become: true
 
+- name: set 'cert_prefix' variable
+  set_fact:
+    cert_prefix: "mailhog"
+
 - name: "generate ssl-certificate for {{ cert_prefix }}"
   include_role:
     name: certificate
     public: true
-  vars:
-    cert_prefix: mailhog
+#  vars:
+#    cert_prefix: "{{ cert_prefix }}"
 
 - name: provide init script for mailhog
   template:
@@ -51,6 +55,10 @@
     mode: '0644'
   notify: systemd | nginx | reloaded
   become: true
+
+- name: unset 'cert_prefix' variable
+  set_fact:
+    cert_prefix: "{{ non_existent|default(None) }}"
 
 - name: ensure mailhog is enabled and started
   systemd:
