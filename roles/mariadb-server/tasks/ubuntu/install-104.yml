@@ -15,6 +15,23 @@
 ##
 ---
 
+- name: "create compatibility symlinks to old libs"
+  ansible.builtin.file:
+    src: "{{ lib_symlink_item.src }}"
+    dest: "{{ lib_symlink_item.dest }}"
+    state: link
+  become: true
+  with_dict:
+    - src: /usr/lib/x86_64-linux-gnu/libaio.so.1t64
+      dest: /usr/lib/x86_64-linux-gnu/libaio.so.1
+    - src: /usr/lib/x86_64-linux-gnu/libncursesw.so.6.4
+      dest: /usr/lib/x86_64-linux-gnu/libncurses.so.5
+    - src: /usr/lib/x86_64-linux-gnu/libtinfo.so.6
+      dest: /usr/lib/x86_64-linux-gnu/libtinfo.so.5
+  loop_control:
+    loop_var: lib_symlink_item
+  when: os_codename == "noble"
+
 - name: set current mariadb base path
   set_fact:
     current_mariadb_base_path: "{{ mariadb_server.base_path }}104"

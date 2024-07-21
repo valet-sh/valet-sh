@@ -15,7 +15,19 @@
 ##
 ---
 
-mariadb_server:
+
+mariadb_server_default:
+  base_path: "{{ valet_packages_path }}/mariadb"
+  base_packages:
+    - "libaio1"
+    - "libncurses5"
+    - "libtinfo5"
+    - "python3-pymysql"
+  default_root_password: "root"
+  default_user: mysql
+  default_group: mysql
+
+mariadb_server_ubuntu_noble:
   base_path: "{{ valet_packages_path }}/mariadb"
   base_packages:
     - "libaio1t64"
@@ -25,6 +37,8 @@ mariadb_server:
   default_root_password: "root"
   default_user: mysql
   default_group: mysql
+
+mariadb_server: "{{ lookup('vars', 'mariadb_server' + current_os + os_codename, default=mariadb_server_default) }}"
 
 mariadb_server_default_root_password: "root"
 
