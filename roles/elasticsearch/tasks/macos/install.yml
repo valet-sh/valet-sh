@@ -20,10 +20,21 @@
     name: "homebrew/cask-versions/adoptopenjdk8"
     state: absent
 
-- name: "ensure temurin8 is installed"
+- name: "ensure 'homebrew/cask-versions' is absent"
   homebrew_cask:
-    name: "homebrew/cask-versions/temurin8"
-    state: present
+    name: "homebrew/cask-versions"
+    state: absent
+
+#- name: Ensure 'homebrew/cask-versions' cask is tapped
+#  shell: '{{ valet_sh_homebrew_bin }} tap homebrew/cask-versions'
+
+- name: "ensure temurin8 is installed"
+  shell: "{{ valet_sh_homebrew_bin }} install --cask temurin@8"
+
+#- name: "ensure temurin8 is installed"
+#  homebrew_cask:
+#    name: "homebrew/cask-versions/temurin8"
+#    state: present
 
 #- name: "ensure vsh-elasticsearch1 is installed"
 #  homebrew:
@@ -32,7 +43,6 @@
 
 - name: "ensure vsh-elasticsearch1 is installed"
   shell: "{{ valet_sh_homebrew_bin }} install vsh-elasticsearch1"
-
 
 - name: "ensure elasticsearch1 plugins are installed"
   shell: "/usr/local/opt/vsh-elasticsearch1/libexec/bin/plugin --install {{ current_elasticsearch_plugin.name }} --url {{ current_elasticsearch_plugin.url }}"
