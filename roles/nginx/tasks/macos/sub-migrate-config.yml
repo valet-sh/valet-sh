@@ -20,3 +20,4 @@
     path: "{{ nginx_vhosts_obj_item.path }}"
     regexp: 'ssl http2;'
     replace: 'ssl;'
+  notify: brew | nginx | restarted
