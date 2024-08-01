@@ -5,7 +5,6 @@
 # @author: "Philipp Dittert"
 # @command: "xdebug"
 # @platform: macOS Ubuntu
-# @sudo: true
 # @description: "enables xdebug for given php version e.g 7.2 7.3 | Usage: xdebug on 7.1"
 # @usage: "valet.sh xdebug <state> <php-version>"
 # @help:
@@ -26,5 +25,10 @@
     valet_action: "{{ cli.args[0] | default() }}"
     php_version: "{{ cli.args[1] | default() }}"
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "[sudo] Password"
+      private: yes
   roles:
+    - sudo-permission-check
     - valet-xdebug
