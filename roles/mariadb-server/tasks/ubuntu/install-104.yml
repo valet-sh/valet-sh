@@ -21,7 +21,7 @@
     dest: "{{ lib_symlink_item.dest }}"
     state: link
   become: true
-  with_dict:
+  with_items:
     - src: /usr/lib/x86_64-linux-gnu/libaio.so.1t64
       dest: /usr/lib/x86_64-linux-gnu/libaio.so.1
     - src: /usr/lib/x86_64-linux-gnu/libncursesw.so.6.4

@@ -38,7 +38,7 @@ mariadb_server_ubuntu_noble:
   default_user: mysql
   default_group: mysql
 
-mariadb_server: "{{ lookup('vars', 'mariadb_server' + current_os + os_codename, default=mariadb_server_default) }}"
+mariadb_server: "{{ lookup('vars', 'mariadb_server_' + current_os + '_' + os_codename, default=mariadb_server_default) }}"
 
 mariadb_server_default_root_password: "root"
 

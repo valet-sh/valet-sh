@@ -39,7 +39,7 @@ mysql_community_server_ubuntu_noble:
   default_user: mysql
   default_group: mysql
 
-mysql_community_server: "{{ lookup('vars', 'mysql_community_server_' + current_os + os_codename, default=mysql_community_server_default) }}"
+mysql_community_server: "{{ lookup('vars', 'mysql_community_server_' + current_os + '_' + os_codename, default=mysql_community_server_default) }}"
 
 mysql_community_server_default_root_password: "root"
 
