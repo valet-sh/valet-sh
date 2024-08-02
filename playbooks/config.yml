@@ -4,7 +4,6 @@
 # @author: "Philipp Dittert"
 # @command: "config"
 # @platform: macOS Ubuntu
-# @sudo: true
 # @description: "Manage config parameters | Usage: valet.sh config <command> <key> <value>"
 # @usage: "valet.sh config <command> <key> <value>"
 # @help:
@@ -33,5 +32,10 @@
     valet_config_action: "{{ cli.args[0] }}"
     valet_config_key: "{{ cli.args[1] | default() }}"
     valet_config_value: "{{ cli.args[2] | default() }}"
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "[sudo] Password"
+      private: yes
   roles:
+    - sudo-permission-check
     - valet-config

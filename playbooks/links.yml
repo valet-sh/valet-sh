@@ -5,7 +5,6 @@
 # @author: "Philipp Dittert"
 # @command: "links"
 # @platform: macOS Ubuntu
-# @sudo: true
 # @description: "Show all currently linked sites"
 # @usage: "valet.sh links"
 # @help:
@@ -19,5 +18,10 @@
   gather_facts: True
   vars:
     valet_action: links
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "[sudo] Password"
+      private: yes
   roles:
+    - sudo-permission-check
     - valet-link

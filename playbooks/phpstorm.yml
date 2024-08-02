@@ -4,7 +4,6 @@
 # @author: "Philipp Dittert"
 # @command: "phpstorm"
 # @platform: macOS Ubuntu
-# @sudo: true
 # @description: "starts phpstorm with current directory as argument"
 # @usage: "valet.sh phpstorm"
 # @help:
@@ -18,5 +17,10 @@
   gather_facts: True
   vars:
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "[sudo] Password"
+      private: yes
   roles:
+    - sudo-permission-check
     - valet-phpstorm
