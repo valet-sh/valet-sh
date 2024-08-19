@@ -49,7 +49,7 @@
     valet_sh_service_default_services: {}
 
 - name: "internal-actions » handle | handle defaults for each service"
-  include: sub-handle-defaults.yml
+  include_tasks: sub-handle-defaults.yml
     valet_sh_service_current_service_item="{{ valet_sh_service_defaultable_services_loop_var }}"
   with_items: "{{ valet_sh_service_defaultable_services }}"
   loop_control:
