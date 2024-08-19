@@ -88,7 +88,6 @@
   include_role:
     name: certificate
     public: true
-    rolespec_validate: false
   vars:
     cert_prefix: "{{ valet_sh_default_vhost_domain }}"
 
