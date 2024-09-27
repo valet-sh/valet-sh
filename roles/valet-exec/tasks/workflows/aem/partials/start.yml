@@ -35,7 +35,6 @@
     CQ_JVM_OPTS: "-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ valet_sh_project_vars.instance.author_debug_port }}"
   when: valet_action_target == "author" or valet_action_target == "all"
 
-# AUTHOR
 - block:
   - name: "workflows » aem » partials » start | check if dispatcher.env exists"
     stat:
