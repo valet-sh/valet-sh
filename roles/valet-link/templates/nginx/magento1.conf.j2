@@ -4,7 +4,7 @@ map $host $storecode_{{ link_name|replace("-", "_") }} {
 {% if value == "default" %}
     {{ value }} {{ key }};
 {% else %}
-    ~^{{ value }}.(.*)$ {{ key }};
+    ~^{{ value }}\.(.*)$ {{ key }};
 {% endif %}
 {% endfor %}
 }
