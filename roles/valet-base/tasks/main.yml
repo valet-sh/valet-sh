@@ -79,3 +79,10 @@
   include_vars:
     file: "{{ valet_etc_config_file }}"
     name: valet_sh_config
+
+- name: "ensure sudo commands are up2date"
+  template:
+    src: "sudoers.j2"
+    dest: "/etc/sudoers.d/valet-sh"
+  become: true
+  when: current_os == "mac"

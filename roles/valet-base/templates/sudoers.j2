@@ -1,0 +1,3 @@
+{% for valet_sh_sudo_command in valet_sh_sudo_commands %}
+{{ current_user }} ALL = NOPASSWD: {{ valet_sh_sudo_command }}
+{% endfor %}
