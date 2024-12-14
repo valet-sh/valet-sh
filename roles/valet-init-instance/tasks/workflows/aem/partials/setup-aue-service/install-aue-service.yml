@@ -1,0 +1,164 @@
+##
+#   Copyright 2024 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "generate ssl-certificate for {{ aem_adobe_universal_service_vhost_server_name }}"
+  include_role:
+    name: certificate
+    public: true
+  vars:
+    cert_prefix: "{{ aem_adobe_universal_service_vhost_server_name }}"
+
+- name: "workflows » aem » partials » setup-aue-service | register hub host"
+  add_host:
+    hostname: hub
+    ansible_host: "{{ valet_sh_hub_host }}"
+    ansible_port: "{{ valet_sh_hub_port }}"
+    ansible_user: "{{ valet_sh_hub_user }}"
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_ssh_pipelining: 1
+
+- name: "workflows » aem » partials » setup-aue-service | get ssh fingerprint for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}'"
+  shell: "ssh-keyscan -tecdsa -p {{ valet_sh_hub_port|string }} {{ valet_sh_hub_host }}"
+  register: valet_sh_hub_host_ssh_fingerprint_obj
+
+- name: "workflows » aem » partials » setup-aue-service | set known_host hash field name'"
+  set_fact:
+    valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
+  when: valet_sh_hub_port != 22 or valet_sh_hub_port != "22"
+
+- name: "workflows » aem » partials » setup-aue-service | set known_host hash field name'"
+  set_fact:
+    valet_sh_known_host_hashed_name: "{{ valet_sh_hub_host }}"
+  when: valet_sh_hub_port == 22 or valet_sh_hub_port == "22"
+
+- name: "workflows » aem » partials » setup-aue-service | ensure ssh-key for '{{ valet_sh_hub_host }}:{{ valet_sh_hub_port }}' is in known_hosts"
+  known_hosts:
+    name: "{{ valet_sh_known_host_hashed_name }}"
+    key: "{{ valet_sh_hub_host_ssh_fingerprint_obj.stdout }}"
+    path: "~/.ssh/known_hosts"
+    state: present
+
+- name: "workflows » aem » partials » setup-aue-service | check if '{{ remote_dir }}/{{ aem_adobe_universal_service_remote_file_name }}' is available on hub"
+  stat:
+    path: "{{ remote_dir }}/{{ aem_adobe_universal_service_remote_file_name }}"
+  register: aue_target_version_remote_file_obj
+  delegate_to: hub
+
+- name: "workflows » aem » partials » setup-aue-service | fail when '{{ remote_dir }}/{{ aem_adobe_universal_service_remote_file_name }}' was not found on hub"
+  fail:
+    msg: "File '{{ remote_dir }}/{{ aem_adobe_universal_service_remote_file_name }}' is not available on the remote hub!"
+  when: not aue_target_version_remote_file_obj.stat.exists
+
+- name: "workflows » aem » partials » setup-aue-service | check if '{{ remote_dir }}/{{ aue_target_version_remote_file_obj.stat.lnk_source }}' is a symlink"
+  set_fact:
+    aem_adobe_universal_service_remote_real_file_path: "{{ aue_target_version_remote_file_obj.stat.lnk_source }}"
+    aem_adobe_universal_service_remote_real_file_name: "{{ aue_target_version_remote_file_obj.stat.lnk_source | basename }}"
+  when: aue_target_version_remote_file_obj.stat.islnk |bool
+
+- name: "workflows » aem » partials » setup-aue-service | check if '{{ valet_packages_path }}/aue/dist/{{ aem_adobe_universal_service_remote_real_file_name }}' exists in {{ valet_packages_path }}/aue/"
+  stat:
+    path: "{{ valet_packages_path }}/aue/{{ aem_adobe_universal_service_remote_real_file_name }}"
+  register: aue_local_file_obj
+
+- name: "workflows » aem » partials » setup-aue-service | load 'remote:{{ aem_adobe_universal_service_remote_real_file_path }}' to '{{ valet_packages_path }}/aue/{{ aem_adobe_universal_service_remote_real_file_name }}'"
+  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ aem_adobe_universal_service_remote_real_file_path }} {{ valet_packages_path }}/aue/{{ aem_adobe_universal_service_remote_real_file_name }}"
+  when: not aue_local_file_obj.stat.exists|bool
+
+- name: block
+  when: current_os == "mac"
+  block:
+    - name: provide init script for aue vhost
+      template:
+        src: "../../templates//aue-service/aue-vhost.conf.j2"
+        dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/{{ aem_adobe_universal_service_vhost_server_name }}.conf"
+        mode: '0644'
+      register: aue_nginx_vhost_obj
+
+    - name: "run 'sudo {{ valet_sh_homebrew_bin }} services restart nginx'"
+      shell: "sudo {{ valet_sh_homebrew_bin }} services restart nginx"
+      when: aue_nginx_vhost_obj.changed
+
+    - name: "launchctl unload '{{ current_home }}/Library/LaunchAgents/aue.plist'"
+      command: "launchctl unload {{ current_home }}/Library/LaunchAgents/aue.plist"
+      ignore_errors: true
+
+    - name: "ensure plist file is up2date"
+      template:
+        src: "../../templates//aue-service/aue.plist.j2"
+        dest: "{{ current_home }}/Library/LaunchAgents/aue.plist"
+        mode: '0644'
+
+- name: "block"
+  when: current_os == "ubuntu"
+  block:
+    - name: provide aue vhost config
+      template:
+        src: "../../templates/aue-service/aue-vhost.conf.j2"
+        dest: "/etc/nginx/conf.d/{{ aem_adobe_universal_service_vhost_server_name }}.conf"
+        owner: root
+        group: root
+        mode: '0644'
+      register: aue_nginx_vhost_obj
+      become: true
+
+    - name: reload nginx
+      systemd:
+        daemon_reload: yes
+        name: nginx
+        state: reloaded
+      become: true
+      when: aue_nginx_vhost_obj.changed
+
+    - name: "run 'systemctl stop aue.service'"
+      command: "systemctl stop aue.service"
+      become: true
+      ignore_errors: true
+
+    - name: "provide aue.service systemd unit file"
+      template:
+        src: "../../templates/aue-service/aue.service.j2"
+        dest: "/etc/systemd/system/aue.service"
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+      register: aue_systemd_service_file_obj
+
+    - name: "run 'systemctl daemon-reload'"
+      command: "systemctl daemon-reload"
+      become: true
+      when: aue_systemd_service_file_obj.changed
+
+- name: "workflows » aem » partials » setup-aue-service | unarchive '{{ valet_packages_path }}/aue/{{ file_name }}' to '{{ valet_packages_path }}/aue/dist/'"
+  unarchive:
+    src: "{{ valet_packages_path }}/aue/{{ aem_adobe_universal_service_remote_real_file_name }}"
+    dest: "{{ valet_packages_path }}/aue/dist/"
+
+- name: "ensure .env is up2date in '{{ valet_packages_path }}/aue/dist/.env'"
+  template:
+    src: "../../templates/aue-service/env.j2"
+    dest: "{{ valet_packages_path }}/aue/dist/.env"
+    mode: '0644'
+
+- name: "launchctl load '{{ current_home }}/Library/LaunchAgents/aue.plist'"
+  command: "launchctl load {{ current_home }}/Library/LaunchAgents/aue.plist"
+  when: current_os == "mac"
+
+- name: "run 'systemctl start aue.service'"
+  command: "systemctl start aue.service"
+  become: true
+  when: current_os == "ubuntu"

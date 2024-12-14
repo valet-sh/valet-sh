@@ -37,3 +37,13 @@ valet_sh_service_mysql_host_presets:
 valet_sh_aem_local_cache_dirname: ".aemcache"
 valet_sh_aem_local_cache_dir: "{{ current_home }}/{{ valet_sh_aem_local_cache_dirname }}"
 valet_sh_aem_sdk_local_cache_dir: "{{ valet_sh_aem_local_cache_dir }}/aem-sdk"
+
+
+aem_adobe_universal_service_nodejs_binary_url_default: https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz
+aem_adobe_universal_service_nodejs_binary_url_mac_x86: https://nodejs.org/dist/v22.12.0/node-v22.12.0-darwin-x64.tar.gz
+aem_adobe_universal_service_nodejs_binary_url_mac_arm64: https://nodejs.org/dist/v22.12.0/node-v22.12.0-darwin-arm64.tar.gz
+aem_adobe_universal_service_nodejs_binary_url: "{{ lookup('vars', 'aem_adobe_universal_service_nodejs_binary_url'+'_' + current_os + '_' + current_arch, default=aem_adobe_universal_service_nodejs_binary_url_default) }}"
+aem_adobe_universal_service_vhost_server_name: adobe-universal-editor-service
+
+aem_adobe_universal_service_remote_file_name: "{{ file_name }}"
+aem_adobe_universal_service_remote_real_file_path: "{{ remote_dir }}/{{ aem_adobe_universal_service_remote_real_file_name }}"

@@ -1,0 +1,74 @@
+##
+#   Copyright 2024 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » aem » partials » setup-aue-service | ensure directories exists"
+  file:
+    path: "{{ aue_current_path }}"
+    state: directory
+  with_items:
+    - "{{ valet_packages_path }}/aue"
+    - "{{ valet_packages_path }}/aue/node"
+    - "{{ valet_packages_path }}/aue/dist"
+  loop_control:
+    loop_var: aue_current_path
+
+- name: "workflows » aem » partials » setup-aue-service | chck if .node_version exists"
+  ansible.builtin.stat:
+    path: "{{ valet_packages_path }}/aue/.node_version"
+  register: aue_installed_node_version_obj
+
+- name: "workflows » aem » partials » setup-aue-service | set installed node version"
+  set_fact:
+    aue_installed_node_version: "{{ lookup('ansible.builtin.file', valet_packages_path + '/aue/.node_version') }}"
+  when: aue_installed_node_version_obj.stat.exists
+
+- name: "workflows » aem » partials » setup-aue-service | set node_filename"
+  set_fact:
+    node_filename: "{{ aem_adobe_universal_service_nodejs_binary_url | basename }}"
+
+- name: "block"
+  when: aue_installed_node_version is not defined or (aue_installed_node_version != node_filename)
+  block:
+    - name: "workflows » aem » partials » setup-aue-service | cleanup directories"
+      file:
+        path: "{{ valet_packages_path }}/aue/tmp"
+        state: absent
+
+    - name: "workflows » aem » partials » setup-aue-service | ensure '{{ valet_packages_path }}/aue/tmp' exists"
+      file:
+        path: "{{ valet_packages_path }}/aue/tmp"
+        state: directory
+
+    - name: "workflows » aem » partials » setup-aue-service | download node runtime '{{ aem_adobe_universal_service_nodejs_binary_url }}' for aue"
+      unarchive:
+        src: "{{ aem_adobe_universal_service_nodejs_binary_url }}"
+        dest: "{{ valet_packages_path }}/aue/tmp"
+        remote_src: true
+        extra_opts: [ --strip-components=1 ]
+
+    - name: "workflows » aem » partials » setup-aue-service | delete '{{ valet_packages_path }}/aue/node'"
+      file:
+        path: "{{ valet_packages_path }}/aue/node"
+        state: absent
+
+    - name: "workflows » aem » partials » setup-aue-service | move node"
+      shell: "mv {{ valet_packages_path }}/aue/tmp {{ valet_packages_path }}/aue/node"
+
+    - name: "safe version to file"
+      copy:
+        content: "{{ node_filename }}"
+        dest: "{{ valet_packages_path }}/aue/.node_version"
