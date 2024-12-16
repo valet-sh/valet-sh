@@ -40,6 +40,10 @@
   set_fact:
     node_filename: "{{ aem_adobe_universal_service_nodejs_binary_url | basename }}"
 
+- name: "ensure gnu-tar is installed"
+  shell: "{{ valet_sh_homebrew_bin }} install gnu-tar"
+  when: current_os == "mac"
+
 - name: "block"
   when: aue_installed_node_version is not defined or (aue_installed_node_version != node_filename)
   block:
