@@ -1,0 +1,30 @@
+server {
+    listen 127.0.0.1:80;
+
+    server_name {{ aem_adobe_universal_service_vhost_server_name }}.{{ development_tld }};
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 127.0.0.1:443 {{ nginx_ssl_directive }};
+
+    server_name {{ aem_adobe_universal_service_vhost_server_name }}.{{ development_tld }};
+
+    ssl_certificate {{ certificate_server_domain_fullchain_file }};
+    ssl_certificate_key {{ certificate_server_domain_key_file }};
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+
+        proxy_pass http://localhost:8010;
+        proxy_connect_timeout 900s;
+        proxy_read_timeout 900s;
+    }
+}

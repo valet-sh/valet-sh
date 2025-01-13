@@ -1,5 +1,5 @@
 ##
-#   Copyright 2023 TechDivision GmbH
+#   Copyright 2024 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@
 ##
 ---
 
-- include_tasks: ../setup-aue-service/main.yml
-  when: valet_sh_aem_addons.aue is defined
+- name: "include 'install-runtime.yml'"
+  include_tasks: install-runtime.yml
 
-- include_tasks: setup-blank-instances.yml
-
-- include_tasks: setup-cif-addon.yml
-  when: valet_sh_aem_addons.cif is defined
+- name: "include 'install-aue-service.yml'"
+  include_tasks: install-aue-service.yml
+  vars:
+    file_name: "universal-editor-service-latest.zip"
+    remote_dir: "{{ valet_sh_project_vars.hub.common_path | trim  }}/.aem/addons/aue"

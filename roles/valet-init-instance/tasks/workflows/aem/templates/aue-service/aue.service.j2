@@ -1,0 +1,14 @@
+[Unit]
+Description=Adobe Universal Editor Service
+Documentation=https://experienceleague.adobe.com/de/docs/experience-manager-65/content/implementing/developing/headless/universal-editor/introduction
+After=network.target
+
+[Service]
+Type=simple
+User={{ current_user }}
+ExecStart={{ valet_packages_path }}/aue/node/bin/node {{ valet_packages_path }}/aue/dist/universal-editor-service.cjs
+WorkingDirectory={{ valet_packages_path }}/aue/dist
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
