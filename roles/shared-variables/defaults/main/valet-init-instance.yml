@@ -27,3 +27,5 @@ valet_sh_aem_author_user: "admin"
 valet_sh_aem_author_password: "admin"
 valet_sh_aem_publish_user: "admin"
 valet_sh_aem_publish_password: "admin"
+
+valet_sh_magento2_env_mage_indexer_threads_count_default: 16
