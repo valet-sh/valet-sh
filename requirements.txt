@@ -1,0 +1,8 @@
+testresources==2.0.1
+ansible==2.10.7
+beautifultable==0.7.0
+PyMySQL==0.10.1
+cryptography==3.4.8
+git+https://github.com/valet-sh/cli@next
+shyaml
+lxml
