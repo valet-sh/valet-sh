@@ -34,6 +34,10 @@
         - valet_sh_project_vars.instance is defined
         - valet_sh_project_vars.instance.multidomain is defined
 
+    - name: "link | check for multidomain scope configuration in .valet-sh.yml file"
+      set_fact:
+        valet_sh_project_multidomain_scope: "{{ valet_sh_project_vars.instance.multidomain_scope | default(valet_sh_project_multidomain_scope_default) }}"
+
     - name: "templates » magento2 | provide nginx vhost configuration for {{ link_name }}.{{ development_tld }}"
       template:
         src: "nginx/magento2.conf.j2"

@@ -30,5 +30,6 @@ valet_link_blacklist:
 # do not throw an error if unlink or link is not possible when true
 valet_link_silent: false
 
-
 valet_flow_context: "Development"
+
+valet_sh_project_multidomain_scope_default: store
