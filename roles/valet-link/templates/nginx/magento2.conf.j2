@@ -190,7 +190,7 @@ server {
         fastcgi_connect_timeout 600s;
 {% if valet_sh_project_multidomain_config is defined %}
         fastcgi_param MAGE_RUN_CODE $storecode_{{ link_name|replace("-", "_") }};
-        fastcgi_param MAGE_RUN_TYPE store;
+        fastcgi_param MAGE_RUN_TYPE {{ valet_sh_project_multidomain_scope }};
 {% endif %}
         fastcgi_index  index.php;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;

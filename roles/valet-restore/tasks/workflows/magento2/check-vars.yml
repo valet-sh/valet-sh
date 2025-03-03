@@ -119,7 +119,7 @@
 
 - name: "workflows » magento2 » check-vars | set hub host"
   set_fact:
-    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim }}"
   when: valet_sh_project_vars.hub.host is defined
 
 - name: "workflows » magento2 » check-vars | set hub user"
@@ -139,21 +139,6 @@
 - name: "workflows » magento2 » check-vars | ensure tmp directory exists"
   file:
     path: "{{ current_tmp_dir }}"
-
-- name: "workflows » magento2 » check-vars | set hub port"
-  set_fact:
-    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
-  when: valet_sh_project_vars.hub.port is defined
-
-- name: "workflows » magento2 » check-vars | set hub host"
-  set_fact:
-    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
-  when: valet_sh_project_vars.hub.host is defined
-
-- name: "workflows » magento2 » check-vars | set hub user"
-  set_fact:
-    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
-  when: valet_sh_project_vars.hub.user is defined
 
 - name: "workflows » magento2 » check-vars | set valet_instancebackup_identifier when defined"
   set_fact:
