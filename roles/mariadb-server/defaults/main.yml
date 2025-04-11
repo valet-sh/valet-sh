@@ -36,3 +36,7 @@ mariadb_server_106:
   package_url: "https://dlm.mariadb.com/2581457/MariaDB/mariadb-10.6.11/bintar-linux-systemd-x86_64/mariadb-10.6.11-linux-systemd-x86_64.tar.gz"
   package_signature: 368e9ee71e6128f55620868e8986527adbd3509b50c16083ea5b3930758d903d
   port: 3319
+mariadb_server_114:
+  package_url: "https://archive.mariadb.org//mariadb-11.4.5/bintar-linux-systemd-x86_64/mariadb-11.4.5-linux-systemd-x86_64.tar.gz"
+  package_signature: 2a44cb70a87dba7eb2cab3b5af2c0416a0204d93a8fda387b4b70c9f1bab7bd6
+  port: 3329
