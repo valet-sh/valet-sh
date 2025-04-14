@@ -22,6 +22,7 @@
   changed_when: false
   failed_when: false
   register: sudo_permission_check_obj
+  ignore_errors: true
 
 - name: fail when password was wrong
   fail:
