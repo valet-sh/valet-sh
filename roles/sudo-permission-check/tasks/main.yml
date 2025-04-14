@@ -17,7 +17,8 @@
 
 - name: Check sudo permissions
   command: echo "check sudo permissions"
-  become: yes
+  become: true
+  timeout: 3
   changed_when: false
   failed_when: false
   register: sudo_permission_check_obj
