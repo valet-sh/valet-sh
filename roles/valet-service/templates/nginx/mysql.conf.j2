@@ -8,12 +8,20 @@ upstream mariadb106 {
     server 127.0.0.1:3319;
 }
 
+upstream mariadb114 {
+    server 127.0.0.1:3329;
+}
+
 upstream mysql57 {
     server 127.0.0.1:3307;
 }
 
 upstream mysql80 {
     server 127.0.0.1:3308;
+}
+
+upstream mysql84 {
+    server 127.0.0.1:3309;
 }
 
 server {
