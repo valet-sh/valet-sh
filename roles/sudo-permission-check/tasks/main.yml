@@ -27,4 +27,4 @@
 - name: fail when password was wrong
   fail:
     msg: "invalid password!"
-  when: sudo_permission_check_obj.rc != 0
+  when: sudo_permission_check_obj is not defined or sudo_permission_check_obj.rc is not defined or sudo_permission_check_obj.rc != 0
