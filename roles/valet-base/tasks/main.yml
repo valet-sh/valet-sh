@@ -79,3 +79,13 @@
   include_vars:
     file: "{{ valet_etc_config_file }}"
     name: valet_sh_config
+
+- name: "ensure sudo commands are up2date"
+  community.general.sudoers:
+    name: valet-sh
+    user: "{{ current_user }}"
+    validation: required
+    commands: "{{ valet_sh_sudo_commands }}"
+    nopassword: true
+  become: true
+  when: current_os == "mac"

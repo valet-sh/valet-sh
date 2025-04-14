@@ -66,6 +66,10 @@
     force: no
   become: true
 
+- name: set 'cert_prefix' variable
+  set_fact:
+    cert_prefix: "{{ valet_sh_default_vhost_domain }}"
+
 - name: "generate ssl-certificate for {{ valet_sh_default_vhost_domain }}"
   include_role:
     name: certificate
@@ -79,6 +83,10 @@
     dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/{{ valet_sh_default_vhost_domain }}.{{ development_tld }}.conf"
     mode: '0644'
   notify: brew | nginx | restarted
+
+- name: unset 'cert_prefix' variable
+  set_fact:
+    cert_prefix: "{{ non_existent|default(None) }}"
 
 - name: "read nginx configurations in '{{ valet_sh_prefix }}/etc/nginx/conf.d/'"
   find:

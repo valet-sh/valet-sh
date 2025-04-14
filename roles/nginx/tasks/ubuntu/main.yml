@@ -17,7 +17,7 @@
 
 - name: "ensure nginx is installed"
   apt:
-    name: nginx
+    name: nginx-full
     state: present
   become: true
 
@@ -80,6 +80,10 @@
     force: no
   become: true
 
+- name: set 'cert_prefix' variable
+  set_fact:
+    cert_prefix: "{{ valet_sh_default_vhost_domain }}"
+
 - name: "generate ssl-certificate for {{ valet_sh_default_vhost_domain }}"
   include_role:
     name: certificate
@@ -96,3 +100,7 @@
     mode: '0644'
   notify: systemd | nginx | reloaded
   become: true
+
+- name: unset 'cert_prefix' variable
+  set_fact:
+    cert_prefix: "{{ non_existent|default(None) }}"

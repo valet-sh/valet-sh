@@ -258,6 +258,31 @@
   become: true
 
 
+- name: "systemd | php8.4-fpm | started"
+  systemd:
+    name: "php8.4-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php8.4-fpm | stopped"
+  systemd:
+    name: "php8.4-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php8.4-fpm | restarted"
+  systemd:
+    name: "php8.4-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php8.4-fpm | reloaded"
+  systemd:
+    name: "php8.4-fpm"
+    state: reloaded
+  become: true
+
+
 - name: brew | vsh-php56 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
 
@@ -347,3 +372,12 @@
 
 - name: brew | vsh-php83 | started
   shell: "{{ valet_sh_homebrew_bin }} services start vsh-php83"
+
+- name: brew | vsh-php84 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php84"
+
+- name: brew | vsh-php84 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php84"
+
+- name: brew | vsh-php84 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-php84"

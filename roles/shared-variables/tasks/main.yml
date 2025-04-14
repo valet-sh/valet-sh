@@ -68,6 +68,11 @@
     os_codename: "jammy"
   when: ansible_distribution_release == 'vanessa' or ansible_distribution_release == 'vera' or ansible_distribution_release == 'victoria' or ansible_distribution_release == 'virginia'
 
+- name: "override 'os_codename' if OS is Linux Mint 22.x"
+  set_fact:
+    os_codename: "noble"
+  when: ansible_distribution_release == 'wilma'
+
 - name: fail when no supported operating system was found
   fail:
     msg: "no supported operating system"
