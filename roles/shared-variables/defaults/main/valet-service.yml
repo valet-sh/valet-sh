@@ -59,8 +59,10 @@ valet_sh_service_defaultable_services_default:
     values:
       - mysql57
       - mysql80
+      - mysql84
       - mariadb104
       - mariadb106
+      - mariadb114
   - scope: xdebug
     default: xdebug3
     values:
@@ -102,8 +104,10 @@ valet_sh_service_defaultable_services_mac:
     values:
       - mysql57
       - mysql80
+      - mysql84
       - mariadb104
       - mariadb106
+      - mariadb114
   - scope: xdebug
     default: xdebug3
     values:
@@ -138,8 +142,10 @@ valet_sh_service_state_preset_default:
     php84: false
   - mysql57: true
   - mysql80: false
+  - mysql84: false
   - mariadb104: false
   - mariadb106: false
+  - mariadb114: false
   - rabbitmq: false
   - redis: true
   - nginx: true
@@ -165,8 +171,10 @@ valet_sh_service_state_preset_mac:
     php84: false
   - mysql57: true
   - mysql80: false
+  - mysql84: false
   - mariadb104: false
   - mariadb106: false
+  - mariadb114: false
   - rabbitmq: false
   - redis: true
   - nginx: true
@@ -195,8 +203,10 @@ valet_sh_service_privileged_services_default:
   - php84
   - mysql57
   - mysql80
+  - mysql84
   - mariadb104
   - mariadb106
+  - mariadb114
   - rabbitmq
   - redis
   - nginx
@@ -271,6 +281,11 @@ valet_sh_service_fuzzy_alias_mapping:
       - "MYSQL8.0"
       - "mysql8.0"
       - "MYSQL80"
+  - target: mysql84
+    aliases:
+      - "MYSQL8.4"
+      - "mysql8.4"
+      - "MYSQL84"
   - target: mariadb104
     aliases:
       - "mariadb10.4"
@@ -281,6 +296,11 @@ valet_sh_service_fuzzy_alias_mapping:
       - "mariadb10.6"
       - "MARIADB10.6"
       - "MARIADB106"
+  - target: mariadb114
+    aliases:
+      - "mariadb11.4"
+      - "MARIADB11.4"
+      - "MARIADB114"
 
 valet_sh_service_alias_mapping_default:
   php56: "php5.6-fpm"
@@ -299,8 +319,10 @@ valet_sh_service_alias_mapping_default:
 valet_sh_service_alias_mapping_mac:
   mysql57: "vsh-mysql57"
   mysql80: "vsh-mysql80"
+  mysql84: "vsh-mysql84"
   mariadb104: "vsh-mariadb104"
   mariadb106: "vsh-mariadb106"
+  mariadb114: "vsh-mariadb114"
   php56: "vsh-php56"
   php70: "vsh-php70"
   php71: "vsh-php71"
@@ -328,8 +350,10 @@ valet_sh_service_rosetta2_emulation:
   dnsmasq: true
   mysql57: true
   mysql80: true
+  mysql84: true
   mariadb104: true
   mariadb106: true
+  mariadb114: true
   php56: true
   php70: true
   php71: true

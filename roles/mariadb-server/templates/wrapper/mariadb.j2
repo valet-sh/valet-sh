@@ -1,3 +1,7 @@
 #!/bin/bash
 
+{% if current_mariadb_key|float == 11.4 %}
 /usr/local/valet-sh/packages/{{ current_mariadb_key }}/dist/bin/mysql --defaults-file=/usr/local/valet-sh/packages/{{ current_mariadb_key }}/etc/my.cnf "$@"
+{% else %}
+/usr/local/valet-sh/packages/{{ current_mariadb_key }}/dist/bin/mariadb --defaults-file=/usr/local/valet-sh/packages/{{ current_mariadb_key }}/etc/my.cnf "$@"
+{% endif %}
