@@ -56,7 +56,7 @@
 - name: "provide .my.cnf configuration file"
   template:
     src: "ubuntu/mariadb114/.my.cnf.j2"
-    dest: "{{ current_home }}/.my11.4.cnf"
+    dest: "{{ current_home }}/.my{{ current_mariadb_version_key }}.cnf"
     mode: '0644'
 
 - name: "provide my.cnf configuration file"
@@ -233,7 +233,7 @@
       shell: "{{ current_mariadb_dist_path }}/scripts/mysql_install_db --auth-root-authentication-method=normal --defaults-file={{ current_mariadb_etc_path }}/my.cnf --datadir={{ current_mariadb_data_path }} --pid-file=/run/mysqld/{{ current_mariadb_key }}.pid"
       become: true
 
-    - name: ensure mariadb 10.6 is restarted
+    - name: ensure mariadb 11.4 is restarted
       systemd:
         name: "{{ current_mariadb_key }}"
         daemon_reload: true

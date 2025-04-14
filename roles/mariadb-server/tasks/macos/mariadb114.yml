@@ -15,13 +15,18 @@
 ##
 ---
 
-- name: "ensure vsh-mariadb114 is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install vsh-mariadb114"
+- name: set current mariadb base vars
+  set_fact:
+    current_mariadb_version_key: "11.4"
+    current_mariadb_key: "mariadb114"
+
+- name: "ensure vsh-{{ current_mariadb_key }} is installed"
+  shell: "{{ valet_sh_homebrew_bin }} install vsh-{{ current_mariadb_key }}"
 
 - name: "provide .my.cnf configuration file"
   template:
     src: "{{ mariadb114_template_dot_my }}"
-    dest: "{{ current_home }}/.my10.6.cnf"
+    dest: "{{ current_home }}/.my{{ current_mariadb_version_key }}.cnf"
     mode: '0644'
   with_first_found:
     - "macos/mariadb114/.my.cnf.j2"
@@ -34,7 +39,7 @@
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb114/conf.d/mysql.cnf"
     mode: '0644'
   with_first_found:
-    - "macos/mariadb114/mysql.cnf.j2"
+    - "macos/{{ current_mariadb_key }}/mysql.cnf.j2"
   loop_control:
     loop_var: mariadb114_template_mysql
 
@@ -44,26 +49,26 @@
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb114/conf.d/mysqldump.cnf"
     mode: '0644'
   with_first_found:
-    - "macos/mariadb114/mysqldump.cnf.j2"
-    - "mariadb114/mysqldump.cnf.j2"
+    - "macos/{{ current_mariadb_key }}/mysqldump.cnf.j2"
+    - "{{ current_mariadb_key }}/mysqldump.cnf.j2"
   loop_control:
     loop_var: mariadb114_template_mysqldump
 
 - name: "provide mysqld.cnf configuration file"
   template:
     src: "{{ mariadb114_template_mysqld }}"
-    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb114/conf.d/mysqld.cnf"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-{{ current_mariadb_key }}/conf.d/mysqld.cnf"
     mode: '0644'
   with_first_found:
-    - "macos/mariadb114/mysqld.cnf.j2"
-    - "mariadb114/mysqld.cnf.j2"
+    - "macos/{{ current_mariadb_key }}/mysqld.cnf.j2"
+    - "{{ current_mariadb_key }}/mysqld.cnf.j2"
   loop_control:
     loop_var: mariadb114_template_mysqld
 
-- name: brew | vsh-mariadb114 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb114"
+- name: brew | vsh-{{ current_mariadb_key }} | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-{{ current_mariadb_key }}"
 
-- name: wait for mariadb114 to start
+- name: wait for {{ current_mariadb_key }} to start
   wait_for:
     port: "{{ mariadb_server_114.port }}"
     delay: 5
