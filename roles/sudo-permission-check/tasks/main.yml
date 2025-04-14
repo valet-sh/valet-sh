@@ -15,6 +15,9 @@
 ##
 ---
 
+- name: Reset sudo session
+  command: sudo -k
+
 - name: Check sudo permissions
   command: echo "check sudo permissions"
   become: true
