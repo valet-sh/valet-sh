@@ -31,9 +31,9 @@
     path: "{{ certificate_ca_cert_path }}"
     state: absent
   when:
-    - ca_cert_check_obj is defined
-    - ca_cert_check_obj.stat is defined
-    - ca_cert_check_obj.stat.exists|bool
+    - ca_cert_expires_check_obj is defined
+    - ca_cert_expires_check_obj.rc is defined
+    - ca_cert_expires_check_obj.rc != 0
   become: true
 
 - name: ca | ensure base directories existing
