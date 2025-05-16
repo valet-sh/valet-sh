@@ -27,6 +27,7 @@
 
 - name: "ensure temurin8 is uninstalled"
   shell: "{{ valet_sh_homebrew_bin }} uninstall --cask temurin@8"
+  failed_when: false
 
 - name: "ensure vsh-elasticsearch1 is installed"
   shell: "{{ valet_sh_homebrew_bin }} install vsh-elasticsearch1"
