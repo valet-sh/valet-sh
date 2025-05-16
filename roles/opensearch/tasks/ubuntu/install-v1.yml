@@ -69,14 +69,14 @@
   lineinfile:
     path: "{{ current_opensearch_base_path }}/config/jvm.options"
     regexp: '^-Xms'
-    line: "-Xms2g"
+    line: "-Xms4g"
   notify: "systemd | opensearch1 | restarted"
 
 - name: "set 'Xmx' in '{{ current_opensearch_base_path }}/config/jvm.options' to 2GB"
   lineinfile:
     path: "{{ current_opensearch_base_path }}/config/jvm.options"
     regexp: '^-Xmx'
-    line: "-Xmx2g"
+    line: "-Xmx4g"
   notify: "systemd | opensearch1 | restarted"
 
 - name: "provide {{ current_opensearch_key }} systemd unit file"
