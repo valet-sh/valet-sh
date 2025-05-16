@@ -47,14 +47,14 @@
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch7/jvm.options"
     regexp: '^-Xms'
-    line: "-Xms2g"
+    line: "-Xms4g"
   notify: "brew | vsh-elasticsearch7 | restarted"
 
 - name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch7/jvm.options' to 2GB"
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch7/jvm.options"
     regexp: '^-Xmx'
-    line: "-Xmx2g"
+    line: "-Xmx4g"
   notify: "brew | vsh-elasticsearch7 | restarted"
 
 - name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch8/jvm.options' to 2GB"
