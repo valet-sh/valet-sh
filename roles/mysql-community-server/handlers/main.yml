@@ -62,6 +62,27 @@
     state: restarted
   become: true
 
+- name: systemd | mysql84 | started
+  systemd:
+    name: mysql84
+    daemon_reload: true
+    state: started
+  become: true
+
+- name: systemd | mysql84 | stopped
+  systemd:
+    name: mysql84
+    daemon_reload: true
+    state: stopped
+  become: true
+
+- name: systemd | mysql84 | restarted
+  systemd:
+    name: mysql84
+    daemon_reload: true
+    state: restarted
+  become: true
+
 - name: brew | vsh-mysql57 | started
   shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql57"
 
@@ -79,3 +100,12 @@
 
 - name: brew | vsh-mysql80 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql80"
+
+- name: brew | vsh-mysql84 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql84"
+
+- name: brew | vsh-mysql84 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql84"
+
+- name: brew | vsh-mysql84 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql84"

@@ -20,8 +20,9 @@
     php_error_log_path: "/tmp/php_errors.log"
 
 - name: "install defined php versions"
-  include: macos/install-php.yml
-    current_php="{{ valet_sh_php_version_item }}"
+  include_tasks: macos/install-php.yml
+  vars:
+    current_php: "{{ valet_sh_php_version_item }}"
   with_items:
     - vsh-php56
     - vsh-php70
@@ -33,5 +34,6 @@
     - vsh-php81
     - vsh-php82
     - vsh-php83
+    - vsh-php84
   loop_control:
     loop_var: valet_sh_php_version_item

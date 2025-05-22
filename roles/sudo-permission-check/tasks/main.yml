@@ -15,14 +15,19 @@
 ##
 ---
 
+- name: Reset sudo session
+  command: sudo -k
+
 - name: Check sudo permissions
   command: echo "check sudo permissions"
-  become: yes
+  become: true
+  timeout: 3
   changed_when: false
   failed_when: false
   register: sudo_permission_check_obj
+  ignore_errors: true
 
 - name: fail when password was wrong
   fail:
     msg: "invalid password!"
-  when: sudo_permission_check_obj.rc != 0
+  when: sudo_permission_check_obj is not defined or sudo_permission_check_obj.rc is not defined or sudo_permission_check_obj.rc != 0

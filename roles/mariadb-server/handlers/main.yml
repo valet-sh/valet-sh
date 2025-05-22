@@ -62,6 +62,27 @@
     state: restarted
   become: true
 
+- name: systemd | mariadb114 | started
+  systemd:
+    name: mariadb114
+    daemon_reload: true
+    state: started
+  become: true
+
+- name: systemd | mariadb114 | stopped
+  systemd:
+    name: mariadb114
+    daemon_reload: true
+    state: stopped
+  become: true
+
+- name: systemd | mariadb114 | restarted
+  systemd:
+    name: mariadb114
+    daemon_reload: true
+    state: restarted
+  become: true
+
 - name: brew | vsh-mariadb104 | started
   shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb104"
 
@@ -79,3 +100,12 @@
 
 - name: brew | vsh-mariadb106 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb106"
+
+- name: brew | vsh-mariadb114 | started
+  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb114"
+
+- name: brew | vsh-mariadb114 | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb114"
+
+- name: brew | vsh-mariadb114 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb114"

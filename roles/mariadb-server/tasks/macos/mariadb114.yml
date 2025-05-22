@@ -1,0 +1,86 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: set current mariadb base vars
+  set_fact:
+    current_mariadb_version_key: "11.4"
+    current_mariadb_key: "mariadb114"
+
+- name: "ensure vsh-{{ current_mariadb_key }} is installed"
+  shell: "{{ valet_sh_homebrew_bin }} install vsh-{{ current_mariadb_key }}"
+
+- name: "provide .my.cnf configuration file"
+  template:
+    src: "{{ mariadb114_template_dot_my }}"
+    dest: "{{ current_home }}/.my{{ current_mariadb_version_key }}.cnf"
+    mode: '0644'
+  with_first_found:
+    - "macos/mariadb114/.my.cnf.j2"
+  loop_control:
+    loop_var: mariadb114_template_dot_my
+
+- name: "provide mysql.cnf configuration file"
+  template:
+    src: "{{ mariadb114_template_mysql }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb114/conf.d/mysql.cnf"
+    mode: '0644'
+  with_first_found:
+    - "macos/{{ current_mariadb_key }}/mysql.cnf.j2"
+  loop_control:
+    loop_var: mariadb114_template_mysql
+
+- name: "provide mysqldump.cnf configuration file"
+  template:
+    src: "{{ mariadb114_template_mysqldump }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb114/conf.d/mysqldump.cnf"
+    mode: '0644'
+  with_first_found:
+    - "macos/{{ current_mariadb_key }}/mysqldump.cnf.j2"
+    - "{{ current_mariadb_key }}/mysqldump.cnf.j2"
+  loop_control:
+    loop_var: mariadb114_template_mysqldump
+
+- name: "provide mysqld.cnf configuration file"
+  template:
+    src: "{{ mariadb114_template_mysqld }}"
+    dest: "{{ valet_sh_prefix }}/etc/vsh-{{ current_mariadb_key }}/conf.d/mysqld.cnf"
+    mode: '0644'
+  with_first_found:
+    - "macos/{{ current_mariadb_key }}/mysqld.cnf.j2"
+    - "{{ current_mariadb_key }}/mysqld.cnf.j2"
+  loop_control:
+    loop_var: mariadb114_template_mysqld
+
+- name: brew | vsh-{{ current_mariadb_key }} | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-{{ current_mariadb_key }}"
+
+- name: wait for {{ current_mariadb_key }} to start
+  wait_for:
+    port: "{{ mariadb_server_114.port }}"
+    delay: 5
+
+- name: Set root password
+  mysql_user:
+    login_host: 127.0.0.1
+    login_port: "{{ mariadb_server_114.port }}"
+    login_user: root
+    login_password: "{{ mariadb_server_default_root_password }}"
+    config_file: "/tmp/noexistent.cnf"
+    name: "root"
+    password: "{{ mariadb_server_default_root_password }}"
+    check_implicit_admin: yes
+    state: present

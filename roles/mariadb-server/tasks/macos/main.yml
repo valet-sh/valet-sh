@@ -18,3 +18,5 @@
 - include_tasks: mariadb104.yml
 
 - include_tasks: mariadb106.yml
+
+- include_tasks: mariadb114.yml

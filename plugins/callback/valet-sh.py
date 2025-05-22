@@ -65,7 +65,7 @@ class LogDisplay(Display):
     def display(self, msg, color=None, stderr=False, screen_only=False, log_only=False, newline=True):
         msg2 = to_bytes(msg.lstrip(u'\n'))
         if sys.version_info >= (3,):
-            msg2 = to_text(msg2, self._output_encoding(stderr=stderr))
+            msg2 = to_text(msg2)
         lvl = logging.DEBUG
         logger.log(lvl, msg2)
 

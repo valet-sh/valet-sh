@@ -25,7 +25,7 @@
     php_version: "{{ current_php.version }}"
 
 - name: "override default configuration for current php"
-  include: override-config.yml
+  include_tasks: override-config.yml
 
 - name: create specific php module list
   set_fact:
@@ -51,7 +51,7 @@
   become: true
 
 - name: "include xdebug compilation tasks"
-  include: compile-xdebug.yml
+  include_tasks: compile-xdebug.yml
   when:
     - current_php.compile_xdebug is defined
     - current_php.compile_xdebug.status is defined

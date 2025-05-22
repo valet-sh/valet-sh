@@ -41,4 +41,4 @@
   become: true
 
 - name: brew | dnsmasq | restarted
-  shell: "sudo {{ valet_sh_homebrew_bin }} services  restart dnsmasq"
+  shell: "{{ valet_sh_homebrew_bin_sudo }} services  restart dnsmasq"

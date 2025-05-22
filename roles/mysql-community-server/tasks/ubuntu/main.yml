@@ -23,6 +23,8 @@
 
 - include_tasks: install-80.yml
 
+- include_tasks: install-84.yml
+
 - name: ensure mysql wrapper script is up2date
   template:
     src: "wrapper/mysql-wrapper.j2"
