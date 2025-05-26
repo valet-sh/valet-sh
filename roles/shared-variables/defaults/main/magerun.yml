@@ -15,13 +15,13 @@
 ##
 ---
 
-magerun1_download_url_default: "http://files.magerun.net/n98-magerun-latest.phar"
+magerun1_download_url_default: "https://github.com/netz98/n98-magerun/releases/latest/download/n98-magerun.phar"
 magerun1_download_url: "{{ lookup('vars', 'magerun1_download_url'+'_'+current_os, default=magerun1_download_url_default) }}"
 
 magerun1_bin_path_default: "/usr/local/bin/magerun"
 magerun1_bin_path: "{{ lookup('vars', 'magerun1_bin_path'+'_'+current_os, default=magerun1_bin_path_default) }}"
 
-magerun2_download_url_default: "http://files.magerun.net/n98-magerun2-latest.phar"
+magerun2_download_url_default: "https://github.com/netz98/n98-magerun2/releases/latest/download/n98-magerun2.phar"
 magerun2_download_url: "{{ lookup('vars', 'magerun2_download_url'+'_'+current_os, default=magerun2_download_url_default) }}"
 
 magerun2_bin_path_default: "/usr/local/bin/magerun2"
