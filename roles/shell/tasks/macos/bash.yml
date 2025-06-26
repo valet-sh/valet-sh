@@ -20,4 +20,3 @@
     name: "{{ current_user }}"
     shell: /bin/bash
   become: true
-
