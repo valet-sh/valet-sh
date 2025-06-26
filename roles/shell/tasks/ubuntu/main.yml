@@ -33,5 +33,6 @@
     - default_shell == "bash"
 
 - include_tasks: ubuntu/zsh.yml
+  when:
     - default_shell is defined
     - default_shell == "zsh"
