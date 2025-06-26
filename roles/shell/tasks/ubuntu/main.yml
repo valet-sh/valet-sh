@@ -15,16 +15,12 @@
 ##
 ---
 
-- name: "ensure default shell is set"
-  set_fact:
-    default_shell: "{{ shell_default_shell }}"
-
-- name: "check if shell is valid"
-  fail:
-    msg: "invalid shell '{{ valet_sh_config.default_shell }}'"
-  when:
-    - valet_sh_config.default_shell is defined
-    - valet_sh_config.default_shell not in shell_available_shells
+#- name: "check if shell is valid"
+#  fail:
+#    msg: "invalid shell '{{ valet_sh_config.default_shell }}'"
+#  when:
+#    - valet_sh_config.default_shell is defined
+#    - valet_sh_config.default_shell not in shell_available_shells
 
 - name: "override default shell"
   set_fact:
@@ -32,7 +28,10 @@
   when: valet_sh_config.default_shell is defined
 
 - include_tasks: ubuntu/bash.yml
-  when: default_shell == "bash"
+  when:
+    - default_shell is defined
+    - default_shell == "bash"
 
 - include_tasks: ubuntu/zsh.yml
-  when: default_shell == "zsh"
+    - default_shell is defined
+    - default_shell == "zsh"
