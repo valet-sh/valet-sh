@@ -1,0 +1,172 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: set current valkey base path
+  set_fact:
+    current_valkey_base_path: "{{ valet_packages_path }}/valkey8"
+    current_valkey_version_key: "8"
+    current_valkey_key: "valkey8"
+
+- name: set current dist path
+  set_fact:
+    current_valkey_dist_path: "{{ current_valkey_base_path }}/dist"
+    current_valkey_etc_path: "{{ current_valkey_base_path }}/etc"
+    current_valkey_etc_conf_path: "{{ current_valkey_base_path }}/etc/conf.d"
+    current_valkey_data_path: "{{ current_valkey_base_path }}/data"
+
+- name: "create basic directories"
+  file:
+    path: "{{ current_valkey_base_directory }}"
+    owner: "redis"
+    group: "redis"
+    mode: '0755'
+    state: directory
+  become: true
+  with_items:
+    - "{{ current_valkey_base_path }}"
+    - "{{ current_valkey_dist_path }}"
+    - "{{ current_valkey_etc_path }}"
+    - "{{ current_valkey_etc_conf_path }}"
+  loop_control:
+    loop_var: current_valkey_base_directory
+
+- name: "create data directory '{{ current_valkey_data_path }}'"
+  file:
+    path: "{{ current_valkey_data_path }}"
+    owner: "redis"
+    group: "redis"
+    mode: '0700'
+    state: directory
+  become: true
+
+- name: "provide valkey.cnf configuration file"
+  template:
+    src: "ubuntu/valkey8/valkey.conf.j2"
+    dest: "{{ current_valkey_etc_conf_path }}/config.cnf"
+    owner: "redis"
+    group: "redis"
+    mode: '0644'
+  become: true
+  notify: "systemd | {{ current_valkey_key }} | restarted"
+
+- name: "provide {{ current_valkey_key }} systemd unit file"
+  template:
+    src: "ubuntu/systemd/{{ current_valkey_key }}.service.j2"
+    dest: "/etc/systemd/system/{{ current_valkey_key }}.service"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: "systemd | {{ current_valkey_key }} | restarted"
+
+- name: "provide {{ current_valkey_key }} mysql client"
+  template:
+    src: "wrapper/valkey.j2"
+    dest: "/usr/local/bin/valkey{{ current_valkey_version_key }}-cli"
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+###
+### dist installation
+###
+
+- name: set default value for var 'current_valkey_dist_is_latest'
+  set_fact:
+    current_valkey_dist_is_latest: false
+
+- name: "get stats for dir '{{ current_valkey_dist_path }}/package.sig'"
+  stat:
+    path: "{{ current_valkey_dist_path }}/package.sig"
+  register: current_valkey_package_sig_status_obj
+
+- block:
+    - name: "read package.sig file"
+      slurp:
+        src: "{{ current_valkey_dist_path }}/package.sig"
+      register: current_valkey_package_sig_obj
+
+    - name: override value for 'current_valkey_dist_is_latest'
+      set_fact:
+        current_valkey_dist_is_latest: true
+      when: (current_valkey_package_sig_obj['content'] | b64decode) == valkey_server_8.package_signature
+  when: current_valkey_package_sig_status_obj.stat.exists
+
+- block:
+    - name: "ensure '{{ current_valkey_key }}' is stopped"
+      systemd:
+        name: "{{ current_valkey_key }}"
+        state: stopped
+      become: true
+
+    - name: "ensure dist folder '{{ current_valkey_dist_path }}' is deleted"
+      file:
+        path: "{{ current_valkey_dist_path }}"
+        state: absent
+      become: true
+
+    - name: "ensure dist folder '{{ current_valkey_dist_path }}' is created"
+      file:
+        path: "{{ current_valkey_dist_path }}"
+        owner: "redis"
+        group: "redis"
+        mode: '0755'
+        state: directory
+      become: true
+
+    - name: Download valkey package
+      get_url:
+        url: "{{ valkey_server_8.package_url }}"
+        dest: "/tmp/{{ valkey_server_8.package_url | basename }}"
+
+    - name: Extract valkey archive
+      unarchive:
+        src: "/tmp/{{ valkey_server_8.package_url | basename }}"
+        dest: "{{ current_valkey_dist_path }}"
+        extra_opts: [--strip-components=1]
+      become: true
+      become_user: "redis"
+
+    - name: "delete valkey release tar.gz"
+      file:
+        path: "/tmp/{{ valkey_server_8.package_url | basename }}"
+        state: absent
+
+    - name: "ensure {{ current_valkey_key }} enabled"
+      systemd:
+        name: "{{ current_valkey_key }}"
+        enabled: yes
+        daemon_reload: yes
+      become: true
+
+    - name: "persist package signing key"
+      copy:
+        content: "{{ valkey_server_8.package_signature }}"
+        dest: "{{ current_valkey_dist_path }}/package.sig"
+        mode: '0755'
+      become: true
+      become_user: "redis"
+
+  when: not current_valkey_dist_is_latest|bool
+
+- name: "ensure {{ current_valkey_key }} is restarted"
+  systemd:
+    name: "{{ current_valkey_key }}"
+    daemon_reload: true
+    state: restarted
+  become: true

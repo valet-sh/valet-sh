@@ -1,0 +1,21 @@
+##
+#   Copyright 2025 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+valkey_server_8:
+  package_url: "https://download.valkey.io/releases/valkey-8.1.2-jammy-x86_64.tar.gz"
+  package_signature: 62c106aa55a8ccc00d97a7334adf3e942a93a41d144bf1343ac2d0e069c36580
+  port: 6389
