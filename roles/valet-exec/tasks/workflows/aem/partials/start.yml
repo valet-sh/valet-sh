@@ -15,6 +15,19 @@
 ##
 ---
 
+- name: "workflows » aem » partials » start | evaluate startup params"
+  set_fact:
+    aem_cq_jvm_opts: "-XX:MaxPermSize=256M"
+
+- name: "workflows » aem » partials » start | override startup params when java version is > 11"
+  set_fact:
+    aem_cq_jvm_opts: "-XX:MaxMetaspaceSize=256M"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.java is defined
+    - valet_sh_project_vars.services.java.version is defined
+    - valet_sh_project_vars.services.java.version | int > 11
+
 - block:
   - name: "workflows » aem » partials » start | check if .env.publish exists"
     stat:
@@ -31,7 +44,7 @@
     environment:
       CQ_RUNMODE: "publish"
       CQ_PORT: "{{ valet_sh_project_vars.instance.publish_port }}"
-      CQ_JVM_OPTS: "-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ valet_sh_project_vars.instance.publish_debug_port }}"
+      CQ_JVM_OPTS: "-server -Xmx1024m {{ aem_cq_jvm_opts }} -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ valet_sh_project_vars.instance.publish_debug_port }}"
   when: valet_action_target == "publish" or valet_action_target == "all"
 
 - block:
@@ -50,7 +63,7 @@
     environment:
       CQ_RUNMODE: "author"
       CQ_PORT: "{{ valet_sh_project_vars.instance.author_port }}"
-      CQ_JVM_OPTS: "-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ valet_sh_project_vars.instance.author_debug_port }}"
+      CQ_JVM_OPTS: "-server -Xmx1024m {{ aem_cq_jvm_opts }} -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ valet_sh_project_vars.instance.author_debug_port }}"
   when: valet_action_target == "author" or valet_action_target == "all"
 
 - block:
