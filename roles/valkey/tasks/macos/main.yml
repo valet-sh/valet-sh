@@ -15,6 +15,5 @@
 ##
 ---
 
-- name: "Ensure redis is installed"
-  ansible.builtin.command: "{{ valet_sh_homebrew_bin }} install vsh-valkey8"
-  notify: brew | valkey8 | restarted
+- name: "Include install-8.yml"
+  ansible.builtin.include_tasks: install-8.yml
