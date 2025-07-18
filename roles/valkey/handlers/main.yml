@@ -14,30 +14,29 @@
 #   limitations under the License.
 ##
 ---
-
-- name: systemd | valkey8-server | started
-  systemd:
+- name: Systemd | valkey8 | started
+  ansible.builtin.systemd:
     name: valkey8-server
     state: started
   become: true
 
-- name: systemd | valkey8-server | stopped
-  systemd:
+- name: Systemd | valkey8 | stopped
+  ansible.builtin.systemd:
     name: valkey8-server
     state: stopped
   become: true
 
-- name: systemd | valkey8-server | restarted
-  systemd:
+- name: Systemd | valkey8 | restarted
+  ansible.builtin.systemd:
     name: valkey8-server
     state: restarted
   become: true
 
-- name: brew | valkey8 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-valkey8"
+- name: Brew | valkey8 | started
+  ansible.builtin.command: "{{ valet_sh_homebrew_bin }} services start vsh-valkey8"
 
-- name: brew | valkey8 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-valkey8"
+- name: Brew | valkey8 | stopped
+  ansible.builtin.command: "{{ valet_sh_homebrew_bin }} services stop vsh-valkey8"
 
-- name: brew | valkey8 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-valkey8"
+- name: Brew | valkey8 | restarted
+  ansible.builtin.command: "{{ valet_sh_homebrew_bin }} services restart vsh-valkey8"

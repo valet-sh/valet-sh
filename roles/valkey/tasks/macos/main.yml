@@ -15,12 +15,6 @@
 ##
 ---
 
-#- name: "ensure redis is installed"
-#  homebrew:
-#    name: redis
-#    state: present
-
-- name: "ensure redis is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install redis"
-  notify: brew | redis | restarted
-
+- name: "Ensure redis is installed"
+  ansible.builtin.command: "{{ valet_sh_homebrew_bin }} install vsh-valkey8"
+  notify: brew | valkey8 | restarted

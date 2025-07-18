@@ -14,7 +14,5 @@
 #   limitations under the License.
 ##
 ---
-
-- include_tasks: base.yml
-
-- include_tasks: install-8.yml
+- name: "Include install-8.yml"
+  ansible.builtin.include_tasks: install-8.yml

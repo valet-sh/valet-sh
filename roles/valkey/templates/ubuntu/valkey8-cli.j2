@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec {{ current_valkey_dist_path }}/bin/valkey-cli -p {{ valkey_server_8.port }} "$@"
