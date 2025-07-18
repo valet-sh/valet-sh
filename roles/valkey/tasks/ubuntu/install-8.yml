@@ -79,7 +79,7 @@
 - name: "Provide {{ current_valkey_key }} systemd unit file"
   ansible.builtin.template:
     src: "ubuntu/{{ current_valkey_key }}.service.j2"
-    dest: "/etc/systemd/system/{{ current_valkey_key }}.service"
+    dest: "/etc/systemd/system/{{ current_valkey_key }}-server.service"
     owner: root
     group: root
     mode: "0644"
@@ -145,11 +145,6 @@
         state: directory
       become: true
 
-    # - name: Download valkey package
-    #  ansible.builtin.get_url:
-    #    url: "{{ valkey_server_8.package_url }}"
-    #    dest: "/tmp/{{ valkey_server_8.package_url | basename }}"
-
     - name: Extract valkey archive
       ansible.builtin.unarchive:
         src: "{{ valkey_server_8.package_url }}"
@@ -179,9 +174,9 @@
       become: true
       become_user: "valkey"
 
-- name: "Ensure {{ current_valkey_key }} is restarted"
+- name: "Ensure {{ current_valkey_key }}-server is restarted"
   ansible.builtin.systemd:
-    name: "{{ current_valkey_key }}"
+    name: "{{ current_valkey_key }}-server"
     daemon_reload: true
     state: restarted
   become: true
