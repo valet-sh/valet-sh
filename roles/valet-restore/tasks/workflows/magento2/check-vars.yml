@@ -61,6 +61,14 @@
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.version is defined
 
+- name: "workflows » magento2 » check-vars | override mariadb client configuration"
+  set_fact:
+    valet_sh_project_mysql_client_configuration: "{{ current_home }}/.my{{ valet_sh_project_vars.services.mariadb.version }}.cnf"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mariadb is defined
+    - valet_sh_project_vars.services.mariadb.version is defined
+
 - name: "workflows » magento2 » check-vars | set default mysql server port configuration"
   set_fact:
     valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mysql57 }}"
