@@ -19,9 +19,7 @@
 mariadb_server_default:
   base_path: "{{ valet_packages_path }}/mariadb"
   base_packages:
-    - "libaio1"
-    - "libncurses5"
-    - "libtinfo5"
+    - "mariad-client"
     - "python3-pymysql"
   default_root_password: "root"
   default_user: mysql
@@ -30,9 +28,7 @@ mariadb_server_default:
 mariadb_server_ubuntu_noble:
   base_path: "{{ valet_packages_path }}/mariadb"
   base_packages:
-    - "libaio1t64"
-    - "libncurses6"
-    - "libtinfo6"
+    - "mariadb-client"
     - "python3-pymysql"
   default_root_password: "root"
   default_user: mysql
@@ -43,14 +39,11 @@ mariadb_server: "{{ lookup('vars', 'mariadb_server_' + current_os + '_' + os_cod
 mariadb_server_default_root_password: "root"
 
 mariadb_server_104:
-  package_url: "https://archive.mariadb.org/mariadb-10.4.21/bintar-linux-systemd-x86_64/mariadb-10.4.21-linux-systemd-x86_64.tar.gz"
-  package_signature: 0a00aa490bed6b185bcc016e5ab3392cfa21873f24183795e701b14b9c51b533
+  image: "docker.io/library/mariadb:10.4"
   port: 3317
 mariadb_server_106:
-  package_url: "https://dlm.mariadb.com/2581457/MariaDB/mariadb-10.6.11/bintar-linux-systemd-x86_64/mariadb-10.6.11-linux-systemd-x86_64.tar.gz"
-  package_signature: 368e9ee71e6128f55620868e8986527adbd3509b50c16083ea5b3930758d903d
+  image: "docker.io/library/mariadb:10.6"
   port: 3319
 mariadb_server_114:
-  package_url: "https://archive.mariadb.org//mariadb-11.4.5/bintar-linux-systemd-x86_64/mariadb-11.4.5-linux-systemd-x86_64.tar.gz"
-  package_signature: 2a44cb70a87dba7eb2cab3b5af2c0416a0204d93a8fda387b4b70c9f1bab7bd6
+  image: "docker.io/library/mariadb:11.4"
   port: 3329

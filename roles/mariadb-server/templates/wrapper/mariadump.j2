@@ -1,7 +1,7 @@
 #!/bin/bash
 
 {% if current_mariadb_key|float == 11.4 %}
-exec /usr/local/valet-sh/packages/{{ current_mariadb_key }}/dist/bin/mysqldump --defaults-file=/usr/local/valet-sh/packages/{{ current_mariadb_key }}/etc/my.cnf "$@"
+exec podman exec -it {{ current_mariadb_key }} mysqldump --defaults-file=/etc/mysql/my.cnf "$@"
 {% else %}
-exec /usr/local/valet-sh/packages/{{ current_mariadb_key }}/dist/bin/mariadb-dump --defaults-file=/usr/local/valet-sh/packages/{{ current_mariadb_key }}/etc/my.cnf "$@"
+exec podman exec -it {{ current_mariadb_key }} mariadb-dump --defaults-file=/etc/mysql/my.cnf "$@"
 {% endif %}
