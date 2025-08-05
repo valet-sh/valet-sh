@@ -17,24 +17,24 @@
 
 - name: systemd | mailhog | started
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: mailhog
     state: started
-  become: true
+    scope: user
 
 - name: systemd | mailhog | stopped
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: mailhog
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | mailhog | restarted
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: mailhog
     state: restarted
-  become: true
+    scope: user
 
 - name: brew | mailhog | stopped
   shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"

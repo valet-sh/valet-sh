@@ -1,12 +1,32 @@
 [Unit]
-Description=MailHog Service
+Description=Mailhog Service
+After=network-online.target local-fs.target
+Wants=network-online.target
+
 
 [Service]
-Type=simple
-User={{ current_user }}
-ExecStart={{ mailhog_bin_target }} -api-bind-addr=127.0.0.1:8025 -ui-bind-addr=127.0.0.1:8025 -smtp-bind-addr=127.0.0.1:1025
+Type=exec
+NotifyAccess=all
 Restart=always
-WorkingDirectory=/
+RestartSec=5s
+TimeoutStartSec=0
+TimeoutStopSec=30
+
+ExecStart=/usr/bin/podman run \
+    --replace \
+    --rm \
+    --name mailhog \
+    --publish 8025:8025 \
+    --publish 1025:1025 \
+    --volume mailhog:/maildir \
+    docker.io/mailhog/mailhog:latest \
+    -api-bind-addr=0.0.0.0:8025 \
+    -ui-bind-addr=0.0.0.0:8025 \
+    -smtp-bind-addr=0.0.0.0:1025 \
+    -storage=maildir \
+    -maildir-path=/maildir
+ExecReload=/usr/bin/podman restart mailhog
+ExecStop=/usr/bin/podman stop --time 10 mailhog
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
