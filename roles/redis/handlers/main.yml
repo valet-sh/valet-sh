@@ -19,19 +19,22 @@
   systemd:
     name: redis-server
     state: started
-  become: true
+    daemon_reload: true
+    scope: user
 
 - name: systemd | redis-server | stopped
   systemd:
     name: redis-server
     state: stopped
-  become: true
+    daemon_reload: true
+    scope: user
 
 - name: systemd | redis-server | restarted
   systemd:
     name: redis-server
     state: restarted
-  become: true
+    daemon_reload: true
+    scope: user
 
 - name: brew | redis | started
   shell: "{{ valet_sh_homebrew_bin }} services start redis"
@@ -41,4 +44,3 @@
 
 - name: brew | redis | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart redis"
-

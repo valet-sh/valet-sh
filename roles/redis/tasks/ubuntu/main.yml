@@ -15,19 +15,29 @@
 ##
 ---
 
-- name: ensure redis packages are installed
+- name: Ensure redis-tools are installed natively
   apt:
-    name: "{{ packages }}"
+    name: "redis-tools"
     state: present
   become: true
-  vars:
-    packages:
-      - redis-server
-      - redis-tools
 
-- name: ensure redis-server is running and enabled
-  systemd:
-    name: redis-server
-    state: started
-    enabled: yes
-  become: true
+- name: Pull redis-server image
+  containers.podman.podman_image:
+    name: "docker.io/library/redis:8.0.3"
+    pull: true
+    state: present
+
+- name: "ensure user systemd directory exists"
+  file:
+    path: "{{ current_home }}/.config/systemd/user"
+    state: directory
+    mode: '0755'
+
+- name: Provide systemd service for redis-server container
+  ansible.builtin.template:
+    src: "systemd/redis.service.j2"
+    dest: "{{ current_home }}/.config/systemd/user/redis-server.service"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: '0644'
+  notify: "systemd | redis-server | restarted"
