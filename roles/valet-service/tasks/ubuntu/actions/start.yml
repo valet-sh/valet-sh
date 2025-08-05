@@ -36,16 +36,38 @@
   when: item.key == valet_service_name
   with_dict: "{{ valet_sh_service_alias_mapping }}"
 
-- name: "actions » start | start {{ valet_service_name }} service"
+- name: "actions » start | start {{ valet_service_name }} service (system-scoped)"
   systemd:
     name: "{{ valet_service_name }}"
     state: started
   become: true
-  when: valet_service_name_alias|length == 0
+  when: 
+    - valet_service_name_alias|length == 0
+    - valet_service_name in valet_sh_service_system_scoped_services
 
-- name: "actions » start | start {{ valet_service_name }} service"
+- name: "actions » start | start {{ valet_service_name }} service (user-scoped)"
+  systemd:
+    name: "{{ valet_service_name }}"
+    state: started
+    scope: user
+  when: 
+    - valet_service_name_alias|length == 0
+    - valet_service_name not in valet_sh_service_system_scoped_services
+
+- name: "actions » start | start {{ valet_service_name }} service (system-scoped)"
   systemd:
     name: "{{ valet_service_name_alias }}"
     state: started
   become: true
-  when: valet_service_name_alias|length > 0
+  when: 
+    - valet_service_name_alias|length > 0
+    - valet_service_name in valet_sh_service_system_scoped_services
+
+- name: "actions » start | start {{ valet_service_name }} service (user-scoped)"
+  systemd:
+    name: "{{ valet_service_name_alias }}"
+    state: started
+    scope: user
+  when: 
+    - valet_service_name_alias|length > 0
+    - valet_service_name not in valet_sh_service_system_scoped_services
