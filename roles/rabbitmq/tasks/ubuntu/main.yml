@@ -15,24 +15,33 @@
 ##
 ---
 
-- name: ensure rabbitmq-server is installed
-  apt:
-    name: rabbitmq-server
+- name: Pull rabbitmq-server image
+  containers.podman.podman_image:
+    name: "docker.io/rabbitmq:3.12.14-management"
+    pull: true
     state: present
-  become: true
+
+- name: "ensure user systemd directory exists"
+  file:
+    path: "{{ current_home }}/.config/systemd/user"
+    state: directory
+    mode: '0755'
+
+- name: Provide systemd service for rabbitmq-server container
+  ansible.builtin.template:
+    src: "systemd/rabbitmq-server.service.j2"
+    dest: "{{ current_home }}/.config/systemd/user/rabbitmq-server.service"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: '0644'
+  notify: "systemd | rabbitmq-server | restarted"
 
 - name: ensure rabbitmq-server is running and enabled
-  service:
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: started
-    enabled: yes
-  become: true
-
-- name: Ensure the rabbitmq_management plugin is enabled
-  rabbitmq_plugin:
-    names: rabbitmq_management
-    state: enabled
-  become: true
+    enabled: true
+    scope: user
 
 - name: set 'cert_prefix' variable
   set_fact:
@@ -42,25 +51,6 @@
   include_role:
     name: certificate
     public: true
-
-- name: "ensure systemd rabbitmq-server config directory exists"
-  file:
-    path: "/etc/systemd/system/rabbitmq-server.service.d/"
-    state: directory
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-
-- name: ensure rabbitmq-server.service override.conf is up2date
-  template:
-    src: "rabbitmq-server.service.j2"
-    dest: "/etc/systemd/system/rabbitmq-server.service.d/override.conf"
-    owner: root
-    group: root
-    mode: '0644'
-  notify: systemd | rabbitmq-server | full-restart
-  become: true
 
 - name: provide nginx vhost configuration for rabbitmq management plugin
   template:

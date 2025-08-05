@@ -1,0 +1,26 @@
+[Unit]
+Description=Rabbitmq-Server
+After=network-online.target local-fs.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+NotifyAccess=all
+Restart=always
+RestartSec=5s
+TimeoutStartSec=0
+TimeoutStopSec=30
+
+ExecStart=/usr/bin/podman run \
+    --replace \
+    --rm \
+    --name rabbitmq \
+    --volume rabbitmq:/var/lib/rabbitmq \
+    --publish 5672:5672 \
+    --publish 15672:15672 \
+    docker.io/library/rabbitmq:3.12.14-management
+ExecReload=/usr/bin/podman restart rabbitmq
+ExecStop=/usr/bin/podman stop --time 10 rabbitmq
+
+[Install]
+WantedBy=default.target
