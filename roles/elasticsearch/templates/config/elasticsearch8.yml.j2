@@ -1,9 +1,7 @@
-network.host: 127.0.0.1
+network.host: 0.0.0.0
 http.port: 9208
-transport.host: 127.0.0.1
+transport.host: 0.0.0.0
 transport.port: 9308
-path.logs: "{{ elasticsearch_base_path }}8/logs"
-path.data: "{{ elasticsearch_base_path }}8/data"
 discovery.type: "single-node"
 cluster.name: elasticsearch8
 xpack.security.enabled: false
