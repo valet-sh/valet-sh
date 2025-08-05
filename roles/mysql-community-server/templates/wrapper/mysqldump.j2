@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec /usr/local/valet-sh/packages/{{ current_mysql_key }}/dist/bin/mysqldump --defaults-file=/usr/local/valet-sh/packages/{{ current_mysql_key }}/etc/my.cnf "$@"
+exec podman exec -it {{ current_mysql_key }} mysqldump --defaults-file=/etc/mysql/my.cnf "$@"

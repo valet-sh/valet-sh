@@ -15,25 +15,6 @@
 ##
 ---
 
-- name: "ensure openjdk17 is installed"
-  apt:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-      - openjdk-17-jre
-      - openjdk-17-jdk
-  become: true
-
-- name: "ensure {{ opensearch_pid_path }} is created"
-  file:
-    path: "{{ opensearch_pid_path }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: '0755'
-    state: directory
-  become: true
-
 - include_tasks: install-v1.yml
 
 - include_tasks: install-v2.yml

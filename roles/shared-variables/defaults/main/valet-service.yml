@@ -344,6 +344,23 @@ valet_sh_service_alias_mapping_mac:
   opensearch2: "vsh-opensearch2"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
 
+valet_sh_service_system_scoped_services_default: []
+valet_sh_service_system_scoped_services_ubuntu:
+  - php56
+  - php70
+  - php71
+  - php72
+  - php73
+  - php74
+  - php80
+  - php81
+  - php82
+  - php83
+  - php84
+  - nginx
+valet_sh_service_system_scoped_services_mac: []
+valet_sh_service_system_scoped_services: "{{ lookup('vars', 'valet_sh_service_system_scoped_services'+'_'+current_os, default=valet_sh_service_system_scoped_services_default) }}"
+
 valet_sh_service_rosetta2_emulation:
   rabbitmq: false
   nginx: true

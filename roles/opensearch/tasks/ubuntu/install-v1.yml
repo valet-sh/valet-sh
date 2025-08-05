@@ -26,65 +26,74 @@
   register: current_opensearch_base_path_obj
 
 - block:
-  - name: Download opensearch package
-    get_url:
-      url: "{{ opensearch_version_1_download_url }}"
-      dest: "/tmp/{{ current_opensearch_key }}.tar.gz"
 
-  - name: "create {{ current_opensearch_base_path }}"
+  - name: "Pull {{ current_opensearch_key }} image"
+    containers.podman.podman_image:
+      name: "docker.io/opensearchproject/opensearch:1.3.1"
+      pull: true
+      state: present
+
+  - name: "Create {{ current_opensearch_key }} volume directory"
     file:
-      path: "{{ current_opensearch_base_path }}"
+      path: "{{ item }}"
       owner: "{{ current_user }}"
       group: "{{ current_group }}"
       mode: '0755'
       state: directory
-    become: true
+    loop:
+      - "{{ current_opensearch_base_path }}/config"
 
-  - name: Extract opensearch archive
-    unarchive:
-      src: "/tmp/{{ current_opensearch_key }}.tar.gz"
-      dest: "{{ current_opensearch_base_path }}"
-      extra_opts: [--strip-components=1]
+  - name: "provide {{ current_opensearch_key }} configuration"
+    template:
+      src: "config/{{ current_opensearch_key }}.yml.j2"
+      dest: "{{ current_opensearch_base_path }}/config/opensearch.yml"
+      mode: '0644'
+    notify: "systemd | opensearch1 | restarted"
 
-  - name: "delete opensearch release tar.gz"
+  - name: "ensure user systemd directory exists"
     file:
-      path: "/tmp/{{ current_opensearch_key }}.tar.gz"
-      state: absent
+      path: "{{ current_home }}/.config/systemd/user"
+      state: directory
+      mode: '0755'
+
+  - name: provide systemd service for {{ current_opensearch_key }} container
+    ansible.builtin.template:
+      src: "systemd/{{ current_opensearch_key }}.service.j2"
+      dest: "{{ current_home }}/.config/systemd/user/{{ current_opensearch_key }}.service"
+      owner: "{{ current_user }}"
+      group: "{{ current_group }}"
+      mode: '0644'
+    notify: "systemd | opensearch1 | restarted"
+
+  - name: "Ensure {{ current_opensearch_key }} is started"
+    systemd:
+      name: "{{ current_opensearch_key }}"
+      state: started
+      daemon_reload: true
+      scope: user
+
+  - name: "Wait for {{ current_opensearch_key }} to be ready"
+    uri:
+      url: "http://localhost:9221/_cluster/health"
+      method: GET
+      status_code: 200
+    register: result
+    until: result.status == 200
+    retries: 20
+    delay: 3
 
   - name: "install plugins"
-    shell: "{{ current_opensearch_base_path }}/bin/opensearch-plugin install {{ current_opensearch_plugin }}"
+    containers.podman.podman_container_exec:
+      name: "{{ current_opensearch_key }}"
+      command: "/usr/share/opensearch/bin/opensearch-plugin install {{ current_opensearch_plugin }}"
     with_items: "{{ opensearch_plugins }}"
     loop_control:
       loop_var: current_opensearch_plugin
-  when: not current_opensearch_base_path_obj.stat.exists
+    when: not current_opensearch_base_path_obj.stat.exists
+    notify: "systemd | opensearch1 | restarted"
 
-- name: "provide {{ current_opensearch_key }} configuration"
-  template:
-    src: "config/{{ current_opensearch_key }}.yml.j2"
-    dest: "{{ current_opensearch_base_path }}/config/opensearch.yml"
-    mode: '0644'
-  notify: "systemd | opensearch1 | restarted"
-
-- name: "set 'Xms' in '{{ current_opensearch_base_path }}/config/jvm.options' to 2GB"
-  lineinfile:
-    path: "{{ current_opensearch_base_path }}/config/jvm.options"
-    regexp: '^-Xms'
-    line: "-Xms4g"
-  notify: "systemd | opensearch1 | restarted"
-
-- name: "set 'Xmx' in '{{ current_opensearch_base_path }}/config/jvm.options' to 2GB"
-  lineinfile:
-    path: "{{ current_opensearch_base_path }}/config/jvm.options"
-    regexp: '^-Xmx'
-    line: "-Xmx4g"
-  notify: "systemd | opensearch1 | restarted"
-
-- name: "provide {{ current_opensearch_key }} systemd unit file"
-  template:
-    src: "systemd/{{ current_opensearch_key }}.service.j2"
-    dest: "/etc/systemd/system/{{ current_opensearch_key }}.service"
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-  notify: "systemd | opensearch1 | restarted"
+  - name: Stop {{ current_opensearch_key }} container after plugin installation
+    ansible.builtin.systemd:
+      name: "{{ current_opensearch_key }}"
+      state: stopped
+      scope: user

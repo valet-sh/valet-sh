@@ -1,0 +1,25 @@
+[Unit]
+Description=Redis-Server
+After=network-online.target local-fs.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+NotifyAccess=all
+Restart=always
+RestartSec=5s
+TimeoutStartSec=0
+TimeoutStopSec=30
+
+ExecStart=/usr/bin/podman run \
+    --replace \
+    --rm \
+    --name redis \
+    --volume redis:/data \
+    --publish 6379:6379 \
+    docker.io/library/redis:8.0.3
+ExecReload=/usr/bin/podman restart redis
+ExecStop=/usr/bin/podman stop --time 10 redis
+
+[Install]
+WantedBy=default.target

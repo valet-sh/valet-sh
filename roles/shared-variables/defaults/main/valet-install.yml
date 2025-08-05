@@ -19,6 +19,7 @@ valet_install_default_roles_default:
   - common
   - certificate
   - dnsmasq
+  - podman
   - elasticsearch
   - opensearch
   - shell

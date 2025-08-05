@@ -16,174 +16,173 @@
 ---
 
 - name: systemd | elasticsearch1 | started
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch1
     state: started
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch1 | stopped
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch1
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch1 | restarted
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch1
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch1 | reloaded
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch1
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch2 | started
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch2
     state: started
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch2 | stopped
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch2
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch2 | restarted
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch2
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch2 | reloaded
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch2
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch5 | started
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch5
     state: started
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch5 | stopped
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch5
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch5 | restarted
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch5
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch5 | reloaded
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch5
     state: restarted
-  become: true
+    scope: user
 
 
 - name: systemd | elasticsearch6 | started
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch6
     state: started
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch6 | stopped
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: elasticsearch6
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch6 | restarted
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch6
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch6 | reloaded
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch6
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch7 | started
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch7
     state: started
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch7 | stopped
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch7
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch7 | restarted
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch7
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch7 | reloaded
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch7
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch8 | started
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch8
     state: started
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch8 | stopped
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch8
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch8 | restarted
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch8
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | elasticsearch8 | reloaded
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch8
     state: restarted
-  become: true
-
+    scope: user
 
 - name: brew | vsh-elasticsearch5 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch5"

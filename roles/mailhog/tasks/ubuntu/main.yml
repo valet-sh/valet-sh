@@ -15,25 +15,26 @@
 ##
 ---
 
-- name: install mailhog
-  get_url:
-    url: "{{ mailhog_release_url }}"
-    dest: "{{ mailhog_bin_target }}"
-    force: no
-    mode: 0755
-    owner: root
-    group: root
-  become: true
+- name: Pull mailhog image
+  containers.podman.podman_image:
+    name: "docker.io/mailhog/mailhog:latest"
+    pull: true
+    state: present
 
-- name: provide init script for mailhog
-  template:
+- name: "ensure user systemd directory exists"
+  file:
+    path: "{{ current_home }}/.config/systemd/user"
+    state: directory
+    mode: '0755'
+
+- name: provide systemd service for mailhog container
+  ansible.builtin.template:
     src: "mailhog.service.j2"
-    dest: "/etc/systemd/system/mailhog.service"
-    owner: root
-    group: root
+    dest: "{{ current_home }}/.config/systemd/user/mailhog.service"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: '0644'
-  notify: systemd | mailhog | restarted
-  become: true
+  notify: "systemd | mailhog | restarted"
 
 - name: set 'cert_prefix' variable
   set_fact:
@@ -60,8 +61,8 @@
 
 - name: ensure mailhog is enabled and started
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: mailhog
     enabled: true
     state: started
-  become: true
+    scope: user

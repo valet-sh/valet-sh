@@ -18,93 +18,71 @@
 - name: set current mysql base path
   set_fact:
     current_mysql_base_path: "{{ mysql_community_server.base_path }}84"
-    current_mysql_version_key: "8.4"
+    current_mysql_version_key: "84"
     current_mysql_key: "mysql84"
 
 - name: set curent dist path
   set_fact:
-    current_mysql_dist_path: "{{ current_mysql_base_path }}/dist"
     current_mysql_etc_path: "{{ current_mysql_base_path }}/etc"
     current_mysql_etc_conf_path: "{{ current_mysql_base_path }}/etc/conf.d"
-    current_mysql_data_path: "{{ current_mysql_base_path }}/data"
 
 - name: "create basic directories"
   file:
     path: "{{ current_mysql_base_directory }}"
-    owner: "{{ mysql_community_server.default_user }}"
-    group: "{{ mysql_community_server.default_group }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: '0755'
     state: directory
   become: true
   with_items:
     - "{{ current_mysql_base_path }}"
-    - "{{ current_mysql_dist_path }}"
     - "{{ current_mysql_etc_path }}"
     - "{{ current_mysql_etc_conf_path }}"
   loop_control:
     loop_var: current_mysql_base_directory
 
-- name: "create data directory '{{ current_mysql_data_path }}'"
-  file:
-    path: "{{ current_mysql_data_path }}"
-    owner: "{{ mysql_community_server.default_user }}"
-    group: "{{ mysql_community_server.default_group }}"
-    mode: '0700'
-    state: directory
-  become: true
+
+- name: "Pull {{ current_mysql_key }} image"
+  containers.podman.podman_image:
+    name: "{{ mysql_community_server_84.image }}"
+    pull: true
+    state: present
 
 - name: "provide .my.cnf configuration file"
   template:
-    src: "mysql84/.my.cnf.j2"
+    src: "{{ current_mysql_key }}/.my.cnf.j2"
     dest: "{{ current_home }}/.my8.4.cnf"
     mode: '0644'
 
 - name: "provide my.cnf configuration file"
   template:
-    src: "mysql84/my.cnf.j2"
+    src: "{{ current_mysql_key }}/my.cnf.j2"
     dest: "{{ current_mysql_etc_path }}/my.cnf"
-    owner: "{{ mysql_community_server.default_user }}"
-    group: "{{ mysql_community_server.default_group }}"
     mode: '0644'
-  become: true
   notify: "systemd | {{ current_mysql_key }} | restarted"
-
-- name: "provide mysql.cnf configuration file"
-  template:
-    src: "mysql84/mysql.cnf.j2"
-    dest: "{{ current_mysql_etc_conf_path }}/mysql.cnf"
-    owner: "{{ mysql_community_server.default_user }}"
-    group: "{{ mysql_community_server.default_group }}"
-    mode: '0644'
-  become: true
-
-- name: "provide mysqldump.cnf configuration file"
-  template:
-    src: "mysql84/mysqldump.cnf.j2"
-    dest: "{{ current_mysql_etc_conf_path }}/mysqldump.cnf"
-    owner: "{{ mysql_community_server.default_user }}"
-    group: "{{ mysql_community_server.default_group }}"
-    mode: '0644'
-  become: true
 
 - name: "provide mysqld.cnf configuration file"
   template:
-    src: "mysql84/mysqld.cnf.j2"
+    src: "{{ current_mysql_key }}/mysqld.cnf.j2"
     dest: "{{ current_mysql_etc_conf_path }}/mysqld.cnf"
-    owner: "{{ mysql_community_server.default_user }}"
-    group: "{{ mysql_community_server.default_group }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: '0644'
-  become: true
   notify: "systemd | {{ current_mysql_key }} | restarted"
+
+- name: "ensure user systemd directory exists"
+  file:
+    path: "{{ current_home }}/.config/systemd/user"
+    state: directory
+    mode: '0755'
 
 - name: "provide {{ current_mysql_key }} systemd unit file"
   template:
     src: "systemd/{{ current_mysql_key }}.service.j2"
-    dest: "/etc/systemd/system/{{ current_mysql_key }}.service"
-    owner: root
-    group: root
+    dest: "{{ current_home }}/.config/systemd/user/{{ current_mysql_key }}.service"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: '0644'
-  become: true
   notify: "systemd | {{ current_mysql_key }} | restarted"
 
 - name: "provide {{ current_mysql_key }} mysql client"
@@ -127,165 +105,34 @@
 
 - name: "provide mysqladmin{{ current_mysql_version_key }} client"
   template:
-    src: "wrapper/mysqldump.j2"
+    src: "wrapper/mysqladmin.j2"
     dest: "/usr/local/bin/mysqladmin{{ current_mysql_version_key }}"
     owner: root
     group: root
     mode: '0755'
   become: true
 
+- name: "Ensure {{ current_mysql_key }} is started"
+  systemd:
+    name: "{{ current_mysql_key }}"
+    state: started
+    daemon_reload: true
+    scope: user
 
+- name: Test MySQL connection and get info
+  mysql_info:
+    login_host: "127.0.0.1"
+    login_port: "{{ mysql_community_server_84.port }}"
+    login_user: root
+    login_password: "{{ mysql_community_server.default_root_password }}"
+  register: mysql_status
+  until: mysql_status is succeeded
+  retries: 30
+  delay: 3
 
-###
-### dist installation
-###
-
-- name: set default value for var 'current_mysql_dist_is_latest'
-  set_fact:
-    current_mysql_dist_is_latest: false
-
-- name: "get stats for dir '{{ current_mysql_dist_path }}/package.sig'"
-  stat:
-    path: "{{ current_mysql_dist_path }}/package.sig"
-  register: current_mysql_package_sig_status_obj
-
-- block:
-    - name: "read package.sig file"
-      slurp:
-        src: "{{ current_mysql_dist_path }}/package.sig"
-      register: current_mysql_package_sig_obj
-
-    - name: override value for 'current_mysql_dist_is_latest'
-      set_fact:
-        current_mysql_dist_is_latest: true
-      when: (current_mysql_package_sig_obj['content'] | b64decode) == mysql_community_server_84.package_signature
-  when: current_mysql_package_sig_status_obj.stat.exists
-
-- block:
-    - name: "ensure '{{ current_mysql_key }}' is stopped"
-      systemd:
-        name: "{{ current_mysql_key }}"
-        state: stopped
-      become: true
-
-    - name: "ensure dist folder '{{ current_mysql_dist_path }}' is deleted"
-      file:
-        path: "{{ current_mysql_dist_path }}"
-        state: absent
-      become: true
-
-    - name: "ensure dist folder '{{ current_mysql_dist_path }}' is created"
-      file:
-        path: "{{ current_mysql_dist_path }}"
-        owner: "{{ mysql_community_server.default_user }}"
-        group: "{{ mysql_community_server.default_group }}"
-        mode: '0755'
-        state: directory
-      become: true
-
-    - name: Download Mysql package
-      get_url:
-        url: "{{ mysql_community_server_84.package_url }}"
-        dest: "/tmp/{{ mysql_community_server_84.package_url | basename }}"
-
-    - name: Extract mysql archive
-      unarchive:
-        src: "/tmp/{{ mysql_community_server_84.package_url | basename }}"
-        dest: "{{ current_mysql_dist_path }}"
-        extra_opts: [--strip-components=1]
-      become: true
-      become_user: "{{ mysql_community_server.default_user }}"
-
-    - name: "delete mysql release tar.gz"
-      file:
-        path: "/tmp/{{ mysql_community_server_84.package_url | basename }}"
-        state: absent
-
-    - name: "ensure {{ current_mysql_key }} enabled"
-      systemd:
-        name: "{{ current_mysql_key }}"
-        enabled: yes
-        daemon_reload: yes
-      become: true
-
-    - name: "persist package signing key"
-      copy:
-        content: "{{ mysql_community_server_84.package_signature }}"
-        dest: "{{ current_mysql_dist_path }}/package.sig"
-        mode: '0755'
-      become: true
-      become_user: "{{ mysql_community_server.default_user }}"
-
-  when: not current_mysql_dist_is_latest|bool
-
-- name: "check if '{{ current_mysql_data_path }}' is empty"
-  find:
-    path: '{{ current_mysql_data_path }}'
-  register: current_mysql_data_dir_status_obj
-  become: true
-
-- block:
-    - name: create dummy mysql-client configuration file
-      tempfile:
-        state: file
-        suffix: temp
-      register: mysql_client_dummy_config_file_obj
-
-    - name: run mysql initialize command
-      shell: "{{ current_mysql_dist_path }}/bin/mysqld --defaults-file={{ current_mysql_etc_path }}/my.cnf --datadir={{ current_mysql_data_path }} --pid-file=/run/mysqld/{{ current_mysql_key }}.pid --initialize-insecure"
-      become: true
-
-    - name: ensure mysql 8.4 is restarted
-      systemd:
-        name: mysql84
-        daemon_reload: true
-        state: restarted
-      become: true
-
-    - name: Deletes anonymous MySQL server user for ansible_fqdn
-      mysql_user:
-        login_host: 127.0.0.1
-        login_port: "{{ mysql_community_server_84.port }}"
-        login_user: root
-        login_password: ""
-        config_file: "{{ mysql_client_dummy_config_file_obj.path }}"
-        user: ""
-        host: "{{ ansible_fqdn }}"
-        state: "absent"
-
-    - name: Deletes anonymous MySQL server user for localhost
-      mysql_user:
-        login_host: 127.0.0.1
-        login_port: "{{ mysql_community_server_84.port }}"
-        login_user: root
-        login_password: ""
-        config_file: "{{ mysql_client_dummy_config_file_obj.path }}"
-        user: ""
-        state: "absent"
-
-    - name: Removes the MySQL test database
-      mysql_db:
-        login_host: 127.0.0.1
-        login_port: "{{ mysql_community_server_84.port }}"
-        login_user: root
-        login_password: ""
-        config_file: "{{ mysql_client_dummy_config_file_obj.path }}"
-        db: test
-        state: absent
-
-    - name: Set root password
-      mysql_user:
-        login_host: 127.0.0.1
-        login_port: "{{ mysql_community_server_84.port }}"
-        login_user: root
-        login_password: ""
-        config_file: "{{ mysql_client_dummy_config_file_obj.path }}"
-        user: "root"
-        password: "root"
-        state: present
-
-    - name: ensure dummy mysql-client configuration file is deleted
-      file:
-        path: "{{ mysql_client_dummy_config_file_obj.path }}"
-        state: absent
-  when: current_mysql_data_dir_status_obj.matched == 0
+- name: Stop {{ current_mysql_key }} service after installation
+  when: mysql_status is succeeded
+  systemd:
+    name: "{{ current_mysql_key }}"
+    state: stopped
+    scope: user

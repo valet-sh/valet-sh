@@ -1,20 +1,28 @@
 [Unit]
-Description=Mariadb 10.4 Server
-After=network.target
-
-[Install]
-WantedBy=multi-user.target
+Description=MariaDB 10.4 Server
+After=network-online.target local-fs.target
+Wants=network-online.target
 
 [Service]
-Type=notify
-PrivateNetwork=false
-User=mysql
-Group=mysql
-PIDFile=/run/mysqld/{{ current_mariadb_key }}.pid
-PermissionsStartOnly=true
-ExecStart={{ current_mariadb_dist_path }}/bin/mysqld --defaults-file={{ current_mariadb_etc_path }}/my.cnf --datadir={{ current_mariadb_data_path }} --pid-file=/run/mysqld/{{ current_mariadb_key }}.pid
-TimeoutSec=600
-Restart=on-failure
-RuntimeDirectory=mysqld
-RuntimeDirectoryMode=755
-LimitNOFILE=5000
+Type=exec
+NotifyAccess=all
+Restart=always
+RestartSec=5s
+TimeoutStartSec=0
+TimeoutStopSec=30
+
+ExecStart=/usr/bin/podman run \
+    --replace \
+    --rm \
+    --name {{ current_mariadb_key }} \
+    --volume {{ current_mariadb_key }}-data:/var/lib/mysql \
+    --volume {{ current_mariadb_etc_path }}/my.cnf:/etc/mysql/my.cnf:z \
+    --volume {{ current_mariadb_etc_conf_path }}:/etc/mysql/conf.d:z \
+    --publish {{ mariadb_server_104.port }}:3306 \
+    --env MYSQL_ROOT_PASSWORD={{ mariadb_server.default_root_password }} \
+    {{ mariadb_server_104.image }}
+ExecReload=/usr/bin/podman restart {{ current_mariadb_key }}
+ExecStop=/usr/bin/podman stop --time 10 {{ current_mariadb_key }}
+
+[Install]
+WantedBy=default.target

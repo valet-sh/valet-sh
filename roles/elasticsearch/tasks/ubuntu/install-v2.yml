@@ -26,51 +26,73 @@
   register: current_elasticsearch_base_path_obj
 
 - block:
-  - name: Download ElasticSearch package
-    get_url:
-      url: "{{ elasticsearch_version_2_download_url }}"
-      dest: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
+  - name: "Pull {{ current_elasticsearch_key }} image"
+    containers.podman.podman_image:
+      name: "docker.io/elasticsearch:2.4.6"
+      pull: true
+      state: present
 
-  - name: "create {{ current_elasticsearch_base_path }}"
+  - name: "Create {{ current_elasticsearch_key }} volume directory"
     file:
-      path: "{{ current_elasticsearch_base_path }}"
+      path: "{{ item }}"
       owner: "{{ current_user }}"
       group: "{{ current_group }}"
       mode: '0755'
       state: directory
-    become: true
+    loop:
+      - "{{ current_elasticsearch_base_path }}/config"
 
-  - name: Extract elasticsearch archive
-    unarchive:
-      src: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
-      dest: "{{ current_elasticsearch_base_path }}"
-      extra_opts: [--strip-components=1]
+  - name: "provide {{ current_elasticsearch_key }} configuration"
+    template:
+      src: "config/{{ current_elasticsearch_key }}.yml.j2"
+      dest: "{{ current_elasticsearch_base_path }}/config/elasticsearch.yml"
+      mode: '0644'
+    notify: "systemd | elasticsearch2 | restarted"
 
-  - name: "delete elasticsearch release tar.gz"
+  - name: "ensure user systemd directory exists"
     file:
-      path: "/tmp/{{ current_elasticsearch_key }}.tar.gz"
-      state: absent
+      path: "{{ current_home }}/.config/systemd/user"
+      state: directory
+      mode: '0755'
+
+  - name: Provide systemd service for {{ current_elasticsearch_key }} container
+    ansible.builtin.template:
+      src: "systemd/{{ current_elasticsearch_key }}.service.j2"
+      dest: "{{ current_home }}/.config/systemd/user/{{ current_elasticsearch_key }}.service"
+      owner: "{{ current_user }}"
+      group: "{{ current_group }}"
+      mode: '0644'
+    notify: "systemd | elasticsearch2 | restarted"
+
+  - name: "Ensure {{ current_elasticsearch_key }} is started"
+    systemd:
+      name: "{{ current_elasticsearch_key }}"
+      state: started
+      daemon_reload: true
+      scope: user
+
+  - name: "Wait for {{ current_elasticsearch_key }} to be ready"
+    uri:
+      url: "http://localhost:9202/_cluster/health"
+      method: GET
+      status_code: 200
+    register: result
+    until: result.status == 200
+    retries: 15
+    delay: 3
 
   - name: "install plugins"
-    shell: "{{ current_elasticsearch_base_path }}/bin/plugin install {{ current_elasticsearch_plugin }}"
+    containers.podman.podman_container_exec:
+      name: "{{ current_elasticsearch_key }}"
+      command: "/usr/share/elasticsearch/bin/plugin install {{ current_elasticsearch_plugin }}"
     with_items: "{{ elasticsearch_plugins }}"
     loop_control:
       loop_var: current_elasticsearch_plugin
-  when: not current_elasticsearch_base_path_obj.stat.exists
+    when: not current_elasticsearch_base_path_obj.stat.exists
+    notify: "systemd | elasticsearch2 | restarted"
 
-- name: "provide {{ current_elasticsearch_key }} configuration"
-  template:
-    src: "config/{{ current_elasticsearch_key }}.yml.j2"
-    dest: "{{ current_elasticsearch_base_path }}/config/elasticsearch.yml"
-    mode: '0644'
-  notify: "systemd | elasticsearch2 | restarted"
-
-- name: "provide {{ current_elasticsearch_key }} systemd unit file"
-  template:
-    src: "systemd/{{ current_elasticsearch_key }}.service.j2"
-    dest: "/etc/systemd/system/{{ current_elasticsearch_key }}.service"
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-  notify: "systemd | elasticsearch2 | restarted"
+  - name: Stop {{ current_elasticsearch_key }} container after plugin installation
+    ansible.builtin.systemd:
+      name: "{{ current_elasticsearch_key }}"
+      state: stopped
+      scope: user

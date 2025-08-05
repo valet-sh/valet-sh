@@ -18,70 +18,70 @@
 - name: systemd | daemon-reload
   systemd:
     daemon_reload: true
-  become: true
+    scope: user
 
 - name: systemd | mariadb104 | started
   systemd:
     name: mariadb104
     daemon_reload: true
     state: started
-  become: true
+    scope: user
 
 - name: systemd | mariadb104 | stopped
   systemd:
     name: mariadb104
     daemon_reload: true
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | mariadb104 | restarted
   systemd:
     name: mariadb104
     daemon_reload: true
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | mariadb106 | started
   systemd:
     name: mariadb106
     daemon_reload: true
     state: started
-  become: true
+    scope: user
 
 - name: systemd | mariadb106 | stopped
   systemd:
     name: mariadb106
     daemon_reload: true
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | mariadb106 | restarted
   systemd:
     name: mariadb106
     daemon_reload: true
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | mariadb114 | started
   systemd:
     name: mariadb114
     daemon_reload: true
     state: started
-  become: true
+    scope: user
 
 - name: systemd | mariadb114 | stopped
   systemd:
     name: mariadb114
     daemon_reload: true
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | mariadb114 | restarted
   systemd:
     name: mariadb114
     daemon_reload: true
     state: restarted
-  become: true
+    scope: user
 
 - name: brew | vsh-mariadb104 | started
   shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb104"

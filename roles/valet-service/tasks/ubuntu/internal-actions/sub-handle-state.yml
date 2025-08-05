@@ -27,34 +27,90 @@
   loop_control:
     loop_var: valet_sh_service_alias_mapping_item
 
-- name: "internal-actions » sub-handle-state | enable {{ valet_current_service_item.key }} service"
+- name: "internal-actions » sub-handle-state | enable {{ valet_current_service_item.key }} service (system-scoped)"
   systemd:
     name: "{{ valet_current_service_item.key }}"
     enabled: yes
     state: restarted
   become: true
-  when: valet_service_name_alias|length == 0 and valet_current_service_item.value|bool
+  when: 
+    - valet_service_name_alias|length == 0 
+    - valet_current_service_item.value|bool
+    - valet_current_service_item.key in valet_sh_service_system_scoped_services
 
-- name: "internal-actions » sub-handle-state | enable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}'"
+- name: "internal-actions » sub-handle-state | enable {{ valet_current_service_item.key }} service (user-scoped)"
+  systemd:
+    name: "{{ valet_current_service_item.key }}"
+    enabled: yes
+    state: restarted
+    scope: user
+  when: 
+    - valet_service_name_alias|length == 0 
+    - valet_current_service_item.value|bool
+    - valet_current_service_item.key not in valet_sh_service_system_scoped_services
+
+- name: "internal-actions » sub-handle-state | enable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}' (system-scoped)"
   systemd:
     name: "{{ valet_service_name_alias }}"
     enabled: yes
     state: restarted
   become: true
-  when: valet_service_name_alias|length > 0 and valet_current_service_item.value|bool
+  when: 
+    - valet_service_name_alias|length > 0 
+    - valet_current_service_item.value|bool
+    - valet_current_service_item.key in valet_sh_service_system_scoped_services
 
-- name: "internal-actions » sub-handle-state | disable {{ valet_current_service_item.key }} service"
+- name: "internal-actions » sub-handle-state | enable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}' (user-scoped)"
+  systemd:
+    name: "{{ valet_service_name_alias }}"
+    enabled: yes
+    state: restarted
+    scope: user
+  when: 
+    - valet_service_name_alias|length > 0 
+    - valet_current_service_item.value|bool
+    - valet_current_service_item.key not in valet_sh_service_system_scoped_services
+
+- name: "internal-actions » sub-handle-state | disable {{ valet_current_service_item.key }} service (system-scoped)"
   systemd:
     name: "{{ valet_current_service_item.key }}"
     enabled: no
     state: stopped
   become: true
-  when: valet_service_name_alias|length == 0 and not valet_current_service_item.value|bool
+  when: 
+    - valet_service_name_alias|length == 0 
+    - not valet_current_service_item.value|bool
+    - valet_current_service_item.key in valet_sh_service_system_scoped_services
 
-- name: "internal-actions » sub-handle-state | disable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}'"
+- name: "internal-actions » sub-handle-state | disable {{ valet_current_service_item.key }} service (user-scoped)"
+  systemd:
+    name: "{{ valet_current_service_item.key }}"
+    enabled: no
+    state: stopped
+    scope: user
+  when: 
+    - valet_service_name_alias|length == 0 
+    - not valet_current_service_item.value|bool
+    - valet_current_service_item.key not in valet_sh_service_system_scoped_services
+
+- name: "internal-actions » sub-handle-state | disable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}' (system-scoped)"
   systemd:
     name: "{{ valet_service_name_alias }}"
     enabled: no
     state: stopped
   become: true
-  when: valet_service_name_alias|length > 0 and not valet_current_service_item.value|bool
+  when: 
+    - valet_service_name_alias|length > 0 
+    - not valet_current_service_item.value|bool
+    - valet_current_service_item.key in valet_sh_service_system_scoped_services
+
+- name: "internal-actions » sub-handle-state | disable service '{{ valet_current_service_item.key }}' with alias '{{ valet_service_name_alias }}' (user-scoped)"
+  systemd:
+    name: "{{ valet_service_name_alias }}"
+    enabled: no
+    state: stopped
+    scope: user
+  when: 
+    - valet_service_name_alias|length > 0 
+    - not valet_current_service_item.value|bool
+    - valet_current_service_item.key not in valet_sh_service_system_scoped_services

@@ -1,30 +1,27 @@
 [mysqld_safe]
-socket		= /var/run/mysqld/mysqld80.sock
 nice		= 0
 
 [mysqld]
-user		= mysql
-pid-file	= /var/run/mysqld/{{ current_mysql_key }}.pid
-#socket		= /var/run/mysqld/mysqld80.sock
-socket =
+pid-file        = /var/run/mysqld/mysqld.pid
+socket          = /var/run/mysqld/mysqld.sock
 mysqlx-socket =
-port		= {{ mysql_community_server_80.port }}
-mysqlx_port = 33080
-basedir		= {{ current_mysql_dist_path }}
-datadir		= {{ current_mysql_data_path }}
+port		= 3306
+mysqlx-port = 33060
+basedir		= /usr
+datadir		= /var/lib/mysql
 tmpdir		= /tmp
-lc-messages-dir	= {{ current_mysql_dist_path }}/share
+lc-messages-dir	=  /usr/share/mysql
 skip-external-locking
 
-mysqlx-bind-address = 127.0.0.1
-bind-address		= 127.0.0.1
+mysqlx-bind-address = 0.0.0.0
+bind-address		= 0.0.0.0
 key_buffer_size		= 16M
 max_allowed_packet	= 256M
 thread_stack		= 192K
 thread_cache_size       = 8
 myisam-recover-options  = BACKUP
 max_connections        = 200
-log_error = /var/log/mysql/{{ current_mysql_key }}-error.log
+log_error = /var/lib/mysql/{{ current_mysql_key }}-error.log
 max_binlog_size   = 100M
 
 character-set-server='utf8mb4'

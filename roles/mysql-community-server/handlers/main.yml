@@ -18,70 +18,70 @@
 - name: systemd | daemon-reload
   systemd:
     daemon_reload: true
-  become: true
+    scope: user
 
 - name: systemd | mysql57 | started
   systemd:
     name: mysql57
     daemon_reload: true
     state: started
-  become: true
+    scope: user
 
 - name: systemd | mysql57 | stopped
   systemd:
     name: mysql57
     daemon_reload: true
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | mysql57 | restarted
   systemd:
     name: mysql57
     daemon_reload: true
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | mysql80 | started
   systemd:
     name: mysql80
     daemon_reload: true
     state: started
-  become: true
+    scope: user
 
 - name: systemd | mysql80 | stopped
   systemd:
     name: mysql80
     daemon_reload: true
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | mysql80 | restarted
   systemd:
     name: mysql80
     daemon_reload: true
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | mysql84 | started
   systemd:
     name: mysql84
     daemon_reload: true
     state: started
-  become: true
+    scope: user
 
 - name: systemd | mysql84 | stopped
   systemd:
     name: mysql84
     daemon_reload: true
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | mysql84 | restarted
   systemd:
     name: mysql84
     daemon_reload: true
     state: restarted
-  become: true
+    scope: user
 
 - name: brew | vsh-mysql57 | started
   shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql57"

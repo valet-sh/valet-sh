@@ -1,0 +1,27 @@
+- name: systemd | Podman | started
+  systemd:
+    daemon_reload: true
+    name: podman
+    state: started
+  become: true
+
+- name: systemd | Podman | stopped
+  systemd:
+    daemon_reload: true
+    name: podman
+    state: stopped
+  become: true
+
+- name: systemd | Podman | reload
+  systemd:
+    daemon_reload: true
+    name: podman
+    state: reloaded
+  become: true
+
+- name: systemd | Podman | restarted
+  systemd:
+    daemon_reload: true
+    name: podman
+    state: restarted
+  become: true
