@@ -17,62 +17,62 @@
 
 - name: systemd | opensearch1 | started
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: opensearch1
     state: started
-  become: true
+    scope: user
 
 - name: systemd | opensearch1 | stopped
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: opensearch1
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | opensearch1 | restarted
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: opensearch1
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | opensearch1 | reloaded
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: opensearch1
     state: restarted
-  become: true
+    scope: user
 
 - name: brew | vsh-opensearch1 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch1"
 
 - name: systemd | opensearch2 | started
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: opensearch2
     state: started
-  become: true
+    scope: user
 
 - name: systemd | opensearch2 | stopped
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: opensearch2
     state: stopped
-  become: true
+    scope: user
 
 - name: systemd | opensearch2 | restarted
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: opensearch2
     state: restarted
-  become: true
+    scope: user
 
 - name: systemd | opensearch2 | reloaded
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: opensearch2
     state: restarted
-  become: true
+    scope: user
 
 - name: brew | vsh-opensearch2 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"
