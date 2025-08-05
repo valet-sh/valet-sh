@@ -1,19 +1,28 @@
 [Unit]
 Description=MySQL 8.0 Community Server
-After=network.target
-
-[Install]
-WantedBy=multi-user.target
+After=network-online.target local-fs.target
+Wants=network-online.target
 
 [Service]
-Type=forking
-User=mysql
-Group=mysql
-PIDFile=/run/mysqld/{{ current_mysql_key }}.pid
-PermissionsStartOnly=true
-ExecStart={{ current_mysql_dist_path }}/bin/mysqld --defaults-file={{ current_mysql_etc_path }}/my.cnf --datadir={{ current_mysql_data_path }} --pid-file=/run/mysqld/{{ current_mysql_key }}.pid --daemonize
-TimeoutSec=600
-Restart=on-failure
-RuntimeDirectory=mysqld
-RuntimeDirectoryMode=755
-LimitNOFILE=5000
+Type=exec
+NotifyAccess=all
+Restart=always
+RestartSec=5s
+TimeoutStartSec=0
+TimeoutStopSec=30
+
+ExecStart=/usr/bin/podman run \
+    --replace \
+    --rm \
+    --name {{ current_mysql_key }} \
+    --volume {{ current_mysql_key }}-data:/var/lib/mysql \
+    --volume {{ current_mysql_etc_path }}/my.cnf:/etc/mysql/my.cnf:z \
+    --volume {{ current_mysql_etc_conf_path }}:/etc/mysql/conf.d:z \
+    --publish {{ mysql_community_server_80.port }}:3306 \
+    --env MYSQL_ROOT_PASSWORD={{ mysql_community_server.default_root_password }} \
+    {{ mysql_community_server_80.image }}
+ExecReload=/usr/bin/podman restart {{ current_mysql_key }}
+ExecStop=/usr/bin/podman stop --time 10 {{ current_mysql_key }}
+
+[Install]
+WantedBy=default.target
