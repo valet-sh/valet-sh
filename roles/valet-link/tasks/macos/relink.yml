@@ -14,8 +14,8 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: macos/unlink.yml
+- ansible.builtin.include_tasks: macos/unlink.yml
   vars:
     valet_link_silent: true
 
-- include_tasks: macos/link.yml
+- ansible.builtin.include_tasks: macos/link.yml

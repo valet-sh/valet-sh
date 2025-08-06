@@ -15,96 +15,88 @@
 ##
 ---
 - name: systemd | daemon-reload
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     scope: user
 
 - name: systemd | mysql57 | started
-  systemd:
+  ansible.builtin.systemd:
     name: mysql57
     daemon_reload: true
     state: started
     scope: user
 
 - name: systemd | mysql57 | stopped
-  systemd:
+  ansible.builtin.systemd:
     name: mysql57
     daemon_reload: true
     state: stopped
     scope: user
 
 - name: systemd | mysql57 | restarted
-  systemd:
+  ansible.builtin.systemd:
     name: mysql57
     daemon_reload: true
     state: restarted
     scope: user
 
 - name: systemd | mysql80 | started
-  systemd:
+  ansible.builtin.systemd:
     name: mysql80
     daemon_reload: true
     state: started
     scope: user
 
 - name: systemd | mysql80 | stopped
-  systemd:
+  ansible.builtin.systemd:
     name: mysql80
     daemon_reload: true
     state: stopped
     scope: user
 
 - name: systemd | mysql80 | restarted
-  systemd:
+  ansible.builtin.systemd:
     name: mysql80
     daemon_reload: true
     state: restarted
     scope: user
 
 - name: systemd | mysql84 | started
-  systemd:
+  ansible.builtin.systemd:
     name: mysql84
     daemon_reload: true
     state: started
     scope: user
 
 - name: systemd | mysql84 | stopped
-  systemd:
+  ansible.builtin.systemd:
     name: mysql84
     daemon_reload: true
     state: stopped
     scope: user
 
 - name: systemd | mysql84 | restarted
-  systemd:
+  ansible.builtin.systemd:
     name: mysql84
     daemon_reload: true
     state: restarted
     scope: user
 
 - name: brew | vsh-mysql57 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql57"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql57"
 - name: brew | vsh-mysql57 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql57"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql57"
 - name: brew | vsh-mysql57 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql57"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql57"
 - name: brew | vsh-mysql80 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql80"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql80"
 - name: brew | vsh-mysql80 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql80"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql80"
 - name: brew | vsh-mysql80 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql80"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql80"
 - name: brew | vsh-mysql84 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql84"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql84"
 - name: brew | vsh-mysql84 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql84"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql84"
 - name: brew | vsh-mysql84 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql84"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql84"

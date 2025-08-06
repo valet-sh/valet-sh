@@ -118,7 +118,8 @@ valet_sh_service_defaultable_services_mac:
     values:
       - composer1
       - composer2
-valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services'+'_'+current_os, default=valet_sh_service_defaultable_services_default) }}"
+valet_sh_service_defaultable_services: "{{ lookup('vars', 'valet_sh_service_defaultable_services'+'_'+current_os, default=valet_sh_service_defaultable_services_default)
+  }}"
 
 valet_sh_service_state_preset_default:
   - elasticsearch1: false
@@ -213,7 +214,8 @@ valet_sh_service_privileged_services_default:
 valet_sh_service_privileged_services_mac:
   - nginx
   - dnsmasq
-valet_sh_service_privileged_services: "{{ lookup('vars', 'valet_sh_service_privileged_services'+'_'+current_os, default=valet_sh_service_privileged_services_default) }}"
+valet_sh_service_privileged_services: "{{ lookup('vars', 'valet_sh_service_privileged_services'+'_'+current_os, default=valet_sh_service_privileged_services_default)
+  }}"
 
 valet_sh_service_fuzzy_alias_mapping:
   - target: php56
@@ -359,7 +361,8 @@ valet_sh_service_system_scoped_services_ubuntu:
   - php84
   - nginx
 valet_sh_service_system_scoped_services_mac: []
-valet_sh_service_system_scoped_services: "{{ lookup('vars', 'valet_sh_service_system_scoped_services'+'_'+current_os, default=valet_sh_service_system_scoped_services_default) }}"
+valet_sh_service_system_scoped_services: "{{ lookup('vars', 'valet_sh_service_system_scoped_services'+'_'+current_os, default=valet_sh_service_system_scoped_services_default)
+  }}"
 
 valet_sh_service_rosetta2_emulation:
   rabbitmq: false

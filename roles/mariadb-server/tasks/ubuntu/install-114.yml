@@ -15,18 +15,18 @@
 ##
 ---
 - name: set current mariadb base path
-  set_fact:
+  ansible.builtin.set_fact:
     current_mariadb_base_path: "{{ mariadb_server.base_path }}114"
     current_mariadb_version_key: "11.4"
     current_mariadb_key: "mariadb114"
 
 - name: set current paths
-  set_fact:
+  ansible.builtin.set_fact:
     current_mariadb_etc_path: "{{ current_mariadb_base_path }}/etc"
     current_mariadb_etc_conf_path: "{{ current_mariadb_base_path }}/etc/conf.d"
 
 - name: "create basic directories"
-  file:
+  ansible.builtin.file:
     path: "{{ current_mariadb_base_directory }}"
     owner: "valet"
     group: "valet"
@@ -47,13 +47,13 @@
     state: present
 
 - name: "provide .my.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "ubuntu/{{ current_mariadb_key }}/.my.cnf.j2"
     dest: "{{ current_home }}/.my{{ current_mariadb_version_key }}.cnf"
     mode: "0644"
 
 - name: "provide my.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "ubuntu/{{ current_mariadb_key }}/my.cnf.j2"
     dest: "{{ current_mariadb_etc_path }}/my.cnf"
     owner: "{{ current_user }}"
@@ -62,7 +62,7 @@
   notify: "systemd | {{ current_mariadb_key }} | restarted"
 
 - name: "provide mysqld.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "ubuntu/{{ current_mariadb_key }}/mysqld.cnf.j2"
     dest: "{{ current_mariadb_etc_conf_path }}/mysqld.cnf"
     owner: "{{ current_user }}"
@@ -71,7 +71,7 @@
   notify: "systemd | {{ current_mariadb_key }} | restarted"
 
 - name: "ensure user systemd directory exists"
-  file:
+  ansible.builtin.file:
     path: "{{ current_home }}/.config/systemd/user"
     state: directory
     mode: "0755"
@@ -86,7 +86,7 @@
   notify: "systemd | {{ current_mariadb_key }} | restarted"
 
 - name: "provide mariadb{{ current_mariadb_version_key }} mysql client"
-  template:
+  ansible.builtin.template:
     src: "wrapper/mariadb.j2"
     dest: "/usr/local/bin/mariadb{{ current_mariadb_version_key }}"
     owner: root
@@ -95,7 +95,7 @@
   become: true
 
 - name: "provide mariadump{{ current_mariadb_version_key }} client"
-  template:
+  ansible.builtin.template:
     src: "wrapper/mariadump.j2"
     dest: "/usr/local/bin/mariadump{{ current_mariadb_version_key }}"
     owner: root
@@ -104,7 +104,7 @@
   become: true
 
 - name: "provide mariaadmin{{ current_mariadb_version_key }} client"
-  template:
+  ansible.builtin.template:
     src: "wrapper/mariaadmin.j2"
     dest: "/usr/local/bin/mariaadmin{{ current_mariadb_version_key }}"
     owner: root
@@ -113,14 +113,14 @@
   become: true
 
 - name: "Ensure {{ current_mariadb_key }} is started"
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ current_mariadb_key }}"
     state: started
     daemon_reload: true
     scope: user
 
 - name: Test MariaDB connection and get info
-  mysql_info:
+  community.mysql.mysql_info:
     login_host: "127.0.0.1"
     login_port: "{{ mariadb_server_114.port }}"
     login_user: root
@@ -132,7 +132,7 @@
 
 - name: Stop {{ current_mariadb_key }} service after installation
   when: mariadb_status is succeeded
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ current_mariadb_key }}"
     state: stopped
     scope: user

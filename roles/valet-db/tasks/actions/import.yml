@@ -14,34 +14,33 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: partials/check-db-name-var.yml
-
+- ansible.builtin.include_tasks: partials/check-db-name-var.yml
 - name: "actions » import | override 'valet_db_name' variable if db name argument was given"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_db_name: "{{ valet_arg2 }}"
   when: valet_arg2 | length > 0
 
 - name: "actions » import | fail when no filename was given"
-  fail:
+  ansible.builtin.fail:
     msg: "no filename was given"
   when: valet_arg1 | length == 0
 
 - name: "actions » import | set filename from args"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_db_filename: "{{ valet_arg1 }}"
 
 - name: "actions » import | set valet_db_file var"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_db_file: "{{ valet_db_filename }}"
   when: valet_db_filename[0]  == "/"
 
 - name: "actions » import | add path to 'valet_db_file' if it is not already an absolute path"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_db_file: "{{ valet_current_path }}/{{ valet_db_filename }}"
   when: valet_db_file is not defined
 
 - name: "actions » import | Import database {{ valet_db_file }} into database '{{ valet_db_name }}'"
-  mysql_db:
+  community.mysql.mysql_db:
     state: import
     config_file: "{{ valet_db_mysql_target_config_file }}"
     config_overrides_defaults: true

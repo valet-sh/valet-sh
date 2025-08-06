@@ -14,10 +14,9 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: ../setup-aue-service/main.yml
+- ansible.builtin.include_tasks: ../setup-aue-service/main.yml
   when: valet_sh_aem_addons.aue is defined
 
-- include_tasks: setup-blank-instances.yml
-
-- include_tasks: setup-cif-addon.yml
+- ansible.builtin.include_tasks: setup-blank-instances.yml
+- ansible.builtin.include_tasks: setup-cif-addon.yml
   when: valet_sh_aem_addons.cif is defined

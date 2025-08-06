@@ -15,11 +15,11 @@
 ##
 ---
 - name: Ensure universe repository is enabled
-  shell: "add-apt-repository -y universe"
+  ansible.builtin.shell: "add-apt-repository -y universe"
   become: true
 
 - name: Update all packages to the latest version
-  apt:
+  ansible.builtin.apt:
     update_cache: true
     upgrade: dist
   become: true
@@ -56,11 +56,11 @@
 #    name: tlp
 
 - name: "run ubuntu-drivers autoinstall"
-  shell: "ubuntu-drivers autoinstall"
+  ansible.builtin.shell: "ubuntu-drivers autoinstall"
   become: true
 
 - name: install video codec packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -72,14 +72,14 @@
       - gstreamer1.0-vaapi
   become: true
 
-- apt_repository:
+- ansible.builtin.apt_repository:
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: true
   become: true
   when: ansible_distribution_release == "bionic"
 
 - name: install bluetooth sound codec packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -90,7 +90,7 @@
   when: ansible_distribution_release == "bionic"
 
 - name: install intel microcode updates
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -98,7 +98,7 @@
   become: true
 
 - name: Enable power saving tweaks for Intel chip
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modprobe.d/i915.conf
     line: "options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1"
     create: true
@@ -116,22 +116,22 @@
 #    line: 'dell-smm-hwmon'
 
 - name: "run update-initramfs -u"
-  shell: "update-initramfs -u"
+  ansible.builtin.shell: "update-initramfs -u"
   become: true
 
 - name: update grub config
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
     line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 mem_sleep_default=deep"'
   become: true
 
 - name: "run update-grub"
-  shell: "update-grub"
+  ansible.builtin.shell: "update-grub"
   become: true
 
 - name: disable gnome tracker apps
-  systemd:
+  ansible.builtin.systemd:
     masked: true
     name: "{{ ubuntu_gnome_tracker_apps_item }}"
   with_items:

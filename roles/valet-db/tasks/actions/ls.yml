@@ -15,19 +15,19 @@
 ##
 ---
 - name: "actions » ls | get list of mysql databases"
-  shell: "{{ valet_db_mysql_client_binary }} -B --disable-column-names --execute 'show databases'" # noqa 305 301
+  ansible.builtin.shell: "{{ valet_db_mysql_client_binary }} -B --disable-column-names --execute 'show databases'"
   register: mysql_query_show_databases_obj
 
 - name: "actions » ls | read current databases from command output"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_current_databases: "{{ mysql_query_show_databases_obj.stdout_lines | difference(valet_mysql_db_blacklist) }}"
 
 - name: "actions » ls | create empty array 'valet_list'"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_list: []
 
 - name: "actions » ls | add existing databases to array 'valet_list'"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_list: "{{ valet_list + [[item]] }}"
   with_items: "{{ valet_current_databases }}"
 

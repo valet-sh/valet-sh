@@ -15,24 +15,24 @@
 ##
 ---
 - name: "bbswitch | install bbswitch dkms module"
-  apt:
+  ansible.builtin.apt:
     name: "bbswitch-dkms"
     state: present
   become: true
 
 - name: "bbswitch | enable bbswitch module"
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modules
     line: "bbswitch"
   become: true
 
 - name: "bbswitch | set module options"
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modprobe.d/bbswitch.conf
     line: "options bbswitch load_state=0"
     create: true
   become: true
 
 - name: "bbswitch | run update-initramfs -u"
-  shell: "update-initramfs -u"
+  ansible.builtin.shell: "update-initramfs -u"
   become: true

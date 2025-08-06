@@ -15,13 +15,13 @@
 ##
 ---
 - name: add chrome repository signin key
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://dl.google.com/linux/linux_signing_key.pub
     state: present
   become: true
 
 - name: ensure unsecure chrome repository is absent
-  apt_repository:
+  ansible.builtin.apt_repository:
     filename: "google-chrome"
     repo: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
     codename: "{{ os_codename }}"
@@ -29,14 +29,14 @@
   become: true
 
 - name: ensure chrome repository is present
-  apt_repository:
+  ansible.builtin.apt_repository:
     filename: "google-chrome"
     repo: "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main"
     codename: "{{ os_codename }}"
   become: true
 
 - name: install google chrome stable
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     update_cache: true

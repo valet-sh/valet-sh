@@ -15,7 +15,7 @@
 ##
 ---
 - name: Check for existing swap-partition
-  shell: |
+  ansible.builtin.shell: |
     lvdisplay | grep -i 'LV Path' | grep -i 'swap' | awk -F '/dev/' '{print $2}'
   become: true
   register: swap_lvm
@@ -28,29 +28,29 @@
 #    - not '"swap" in swap_lvm.stdout'
 
 - name: Check for swapfile
-  stat:
+  ansible.builtin.stat:
     path: "{{ swapfile_path }}"
   register: swapfile_exists
 
 - name: Create swapfile
-  command: fallocate -l {{ swapsize }} {{ swapfile_path }}
+  ansible.builtin.command: fallocate -l {{ swapsize }} {{ swapfile_path }}
   become: true
   when: not swapfile_exists.stat.exists
 
 - name: Set permissions on swapfile
-  file:
+  ansible.builtin.file:
     path: "{{ swapfile_path }}"
     mode: "0600"
   become: true
   when: not swapfile_exists.stat.exists
 
 - name: Format swapfile
-  command: mkswap {{ swapfile_path }}
+  ansible.builtin.command: mkswap {{ swapfile_path }}
   become: true
   when: not swapfile_exists.stat.exists
 
 - name: Add swapfile to fstab
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/fstab
     regexp: "{{ swapfile_path }}"
     line: "{{ swapfile_path }} none swap sw 0 0"
@@ -58,7 +58,7 @@
   when: not swapfile_exists.stat.exists
 
 - name: Turnon all swapfiles
-  command: swapon -a
+  ansible.builtin.command: swapon -a
   become: true
   changed_when: false
   when: not swapfile_exists.stat.exists

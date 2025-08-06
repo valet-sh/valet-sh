@@ -16,7 +16,7 @@
 ---
 - name: "workflows » aem » project-deployment | wait until author instance 'http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp'
     is reachable"
-  uri:
+  ansible.builtin.uri:
     url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp"
     url_username: "{{ valet_sh_aem_author_user }}"
     url_password: "{{ valet_sh_aem_author_password }}"
@@ -31,7 +31,7 @@
 
 - name: "workflows » aem » project-deployment | wait until publish instance 'http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/crx/packmgr/service.jsp'
     is reachable"
-  uri:
+  ansible.builtin.uri:
     url: "http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/crx/packmgr/service.jsp"
     url_username: "{{ valet_sh_aem_publish_user }}"
     url_password: "{{ valet_sh_aem_publish_password }}"
@@ -45,17 +45,17 @@
   register: publish_uri_output
 
 - name: "workflows » aem » project-deployment | run 'install-scripts/author-all-quick-install.sh'"
-  shell: "{{ valet_sh_aem_runtime_dir }}/install-scripts/author-all-quick-install.sh"
+  ansible.builtin.shell: "{{ valet_sh_aem_runtime_dir }}/install-scripts/author-all-quick-install.sh"
   args:
     chdir: "{{ valet_current_path }}"
 
 - name: "workflows » aem » project-deployment | run 'install-scripts/publish-all-quick-install.sh'"
-  shell: "{{ valet_sh_aem_runtime_dir }}/install-scripts/publish-all-quick-install.sh"
+  ansible.builtin.shell: "{{ valet_sh_aem_runtime_dir }}/install-scripts/publish-all-quick-install.sh"
   args:
     chdir: "{{ valet_current_path }}"
 
 - name: "workflows » aem » project-deployment | configure replication to publish"
-  uri:
+  ansible.builtin.uri:
     url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/publish/jcr:content"
     method: POST
     body_format: form-urlencoded
@@ -75,7 +75,7 @@
       "./transportPassword": "{{ valet_sh_aem_publish_password }}"
 
 - name: "workflows » aem » project-deployment | configure dispatcher cache flush agent"
-  uri:
+  ansible.builtin.uri:
     url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/etc/replication/agents.author/flush/jcr:content"
     method: POST
     body_format: form-urlencoded

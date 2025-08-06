@@ -6,7 +6,7 @@
   no_log: false
   tasks:
     - name: Create molecule instance(s)
-      lxd_container:
+      community.general.lxd_container:
         name: "{{ item.name }}"
         state: started
         source:
@@ -22,5 +22,5 @@
 
     - name: Install Python in container
       delegate_to: "{{ item.name }}"
-      raw: apt-get install -y python
+      ansible.builtin.raw: apt-get install -y python
       with_items: "{{ molecule_yml.platforms }}"

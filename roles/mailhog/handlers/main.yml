@@ -15,31 +15,29 @@
 ##
 ---
 - name: systemd | mailhog | started
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: mailhog
     state: started
     scope: user
 
 - name: systemd | mailhog | stopped
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: mailhog
     state: stopped
     scope: user
 
 - name: systemd | mailhog | restarted
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: mailhog
     state: restarted
     scope: user
 
 - name: brew | mailhog | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"
 - name: brew | mailhog | started
-  shell: "{{ valet_sh_homebrew_bin }} services start mailhog"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start mailhog"
 - name: brew | mailhog | restart
-  shell: "{{ valet_sh_homebrew_bin }} services restart mailhog"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart mailhog"

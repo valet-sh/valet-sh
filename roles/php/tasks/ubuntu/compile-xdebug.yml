@@ -15,61 +15,61 @@
 ##
 ---
 - name: fail when no xdebug version is set
-  fail:
+  ansible.builtin.fail:
     msg: "no xdebug version set"
   when: current_php.compile_xdebug.version is not defined
 
 - name: "install php-dev and pecl package when required"
-  apt:
+  ansible.builtin.apt:
     name: ["php{{ php_version }}-dev", "php-pear", "build-essential"]
     state: present
   become: true
 
 - name: Create temporary build directory
-  tempfile:
+  ansible.builtin.tempfile:
     state: directory
     suffix: build
   register: xdebug_tmp_directory_obj
 
 - name: "download and unpack xdebug sources into tmp directory {{ xdebug_tmp_directory_obj.path }}"
-  unarchive:
+  ansible.builtin.unarchive:
     src: "https://github.com/xdebug/xdebug/archive/{{ current_php.compile_xdebug.version }}.tar.gz"
     dest: "{{ xdebug_tmp_directory_obj.path }}"
     remote_src: true
     extra_opts: [--strip-components=1]
 
 - name: "run phpize on xdebug module source"
-  command: "/usr/bin/phpize{{ php_version }}"
+  ansible.builtin.command: "/usr/bin/phpize{{ php_version }}"
   args:
     chdir: "{{ xdebug_tmp_directory_obj.path }}"
 
 - name: "run ./configure on xdebug module source"
-  command: "./configure --with-php-config=/usr/bin/php-config{{ php_version }}"
+  ansible.builtin.command: "./configure --with-php-config=/usr/bin/php-config{{ php_version }}"
   args:
     chdir: "{{ xdebug_tmp_directory_obj.path }}"
 
 - name: "run make clean on xdebug module source"
-  command: "make clean"
+  ansible.builtin.command: "make clean"
   args:
     chdir: "{{ xdebug_tmp_directory_obj.path }}"
 
 - name: "run make all on xdebug module source"
-  command: "make all"
+  ansible.builtin.command: "make all"
   args:
     chdir: "{{ xdebug_tmp_directory_obj.path }}"
 
 - name: "get php extension dir"
-  command: "/usr/bin/php-config{{ php_version }} --extension-dir"
+  ansible.builtin.command: "/usr/bin/php-config{{ php_version }} --extension-dir"
   register: php_extension_dir
 
 - name: "copy xdebug.so extension to extension dir"
-  copy:
+  ansible.builtin.copy:
     src: "{{ xdebug_tmp_directory_obj.path }}/modules/xdebug.so"
     dest: "{{ php_extension_dir.stdout }}/{{ current_php.compile_xdebug.target_module_name | default('xdebug2') }}.so"
   become: true
 
 - name: ensure tmp directory is deleted
-  file:
+  ansible.builtin.file:
     path: "{{ xdebug_tmp_directory_obj.path }}"
     state: absent
   become: true

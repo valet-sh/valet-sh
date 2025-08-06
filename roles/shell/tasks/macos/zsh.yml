@@ -15,21 +15,21 @@
 ##
 ---
 - name: Cloning  oh-my-zsh
-  git:
+  ansible.builtin.git:
     repo: "https://github.com/robbyrussell/oh-my-zsh"
     dest: "{{ current_home }}/.oh-my-zsh"
     force: true
   register: cloning
 
 - name: Creating new ~/.zshrc
-  copy:
+  ansible.builtin.copy:
     src: "~/.oh-my-zsh/templates/zshrc.zsh-template"
     dest: "{{ current_home }}/.zshrc"
     force: false
   when: cloning is changed
 
 - name: load aliases file in .zshrc
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: "{{ current_home }}/.zshrc"
     marker_begin: "ZSH BEGIN"
     marker_end: "ZSH END"
@@ -41,7 +41,7 @@
   when: current_arch != "arm64"
 
 - name: load aliases file in .zshrc
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: "{{ current_home }}/.zshrc"
     marker_begin: "ZSH BEGIN"
     marker_end: "ZSH END"
@@ -53,17 +53,17 @@
   when: current_arch == "arm64"
 
 - name: ensure .profile file exists
-  file:
+  ansible.builtin.file:
     path: "{{ current_home }}/.profile"
     state: touch
 
 - name: check for .zprofile file in user's home directory
-  stat:
+  ansible.builtin.stat:
     path: "{{ current_home }}/.zprofile"
   register: zsh_zprofile_obj
 
 - name: create .zprofile when not existent
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: "{{ current_home }}/.zprofile"
     block: |
       emulate sh
@@ -73,7 +73,7 @@
   when: zsh_zprofile_obj.stat.exists == False
 
 - name: change default shell to zsh for current user
-  user:
+  ansible.builtin.user:
     name: "{{ current_user }}"
     shell: /bin/zsh
   become: true

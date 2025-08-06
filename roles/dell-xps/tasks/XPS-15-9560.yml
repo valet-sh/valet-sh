@@ -15,22 +15,22 @@
 ##
 ---
 - name: ensure universe repository is enabled
-  shell: "add-apt-repository -y universe"
+  ansible.builtin.shell: "add-apt-repository -y universe"
   become: true
 
 - name: Update all packages to the latest version
-  apt:
+  ansible.builtin.apt:
     update_cache: true
     upgrade: dist
   become: true
 
-- apt_repository:
+- ansible.builtin.apt_repository:
     repo: ppa:linrunner/tlp
     update_cache: true
   become: true
 
 - name: install tlp packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -41,7 +41,7 @@
   become: true
 
 - name: Fix Sleep/Wake Bluetooth Bug
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ valet_tlp_config_item }}"
     regexp: "^RESTORE_DEVICE_STATE_ON_STARTUP"
     line: "RESTORE_DEVICE_STATE_ON_STARTUP=1"
@@ -53,7 +53,7 @@
     loop_var: valet_tlp_config_item
 
 - name: Fix Audio Feedback/White Noise from Headphones on Battery Bug
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ valet_tlp_config_item }}"
     regexp: "^SOUND_POWER_SAVE_ON_BAT"
     line: "SOUND_POWER_SAVE_ON_BAT=0"
@@ -65,23 +65,23 @@
     loop_var: valet_tlp_config_item
 
 - name: ensure tlp service is restarted
-  systemd:
+  ansible.builtin.systemd:
     state: restarted
     name: tlp
   become: true
 
 - name: "enable graphic drivers ppa"
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: ppa:graphics-drivers/ppa
     update_cache: true
   become: true
 
 - name: "run ubuntu-drivers autoinstall"
-  shell: "ubuntu-drivers autoinstall"
+  ansible.builtin.shell: "ubuntu-drivers autoinstall"
   become: true
 
 - name: install video codec packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -93,14 +93,14 @@
       - gstreamer1.0-vaapi
   become: true
 
-- apt_repository:
+- ansible.builtin.apt_repository:
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: true
   become: true
   when: ansible_distribution_release == "bionic"
 
 - name: install bluetooth sound codec packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -111,7 +111,7 @@
   when: ansible_distribution_release == "bionic"
 
 - name: install intel microcode updates
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -119,35 +119,35 @@
   become: true
 
 - name: Enable power saving tweaks for Intel chip
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modprobe.d/i915.conf
     line: "options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1"
     create: true
   become: true
 
 - name: enable fan speed with lm-sensors
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modprobe.d/dell-smm-hwmon.conf
     line: "options dell-smm-hwmon restricted=0 force=1"
     create: true
   become: true
 
 - name: enable dell specific module
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modules
     line: "dell-smm-hwmon"
   become: true
 
 - name: "run update-initramfs -u"
-  shell: "update-initramfs -u"
+  ansible.builtin.shell: "update-initramfs -u"
   become: true
 
 - name: "switch to intel gpu"
-  shell: "prime-select intel"
+  ansible.builtin.shell: "prime-select intel"
   become: true
 
 - name: update grub config
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
     line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 acpi_osi=Linux nouveau.modeset=0 pcie_aspm=force drm.vblankoffdelay=1 scsi_mod.use_blk_mq=1
@@ -155,18 +155,18 @@
   become: true
 
 - name: tidyup intermittent grub config
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_OPTIONS="'
     line: "#GRUB_OPTIONS"
   become: true
 
 - name: "run update-grub"
-  shell: "update-grub"
+  ansible.builtin.shell: "update-grub"
   become: true
 
 - name: disable gnome tracker apps
-  systemd:
+  ansible.builtin.systemd:
     masked: true
     name: "{{ ubuntu_gnome_tracker_apps_item }}"
   with_items:
@@ -179,7 +179,7 @@
     loop_var: ubuntu_gnome_tracker_apps_item
 
 - name: disable fingerprint reader
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/udev/rules.d/fingerprint.rules
     line: 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"27c6\", ATTRS{idProduct}==\"5395\", ATTR{authorized}=\"0\"'
     create: true

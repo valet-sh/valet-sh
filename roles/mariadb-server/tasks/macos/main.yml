@@ -14,8 +14,6 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: mariadb104.yml
-
-- include_tasks: mariadb106.yml
-
-- include_tasks: mariadb114.yml
+- ansible.builtin.include_tasks: mariadb104.yml
+- ansible.builtin.include_tasks: mariadb106.yml
+- ansible.builtin.include_tasks: mariadb114.yml

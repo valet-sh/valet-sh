@@ -15,7 +15,7 @@
 ##
 ---
 - name: "workflows » magento2 » project-cc | clear cache folders"
-  file:
+  ansible.builtin.file:
     path: "{{ valet_sh_project_src_path }}/{{ current_project_cache_path_item }}"
     state: absent
   with_items:
@@ -30,5 +30,5 @@
     loop_var: current_project_cache_path_item
 
 - name: "workflows » magento2 » project-cc | flush redis"
-  shell: "redis-cli flushall"
+  ansible.builtin.shell: "redis-cli flushall"
   failed_when: false

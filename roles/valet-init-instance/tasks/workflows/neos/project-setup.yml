@@ -15,17 +15,17 @@
 ##
 ---
 - name: "running restore commmand"
-  include_role:
+  ansible.builtin.include_role:
     name: valet-restore
 
-- set_fact:
+- ansible.builtin.set_fact:
     valet_link_php_target_version: "php{{ php_version_number | replace('.', '') }}"
   when:
     - php_version_number is defined
     - php_version_number|length > 0
 
 - name: "running link command"
-  include_role:
+  ansible.builtin.include_role:
     name: valet-link
   vars:
     valet_action: relink

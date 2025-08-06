@@ -14,10 +14,7 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: services/elasticsearch.yml
-
-- include_tasks: services/php.yml
-
-- include_tasks: services/mysql.yml
-
-- include_tasks: services/node.yml
+- ansible.builtin.include_tasks: services/elasticsearch.yml
+- ansible.builtin.include_tasks: services/php.yml
+- ansible.builtin.include_tasks: services/mysql.yml
+- ansible.builtin.include_tasks: services/node.yml

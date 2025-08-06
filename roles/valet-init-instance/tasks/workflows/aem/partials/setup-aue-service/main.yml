@@ -15,10 +15,9 @@
 ##
 ---
 - name: "include 'install-runtime.yml'"
-  include_tasks: install-runtime.yml
-
+  ansible.builtin.include_tasks: install-runtime.yml
 - name: "include 'install-aue-service.yml'"
-  include_tasks: install-aue-service.yml
+  ansible.builtin.include_tasks: install-aue-service.yml
   vars:
     file_name: "universal-editor-service-latest.zip"
     remote_dir: "{{ valet_sh_project_vars.hub.common_path | trim }}/.aem/addons/aue"

@@ -15,7 +15,7 @@
 ##
 ---
 - name: install base packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ mysql_community_server.base_packages }}"
     state: present
   become: true

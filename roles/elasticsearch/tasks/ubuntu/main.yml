@@ -14,14 +14,9 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: install-v1.yml
-
-- include_tasks: install-v2.yml
-
-- include_tasks: install-v5.yml
-
-- include_tasks: install-v6.yml
-
-- include_tasks: install-v7.yml
-
-- include_tasks: install-v8.yml
+- ansible.builtin.include_tasks: install-v1.yml
+- ansible.builtin.include_tasks: install-v2.yml
+- ansible.builtin.include_tasks: install-v5.yml
+- ansible.builtin.include_tasks: install-v6.yml
+- ansible.builtin.include_tasks: install-v7.yml
+- ansible.builtin.include_tasks: install-v8.yml

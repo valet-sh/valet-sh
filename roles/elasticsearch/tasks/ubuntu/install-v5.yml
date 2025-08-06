@@ -15,12 +15,12 @@
 ##
 ---
 - name: set current elasticsearch base path
-  set_fact:
+  ansible.builtin.set_fact:
     current_elasticsearch_base_path: "{{ elasticsearch_base_path }}5"
     current_elasticsearch_key: "elasticsearch5"
 
 - name: "get stats for dir {{ current_elasticsearch_base_path }}"
-  stat:
+  ansible.builtin.stat:
     path: "{{ current_elasticsearch_base_path }}"
   register: current_elasticsearch_base_path_obj
 
@@ -32,7 +32,7 @@
         state: present
 
     - name: "Create {{ current_elasticsearch_key }} volume directory"
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         owner: "{{ current_user }}"
         group: "{{ current_group }}"
@@ -42,14 +42,14 @@
         - "{{ current_elasticsearch_base_path }}/config"
 
     - name: "provide {{ current_elasticsearch_key }} configuration"
-      template:
+      ansible.builtin.template:
         src: "config/{{ current_elasticsearch_key }}.yml.j2"
         dest: "{{ current_elasticsearch_base_path }}/config/elasticsearch.yml"
         mode: "0644"
       notify: "systemd | elasticsearch5 | restarted"
 
     - name: "ensure user systemd directory exists"
-      file:
+      ansible.builtin.file:
         path: "{{ current_home }}/.config/systemd/user"
         state: directory
         mode: "0755"
@@ -64,14 +64,14 @@
       notify: "systemd | elasticsearch5 | restarted"
 
     - name: "Ensure {{ current_elasticsearch_key }} is started"
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ current_elasticsearch_key }}"
         state: started
         daemon_reload: true
         scope: user
 
     - name: "Wait for {{ current_elasticsearch_key }} to be ready"
-      uri:
+      ansible.builtin.uri:
         url: "http://localhost:9205/_cluster/health"
         method: GET
         status_code: 200

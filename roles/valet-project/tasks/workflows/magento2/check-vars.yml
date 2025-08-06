@@ -15,11 +15,11 @@
 ##
 ---
 - name: "workflows » magento2 » check-vars | set default path to project source"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}"
 
 - name: "workflows » magento2 » check-vars | set path to project source"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.path }}"
   when:
     - valet_sh_project_vars.instance is defined

@@ -15,34 +15,34 @@
 ##
 ---
 - name: "commands » get | fail when no 'valet_config_key' is set"
-  fail:
+  ansible.builtin.fail:
     msg: "no config key was given"
   when: (valet_config_key is not defined) or (valet_config_key | length == 0)
 
 - name: "commands » get | set runtime flag"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_config_in_command: true
 
 - name: "commands » get | include valet etc config file"
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_config_file }}"
     name: valet_etc_config_obj
 
 - name: "commands » get | search value for config key '{{ valet_config_key }}'"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_config_value: "{{ valet_etc_config_obj[valet_config_key] | default('__INVALID__') }}"
 
 - name: "commands » get | fail when no config value for config key '{{ valet_config_key }}' was found"
-  fail:
+  ansible.builtin.fail:
     msg: "no config value for '{{ valet_config_key }}' found!"
   when: valet_config_value == '__INVALID__'
 
 - name: "commands » get | set empty array 'valet_config_list'"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_config_list: []
 
 - name: "commands » get | add config to array"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_config_list: "{{ valet_config_list + [[valet_config_key, valet_config_value]] }}"
 
 - name: "commands » get | print table based on 'valet_config_list' array"

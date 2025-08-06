@@ -15,38 +15,36 @@
 ##
 ---
 - name: systemd | NetworkManager | started
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: NetworkManager
     state: started
   become: true
 
 - name: systemd | NetworkManager | stopped
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: NetworkManager
     state: stopped
   become: true
 
 - name: systemd | NetworkManager | reload
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: NetworkManager
     state: reloaded
   become: true
 
 - name: systemd | NetworkManager | restarted
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: NetworkManager
     state: restarted
   become: true
 
 - name: brew | dnsmasq | restarted
-  shell: "{{ valet_sh_homebrew_bin_sudo }} services restart dnsmasq"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart dnsmasq"
 - name: brew | dnsmasq | stopped
-  shell: "{{ valet_sh_homebrew_bin_sudo }} services stop dnsmasq"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services stop dnsmasq"
 - name: brew | dnsmasq | started
-  shell: "{{ valet_sh_homebrew_bin_sudo }} services start dnsmasq"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start dnsmasq"

@@ -15,11 +15,11 @@
 ##
 ---
 - name: "workflows » aem » partials » start | evaluate startup params"
-  set_fact:
+  ansible.builtin.set_fact:
     aem_cq_jvm_opts: "-XX:MaxPermSize=256M"
 
 - name: "workflows » aem » partials » start | override startup params when java version is > 11"
-  set_fact:
+  ansible.builtin.set_fact:
     aem_cq_jvm_opts: "-XX:MaxMetaspaceSize=256M"
   when:
     - valet_sh_project_vars.services is defined
@@ -29,11 +29,11 @@
 
 - block:
     - name: "workflows » aem » partials » start | check if .env.publish exists"
-      stat:
+      ansible.builtin.stat:
         path: "{{ valet_sh_project_src_path }}/.env.publish"
       register: publish_env_file
     - name: "workflows » aem » partials » start | start publish instance"
-      shell: |
+      ansible.builtin.shell: |
         {% if publish_env_file.stat.exists %}
         source {{ valet_sh_project_src_path }}/.env.publish && export $(grep -v '^#' {{ valet_sh_project_src_path }}/.env.publish | cut -d= -f1 | xargs)
         {% endif %}
@@ -49,11 +49,11 @@
 
 - block:
     - name: "workflows » aem » partials » start | check if .env.author exists"
-      stat:
+      ansible.builtin.stat:
         path: "{{ valet_sh_project_src_path }}/.env.author"
       register: author_env_file
     - name: "workflows » aem » partials » start | start author instance"
-      shell: |
+      ansible.builtin.shell: |
         {% if author_env_file.stat.exists %}
         source {{ valet_sh_project_src_path }}/.env.author && export $(grep -v '^#' {{ valet_sh_project_src_path }}/.env.author | cut -d= -f1 | xargs)
         {% endif %}
@@ -69,15 +69,15 @@
 
 - block:
     - name: "workflows » aem » partials » start | check if .env.dispatcher exists"
-      stat:
+      ansible.builtin.stat:
         path: "{{ valet_sh_project_src_path }}/.env.dispatcher"
       register: dispatcher_env_file
 
     #@TODO ensure docker daemon is started
     - name: "workflows » aem » partials » start | start dispatcher tools"
-      shell: "HOT_RELOAD=true ALLOW_CACHE_INVALIDATION_GLOBALLY=true {{ dispatcher_env_var }} {{ valet_sh_aem_dispatcher_dir }}/bin/docker_run.sh {{ valet_sh_project_src_path
-        }}/dispatcher/src host.docker.internal:{{ valet_sh_project_vars.instance.publish_port }} {{ valet_sh_project_vars.instance.dispatcher_port }} &> {{ valet_sh_aem_dispatcher_dir
-        }}/output.log &"
+      ansible.builtin.shell: "HOT_RELOAD=true ALLOW_CACHE_INVALIDATION_GLOBALLY=true {{ dispatcher_env_var }} {{ valet_sh_aem_dispatcher_dir }}/bin/docker_run.sh
+        {{ valet_sh_project_src_path }}/dispatcher/src host.docker.internal:{{ valet_sh_project_vars.instance.publish_port }} {{ valet_sh_project_vars.instance.dispatcher_port
+        }} &> {{ valet_sh_aem_dispatcher_dir }}/output.log &"
       args:
         chdir: "{{ valet_sh_aem_dispatcher_dir }}"
       vars:
@@ -85,7 +85,7 @@
   when: valet_action_target == "dispatcher" or valet_action_target == "all"
 
 - name: "workflows » aem » partials » start | fix folder permissions"
-  shell: "chown -R {{ current_user }}:{{ current_group }} {{ valet_sh_aem_dispatcher_dir }}/cache"
+  ansible.builtin.shell: "chown -R {{ current_user }}:{{ current_group }} {{ valet_sh_aem_dispatcher_dir }}/cache"
   args:
     removes: "{{ valet_sh_aem_dispatcher_dir }}/cache"
     chdir: "{{ valet_sh_aem_dispatcher_dir }}"

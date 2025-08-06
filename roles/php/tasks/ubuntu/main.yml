@@ -14,22 +14,21 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: "migrations/main.yml"
-
+- ansible.builtin.include_tasks: "migrations/main.yml"
 - name: ensure apt-transport-https is installed
-  apt:
+  ansible.builtin.apt:
     name: apt-transport-https
     state: present
   become: true
 
 - name: use php ppa (Ubuntu)
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "ppa:ondrej/php"
     codename: "{{ os_codename }}"
   become: true
 
 - name: "install defined php versions"
-  include_tasks: install-php.yml
+  ansible.builtin.include_tasks: install-php.yml
   vars:
     current_php: "{{ php_multi_item }}"
   with_items: "{{ php_multi }}"
@@ -37,13 +36,13 @@
     loop_var: php_multi_item
 
 - name: "install php-imagick"
-  apt:
+  ansible.builtin.apt:
     name: php-imagick
     state: present
   become: true
 
 - name: "set default php cli version"
-  alternatives:
+  community.general.alternatives:
     name: php
     path: "/usr/bin/php{{ item.version }}"
   with_items: "{{ php_multi }}"
@@ -51,7 +50,7 @@
   become: true
 
 - name: ensure php wrapper script is up2date
-  copy:
+  ansible.builtin.copy:
     src: "ubuntu/php-wrapper"
     dest: "/usr/local/bin/php"
     mode: "0755"

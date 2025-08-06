@@ -14,26 +14,23 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: install-57.yml
-
-- include_tasks: install-80.yml
-
-- include_tasks: install-84.yml
-
+- ansible.builtin.include_tasks: install-57.yml
+- ansible.builtin.include_tasks: install-80.yml
+- ansible.builtin.include_tasks: install-84.yml
 - name: ensure mysql wrapper script is up2date
-  template:
+  ansible.builtin.template:
     src: "wrapper/mysql-wrapper.j2"
     dest: "/usr/local/bin/mysql"
     mode: "0755"
 
 - name: ensure mysqladmin wrapper script is up2date
-  template:
+  ansible.builtin.template:
     src: "wrapper/mysqladmin-wrapper.j2"
     dest: "/usr/local/bin/mysqladmin"
     mode: "0755"
 
 - name: ensure mysqldump wrapper script is up2date
-  template:
+  ansible.builtin.template:
     src: "wrapper/mysqldump-wrapper.j2"
     dest: "/usr/local/bin/mysqldump"
     mode: "0755"

@@ -15,7 +15,7 @@
 ##
 ---
 - name: install | ensure essential packages are installed
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
   vars:

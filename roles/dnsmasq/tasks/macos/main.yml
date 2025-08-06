@@ -20,24 +20,23 @@
 #    state: present
 
 - name: "ensure dnsmasq is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install dnsmasq"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install dnsmasq"
 - name: "ensure domain '{{ dnsmasq_domain }}' is handled by local dns"
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "/etc/resolver/{{ dnsmasq_domain }}"
     line: "nameserver 127.0.0.1"
     create: true
   become: true
 
 - name: "ensure dns resolving for .{{ dnsmasq_domain }} domain is handled by dnsmasq"
-  template:
+  ansible.builtin.template:
     src: development-domain.conf.j2
     dest: "/usr/local/etc/dnsmasq.d/development-domain.conf"
   notify: brew | dnsmasq | restarted
 
 - name: "run 'codesign -f -s - {{ valet_sh_homebrew_prefix }}/dnsmasq/sbin/dnsmasq'"
-  shell: "codesign -f -s - {{ valet_sh_homebrew_prefix }}/dnsmasq/sbin/dnsmasq"
+  ansible.builtin.shell: "codesign -f -s - {{ valet_sh_homebrew_prefix }}/dnsmasq/sbin/dnsmasq"
   become: true
 
 - name: brew | dnsmasq | restarted
-  shell: "{{ valet_sh_homebrew_bin_sudo }} services  restart dnsmasq"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services  restart dnsmasq"

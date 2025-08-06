@@ -16,47 +16,47 @@
 ---
 - block:
     - name: "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ valet_sh_service_mysql_current_name }}"
         state: started
         enabled: true
       become: true
 
     - name: "workflows » magento2 » services » mysql | include valet services file"
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
 
     - name: "workflows » magento2 » services » mysql | prepare new config element"
-      set_fact:
+      ansible.builtin.set_fact:
         new_service_state_element: "{ '{{ valet_sh_service_mysql_current_name }}': true }"
 
     - name: "workflows » magento2 » services » mysql | update service object"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
 
     - name: "workflows » magento2 » services » mysql | merge objects"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_obj:
           states: "{{ valet_sh_services_updated_states }}"
           defaults: "{{ valet_sh_services_obj.defaults }}"
 
     - name: "workflows » magento2 » services » mysql | transform object into nice yaml output"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » mysql | write new services.yml file"
-      copy:
+      ansible.builtin.copy:
         content: "{{ valet_etc_services_list }}"
         dest: "{{ valet_etc_services_file }}"
       become: true
 
     - name: "workflows » magento2 » services » mysql | wait for mysql to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mysql_current_name] }}"
         delay: 5
   when:
@@ -67,47 +67,47 @@
 
 - block:
     - name: "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ valet_sh_service_mariadb_current_name }}"
         state: started
         enabled: true
       become: true
 
     - name: "workflows » magento2 » services » mysql | include valet services file"
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
 
     - name: "workflows » magento2 » services » mysql | prepare new config element"
-      set_fact:
+      ansible.builtin.set_fact:
         new_service_state_element: "{ '{{ valet_sh_service_mariadb_current_name }}': true }"
 
     - name: "workflows » magento2 » services » mysql | update service object"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
 
     - name: "workflows » magento2 » services » mysql | merge objects"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_obj:
           states: "{{ valet_sh_services_updated_states }}"
           defaults: "{{ valet_sh_services_obj.defaults }}"
 
     - name: "workflows » magento2 » services » mysql | transform object into nice yaml output"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » mysql | write new services.yml file"
-      copy:
+      ansible.builtin.copy:
         content: "{{ valet_etc_services_list }}"
         dest: "{{ valet_etc_services_file }}"
       become: true
 
     - name: "workflows » magento2 » services » mariadb | wait for mariadb to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
         delay: 5
   when:
@@ -118,42 +118,41 @@
 
 - block:
     - name: "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
-      shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
-
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
     - name: "workflows » magento2 » services » mysql | include valet services file"
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
 
     - name: "workflows » magento2 » services » mysql | prepare new config element"
-      set_fact:
+      ansible.builtin.set_fact:
         new_service_state_element: "{ '{{ valet_sh_service_mysql_current_name }}': true }"
 
     - name: "workflows » magento2 » services » mysql | update service object"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
 
     - name: "workflows » magento2 » services » mysql | merge objects"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_obj:
           states: "{{ valet_sh_services_updated_states }}"
           defaults: "{{ valet_sh_services_obj.defaults }}"
 
     - name: "workflows » magento2 » services » mysql | transform object into nice yaml output"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » mysql | write new services.yml file"
-      copy:
+      ansible.builtin.copy:
         content: "{{ valet_etc_services_list }}"
         dest: "{{ valet_etc_services_file }}"
 
     - name: "workflows » magento2 » services » mysql | wait for mysql to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mysql_current_name] }}"
         delay: 5
   when:
@@ -164,42 +163,41 @@
 
 - block:
     - name: "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
-      shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mariadb_current_name }}"
-
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mariadb_current_name }}"
     - name: "workflows » magento2 » services » mysql | include valet services file"
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
 
     - name: "workflows » magento2 » services » mysql | prepare new config element"
-      set_fact:
+      ansible.builtin.set_fact:
         new_service_state_element: "{ '{{ valet_sh_service_mariadb_current_name }}': true }"
 
     - name: "workflows » magento2 » services » mysql | update service object"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
 
     - name: "workflows » magento2 » services » mysql | merge objects"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_obj:
           states: "{{ valet_sh_services_updated_states }}"
           defaults: "{{ valet_sh_services_obj.defaults }}"
 
     - name: "workflows » magento2 » services » mysql | transform object into nice yaml output"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » mysql | write new services.yml file"
-      copy:
+      ansible.builtin.copy:
         content: "{{ valet_etc_services_list }}"
         dest: "{{ valet_etc_services_file }}"
 
     - name: "workflows » magento2 » services » mariadb | wait for mariadb to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
         delay: 5
   when:

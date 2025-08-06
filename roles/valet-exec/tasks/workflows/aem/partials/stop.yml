@@ -17,18 +17,18 @@
 # AUTHOR
 - block:
     - name: "workflows » aem » partials » stop | maybe get running author pid"
-      set_fact:
+      ansible.builtin.set_fact:
         author_pid: "{{ lookup('file', valet_sh_aem_author_dir + '/crx-quickstart/conf/cq.pid') }}"
       ignore_errors: true
 
     - name: "workflows » aem » partials » stop | maybe stop author instance"
-      shell: "{{ valet_sh_aem_author_dir }}/crx-quickstart/bin/stop"
+      ansible.builtin.shell: "{{ valet_sh_aem_author_dir }}/crx-quickstart/bin/stop"
       args:
         chdir: "{{ valet_sh_aem_author_dir }}"
       ignore_errors: true
 
     - name: "workflows » aem » partials » stop | maybe wait for author to be stopped"
-      shell: "ps -p {{ author_pid }} | grep {{ author_pid }}"
+      ansible.builtin.shell: "ps -p {{ author_pid }} | grep {{ author_pid }}"
       register: response
       retries: 30
       delay: 3
@@ -40,18 +40,18 @@
 # PUBLISH
 - block:
     - name: "workflows » aem » partials » stop | maybe get running publish pid"
-      set_fact:
+      ansible.builtin.set_fact:
         publish_pid: "{{ lookup('file', valet_sh_aem_publish_dir + '/crx-quickstart/conf/cq.pid') }}"
       ignore_errors: true
 
     - name: "workflows » aem » partials » stop | maybe stop publish instance"
-      shell: "{{ valet_sh_aem_publish_dir }}/crx-quickstart/bin/stop"
+      ansible.builtin.shell: "{{ valet_sh_aem_publish_dir }}/crx-quickstart/bin/stop"
       args:
         chdir: "{{ valet_sh_aem_publish_dir }}"
       ignore_errors: true
 
     - name: "workflows » aem » partials » stop | maybe wait for publish to be stopped"
-      shell: "ps -p {{ publish_pid }} | grep {{ publish_pid }}"
+      ansible.builtin.shell: "ps -p {{ publish_pid }} | grep {{ publish_pid }}"
       register: response
       retries: 30
       delay: 3
@@ -63,15 +63,16 @@
 # DISPATCHER
 - block:
     - name: "workflows » aem » partials » stop | get running dispatcher container"
-      shell: "docker container ls --format='{% raw %}{{.ID}}\t{{.Ports}}{% endraw %}' | grep {{ valet_sh_project_vars.instance.dispatcher_port }} | awk '{print $1}'"
+      ansible.builtin.shell: "docker container ls --format='{% raw %}{{.ID}}\t{{.Ports}}{% endraw %}' | grep {{ valet_sh_project_vars.instance.dispatcher_port }}
+        | awk '{print $1}'"
       register: valet_sh_aem_dispatcher_docker_container_obj
 
     - name: "workflows » aem » partials » stop | fail when multiple containers were found"
-      fail:
+      ansible.builtin.fail:
         msg: "multiple dispatcher container found"
       when: valet_sh_aem_dispatcher_docker_container_obj.stdout_lines|length > 1
 
     - name: "workflows » aem » partials » stop | stopping dispatcher container {{ valet_sh_aem_dispatcher_docker_container_obj.stdout }}"
-      shell: "docker container stop {{ valet_sh_aem_dispatcher_docker_container_obj.stdout }}"
+      ansible.builtin.shell: "docker container stop {{ valet_sh_aem_dispatcher_docker_container_obj.stdout }}"
       when: valet_sh_aem_dispatcher_docker_container_obj.stdout_lines|length == 1
   when: valet_action_target == "dispatcher" or valet_action_target == "all"

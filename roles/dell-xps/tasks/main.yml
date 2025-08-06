@@ -15,7 +15,7 @@
 ##
 ---
 - name: Get current XPS model (was not defined manually)
-  shell: |
+  ansible.builtin.shell: |
     dmidecode -t 1 | grep 'Product Name:' | awk -F ': ' '{print $2}'
   become: true
   register: xps_model_result
@@ -23,19 +23,18 @@
   changed_when: false
 
 - name: Set current XPS model
-  set_fact:
+  ansible.builtin.set_fact:
     xps_model: "{{ xps_model_result.stdout }}"
   when: (xps_model is not defined) or (xps_model == "")
 
 - name: Fail when XPS model is not supported
-  fail:
+  ansible.builtin.fail:
     msg: "Your XPS model is not yet supported"
   when: (xps_model is not defined) or (xps_model == "") or (xps_model not in supported_models)
 
 - name: Running currently on XPS model
-  debug:
+  ansible.builtin.debug:
     var: xps_model
 
-- include_tasks: basics.yml
-
-- include_tasks: "{{ xps_model |replace(' ', '-') }}.yml"
+- ansible.builtin.include_tasks: basics.yml
+- ansible.builtin.include_tasks: "{{ xps_model |replace(' ', '-') }}.yml"

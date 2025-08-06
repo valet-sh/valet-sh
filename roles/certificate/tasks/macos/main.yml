@@ -14,13 +14,12 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: macos/install.yml
-
-- include_tasks: macos/ca.yml
+- ansible.builtin.include_tasks: macos/install.yml
+- ansible.builtin.include_tasks: macos/ca.yml
   when: cert_prefix is not defined
 
-- include_tasks: macos/cert-renew.yml
+- ansible.builtin.include_tasks: macos/cert-renew.yml
   when: cert_prefix is not defined
 
-- include_tasks: macos/server.yml
+- ansible.builtin.include_tasks: macos/server.yml
   when: cert_prefix is defined

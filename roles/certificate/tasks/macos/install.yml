@@ -15,4 +15,4 @@
 ##
 ---
 - name: "install | ensure openssl is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install openssl"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install openssl"

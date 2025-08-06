@@ -15,7 +15,7 @@
 ##
 ---
 - name: ensure zsh is installed
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
   register: installation
@@ -25,25 +25,25 @@
   become: true
 
 - name: Backing up existing ~/.zshrc
-  shell: "if [ -f {{ current_home }}/.zshrc ]; then mv {{ current_home }}/.zshrc {{ current_home }}/.zshrc.orig; fi"
+  ansible.builtin.shell: "if [ -f {{ current_home }}/.zshrc ]; then mv {{ current_home }}/.zshrc {{ current_home }}/.zshrc.orig; fi"
   when: installation is changed
 
 - name: Cloning  oh-my-zsh
-  git:
+  ansible.builtin.git:
     repo: "https://github.com/robbyrussell/oh-my-zsh"
     dest: "{{ current_home }}/.oh-my-zsh"
   when: installation is changed
   register: cloning
 
 - name: Creating new ~/.zshrc
-  copy:
+  ansible.builtin.copy:
     src: "~/.oh-my-zsh/templates/zshrc.zsh-template"
     dest: "{{ current_home }}/.zshrc"
     force: false
   when: cloning is changed
 
 - name: load aliases file in .zshrc
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: "{{ current_home }}/.zshrc"
     block: |
       if [ -f ~/.aliases ]; then
@@ -51,12 +51,12 @@
       fi
 
 - name: check for .zprofile file in user's home directory
-  stat:
+  ansible.builtin.stat:
     path: "{{ current_home }}/.zprofile"
   register: zsh_zprofile_obj
 
 - name: create .zprofile when not existent
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: "{{ current_home }}/.zprofile"
     block: |
       emulate sh
@@ -66,7 +66,7 @@
   when: zsh_zprofile_obj.stat.exists == False
 
 - name: change default shell to zsh for current user
-  user:
+  ansible.builtin.user:
     name: "{{ current_user }}"
     shell: /usr/bin/zsh
   when: installation is success

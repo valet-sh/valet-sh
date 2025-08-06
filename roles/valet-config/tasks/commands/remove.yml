@@ -15,25 +15,25 @@
 ##
 ---
 - name: "commands » remove | fail when no 'valet_config_key' is set"
-  fail:
+  ansible.builtin.fail:
     msg: "no config key was given"
   when: (valet_config_key is not defined) or (valet_config_key | length == 0)
 
 - name: "commands » remove | set runtime flag"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_config_in_command: true
 
 - name: "commands » remove | include valet etc config file"
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_config_file }}"
     name: valet_etc_config_obj
 
 - name: "commands » remove | set empty array 'new_valet_etc_config_obj'"
-  set_fact:
+  ansible.builtin.set_fact:
     new_valet_etc_config_obj: []
 
 - name: "commands » remove | remove given config '{{ valet_config_key }}' from configuration"
-  set_fact:
+  ansible.builtin.set_fact:
     new_valet_etc_config_obj: "{{ new_valet_etc_config_obj | combine(tmp_item) }}"
   vars:
     tmp_item: "{ '{{ item.key }}': '{{ item.value }}' }"
@@ -41,10 +41,10 @@
   with_dict: "{{ valet_etc_config_obj }}"
 
 - name: "commands » remove | transform object into nice yaml output"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_etc_config_list: "{{ new_valet_etc_config_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
 - name: "commands » remove | write new config.yml file"
-  copy:
+  ansible.builtin.copy:
     content: "{{ valet_etc_config_list }}"
     dest: "{{ valet_etc_config_file }}"

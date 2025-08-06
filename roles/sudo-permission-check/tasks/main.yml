@@ -15,10 +15,9 @@
 ##
 ---
 - name: Reset sudo session
-  command: sudo -k
-
+  ansible.builtin.command: sudo -k
 - name: Check sudo permissions
-  command: echo "check sudo permissions"
+  ansible.builtin.command: echo "check sudo permissions"
   become: true
   timeout: 3
   changed_when: false
@@ -27,6 +26,6 @@
   ignore_errors: true
 
 - name: fail when password was wrong
-  fail:
+  ansible.builtin.fail:
     msg: "invalid password!"
   when: sudo_permission_check_obj is not defined or sudo_permission_check_obj.rc is not defined or sudo_permission_check_obj.rc != 0

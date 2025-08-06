@@ -15,10 +15,9 @@
 ##
 ---
 - name: "ensure vsh-mysql80 is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql80"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql80"
 - name: "provide .my.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql80_template_dot_my }}"
     dest: "{{ current_home }}/.my8.0.cnf"
     mode: "0644"
@@ -29,7 +28,7 @@
     loop_var: mysql80_template_dot_my
 
 - name: "provide mysql.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql80_template_mysql }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql80/conf.d/mysql.cnf"
     mode: "0644"
@@ -40,7 +39,7 @@
     loop_var: mysql80_template_mysql
 
 - name: "provide mysqldump.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql80_template_mysqldump }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql80/conf.d/mysqldump.cnf"
     mode: "0644"
@@ -51,7 +50,7 @@
     loop_var: mysql80_template_mysqldump
 
 - name: "provide mysqld.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql80_template_mysqld }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql80/conf.d/mysqld.cnf"
     mode: "0644"
@@ -62,15 +61,14 @@
     loop_var: mysql80_template_mysqld
 
 - name: brew | vsh-mysql80 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql80"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql80"
 - name: wait for mysql80 to start
-  wait_for:
+  ansible.builtin.wait_for:
     port: 3308
     delay: 5
 
 - name: Set root password
-  mysql_user:
+  community.mysql.mysql_user:
     login_host: 127.0.0.1
     login_port: "{{ mysql_community_server_80.port }}"
     login_user: root

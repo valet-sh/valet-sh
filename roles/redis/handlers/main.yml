@@ -15,31 +15,29 @@
 ##
 ---
 - name: systemd | redis-server | started
-  systemd:
+  ansible.builtin.systemd:
     name: redis-server
     state: started
     daemon_reload: true
     scope: user
 
 - name: systemd | redis-server | stopped
-  systemd:
+  ansible.builtin.systemd:
     name: redis-server
     state: stopped
     daemon_reload: true
     scope: user
 
 - name: systemd | redis-server | restarted
-  systemd:
+  ansible.builtin.systemd:
     name: redis-server
     state: restarted
     daemon_reload: true
     scope: user
 
 - name: brew | redis | started
-  shell: "{{ valet_sh_homebrew_bin }} services start redis"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start redis"
 - name: brew | redis | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop redis"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop redis"
 - name: brew | redis | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart redis"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart redis"

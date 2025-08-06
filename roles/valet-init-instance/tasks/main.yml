@@ -14,11 +14,9 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: partials/check-vars.yml
-
-- include_tasks: partials/clone-project.yml
+- ansible.builtin.include_tasks: partials/check-vars.yml
+- ansible.builtin.include_tasks: partials/clone-project.yml
   when: valet_project_name | length > 0
 
-- include_tasks: partials/load-valet-sh-file.yml
-
-- include_tasks: partials/load-project-workflow.yml
+- ansible.builtin.include_tasks: partials/load-valet-sh-file.yml
+- ansible.builtin.include_tasks: partials/load-project-workflow.yml

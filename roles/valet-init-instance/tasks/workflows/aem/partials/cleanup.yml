@@ -15,6 +15,6 @@
 ##
 ---
 - name: "workflows » aem » partials » cleanup | remove runtime tmp dir"
-  file:
+  ansible.builtin.file:
     path: "{{ valet_sh_aem_runtime_tmp_dir }}"
     state: absent

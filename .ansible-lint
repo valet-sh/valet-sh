@@ -15,7 +15,6 @@ skip_list:
   - "no-tabs"
   - "role-name"
   - "risky-shell-pipe"
-  - "fqcn"
   - "command-instead-of-module"
   - "command-instead-of-shell"
   - "key-order[task]"

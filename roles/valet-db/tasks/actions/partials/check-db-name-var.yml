@@ -15,11 +15,11 @@
 ##
 ---
 - name: "actions » partials » check-db-name-var | set default database name based on current working dir"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_db_name: "{{ valet_working_dir }}"
 
 - name: "actions » partials » check-db-name-var | override database name when defined in valet-sh.yml file"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_db_name: "{{ valet_sh_project_vars.services.mysql.database | trim }}"
   when:
     - valet_sh_project_vars is defined
@@ -28,7 +28,7 @@
     - valet_sh_project_vars.services.mysql.database is defined
 
 - name: "actions » partials » check-db-name-var | override database name when defined in valet-sh.yml file"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_db_name: "{{ valet_sh_project_vars.services.mariadb.database | trim }}"
   when:
     - valet_sh_project_vars is defined

@@ -15,18 +15,18 @@
 ##
 ---
 - name: "workflows » aem | validate var 'valet_action'"
-  fail:
+  ansible.builtin.fail:
     msg: "unknown action '{{ valet_action }}'"
   when:
     - valet_action != "start"
     - valet_action != "stop"
     - valet_action != "restart"
 
-- include_tasks: "partials/start.yml"
+- ansible.builtin.include_tasks: "partials/start.yml"
   when: valet_action == "start"
 
-- include_tasks: "partials/stop.yml"
+- ansible.builtin.include_tasks: "partials/stop.yml"
   when: valet_action == "stop"
 
-- include_tasks: "partials/restart.yml"
+- ansible.builtin.include_tasks: "partials/restart.yml"
   when: valet_action == "restart"

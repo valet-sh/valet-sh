@@ -20,5 +20,5 @@
 #    state: present
 
 - name: "ensure redis is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install redis"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install redis"
   notify: brew | redis | restarted

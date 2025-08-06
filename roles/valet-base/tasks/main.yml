@@ -15,7 +15,7 @@
 ##
 ---
 - name: "create valet base dirs"
-  file:
+  ansible.builtin.file:
     path: "{{ current_valet_base_dir }}"
     state: directory
     owner: "{{ current_user }}"
@@ -27,23 +27,23 @@
     loop_var: current_valet_base_dir
 
 - name: "get stat for {{ valet_etc_links_file }}"
-  stat:
+  ansible.builtin.stat:
     path: "{{ valet_etc_links_file }}"
   register: valet_etc_links_file_obj
 
 - name: "transform object into nice yaml output"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_links_list_stub: "{{ valet_links_stub | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
   when: not valet_etc_links_file_obj.stat.exists
 
 - name: "write new links.yml file"
-  copy:
+  ansible.builtin.copy:
     content: "{{ valet_links_list_stub }}"
     dest: "{{ valet_etc_links_file }}"
   when: not valet_etc_links_file_obj.stat.exists
 
 - name: "ensure valet links file exists"
-  file:
+  ansible.builtin.file:
     dest: "{{ valet_etc_links_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
@@ -52,12 +52,12 @@
   become: true
 
 - name: "get stat for {{ valet_etc_config_file }}"
-  stat:
+  ansible.builtin.stat:
     path: "{{ valet_etc_config_file }}"
   register: valet_etc_config_file_obj
 
 - name: "ensure valet config file exists"
-  file:
+  ansible.builtin.file:
     dest: "{{ valet_etc_config_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
@@ -66,7 +66,7 @@
   become: true
 
 - name: "ensure valet services file exists"
-  template:
+  ansible.builtin.template:
     src: "services.yml.j2"
     dest: "{{ valet_etc_services_file }}"
     owner: "{{ current_user }}"
@@ -75,7 +75,7 @@
     mode: "0644"
 
 - name: "include valet config file"
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_config_file }}"
     name: valet_sh_config
 

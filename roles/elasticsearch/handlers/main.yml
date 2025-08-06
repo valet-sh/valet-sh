@@ -106,7 +106,7 @@
     scope: user
 
 - name: systemd | elasticsearch6 | stopped
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: elasticsearch6
     state: stopped
@@ -183,13 +183,10 @@
     scope: user
 
 - name: brew | vsh-elasticsearch5 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch5"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch5"
 - name: brew | vsh-elasticsearch6 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch6"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch6"
 - name: brew | vsh-elasticsearch7 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch7"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch7"
 - name: brew | vsh-elasticsearch8 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch8"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch8"

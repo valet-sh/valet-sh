@@ -15,7 +15,7 @@
 ##
 ---
 - name: ensure default shell is 'bash'
-  user:
+  ansible.builtin.user:
     name: "{{ current_user }}"
     shell: /bin/bash
   become: true

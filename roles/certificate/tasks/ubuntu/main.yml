@@ -14,13 +14,12 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: ubuntu/install.yml
-
-- include_tasks: ubuntu/ca.yml
+- ansible.builtin.include_tasks: ubuntu/install.yml
+- ansible.builtin.include_tasks: ubuntu/ca.yml
   when: cert_prefix is not defined
 
-- include_tasks: ubuntu/cert-renew.yml
+- ansible.builtin.include_tasks: ubuntu/cert-renew.yml
   when: cert_prefix is not defined
 
-- include_tasks: ubuntu/server.yml
+- ansible.builtin.include_tasks: ubuntu/server.yml
   when: cert_prefix is defined

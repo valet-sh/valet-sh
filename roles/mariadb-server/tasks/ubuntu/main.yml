@@ -14,10 +14,7 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: base.yml
-
-- include_tasks: install-104.yml
-
-- include_tasks: install-106.yml
-
-- include_tasks: install-114.yml
+- ansible.builtin.include_tasks: base.yml
+- ansible.builtin.include_tasks: install-104.yml
+- ansible.builtin.include_tasks: install-106.yml
+- ansible.builtin.include_tasks: install-114.yml

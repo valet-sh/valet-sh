@@ -15,7 +15,7 @@
 ##
 ---
 - name: provide power saving settings - systemd service file
-  template:
+  ansible.builtin.template:
     src: valet-sh-power-saving-settings.service.j2
     dest: "/etc/systemd/system/valet-sh-power-saving-settings.service"
     owner: root
@@ -24,7 +24,7 @@
   become: true
 
 - name: provide power saving settings - systemd sleep file
-  template:
+  ansible.builtin.template:
     src: valet-sh-power-saving-settings.j2
     dest: "/lib/systemd/system-sleep/valet-sh-power-saving-settings"
     owner: root
@@ -33,12 +33,12 @@
   become: true
 
 - name: trigger systemd to reread configs
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
   become: true
 
 - name: enable power saving settings service
-  systemd:
+  ansible.builtin.systemd:
     name: valet-sh-power-saving-settings.service
     state: started
     enabled: true

@@ -17,29 +17,29 @@
 ### variable check
 
 - name: "partials » clone-project | fail when hub_project is not defined"
-  fail:
+  ansible.builtin.fail:
     msg: "hub_project var is not defined - please run setup for 'init-instance' first"
   when: valet_sh_config.hub_project is not defined
 
 - name: "partials » clone-project | fail when hub_domain is not defined"
-  fail:
+  ansible.builtin.fail:
     msg: "hub_domain var is not defined - please run setup for 'init-instance' first"
   when: valet_sh_config.hub_domain is not defined
 
 - name: "partials » clone-project | fail when hub_gitlab_ssh_port is not defined"
-  fail:
+  ansible.builtin.fail:
     msg: "hub_gitlab_ssh_port var is not defined - please run setup for 'init-instance' first"
   when: valet_sh_config.hub_gitlab_ssh_port is not defined
 
 ### check if a .valet-sh.yml file already exists in current directory and fail
 
 - name: "partials » clone-project | checking for '{{ valet_sh_filename }}' file in '{{ valet_current_path }}'"
-  stat:
+  ansible.builtin.stat:
     path: "{{ valet_current_path }}/{{ valet_sh_filename }}"
   register: valet_sh_file_obj
 
 - name: "partials » clone-project | fail when '{{ valet_sh_filename }}' file does exist"
-  fail:
+  ansible.builtin.fail:
     msg: "'{{ valet_sh_filename }}' already exists in current directory. project nesting is not allowed"
   when: valet_sh_file_obj.stat.exists
 
@@ -55,18 +55,18 @@
 ## check if project folder already exists and delete it
 
 - name: "partials » clone-project | get stat for '{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}'"
-  stat:
+  ansible.builtin.stat:
     path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
   register: valet_sh_project_folder_obj
 
 - name: "partials » clone-project | delete existing project folder {{ valet_project_name }}/{{ valet_sh_default_project_name }}"
-  file:
+  ansible.builtin.file:
     path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"
     state: absent
   when: valet_sh_project_folder_obj.stat.exists
 
 - name: "partials » clone-project | create project folder"
-  file:
+  ansible.builtin.file:
     path: "{{ valet_current_path }}/{{ valet_project_name }}"
     state: directory
 
@@ -82,11 +82,11 @@
 #    key: "{{ lookup('pipe', 'ssh-keyscan -p {{ valet_sh_config.hub_gitlab_ssh_port }} {{ valet_sh_project_hub_fqdn }},`dig +short {{ valet_sh_project_hub_fqdn }}`') }}"
 
 - name: "workflows » magento2 | get ssh fingerprint for '{{ valet_sh_project_hub_fqdn }}:{{  valet_sh_config.hub_gitlab_ssh_port }}'"
-  shell: "ssh-keyscan -tecdsa -p {{ valet_sh_config.hub_gitlab_ssh_port|string }} {{ valet_sh_project_hub_fqdn }}"
+  ansible.builtin.shell: "ssh-keyscan -tecdsa -p {{ valet_sh_config.hub_gitlab_ssh_port|string }} {{ valet_sh_project_hub_fqdn }}"
   register: valet_sh_project_hub_host_ssh_fingerprint_obj
 
 - name: "workflows » magento2 | ensure ssh-key for '{{ valet_sh_project_hub_fqdn }}:{{  valet_sh_config.hub_gitlab_ssh_port }}' is in known_hosts"
-  known_hosts:
+  ansible.builtin.known_hosts:
     name: "[{{ valet_sh_project_hub_fqdn }}]:{{  valet_sh_config.hub_gitlab_ssh_port | string }}"
     key: "{{ valet_sh_project_hub_host_ssh_fingerprint_obj.stdout }}"
     path: "~/.ssh/known_hosts"
@@ -119,5 +119,5 @@
     - valet_sh_default_project_branch | length > 0
 
 - name: "partials » clone-project | change current path to new cloned project"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_current_path: "{{ valet_current_path }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}"

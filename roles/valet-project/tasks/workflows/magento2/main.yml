@@ -13,14 +13,13 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: workflows/magento2/check-vars.yml
-
-- include_tasks: workflows/magento2/env.yml
+- ansible.builtin.include_tasks: workflows/magento2/check-vars.yml
+- ansible.builtin.include_tasks: workflows/magento2/env.yml
   when:
     - valet_project_action is defined
     - valet_project_action == "env"
 
-- include_tasks: workflows/magento2/cc.yml
+- ansible.builtin.include_tasks: workflows/magento2/cc.yml
   when:
     - valet_project_action is defined
     - valet_project_action == "cc"

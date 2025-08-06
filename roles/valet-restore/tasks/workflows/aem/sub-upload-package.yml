@@ -14,23 +14,23 @@
 ##
 ---
 - name: "workflows » aem » sub-upload-package | upload package '{{ valet_sh_aem_restore_current_packagename }}.zip'"
-  shell: "curl -u {{ valet_sh_aem_author_user }}:{{ valet_sh_aem_author_password }} -F cmd=upload -F force=true -F package=@{{ valet_sh_aem_runtime_tmp_dir }}/{{
-    valet_sh_aem_restore_current_packagename }}.zip http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service/exec.json"
+  ansible.builtin.shell: "curl -u {{ valet_sh_aem_author_user }}:{{ valet_sh_aem_author_password }} -F cmd=upload -F force=true -F package=@{{ valet_sh_aem_runtime_tmp_dir
+    }}/{{ valet_sh_aem_restore_current_packagename }}.zip http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service/exec.json"
   args:
     warn: false
   register: upload_package_obj
 
 - name: "workflows » aem » sub-upload-package | check result"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_sh_aem_restore_upload_result: "{{ upload_package_obj.stdout | from_json }}"
 
 - name: "workflows » aem » sub-upload-package | fail when upload was not successful"
-  fail:
+  ansible.builtin.fail:
     msg: "Upload of Package '{{ valet_sh_aem_restore_current_packagename }}.zip' failed with message: '{{ valet_sh_aem_restore_upload_result.msg }}'"
   when: valet_sh_aem_restore_upload_result.success is not defined or not valet_sh_aem_restore_upload_result.success|bool
 
 - name: "workflows » aem » sub-install-package | wait for 5 seconds"
-  command: "sleep 5"
+  ansible.builtin.command: "sleep 5"
   args:
     warn: false
 

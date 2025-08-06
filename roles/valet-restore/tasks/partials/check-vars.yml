@@ -14,10 +14,10 @@
 ##
 ---
 - name: "partials » check-vars | fail when valet_current_path is not defined"
-  fail:
+  ansible.builtin.fail:
     msg: "valet_current_path is not defined"
   when: valet_current_path is not defined
 
 - name: "partials » check-vars | set working dir name"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_working_dir: "{{ valet_current_path | basename }}"

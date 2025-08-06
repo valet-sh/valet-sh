@@ -15,16 +15,13 @@
 ##
 ---
 - name: "workflows » aem » project-setup | stop instances"
-  include_role:
+  ansible.builtin.include_role:
     name: valet-exec
   vars:
     valet_action: stop
     valet_action_target: all
 
-- include_tasks: partials/reset-runtime-dir.yml
-
-- include_tasks: partials/get-runtime-files/get-runtime-files.yml
-
-- include_tasks: partials/setup-instances/setup-instances.yml
-
-- include_tasks: partials/cleanup.yml
+- ansible.builtin.include_tasks: partials/reset-runtime-dir.yml
+- ansible.builtin.include_tasks: partials/get-runtime-files/get-runtime-files.yml
+- ansible.builtin.include_tasks: partials/setup-instances/setup-instances.yml
+- ansible.builtin.include_tasks: partials/cleanup.yml

@@ -15,17 +15,17 @@
 ##
 ---
 - name: ensure universe repository is enabled
-  shell: "add-apt-repository -y universe"
+  ansible.builtin.shell: "add-apt-repository -y universe"
   become: true
 
 - name: Update all packages to the latest version
-  apt:
+  ansible.builtin.apt:
     update_cache: true
     upgrade: dist
   become: true
 
 - name: install power management packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -34,7 +34,7 @@
   become: true
 
 - name: ensure tlp packages are not installed
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: absent
   vars:
@@ -44,7 +44,7 @@
   become: true
 
 - name: ensure tpl config does not exist
-  file:
+  ansible.builtin.file:
     path: "{{ valet_tlp_config_item }}"
     state: absent
   become: true
@@ -56,7 +56,7 @@
     loop_var: valet_tlp_config_item
 
 - name: "enable graphic drivers ppa"
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: ppa:graphics-drivers/ppa
     update_cache: true
     state: present
@@ -64,7 +64,7 @@
   when: ansible_distribution_release == "bionic"
 
 - name: "disable graphic drivers ppa"
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: ppa:graphics-drivers/ppa
     update_cache: true
     state: absent
@@ -72,11 +72,11 @@
   when: ansible_distribution_release != "bionic"
 
 - name: "run ubuntu-drivers autoinstall"
-  shell: "ubuntu-drivers autoinstall"
+  ansible.builtin.shell: "ubuntu-drivers autoinstall"
   become: true
 
 - name: install video codec packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -88,14 +88,14 @@
       - gstreamer1.0-vaapi
   become: true
 
-- apt_repository:
+- ansible.builtin.apt_repository:
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: true
     state: present
   become: true
   when: ansible_distribution_release == "bionic"
 
-- apt_repository:
+- ansible.builtin.apt_repository:
     repo: ppa:eh5/pulseaudio-a2dp
     update_cache: true
     state: absent
@@ -103,7 +103,7 @@
   when: ansible_distribution_release != "bionic"
 
 - name: install bluetooth sound codec packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -114,7 +114,7 @@
   when: ansible_distribution_release == "bionic"
 
 - name: install intel microcode updates
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -122,62 +122,62 @@
   become: true
 
 - name: Enable power saving tweaks for Intel chip
-  copy:
+  ansible.builtin.copy:
     content: "options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1 enable_psr=0"
     dest: "/etc/modprobe.d/i915.conf"
   become: true
 
 - name: enable fan speed with lm-sensors
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modprobe.d/dell-smm-hwmon.conf
     line: "options dell-smm-hwmon restricted=0 force=1"
     create: true
   become: true
 
 - name: enable dell specific module
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modules
     line: "dell-smm-hwmon"
   become: true
 
 - name: "run update-initramfs -u"
-  shell: "update-initramfs -u"
+  ansible.builtin.shell: "update-initramfs -u"
   become: true
 
 - name: "switch to intel gpu"
-  shell: "prime-select intel"
+  ansible.builtin.shell: "prime-select intel"
   become: true
 
-- include_tasks: "hardware-related/bbswitch.yml"
+- ansible.builtin.include_tasks: "hardware-related/bbswitch.yml"
   when: ansible_distribution_release == "focal"
 
 - name: "ensure backport-iwlwifi-dkms package is installed on bionic"
-  apt:
+  ansible.builtin.apt:
     name: "backport-iwlwifi-dkms"
     state: present
   become: true
   when: ansible_distribution_release == "bionic"
 
 - name: "ensure backport-iwlwifi-dkms package is NOT installed on focal"
-  apt:
+  ansible.builtin.apt:
     name: "backport-iwlwifi-dkms"
     state: absent
   become: true
   when: ansible_distribution_release == "focal"
 
 - name: update grub config
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
     line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 nouveau.modeset=0 pcie_aspm=force mem_sleep_default=deep"'
   become: true
 
 - name: "run update-grub"
-  shell: "update-grub"
+  ansible.builtin.shell: "update-grub"
   become: true
 
 - name: disable gnome tracker apps
-  systemd:
+  ansible.builtin.systemd:
     masked: true
     name: "{{ ubuntu_gnome_tracker_apps_item }}"
   with_items:
@@ -190,17 +190,17 @@
     loop_var: ubuntu_gnome_tracker_apps_item
 
 - name: disable fingerprint reader
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/udev/rules.d/fingerprint.rules
     line: 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"27c6\", ATTRS{idProduct}==\"5395\", ATTR{authorized}=\"0\"'
     create: true
   become: true
 
-- set_fact:
+- ansible.builtin.set_fact:
     systemd_sleep_modulename: "i2c_hid"
 
 - name: provide systemd sleep configuration for touchpad
-  template:
+  ansible.builtin.template:
     src: systemd-sleep-module.j2
     dest: "/lib/systemd/system-sleep/touchpad"
     owner: root
@@ -209,11 +209,11 @@
   become: true
 
 - name: install Ubuntu Hardware Enablement Stack
-  apt:
+  ansible.builtin.apt:
     name: "{{ ubuntu_hwe_packages }}"
     state: present
     install_recommends: true
   become: true
   when: ansible_distribution_release == "bionic"
 
-- include_tasks: "partials/power-saving-settings.yml"
+- ansible.builtin.include_tasks: "partials/power-saving-settings.yml"

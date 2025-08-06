@@ -15,7 +15,7 @@
 ##
 ---
 - name: "migrations | ensure old config files are deleted"
-  file:
+  ansible.builtin.file:
     dest: "{{ php_cli_custom_config_item }}"
     state: "absent"
     mode: "0755"

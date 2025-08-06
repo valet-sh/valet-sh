@@ -15,7 +15,7 @@
 ##
 ---
 - name: ensure mysql process is stopped and disabled
-  systemd:
+  ansible.builtin.systemd:
     name: mysql
     state: stopped
     enabled: false

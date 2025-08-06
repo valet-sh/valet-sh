@@ -15,7 +15,7 @@
 ##
 ---
 - name: "workflows » aem » project-instance-restart | restart instances"
-  include_role:
+  ansible.builtin.include_role:
     name: valet-exec
   vars:
     valet_action: restart

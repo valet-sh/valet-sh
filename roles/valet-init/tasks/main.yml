@@ -15,14 +15,14 @@
 ##
 ---
 - name: "fail when variable 'valet_current_path' is not defined or empty"
-  fail:
+  ansible.builtin.fail:
     msg: "variable 'valet_current_path' is not defined"
   when: valet_current_path is not defined or valet_current_path|length==0
 
 - name: "fail when no command action '{{ valet_action }}' was found"
-  fail:
+  ansible.builtin.fail:
     msg: "invalid action '{{ valet_action }}'"
   when: valet_action not in valet_init_actions
 
-- include_tasks: "commands/init.yml"
+- ansible.builtin.include_tasks: "commands/init.yml"
   when: valet_action == "init"

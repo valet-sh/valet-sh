@@ -14,19 +14,19 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: "commands/list.yml"
+- ansible.builtin.include_tasks: "commands/list.yml"
   when: valet_config_action == "list"
 
-- include_tasks: "commands/get.yml"
+- ansible.builtin.include_tasks: "commands/get.yml"
   when: valet_config_action == "get"
 
-- include_tasks: "commands/set.yml"
+- ansible.builtin.include_tasks: "commands/set.yml"
   when: valet_config_action == "set"
 
-- include_tasks: "commands/remove.yml"
+- ansible.builtin.include_tasks: "commands/remove.yml"
   when: valet_config_action == "remove"
 
 - name: "fail when no command action '{{ valet_config_action }}' was found"
-  fail:
+  ansible.builtin.fail:
     msg: "invalid action '{{ valet_config_action }}'"
   when: not valet_config_in_command

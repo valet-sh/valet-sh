@@ -15,37 +15,37 @@
 ##
 ---
 - name: "commands » set | fail when no 'valet_config_key' is set"
-  fail:
+  ansible.builtin.fail:
     msg: "no config key was given"
   when: (valet_config_key is not defined) or (valet_config_key | length == 0)
 
 - name: "commands » set | fail when no 'valet_config_value' is set"
-  fail:
+  ansible.builtin.fail:
     msg: "no config value was given"
   when: (valet_config_value is not defined) or (valet_config_value | length == 0)
 
 - name: "commands » set | set runtime flag"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_config_in_command: true
 
 - name: "commands » set | include valet etc config file"
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_config_file }}"
     name: valet_etc_config_obj
 
 - name: "commands » set | prepare new config element"
-  set_fact:
+  ansible.builtin.set_fact:
     new_config_element: "{ '{{ valet_config_key }}': '{{ valet_config_value }}' }"
 
 - name: "commands » set | update config object"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_etc_config_obj: "{{ valet_etc_config_obj | combine(new_config_element) }}"
 
 - name: "commands » set | transform object into nice yaml output"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_etc_config_list: "{{ valet_etc_config_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
 - name: "commands » set | write new config.yml file"
-  copy:
+  ansible.builtin.copy:
     content: "{{ valet_etc_config_list }}"
     dest: "{{ valet_etc_config_file }}"

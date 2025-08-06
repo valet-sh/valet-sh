@@ -14,8 +14,8 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: "ubuntu/unlink.yml"
+- ansible.builtin.include_tasks: "ubuntu/unlink.yml"
   vars:
     valet_link_silent: true
 
-- include_tasks: "ubuntu/link.yml"
+- ansible.builtin.include_tasks: "ubuntu/link.yml"

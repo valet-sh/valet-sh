@@ -20,34 +20,33 @@
 #    state: present
 
 - name: "ensure nginx is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install nginx"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install nginx"
 - name: Generate dhparams file
-  shell: "openssl dhparam -out {{ nginx_dhparams_file }} {{ nginx_dhparams_keysize }}"
+  ansible.builtin.shell: "openssl dhparam -out {{ nginx_dhparams_file }} {{ nginx_dhparams_keysize }}"
   args:
     creates: "{{ nginx_dhparams_file }}"
 
 - name: Override default config
-  template:
+  ansible.builtin.template:
     src: "nginx.conf.j2"
     dest: "{{ valet_sh_prefix }}/etc/nginx/nginx.conf"
     mode: "0644"
   notify: brew | nginx | restarted
 
 - name: Create nginx conf.d dir
-  file:
+  ansible.builtin.file:
     path: "{{ valet_sh_prefix }}/etc/nginx/conf.d"
     state: directory
     mode: "0755"
 
 - name: Create nginx stream.d dir
-  file:
+  ansible.builtin.file:
     path: "{{ valet_sh_prefix }}/etc/nginx/stream.d"
     state: directory
     mode: "0755"
 
 - name: "ensure vhost directory '{{ valet_sh_default_vhost_root }}' exists"
-  file:
+  ansible.builtin.file:
     path: "{{ valet_sh_default_vhost_root }}"
     state: directory
     owner: "{{ current_user }}"
@@ -56,7 +55,7 @@
   become: true
 
 - name: "provide default vhost template"
-  template:
+  ansible.builtin.template:
     src: "default-vhost-index.html.j2"
     dest: "{{ valet_sh_default_vhost_root }}/index.html"
     owner: "{{ current_user }}"
@@ -66,35 +65,35 @@
   become: true
 
 - name: set 'cert_prefix' variable
-  set_fact:
+  ansible.builtin.set_fact:
     cert_prefix: "{{ valet_sh_default_vhost_domain }}"
 
 - name: "generate ssl-certificate for {{ valet_sh_default_vhost_domain }}"
-  include_role:
+  ansible.builtin.include_role:
     name: certificate
     public: true
   vars:
     cert_prefix: "{{ valet_sh_default_vhost_domain }}"
 
 - name: "provide default vhost"
-  template:
+  ansible.builtin.template:
     src: "default-vhost.conf.j2"
     dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/{{ valet_sh_default_vhost_domain }}.{{ development_tld }}.conf"
     mode: "0644"
   notify: brew | nginx | restarted
 
 - name: unset 'cert_prefix' variable
-  set_fact:
+  ansible.builtin.set_fact:
     cert_prefix: "{{ non_existent | default(None) }}"
 
 - name: "read nginx configurations in '{{ valet_sh_prefix }}/etc/nginx/conf.d/'"
-  find:
+  ansible.builtin.find:
     paths: "{{ valet_sh_prefix }}/etc/nginx/conf.d/"
     recurse: false
     file_type: file
   register: nginx_vhosts_obj
 
-- include_tasks: sub-migrate-config.yml
+- ansible.builtin.include_tasks: sub-migrate-config.yml
   with_items: "{{ nginx_vhosts_obj.files }}"
   loop_control:
     loop_var: nginx_vhosts_obj_item

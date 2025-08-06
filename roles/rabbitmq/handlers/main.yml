@@ -15,31 +15,31 @@
 ##
 ---
 - name: systemd | rabbitmq-server | started
-  systemd:
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: started
     scope: user
 
 - name: systemd | rabbitmq-server | stopped
-  systemd:
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: stopped
     scope: user
 
 - name: systemd | rabbitmq-server | restarted
-  systemd:
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: restarted
     scope: user
 
 - name: systemd | rabbitmq-server | reloaded
-  systemd:
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: reloaded
     scope: user
 
 - name: systemd | rabbitmq-server | full-restart
-  systemd:
+  ansible.builtin.systemd:
     name: rabbitmq-server
     state: restarted
     daemon_reload: true

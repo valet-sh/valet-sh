@@ -14,9 +14,9 @@
 ##
 ---
 - name: "partials » load-project-workflow | fail when project_type was not found"
-  fail:
+  ansible.builtin.fail:
     msg: "could not find project_type"
   when: valet_sh_project_vars.instance.type is not defined
 
-- include_tasks: "../workflows/aem/main.yml"
+- ansible.builtin.include_tasks: "../workflows/aem/main.yml"
   when: valet_sh_project_vars.instance.type == "aem"

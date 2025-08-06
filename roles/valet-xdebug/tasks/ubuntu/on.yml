@@ -14,16 +14,16 @@
 ##
 ---
 - name: "on | include valet services file"
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_services_file }}"
     name: valet_sh_services_obj
 
 - name: "on | set default xdebug version to 3"
-  set_fact:
+  ansible.builtin.set_fact:
     xdebug_preferred_version: "xdebug3"
 
 - name: "on | read preferred xdebug version"
-  set_fact:
+  ansible.builtin.set_fact:
     xdebug_preferred_version: "{{ valet_sh_services_obj.defaults.xdebug }}"
   when:
     - valet_sh_services_obj.defaults is defined
@@ -31,7 +31,7 @@
 
 - block:
     - name: "on | create symlink for xdebug cli configuration"
-      file:
+      ansible.builtin.file:
         src: "{{ item }}"
         dest: "/etc/php/{{ php_version_number }}/cli/conf.d/20-xdebug.ini"
         state: link
@@ -42,7 +42,7 @@
         - "/etc/php/{{ php_version_number }}/mods-available/xdebug2.ini"
 
     - name: "on | create symlink for xdebug fpm configuration"
-      file:
+      ansible.builtin.file:
         src: "{{ item }}"
         dest: "/etc/php/{{ php_version_number }}/fpm/conf.d/20-xdebug.ini"
         state: link
@@ -56,7 +56,7 @@
 
 - block:
     - name: "on | create symlink for xdebug cli configuration"
-      file:
+      ansible.builtin.file:
         src: "{{ item }}"
         dest: "/etc/php/{{ php_version_number }}/cli/conf.d/20-xdebug.ini"
         state: link
@@ -67,7 +67,7 @@
         - "/etc/php/{{ php_version_number }}/mods-available/xdebug3.ini"
 
     - name: "on | create symlink for xdebug fpm configuration"
-      file:
+      ansible.builtin.file:
         src: "{{ item }}"
         dest: "/etc/php/{{ php_version_number }}/fpm/conf.d/20-xdebug.ini"
         state: link

@@ -17,10 +17,9 @@
 ##### start mysql8.4 installation
 
 - name: "ensure vsh-mysql84 is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql84"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-mysql84"
 - name: "provide .my.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql84_template_dot_my }}"
     dest: "{{ current_home }}/.my8.4.cnf"
     mode: "0644"
@@ -31,7 +30,7 @@
     loop_var: mysql84_template_dot_my
 
 - name: "provide mysql.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql84_template_mysql }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql84/conf.d/mysql.cnf"
     mode: "0644"
@@ -42,7 +41,7 @@
     loop_var: mysql84_template_mysql
 
 - name: "provide mysqldump.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql84_template_mysqldump }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql84/conf.d/mysqldump.cnf"
     mode: "0644"
@@ -53,7 +52,7 @@
     loop_var: mysql84_template_mysqldump
 
 - name: "provide mysqld.cnf configuration file"
-  template:
+  ansible.builtin.template:
     src: "{{ mysql84_template_mysqld }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mysql84/conf.d/mysqld.cnf"
     mode: "0644"
@@ -64,15 +63,14 @@
     loop_var: mysql84_template_mysqld
 
 - name: brew | vsh-mysql84 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql84"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql84"
 - name: wait for mysql84 to start
-  wait_for:
+  ansible.builtin.wait_for:
     port: 3309
     delay: 5
 
 - name: Set root password
-  mysql_user:
+  community.mysql.mysql_user:
     login_host: 127.0.0.1
     login_port: "{{ mysql_community_server_84.port }}"
     login_user: root

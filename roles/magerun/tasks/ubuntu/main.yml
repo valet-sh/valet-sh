@@ -15,7 +15,7 @@
 ##
 ---
 - name: ensure that magerun1 is installed
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ magerun1_download_url }}"
     dest: "{{ magerun1_bin_path }}"
     owner: "{{ current_user }}"
@@ -25,7 +25,7 @@
   become: true
 
 - name: ensure that magerun2 is installed
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ magerun2_download_url }}"
     dest: "{{ magerun2_bin_path }}"
     owner: "{{ current_user }}"

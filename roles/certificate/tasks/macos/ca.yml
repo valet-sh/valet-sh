@@ -15,18 +15,18 @@
 ##
 ---
 - name: "ca | check if CA '{{ certificate_ca_cert_file }}' already exists"
-  stat:
+  ansible.builtin.stat:
     path: "{{ certificate_ca_cert_file }}"
   register: ca_cert_check_obj
 
 - name: "ca | check if CA '{{ certificate_ca_cert_file }}' expires in less than 6 months"
-  shell: "openssl x509 -checkend 15552000 -noout -in {{ certificate_ca_cert_file }}"
+  ansible.builtin.shell: "openssl x509 -checkend 15552000 -noout -in {{ certificate_ca_cert_file }}"
   failed_when: false
   when: ca_cert_check_obj.stat.exists|bool
   register: ca_cert_expires_check_obj
 
 - name: "ca | delete expiring CA files"
-  file:
+  ansible.builtin.file:
     path: "{{ certificate_ca_cert_path }}"
     state: absent
   when:
@@ -36,7 +36,7 @@
   become: true
 
 - name: ca | ensure base directories existing
-  file:
+  ansible.builtin.file:
     path: "{{ certificate_base_path_item }}"
     state: directory
     owner: root
@@ -51,13 +51,13 @@
     loop_var: certificate_base_path_item
 
 - name: ca | generate private ca key
-  shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
+  ansible.builtin.shell: "openssl genrsa -out {{ certificate_ca_key_file }} {{ certificate_ca_key_size }}"
   args:
     creates: "{{ certificate_ca_key_file }}"
   become: true
 
 - name: "ca | ensure only root can read ca key file"
-  file:
+  ansible.builtin.file:
     path: "{{ certificate_ca_key_file }}"
     owner: root
     group: wheel
@@ -65,14 +65,15 @@
   become: true
 
 - name: ca | generate CA Certificate
-  shell: "openssl req -subj '/CN=valet.sh Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{ certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
+  ansible.builtin.shell: "openssl req -subj '/CN=valet.sh Development CA/O=TechDivision/C=DE' -x509 -new -nodes -key {{ certificate_ca_key_file }} -sha256 -days {{
+    certificate_ca_lifetime }} -out {{ certificate_ca_cert_file }}"
   args:
     creates: "{{ certificate_ca_cert_file }}"
   become: true
   register: generate_trusted_root_ca_obj
 
 - name: "ca | add ca certificate to keystore"
-  shell: "security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ certificate_ca_cert_file }}"
+  ansible.builtin.shell: "security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ certificate_ca_cert_file }}"
   become: true
   when: >
     generate_trusted_root_ca_obj is changed or

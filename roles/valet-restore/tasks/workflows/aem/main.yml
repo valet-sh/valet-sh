@@ -13,17 +13,13 @@
 #   limitations under the License.
 ##
 ---
-- include_vars: "vars.yml"
-
-- include_tasks: "check-opts.yml"
-
+- ansible.builtin.include_vars: "vars.yml"
+- ansible.builtin.include_tasks: "check-opts.yml"
 - block:
-    - include_tasks: "check-vars.yml"
-
-    - include_tasks: "register-hub.yml"
-
+    - ansible.builtin.include_tasks: "check-vars.yml"
+    - ansible.builtin.include_tasks: "register-hub.yml"
     - name: "workflows » aem | fail when no packages are defined"
-      assert:
+      ansible.builtin.assert:
         msg: "no packages defined for restore"
         that:
           - valet_sh_project_vars is defined
@@ -33,27 +29,27 @@
           - valet_sh_project_vars.instance.sync.packages | length > 1
 
     - name: "workflows » aem | create runtime tmp dir"
-      file:
+      ansible.builtin.file:
         path: "{{ valet_sh_aem_runtime_tmp_dir }}"
         state: directory
 
-    - include_tasks: sub-download-package.yml
+    - ansible.builtin.include_tasks: sub-download-package.yml
       with_items: "{{ valet_sh_project_vars.instance.sync.packages }}"
       loop_control:
         loop_var: valet_sh_aem_restore_current_packagename
 
-    - include_tasks: sub-upload-package.yml
+    - ansible.builtin.include_tasks: sub-upload-package.yml
       with_items: "{{ valet_sh_project_vars.instance.sync.packages }}"
       loop_control:
         loop_var: valet_sh_aem_restore_current_packagename
 
-    - include_tasks: sub-install-package.yml
+    - ansible.builtin.include_tasks: sub-install-package.yml
       with_items: "{{ valet_sh_project_vars.instance.sync.packages }}"
       loop_control:
         loop_var: valet_sh_aem_restore_current_packagename
 
     - name: "workflows » aem | clear runtime tmp dir"
-      file:
+      ansible.builtin.file:
         path: "{{ valet_sh_aem_runtime_tmp_dir }}"
         state: absent
   when:

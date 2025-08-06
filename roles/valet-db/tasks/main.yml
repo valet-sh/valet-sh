@@ -14,10 +14,7 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: partials/check-vars.yml
-
-- include_tasks: partials/load-valet-sh-file.yml
-
-- include_tasks: partials/switch-target-db-host.yml
-
-- include_tasks: actions/main.yml
+- ansible.builtin.include_tasks: partials/check-vars.yml
+- ansible.builtin.include_tasks: partials/load-valet-sh-file.yml
+- ansible.builtin.include_tasks: partials/switch-target-db-host.yml
+- ansible.builtin.include_tasks: actions/main.yml

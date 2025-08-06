@@ -16,56 +16,56 @@
 ---
 - block:
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      systemd:
+      ansible.builtin.systemd:
         name: rabbitmq-server
         state: restarted
         enabled: true
       become: true
 
     - name: "workflows » magento2 » services » rabbitmq | include valet services file"
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
 
     - name: "workflows » magento2 » services » rabbitmq | prepare new config element"
-      set_fact:
+      ansible.builtin.set_fact:
         new_service_state_element:
           rabbitmq: true
 
     - name: "workflows » magento2 » services » rabbitmq | update service object"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
 
     - name: "workflows » magento2 » services » rabbitmq | merge objects"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_obj:
           states: "{{ valet_sh_services_updated_states }}"
           defaults: "{{ valet_sh_services_obj.defaults }}"
 
     - name: "workflows » magento2 » services » rabbitmq | transform object into nice yaml output"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » rabbitmq | write new services.yml file"
-      copy:
+      ansible.builtin.copy:
         content: "{{ valet_etc_services_list }}"
         dest: "{{ valet_etc_services_file }}"
       become: true
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: 5672
         delay: 5
 
     - block:
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost is absent"
-          rabbitmq_vhost:
+          community.rabbitmq.rabbitmq_vhost:
             name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
             state: absent
           become: true
 
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user is absent"
-          rabbitmq_user:
+          community.rabbitmq.rabbitmq_user:
             user: "{{ valet_sh_service_rabbitmq_user }}"
             password: "{{ valet_sh_service_rabbitmq_password }}"
             vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
@@ -75,13 +75,13 @@
       when: valet_opt_flag_clean is defined and valet_opt_flag_clean|bool
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
-      rabbitmq_vhost:
+      community.rabbitmq.rabbitmq_vhost:
         name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
         state: present
       become: true
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user exists"
-      rabbitmq_user:
+      community.rabbitmq.rabbitmq_user:
         user: "{{ valet_sh_service_rabbitmq_user }}"
         password: "{{ valet_sh_service_rabbitmq_password }}"
         vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
@@ -99,56 +99,56 @@
 
 - block:
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      shell: "{{ valet_sh_homebrew_bin_x86 }} services start rabbitmq"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_x86 }} services start rabbitmq"
       when: current_arch != "arm64"
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      shell: "{{ valet_sh_homebrew_bin_arm64 }} services start rabbitmq"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_arm64 }} services start rabbitmq"
       when: current_arch == "arm64"
 
     - name: "workflows » magento2 » services » rabbitmq | include valet services file"
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
 
     - name: "workflows » magento2 » services » rabbitmq | prepare new config element"
-      set_fact:
+      ansible.builtin.set_fact:
         new_service_state_element:
           rabbitmq: true
 
     - name: "workflows » magento2 » services » rabbitmq | update service object"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
 
     - name: "workflows » magento2 » services » rabbitmq | merge objects"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_sh_services_obj:
           states: "{{ valet_sh_services_updated_states }}"
           defaults: "{{ valet_sh_services_obj.defaults }}"
 
     - name: "workflows » magento2 » services » rabbitmq | transform object into nice yaml output"
-      set_fact:
+      ansible.builtin.set_fact:
         valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » rabbitmq | write new services.yml file"
-      copy:
+      ansible.builtin.copy:
         content: "{{ valet_etc_services_list }}"
         dest: "{{ valet_etc_services_file }}"
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
-      wait_for:
+      ansible.builtin.wait_for:
         port: 5672
         delay: 5
 
     - block:
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost is absent"
-          rabbitmq_vhost:
+          community.rabbitmq.rabbitmq_vhost:
             name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
             node: "rabbit@localhost"
             state: absent
 
         - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user is absent"
-          rabbitmq_user:
+          community.rabbitmq.rabbitmq_user:
             user: "{{ valet_sh_service_rabbitmq_user }}"
             password: "{{ valet_sh_service_rabbitmq_password }}"
             vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
@@ -158,13 +158,13 @@
       when: valet_opt_flag_clean is defined and valet_opt_flag_clean|bool
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
-      rabbitmq_vhost:
+      community.rabbitmq.rabbitmq_vhost:
         name: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
         node: "rabbit@localhost"
         state: present
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq user exists"
-      rabbitmq_user:
+      community.rabbitmq.rabbitmq_user:
         user: "{{ valet_sh_service_rabbitmq_user }}"
         password: "{{ valet_sh_service_rabbitmq_password }}"
         vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"

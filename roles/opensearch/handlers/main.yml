@@ -15,63 +15,62 @@
 ##
 ---
 - name: systemd | opensearch1 | started
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: opensearch1
     state: started
     scope: user
 
 - name: systemd | opensearch1 | stopped
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: opensearch1
     state: stopped
     scope: user
 
 - name: systemd | opensearch1 | restarted
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: opensearch1
     state: restarted
     scope: user
 
 - name: systemd | opensearch1 | reloaded
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: opensearch1
     state: restarted
     scope: user
 
 - name: brew | vsh-opensearch1 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch1"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch1"
 - name: systemd | opensearch2 | started
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: opensearch2
     state: started
     scope: user
 
 - name: systemd | opensearch2 | stopped
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: opensearch2
     state: stopped
     scope: user
 
 - name: systemd | opensearch2 | restarted
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: opensearch2
     state: restarted
     scope: user
 
 - name: systemd | opensearch2 | reloaded
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     name: opensearch2
     state: restarted
     scope: user
 
 - name: brew | vsh-opensearch2 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"

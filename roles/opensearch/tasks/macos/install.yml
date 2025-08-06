@@ -15,10 +15,9 @@
 ##
 ---
 - name: "ensure vsh-opensearch1 is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install vsh-opensearch1"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-opensearch1"
 - name: "ensure opensearch 1 plugins are installed"
-  elasticsearch_plugin:
+  community.general.elasticsearch_plugin:
     name: "{{ current_opensearch_plugin }}"
     state: present
     plugin_bin: "/usr/local/opt/vsh-opensearch1/libexec/bin/opensearch-plugin"
@@ -28,10 +27,9 @@
     loop_var: current_opensearch_plugin
 
 - name: "ensure vsh-opensearch2 is installed"
-  shell: "{{ valet_sh_homebrew_bin }} install vsh-opensearch2"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install vsh-opensearch2"
 - name: "ensure opensearch 2 plugins are installed"
-  elasticsearch_plugin:
+  community.general.elasticsearch_plugin:
     name: "{{ current_opensearch_plugin }}"
     state: present
     plugin_bin: "/usr/local/opt/vsh-opensearch2/libexec/bin/opensearch-plugin"

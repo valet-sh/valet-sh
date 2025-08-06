@@ -15,6 +15,6 @@
 ##
 ---
 - name: "sub » read | include valet links configuration"
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ valet_etc_links_file }}"
     name: valet_links_obj

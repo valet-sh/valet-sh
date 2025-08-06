@@ -15,96 +15,88 @@
 ##
 ---
 - name: systemd | daemon-reload
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     scope: user
 
 - name: systemd | mariadb104 | started
-  systemd:
+  ansible.builtin.systemd:
     name: mariadb104
     daemon_reload: true
     state: started
     scope: user
 
 - name: systemd | mariadb104 | stopped
-  systemd:
+  ansible.builtin.systemd:
     name: mariadb104
     daemon_reload: true
     state: stopped
     scope: user
 
 - name: systemd | mariadb104 | restarted
-  systemd:
+  ansible.builtin.systemd:
     name: mariadb104
     daemon_reload: true
     state: restarted
     scope: user
 
 - name: systemd | mariadb106 | started
-  systemd:
+  ansible.builtin.systemd:
     name: mariadb106
     daemon_reload: true
     state: started
     scope: user
 
 - name: systemd | mariadb106 | stopped
-  systemd:
+  ansible.builtin.systemd:
     name: mariadb106
     daemon_reload: true
     state: stopped
     scope: user
 
 - name: systemd | mariadb106 | restarted
-  systemd:
+  ansible.builtin.systemd:
     name: mariadb106
     daemon_reload: true
     state: restarted
     scope: user
 
 - name: systemd | mariadb114 | started
-  systemd:
+  ansible.builtin.systemd:
     name: mariadb114
     daemon_reload: true
     state: started
     scope: user
 
 - name: systemd | mariadb114 | stopped
-  systemd:
+  ansible.builtin.systemd:
     name: mariadb114
     daemon_reload: true
     state: stopped
     scope: user
 
 - name: systemd | mariadb114 | restarted
-  systemd:
+  ansible.builtin.systemd:
     name: mariadb114
     daemon_reload: true
     state: restarted
     scope: user
 
 - name: brew | vsh-mariadb104 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb104"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb104"
 - name: brew | vsh-mariadb104 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb104"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb104"
 - name: brew | vsh-mariadb104 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb104"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb104"
 - name: brew | vsh-mariadb106 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb106"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb106"
 - name: brew | vsh-mariadb106 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb106"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb106"
 - name: brew | vsh-mariadb106 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb106"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb106"
 - name: brew | vsh-mariadb114 | started
-  shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb114"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb114"
 - name: brew | vsh-mariadb114 | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb114"
-
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb114"
 - name: brew | vsh-mariadb114 | restarted
-  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb114"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb114"

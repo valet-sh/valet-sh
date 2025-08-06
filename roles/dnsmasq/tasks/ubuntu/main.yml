@@ -15,14 +15,14 @@
 ##
 ---
 - name: "enable dns resolving for .{{ dnsmasq_domain }} domain"
-  template:
+  ansible.builtin.template:
     src: development-domain.conf.j2
     dest: "{{ dnsmasq_conf_file }}"
   notify: systemd | NetworkManager | reload
   become: true
 
 - name: enable dnsmasq in NetworkManager
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "/etc/NetworkManager/NetworkManager.conf"
     insertafter: "^\\[main\\]"
     line: "dns=dnsmasq"
@@ -30,7 +30,7 @@
   become: true
 
 - name: remove /run/systemd/resolve/stub-resolv.conf symlink
-  file:
+  ansible.builtin.file:
     src: "/var/run/NetworkManager/resolv.conf"
     dest: "/etc/resolv.conf"
     state: link

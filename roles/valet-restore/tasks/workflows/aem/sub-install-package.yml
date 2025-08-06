@@ -14,7 +14,7 @@
 ##
 ---
 - name: "workflows » aem » sub-install-package | install package '{{ valet_sh_aem_restore_current_packagename }}.zip'"
-  uri:
+  ansible.builtin.uri:
     url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service/.json/etc/packages/{{ valet_sh_project_vars.instance.sync.groupname
       }}/{{ valet_sh_aem_restore_current_packagename }}.zip"
     method: POST
@@ -54,6 +54,6 @@
 #  register: install_package_obj
 
 - name: "workflows » aem » sub-install-package | wait for 5 seconds"
-  command: "sleep 5"
+  ansible.builtin.command: "sleep 5"
   args:
     warn: false

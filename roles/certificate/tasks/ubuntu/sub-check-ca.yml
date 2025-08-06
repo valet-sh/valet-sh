@@ -15,13 +15,13 @@
 ##
 ---
 - name: create temporary file
-  tempfile:
+  ansible.builtin.tempfile:
     state: file
     suffix: temp
   register: current_cert9_cert_file_obj
 
 - name: "ca | get current certificate information"
-  shell: 'certutil -L -a -n "TechDivision Development CA" -d sql:{{ current_cert9_file_item | dirname }} > {{ current_cert9_cert_file_obj.path }}'
+  ansible.builtin.shell: 'certutil -L -a -n "TechDivision Development CA" -d sql:{{ current_cert9_file_item | dirname }} > {{ current_cert9_cert_file_obj.path }}'
   failed_when: false
   register: certutil_info_command_obj
 
@@ -40,5 +40,5 @@
       register: current_cacert_file
 
     - name: "ca | delete currently active CA in key store when serial_numer is not equal"
-      shell: 'certutil -D -n "TechDivision Development CA" -d sql:{{ current_cert9_file_item | dirname }}'
+      ansible.builtin.shell: 'certutil -D -n "TechDivision Development CA" -d sql:{{ current_cert9_file_item | dirname }}'
       when: current_cert_in_store.serial_number != current_cacert_file.serial_number

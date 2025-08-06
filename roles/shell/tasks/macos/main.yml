@@ -15,23 +15,23 @@
 ##
 ---
 - name: "ensure default shell is set"
-  set_fact:
+  ansible.builtin.set_fact:
     default_shell: "{{ shell_default_shell }}"
 
 - name: "check if shell is valid"
-  fail:
+  ansible.builtin.fail:
     msg: "invalid shell '{{ valet_sh_config.default_shell }}'"
   when:
     - valet_sh_config.default_shell is defined
     - valet_sh_config.default_shell not in shell_available_shells
 
 - name: "override default shell"
-  set_fact:
+  ansible.builtin.set_fact:
     default_shell: "{{ valet_sh_config.default_shell }}"
   when: valet_sh_config.default_shell is defined
 
-- include_tasks: macos/bash.yml
+- ansible.builtin.include_tasks: macos/bash.yml
   when: default_shell == "bash"
 
-- include_tasks: macos/zsh.yml
+- ansible.builtin.include_tasks: macos/zsh.yml
   when: default_shell == "zsh"

@@ -14,11 +14,11 @@
 ##
 ---
 - name: "check if valet_current_path variable is set"
-  fail:
+  ansible.builtin.fail:
     msg: "valet_current_path variable is not set"
   when: valet_current_path is not defined
 
 - name: "start phpstorm"
-  shell: "open -a PhpStorm ."
+  ansible.builtin.shell: "open -a PhpStorm ."
   args:
     chdir: "{{ valet_current_path }}/"

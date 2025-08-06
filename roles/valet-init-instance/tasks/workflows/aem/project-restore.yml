@@ -15,5 +15,5 @@
 ##
 ---
 - name: "workflows » aem » project-restore | run restore command"
-  include_role:
+  ansible.builtin.include_role:
     name: valet-restore

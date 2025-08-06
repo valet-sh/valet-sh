@@ -14,14 +14,13 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: "sub/read.yml"
-
+- ansible.builtin.include_tasks: "sub/read.yml"
 - name: "links | set empty array 'valet_list'"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_list: []
 
 - name: "links | add available links to array"
-  set_fact:
+  ansible.builtin.set_fact:
     valet_list: "{{ valet_list + [[item.name, item.path, item.ssl, item.phpVersion | default(''), item.template | default('')]] }}"
   with_items: "{{ valet_links_obj.valet_links.links }}"
 

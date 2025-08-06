@@ -15,32 +15,30 @@
 ##
 ---
 - name: Uninstall useless packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ absent_packages }}"
     state: absent
   become: true
 
 - name: Install common basic_packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ basic_packages }}"
     state: present
   become: true
 
 - name: Install additional packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ additional_packages }}"
     state: present
   become: true
 
 - name: Get user home directory
-  set_fact:
+  ansible.builtin.set_fact:
     home_dir: "{{ lookup('env', 'HOME') }}"
 
 - name: Setup swapfile
-  include_tasks: config-related/setup_swap.yml
-
+  ansible.builtin.include_tasks: config-related/setup_swap.yml
 - name: Setup Atheros/Qualcom Wifi firmware, if needed
-  include_tasks: hardware-related/atheros-firmware.yml
-
+  ansible.builtin.include_tasks: hardware-related/atheros-firmware.yml
 - name: Setup Intel/Killer Wifi firmware, if needed
-  include_tasks: hardware-related/intel-killer-firmware.yml
+  ansible.builtin.include_tasks: hardware-related/intel-killer-firmware.yml

@@ -15,7 +15,7 @@
 ##
 ---
 - name: "ensure composer-2 is installed"
-  get_url:
+  ansible.builtin.get_url:
     url: https://getcomposer.org/composer-2.phar
     dest: "{{ composer2_phar_bin }}"
     owner: "{{ current_user }}"
@@ -25,7 +25,7 @@
   become: true
 
 - name: "ensure composer2 script is up2date"
-  template:
+  ansible.builtin.template:
     src: "composer2.j2"
     dest: "{{ composer2_bin }}"
     mode: "0755"

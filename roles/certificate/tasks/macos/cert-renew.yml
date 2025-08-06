@@ -15,13 +15,13 @@
 ##
 ---
 - name: "cert-renew | read certificates in '{{ certificate_server_cert_path }}'"
-  find:
+  ansible.builtin.find:
     paths: "{{ certificate_server_cert_path }}"
     recurse: false
     file_type: directory
   register: available_dev_certs
 
-- include_tasks: sub-cert-renew.yml
+- ansible.builtin.include_tasks: sub-cert-renew.yml
   with_items: "{{ available_dev_certs.files }}"
   loop_control:
     loop_var: available_dev_certs_item

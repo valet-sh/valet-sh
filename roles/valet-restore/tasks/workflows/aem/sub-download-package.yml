@@ -14,13 +14,13 @@
 ##
 ---
 - name: "workflows » aem | check if instancebackup package '{{ valet_sh_aem_restore_current_packagename }}.zip'"
-  stat:
+  ansible.builtin.stat:
     path: "{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/instance-backup/{{ valet_sh_aem_restore_current_packagename }}.zip"
   register: instancebackup_target_package_file_obj
   delegate_to: hub
 
 - name: "workflows » aem | fail when package '{{ valet_sh_aem_restore_current_packagename }}.zip' does not exist"
-  fail:
+  ansible.builtin.fail:
     msg: "file '{{ valet_sh_aem_restore_current_packagename }}.zip' does not exist!"
   when: not instancebackup_target_package_file_obj.stat.exists
 

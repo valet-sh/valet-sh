@@ -14,12 +14,8 @@
 #   limitations under the License.
 ##
 ---
-- include_tasks: check-vars.yml
-
-- include_tasks: service-install.yml
-
-- include_tasks: project-install.yml
-
-- include_tasks: project-env.yml
-
-- include_tasks: project-setup.yml
+- ansible.builtin.include_tasks: check-vars.yml
+- ansible.builtin.include_tasks: service-install.yml
+- ansible.builtin.include_tasks: project-install.yml
+- ansible.builtin.include_tasks: project-env.yml
+- ansible.builtin.include_tasks: project-setup.yml

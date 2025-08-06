@@ -15,7 +15,7 @@
 ##
 ---
 - name: Check for Qualcom Atheros WIFI Device
-  shell: |
+  ansible.builtin.shell: |
     lspci | grep "{{ atheros_wifi }}"
   register: atheros_wifi_device
   failed_when: false
@@ -24,7 +24,7 @@
 # Todo: Check if firmware files are already deployed
 
 - name: Download ath10k firmware files
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ item.value.url }}"
     dest: "{{ item.value.dest }}"
     force: true
