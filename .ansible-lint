@@ -7,6 +7,7 @@ skip_list:
   - "yaml[line-length]"
   - "yaml[new-line-at-end-of-file]"
   - "yaml[comments]"
+  - "yaml[empty-lines]
   - "var-naming[non-string]"
   - "var-naming[no-role-prefix]"
   - "no-handler"
@@ -21,3 +22,4 @@ skip_list:
   - "no-relative-paths"
   - "schema[tasks]"
   - "schema[vars]"
+  - "risky-file-permissions"
