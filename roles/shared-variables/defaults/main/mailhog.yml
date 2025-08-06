@@ -16,7 +16,7 @@
 ---
 
 mailhog_release_url_default: "https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64"
-mailhog_release_url: "{{ lookup('vars', 'mailhog_release_url'+'_'+current_os, default=mailhog_release_url_default) }}"
+mailhog_release_url: "{{ lookup('vars', 'mailhog_release_url' + '_' + current_os, default=mailhog_release_url_default) }}"
 
 mailhog_bin_target_default: "/usr/local/bin/mailhog"
-mailhog_bin_target: "{{ lookup('vars', 'mailhog_bin_target'+'_'+current_os, default=mailhog_bin_target_default) }}"
+mailhog_bin_target: "{{ lookup('vars', 'mailhog_bin_target' + '_' + current_os, default=mailhog_bin_target_default) }}"

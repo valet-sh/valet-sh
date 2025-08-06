@@ -14,7 +14,7 @@
 #   limitations under the License.
 ##
 ---
-- name: "check if '.valet-sh.yml' file already exists in '{{valet_current_path}}'"
+- name: "check if '.valet-sh.yml' file already exists in '{{ valet_current_path }}'"
   ansible.builtin.stat:
     path: "{{ valet_current_path }}/.valet-sh.yml"
   register: valet_sh_file_obj

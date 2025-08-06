@@ -82,7 +82,7 @@
 #    key: "{{ lookup('pipe', 'ssh-keyscan -p {{ valet_sh_config.hub_gitlab_ssh_port }} {{ valet_sh_project_hub_fqdn }},`dig +short {{ valet_sh_project_hub_fqdn }}`') }}"
 
 - name: "workflows » magento2 | get ssh fingerprint for '{{ valet_sh_project_hub_fqdn }}:{{  valet_sh_config.hub_gitlab_ssh_port }}'"
-  ansible.builtin.shell: "ssh-keyscan -tecdsa -p {{ valet_sh_config.hub_gitlab_ssh_port|string }} {{ valet_sh_project_hub_fqdn }}"
+  ansible.builtin.shell: "ssh-keyscan -tecdsa -p {{ valet_sh_config.hub_gitlab_ssh_port | string }} {{ valet_sh_project_hub_fqdn }}"
   register: valet_sh_project_hub_host_ssh_fingerprint_obj
 
 - name: "workflows » magento2 | ensure ssh-key for '{{ valet_sh_project_hub_fqdn }}:{{  valet_sh_config.hub_gitlab_ssh_port }}' is in known_hosts"

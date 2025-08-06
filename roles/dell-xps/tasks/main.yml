@@ -37,4 +37,4 @@
     var: xps_model
 
 - ansible.builtin.include_tasks: basics.yml
-- ansible.builtin.include_tasks: "{{ xps_model |replace(' ', '-') }}.yml"
+- ansible.builtin.include_tasks: "{{ xps_model | replace(' ', '-') }}.yml"
