@@ -31,6 +31,6 @@
 # the shell currently started by ansible for the module execution
 
 #- name: "workflows » neos » services » node | switch node version to '{{ valet_sh_node_version }}'"
-#  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ valet_sh_node_version }}" # noqa 301
+#  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ valet_sh_node_version }}"
 #  args:
 #    chdir: "{{ valet_current_path }}"
