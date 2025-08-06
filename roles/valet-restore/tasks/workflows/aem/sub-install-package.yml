@@ -54,6 +54,5 @@
 #  register: install_package_obj
 
 - name: "workflows » aem » sub-install-package | wait for 5 seconds"
-  ansible.builtin.command: "sleep 5"
-  args:
-    warn: false
+  ansible.builtin.pause:
+    seconds: 5

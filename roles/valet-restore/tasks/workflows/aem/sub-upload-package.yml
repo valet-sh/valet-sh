@@ -30,9 +30,8 @@
   when: valet_sh_aem_restore_upload_result.success is not defined or not valet_sh_aem_restore_upload_result.success|bool
 
 - name: "workflows » aem » sub-install-package | wait for 5 seconds"
-  ansible.builtin.command: "sleep 5"
-  args:
-    warn: false
+  ansible.builtin.pause:
+    seconds: 5
 
 #- debug:
 #    msg: "{{ valet_sh_aem_runtime_tmp_dir }}/{{ valet_sh_aem_restore_current_packagename }}.zip"
