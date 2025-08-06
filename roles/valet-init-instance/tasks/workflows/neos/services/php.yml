@@ -63,7 +63,7 @@
 
 - block:
     - name: "workflows » neos » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
     - name: "workflows » neos » services » php | include valet services file"
       ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
