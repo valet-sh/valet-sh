@@ -23,14 +23,13 @@ galaxy_info:
   description: valet.sh db command
   company: "TechDivision GmbH"
   license: "Apache-2.0"
-  min_ansible_version: 2.10
+  min_ansible_version: "2.10"
   platforms:
     - name: Ubuntu
       versions:
-        - 20.04
-        - 22.04
+        - "focal"
+        - "jammy"
     - name: MacOSX
       versions:
-        - 11
-        - 12
-        - 13
+        - "10.14"
+        - "10.15"
