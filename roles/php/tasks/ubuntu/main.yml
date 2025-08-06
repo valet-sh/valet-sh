@@ -46,7 +46,7 @@
     name: php
     path: "/usr/bin/php{{ item.version }}"
   with_items: "{{ php_multi }}"
-  when: (item.default is defined) and (item.default == true)
+  when: (item.default is defined) and (item.default is true)
   become: true
 
 - name: ensure php wrapper script is up2date

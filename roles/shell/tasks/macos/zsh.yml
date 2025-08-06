@@ -70,7 +70,7 @@
       . ~/.profile
       emulate zsh
     create: true
-  when: zsh_zprofile_obj.stat.exists == False
+  when: not zsh_zprofile_obj.stat.exists
 
 - name: change default shell to zsh for current user
   ansible.builtin.user:
