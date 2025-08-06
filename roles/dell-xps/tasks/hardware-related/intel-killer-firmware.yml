@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "check for Intel killer Wifi Device AX200/AX1650"
   shell: |
     lspci | grep "Device 2723"

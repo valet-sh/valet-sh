@@ -11,7 +11,6 @@
 # valet.sh project:cc
 #
 ---
-
 - name: "project:cc"
   hosts: local
   gather_facts: true

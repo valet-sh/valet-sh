@@ -14,11 +14,9 @@
 #   limitations under the License.
 ##
 ---
-
 - include_tasks: partials/check-vars.yml
 
 - include_tasks: partials/load-valet-sh-file.yml
   when: valet_sh_project_vars is not defined
 
 - include_tasks: partials/load-project-workflow.yml
-

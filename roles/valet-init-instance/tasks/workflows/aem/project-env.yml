@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » project-env | get target aem sdk version"
   set_fact:
     valet_sh_aem_sdk_target_version: "{{ valet_sh_project_vars.instance.sdk_version }}"

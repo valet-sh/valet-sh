@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: ensure universe repository is enabled
   shell: "add-apt-repository -y universe"
   become: true
@@ -44,8 +43,8 @@
 - name: Fix Sleep/Wake Bluetooth Bug
   lineinfile:
     path: "{{ valet_tlp_config_item }}"
-    regexp: '^RESTORE_DEVICE_STATE_ON_STARTUP'
-    line: 'RESTORE_DEVICE_STATE_ON_STARTUP=1'
+    regexp: "^RESTORE_DEVICE_STATE_ON_STARTUP"
+    line: "RESTORE_DEVICE_STATE_ON_STARTUP=1"
   become: true
   with_first_found:
     - /etc/tlp.conf
@@ -56,8 +55,8 @@
 - name: Fix Audio Feedback/White Noise from Headphones on Battery Bug
   lineinfile:
     path: "{{ valet_tlp_config_item }}"
-    regexp: '^SOUND_POWER_SAVE_ON_BAT'
-    line: 'SOUND_POWER_SAVE_ON_BAT=0'
+    regexp: "^SOUND_POWER_SAVE_ON_BAT"
+    line: "SOUND_POWER_SAVE_ON_BAT=0"
   become: true
   with_first_found:
     - /etc/tlp.conf
@@ -122,21 +121,21 @@
 - name: Enable power saving tweaks for Intel chip
   lineinfile:
     path: /etc/modprobe.d/i915.conf
-    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1'
+    line: "options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1"
     create: true
   become: true
 
 - name: enable fan speed with lm-sensors
   lineinfile:
     path: /etc/modprobe.d/dell-smm-hwmon.conf
-    line: 'options dell-smm-hwmon restricted=0 force=1'
+    line: "options dell-smm-hwmon restricted=0 force=1"
     create: true
   become: true
 
 - name: enable dell specific module
   lineinfile:
     path: /etc/modules
-    line: 'dell-smm-hwmon'
+    line: "dell-smm-hwmon"
   become: true
 
 - name: "run update-initramfs -u"
@@ -151,14 +150,15 @@
   lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 acpi_osi=Linux nouveau.modeset=0 pcie_aspm=force drm.vblankoffdelay=1 scsi_mod.use_blk_mq=1 nouveau.runpm=0 mem_sleep_default=deep"'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_rev_override=1 acpi_osi=Linux nouveau.modeset=0 pcie_aspm=force drm.vblankoffdelay=1 scsi_mod.use_blk_mq=1
+      nouveau.runpm=0 mem_sleep_default=deep"'
   become: true
 
 - name: tidyup intermittent grub config
   lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_OPTIONS="'
-    line: '#GRUB_OPTIONS'
+    line: "#GRUB_OPTIONS"
   become: true
 
 - name: "run update-grub"
@@ -177,7 +177,6 @@
   become: true
   loop_control:
     loop_var: ubuntu_gnome_tracker_apps_item
-
 
 - name: disable fingerprint reader
   lineinfile:

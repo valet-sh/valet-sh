@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "bbswitch | install bbswitch dkms module"
   apt:
     name: "bbswitch-dkms"
@@ -24,13 +23,13 @@
 - name: "bbswitch | enable bbswitch module"
   lineinfile:
     path: /etc/modules
-    line: 'bbswitch'
+    line: "bbswitch"
   become: true
 
 - name: "bbswitch | set module options"
   lineinfile:
     path: /etc/modprobe.d/bbswitch.conf
-    line: 'options bbswitch load_state=0'
+    line: "options bbswitch load_state=0"
     create: true
   become: true
 

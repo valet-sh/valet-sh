@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » partials » cleanup | remove runtime tmp dir"
   file:
     path: "{{ valet_sh_aem_runtime_tmp_dir }}"

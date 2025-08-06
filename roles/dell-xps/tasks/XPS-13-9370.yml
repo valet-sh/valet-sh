@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: Ensure universe repository is enabled
   shell: "add-apt-repository -y universe"
   become: true
@@ -101,7 +100,7 @@
 - name: Enable power saving tweaks for Intel chip
   lineinfile:
     path: /etc/modprobe.d/i915.conf
-    line: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1'
+    line: "options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1"
     create: true
   become: true
 

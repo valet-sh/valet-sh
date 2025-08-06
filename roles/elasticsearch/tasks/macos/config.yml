@@ -14,59 +14,58 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch5/jvm.options' to 1GB"
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch5/jvm.options"
-    regexp: '^-Xms'
+    regexp: "^-Xms"
     line: "-Xms1g"
   notify: "brew | vsh-elasticsearch5 | restarted"
 
 - name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch5/jvm.options' to 1GB"
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch5/jvm.options"
-    regexp: '^-Xmx'
+    regexp: "^-Xmx"
     line: "-Xmx1g"
   notify: "brew | vsh-elasticsearch5 | restarted"
 
 - name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch6/jvm.options' to 1GB"
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch6/jvm.options"
-    regexp: '^-Xms'
+    regexp: "^-Xms"
     line: "-Xms1g"
   notify: "brew | vsh-elasticsearch6 | restarted"
 
 - name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch6/jvm.options' to 1GB"
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch6/jvm.options"
-    regexp: '^-Xmx'
+    regexp: "^-Xmx"
     line: "-Xmx1g"
   notify: "brew | vsh-elasticsearch6 | restarted"
 
 - name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch7/jvm.options' to 2GB"
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch7/jvm.options"
-    regexp: '^-Xms'
+    regexp: "^-Xms"
     line: "-Xms4g"
   notify: "brew | vsh-elasticsearch7 | restarted"
 
 - name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch7/jvm.options' to 2GB"
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch7/jvm.options"
-    regexp: '^-Xmx'
+    regexp: "^-Xmx"
     line: "-Xmx4g"
   notify: "brew | vsh-elasticsearch7 | restarted"
 
 - name: "set 'Xms' in '/usr/local/etc/vsh-elasticsearch8/jvm.options' to 2GB"
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch8/jvm.options"
-    regexp: '^-Xms'
+    regexp: "^-Xms"
     line: "-Xms4g"
   notify: "brew | vsh-elasticsearch8 | restarted"
 
 - name: "set 'Xmx' in '/usr/local/etc/vsh-elasticsearch8/jvm.options' to 1GB"
   lineinfile:
     path: "/usr/local/etc/vsh-elasticsearch8/jvm.options"
-    regexp: '^-Xmx'
+    regexp: "^-Xmx"
     line: "-Xmx4g"
   notify: "brew | vsh-elasticsearch8 | restarted"

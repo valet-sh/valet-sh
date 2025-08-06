@@ -15,7 +15,7 @@
 ##
 ---
 
-template_found: False
+template_found: false
 neos_template_found: false
 shopware6_template_found: false
 aem_template_found: false

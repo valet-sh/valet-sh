@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "include 'install-runtime.yml'"
   include_tasks: install-runtime.yml
 
@@ -22,4 +21,4 @@
   include_tasks: install-aue-service.yml
   vars:
     file_name: "universal-editor-service-latest.zip"
-    remote_dir: "{{ valet_sh_project_vars.hub.common_path | trim  }}/.aem/addons/aue"
+    remote_dir: "{{ valet_sh_project_vars.hub.common_path | trim }}/.aem/addons/aue"

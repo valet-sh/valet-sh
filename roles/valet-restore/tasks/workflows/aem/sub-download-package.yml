@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem | check if instancebackup package '{{ valet_sh_aem_restore_current_packagename }}.zip'"
   stat:
     path: "{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/instance-backup/{{ valet_sh_aem_restore_current_packagename }}.zip"
@@ -26,7 +25,7 @@
   when: not instancebackup_target_package_file_obj.stat.exists
 
 - name: "workflows » aem | synchronize package '{{ valet_sh_aem_restore_current_packagename }}.zip'"
-  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/{{ valet_sh_project_vars.instance.sync.groupname }}/{{ valet_sh_aem_restore_current_packagename }}.zip {{ valet_sh_aem_runtime_tmp_dir }}/"
+  shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier
+    }}/{{ valet_sh_project_vars.instance.sync.groupname }}/{{ valet_sh_aem_restore_current_packagename }}.zip {{ valet_sh_aem_runtime_tmp_dir }}/"
   tags:
-  - skip_ansible_lint
-
+    - skip_ansible_lint

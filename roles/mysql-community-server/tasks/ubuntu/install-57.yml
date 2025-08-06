@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: set current mysql base path
   set_fact:
     current_mysql_base_path: "{{ mysql_community_server.base_path }}57"
@@ -31,7 +30,7 @@
     path: "{{ current_mysql_base_directory }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: '0755'
+    mode: "0755"
     state: directory
   become: true
   with_items:
@@ -40,7 +39,6 @@
     - "{{ current_mysql_etc_conf_path }}"
   loop_control:
     loop_var: current_mysql_base_directory
-
 
 - name: "Pull {{ current_mysql_key }} image"
   containers.podman.podman_image:
@@ -52,13 +50,13 @@
   template:
     src: "{{ current_mysql_key }}/.my.cnf.j2"
     dest: "{{ current_home }}/.my5.7.cnf"
-    mode: '0644'
+    mode: "0644"
 
 - name: "provide my.cnf configuration file"
   template:
     src: "{{ current_mysql_key }}/my.cnf.j2"
     dest: "{{ current_mysql_etc_path }}/my.cnf"
-    mode: '0644'
+    mode: "0644"
   notify: "systemd | {{ current_mysql_key }} | restarted"
 
 - name: "provide mysqld.cnf configuration file"
@@ -67,14 +65,14 @@
     dest: "{{ current_mysql_etc_conf_path }}/mysqld.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: '0644'
+    mode: "0644"
   notify: "systemd | {{ current_mysql_key }} | restarted"
 
 - name: "ensure user systemd directory exists"
   file:
     path: "{{ current_home }}/.config/systemd/user"
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: "provide {{ current_mysql_key }} systemd unit file"
   template:
@@ -82,7 +80,7 @@
     dest: "{{ current_home }}/.config/systemd/user/{{ current_mysql_key }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: '0644'
+    mode: "0644"
   notify: "systemd | {{ current_mysql_key }} | restarted"
 
 - name: "provide {{ current_mysql_key }} mysql client"
@@ -91,7 +89,7 @@
     dest: "/usr/local/bin/mysql{{ current_mysql_version_key }}"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: "provide mysqldump{{ current_mysql_version_key }} client"
@@ -100,7 +98,7 @@
     dest: "/usr/local/bin/mysqldump{{ current_mysql_version_key }}"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: "provide mysqladmin{{ current_mysql_version_key }} client"
@@ -109,7 +107,7 @@
     dest: "/usr/local/bin/mysqladmin{{ current_mysql_version_key }}"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: "Ensure {{ current_mysql_key }} is started"

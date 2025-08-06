@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "sub » read | include valet links configuration"
   include_vars:
     file: "{{ valet_etc_links_file }}"

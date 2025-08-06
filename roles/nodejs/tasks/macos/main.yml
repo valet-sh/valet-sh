@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: check for .bashrc or .zshrc file
   set_fact:
     shellrc_file: ".zshrc"

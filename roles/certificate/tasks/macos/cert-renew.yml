@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "cert-renew | read certificates in '{{ certificate_server_cert_path }}'"
   find:
     paths: "{{ certificate_server_cert_path }}"

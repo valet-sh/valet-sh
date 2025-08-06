@@ -14,14 +14,13 @@
 #   limitations under the License.
 ##
 ---
-
 - name: server | ensure the domain base directory exists
   file:
     path: "{{ certificate_server_domain_cert_path }}"
     state: directory
     owner: root
     group: wheel
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: server | generate key file
@@ -35,7 +34,7 @@
     path: "{{ certificate_server_domain_key_file }}"
     owner: root
     group: wheel
-    mode: '0400'
+    mode: "0400"
   become: true
 
 - name: provide req.cnf
@@ -44,7 +43,7 @@
     dest: "{{ certificate_server_domain_cnf_file }}"
     owner: root
     group: wheel
-    mode: '0644'
+    mode: "0644"
   become: true
 
 - name: server | generate csr file

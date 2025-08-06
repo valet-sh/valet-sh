@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: check if nvm.sh already exists
   stat:
     path: "{{ current_home }}/.nvm/nvm.sh"
@@ -65,4 +64,3 @@
   args:
     executable: /bin/bash
   when: nvm_installation_obj.changed
-

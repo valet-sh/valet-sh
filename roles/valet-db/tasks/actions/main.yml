@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: fail when valet_action is unknown
   fail:
     msg: "unknown action '{{ valet_action }}'"
@@ -37,4 +36,3 @@
 
 - include_tasks: export.yml
   when: valet_action == "export"
-

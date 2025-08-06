@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "actions » partials » check-db-name-var | set default database name based on current working dir"
   set_fact:
     valet_db_name: "{{ valet_working_dir }}"

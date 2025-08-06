@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: systemd | elasticsearch1 | started
   ansible.builtin.systemd:
     daemon_reload: true
@@ -98,7 +97,6 @@
     name: elasticsearch5
     state: restarted
     scope: user
-
 
 - name: systemd | elasticsearch6 | started
   ansible.builtin.systemd:

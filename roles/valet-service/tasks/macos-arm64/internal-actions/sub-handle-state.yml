@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "set default homebrew bin"
   set_fact:
     valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin }}"
@@ -63,7 +62,6 @@
     - valet_service_name_alias|length > 0
     - valet_current_service_item.key not in valet_sh_service_privileged_services
     - valet_current_service_item.value|bool
-
 
 - name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
   shell: "{{ valet_sh_homebrew_bin_sudo }} services stop {{ valet_current_service_item.key }}"

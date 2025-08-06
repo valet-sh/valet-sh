@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » magento2 » check-vars | set path to composer1 (default)"
   set_fact:
     composer_bin: "{{ composer1_bin }}"
@@ -57,7 +56,7 @@
     - php_version_number|length > 0
 
 - name: "workflows » neos » check-vars | get path of php binary"
-  shell: "which {{ php_bin_name }}"  # noqa 305 301
+  shell: "which {{ php_bin_name }}" # noqa 305 301
   register: php_bin_obj
 
 - name: "workflows » neos » check-vars | fail when no php binary could be found"

@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "actions » partials » switch-target-db-host | set default my.cnf config path"
   set_fact:
     valet_db_mysql_target_config_file: "{{ current_home }}/.my.cnf"
@@ -49,14 +48,13 @@
     - valet_sh_project_vars.services.mariadb.version is defined
     - valet_sh_project_vars.services.mariadb.version == 10.4
 
-
 - name: "actions » partials » switch-target-db-host | set default mysql client binary"
   set_fact:
     valet_db_mysql_client_binary: "mysql"
 
 - name: "actions » partials » switch-target-db-host | override mysql client binary"
   set_fact:
-        valet_db_mysql_client_binary: "mysql5.7"
+    valet_db_mysql_client_binary: "mysql5.7"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.services is defined
@@ -66,7 +64,7 @@
 
 - name: "actions » partials » switch-target-db-host | override mysql client binary"
   set_fact:
-        valet_db_mysql_client_binary: "mysql8.0"
+    valet_db_mysql_client_binary: "mysql8.0"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.services is defined
@@ -76,7 +74,7 @@
 
 - name: "actions » partials » switch-target-db-host | override mysql client binary"
   set_fact:
-        valet_db_mysql_client_binary: "mariadb10.4"
+    valet_db_mysql_client_binary: "mariadb10.4"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.services is defined

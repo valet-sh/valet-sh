@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: install | ensure essential packages are installed
   apt:
     name: "{{ packages }}"

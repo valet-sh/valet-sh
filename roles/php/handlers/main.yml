@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "systemd | php5.6-fpm | started"
   systemd:
     name: "php5.6-fpm"
@@ -135,7 +134,6 @@
     state: reloaded
   become: true
 
-
 - name: "systemd | php7.4-fpm | started"
   systemd:
     name: "php7.4-fpm"
@@ -232,7 +230,6 @@
     state: reloaded
   become: true
 
-
 - name: "systemd | php8.3-fpm | started"
   systemd:
     name: "php8.3-fpm"
@@ -257,7 +254,6 @@
     state: reloaded
   become: true
 
-
 - name: "systemd | php8.4-fpm | started"
   systemd:
     name: "php8.4-fpm"
@@ -281,7 +277,6 @@
     name: "php8.4-fpm"
     state: reloaded
   become: true
-
 
 - name: brew | vsh-php56 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"

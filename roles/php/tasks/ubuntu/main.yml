@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - include_tasks: "migrations/main.yml"
 
 - name: ensure apt-transport-https is installed
@@ -25,7 +24,7 @@
 
 - name: use php ppa (Ubuntu)
   apt_repository:
-    repo: 'ppa:ondrej/php'
+    repo: "ppa:ondrej/php"
     codename: "{{ os_codename }}"
   become: true
 
@@ -55,6 +54,6 @@
   copy:
     src: "ubuntu/php-wrapper"
     dest: "/usr/local/bin/php"
-    mode: '0755'
+    mode: "0755"
     force: true
   become: true

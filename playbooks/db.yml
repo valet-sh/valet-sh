@@ -30,7 +30,6 @@
 #
 #
 ---
-
 - name: "db"
   hosts: local
   gather_facts: true

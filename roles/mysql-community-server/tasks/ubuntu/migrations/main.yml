@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: ensure mysql process is stopped and disabled
   systemd:
     name: mysql

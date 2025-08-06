@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "commands » list | set runtime flag"
   set_fact:
     valet_config_in_command: true
@@ -30,12 +29,12 @@
 
 - name: "commands » list | add config to array"
   set_fact:
-    valet_config_list: "{{ valet_config_list + [[ item.key, item.value ]] }}"
+    valet_config_list: "{{ valet_config_list + [[item.key, item.value]] }}"
   with_dict: "{{ valet_etc_config_obj }}"
 
 - name: "commands » list | print table based on 'valet_config_list' array"
   vsh-table:
-    headers: ['Key', 'Value']
+    headers: ["Key", "Value"]
     rows: "{{ valet_config_list }}"
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint

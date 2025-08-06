@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "enable dns resolving for .{{ dnsmasq_domain }} domain"
   template:
     src: development-domain.conf.j2
@@ -25,8 +24,8 @@
 - name: enable dnsmasq in NetworkManager
   lineinfile:
     path: "/etc/NetworkManager/NetworkManager.conf"
-    insertafter: '^\[main\]'
-    line: 'dns=dnsmasq'
+    insertafter: "^\\[main\\]"
+    line: "dns=dnsmasq"
   notify: systemd | NetworkManager | reload
   become: true
 

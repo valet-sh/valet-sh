@@ -14,10 +14,9 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "provide elasticsearch default configuration"
   template:
     src: "nginx/elasticsearch.conf.j2"
     dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/elasticsearch.conf"
-    mode: '0644'
+    mode: "0644"
   notify: brew | nginx | restarted

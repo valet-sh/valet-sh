@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "actions » start | fail when no service name was given"
   fail:
     msg: "no service name was given"
@@ -41,7 +40,7 @@
     name: "{{ valet_service_name }}"
     state: started
   become: true
-  when: 
+  when:
     - valet_service_name_alias|length == 0
     - valet_service_name in valet_sh_service_system_scoped_services
 
@@ -50,7 +49,7 @@
     name: "{{ valet_service_name }}"
     state: started
     scope: user
-  when: 
+  when:
     - valet_service_name_alias|length == 0
     - valet_service_name not in valet_sh_service_system_scoped_services
 
@@ -59,7 +58,7 @@
     name: "{{ valet_service_name_alias }}"
     state: started
   become: true
-  when: 
+  when:
     - valet_service_name_alias|length > 0
     - valet_service_name in valet_sh_service_system_scoped_services
 
@@ -68,6 +67,6 @@
     name: "{{ valet_service_name_alias }}"
     state: started
     scope: user
-  when: 
+  when:
     - valet_service_name_alias|length > 0
     - valet_service_name not in valet_sh_service_system_scoped_services

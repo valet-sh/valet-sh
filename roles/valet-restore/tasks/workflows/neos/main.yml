@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - include_vars: "vars.yml"
 
 - include_tasks: "check-opts.yml"
@@ -38,7 +37,7 @@
 
     - name: "workflows » neos | set known_host hash field name'"
       set_fact:
-        valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
+        valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port | string }}"
       when: valet_sh_hub_port != 22 or valet_sh_hub_port != "22"
 
     - name: "workflows » neos | set known_host hash field name'"
@@ -77,9 +76,10 @@
           when: not instancebackup_target_db_file_obj.stat.exists
 
         - name: "workflows » neos | synchronize db dump {{ valet_instancebackup_identifier }}/{{ valet_sh_instance_db_filename }}"
-          shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/db/{{ valet_sh_instance_db_filename }} {{ current_tmp_dir }}" # noqa 204
+          shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier
+            }}/db/{{ valet_sh_instance_db_filename }} {{ current_tmp_dir }}" # noqa 204
           tags:
-          - skip_ansible_lint
+            - skip_ansible_lint
 
         - name: "workflows » neos | drop database '{{ valet_sh_project_database_name }}'"
           mysql_db:
@@ -114,10 +114,11 @@
           loop_control:
             loop_var: valet_sh_restore_current_fs_prepare
           tags:
-          - skip_ansible_lint
+            - skip_ansible_lint
 
         - name: "workflows » neos | synchronize filesystem"
-          shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier }}/fs/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
+          shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ valet_sh_project_vars.hub.path }}/{{ valet_instancebackup_identifier
+            }}/fs/{{ valet_sh_restore_current_fs }}/ {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_fs }}/" # noqa 204
           with_items: "{{ valet_sh_project_vars.instance.sync.fs }}"
           when:
             - valet_sh_project_vars.instance is defined
@@ -126,7 +127,7 @@
           loop_control:
             loop_var: valet_sh_restore_current_fs
           tags:
-          - skip_ansible_lint
+            - skip_ansible_lint
       when: valet_opt_flag_skip_fs is not defined or not valet_opt_flag_skip_fs|bool
 
 - name: "workflows » neos | delete old domains when 'multi_domain' setting is present in .valet-sh.yml"
@@ -137,7 +138,8 @@
   failed_when: false
 
 - name: "workflows » neos | set dev domains in neos"
-  shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/flow domain:add {{ valet_sh_multi_domain_item.key }} {{ valet_sh_multi_domain_item.value }}.{{ valet_sh_project_vars.instance.key }}.{{ development_tld }}"
+  shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/flow domain:add {{ valet_sh_multi_domain_item.key }} {{ valet_sh_multi_domain_item.value
+    }}.{{ valet_sh_project_vars.instance.key }}.{{ development_tld }}"
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.multi_domain is defined
@@ -166,7 +168,7 @@
     loop_var: valet_sh_restore_current_post_command
   when: valet_restore_run_post_restore_commands
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint
 
 - name: "workflows » neos | run custom post restore commands"
   shell: "{{ valet_sh_restore_current_custom_post_command }}"
@@ -176,4 +178,4 @@
   loop_control:
     loop_var: valet_sh_restore_current_custom_post_command
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint

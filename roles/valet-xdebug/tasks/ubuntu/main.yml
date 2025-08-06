@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "check if valet_action variable is set"
   fail:
     msg: "valet_action variable is not set"

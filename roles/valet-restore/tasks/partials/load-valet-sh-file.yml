@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "partials » load-valet-sh-file | checking for '{{ valet_sh_filename }}' file in '{{ valet_current_path }}'"
   stat:
     path: "{{ valet_current_path }}/{{ valet_sh_filename }}"

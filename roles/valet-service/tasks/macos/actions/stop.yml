@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "actions » stop | fail when no service name was given"
   fail:
     msg: "no service name was given"
@@ -51,5 +50,3 @@
 - name: "actions » stop | stop {{ valet_service_name }} service"
   shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_service_name_alias }}"
   when: valet_service_name_alias|length > 0 and (valet_service_name not in valet_sh_service_privileged_services)
-
-

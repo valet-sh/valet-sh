@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: Pull mailhog image
   containers.podman.podman_image:
     name: "docker.io/mailhog/mailhog:latest"
@@ -25,7 +24,7 @@
   file:
     path: "{{ current_home }}/.config/systemd/user"
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: provide systemd service for mailhog container
   ansible.builtin.template:
@@ -33,7 +32,7 @@
     dest: "{{ current_home }}/.config/systemd/user/mailhog.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: '0644'
+    mode: "0644"
   notify: "systemd | mailhog | restarted"
 
 - name: set 'cert_prefix' variable
@@ -51,13 +50,13 @@
     dest: "/etc/nginx/conf.d/mailhog.conf"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify: systemd | nginx | reloaded
   become: true
 
 - name: unset 'cert_prefix' variable
   set_fact:
-    cert_prefix: "{{ non_existent|default(None) }}"
+    cert_prefix: "{{ non_existent | default(None) }}"
 
 - name: ensure mailhog is enabled and started
   systemd:

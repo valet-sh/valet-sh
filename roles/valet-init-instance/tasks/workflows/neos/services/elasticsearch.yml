@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - block:
     - name: "workflows » neos » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
       systemd:
@@ -44,7 +43,7 @@
 
     - name: "workflows » neos » services » elasticsearch | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » neos » services » elasticsearch | write new services.yml file"
       copy:
@@ -92,7 +91,7 @@
 
     - name: "workflows » neos » services » elasticsearch | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » neos » services » elasticsearch | write new services.yml file"
       copy:

@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - include_tasks: "commands/list.yml"
   when: valet_config_action == "list"
 

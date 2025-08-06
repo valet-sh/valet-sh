@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "fail when variable 'valet_current_path' is not defined or empty"
   fail:
     msg: "variable 'valet_current_path' is not defined"

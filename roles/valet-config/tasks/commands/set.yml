@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "commands » set | fail when no 'valet_config_key' is set"
   fail:
     msg: "no config key was given"
@@ -44,7 +43,7 @@
 
 - name: "commands » set | transform object into nice yaml output"
   set_fact:
-    valet_etc_config_list: "{{ valet_etc_config_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+    valet_etc_config_list: "{{ valet_etc_config_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
 - name: "commands » set | write new config.yml file"
   copy:

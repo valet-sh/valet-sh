@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » neos » project-install | run composer install in project source path when defined in .valet-sh.yml"
   command: "{{ php_bin }} {{ composer_bin }} install -n"
   args:

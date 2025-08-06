@@ -14,20 +14,19 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "set vars 'current_user', 'current_group' and 'current_home'"
   set_fact:
-    current_user: "{{ lookup('env','USER') }}"
-    current_home: "{{ lookup('env','HOME') }}"
+    current_user: "{{ lookup('env', 'USER') }}"
+    current_home: "{{ lookup('env', 'HOME') }}"
 
 - name: "set 'current_group' var for ubuntu"
   set_fact:
-    current_group: "{{ lookup('env','USER') }}"
+    current_group: "{{ lookup('env', 'USER') }}"
   when: ansible_distribution == 'Ubuntu'
 
 - name: "set 'current_group' var for ubuntu"
   set_fact:
-    current_group: "{{ lookup('env','USER') }}"
+    current_group: "{{ lookup('env', 'USER') }}"
   when: ansible_distribution == 'Linux Mint'
 
 - name: "set 'current_group' var for macos"
@@ -61,12 +60,14 @@
 - name: "override 'os_codename' if OS is Linux Mint 20.x"
   set_fact:
     os_codename: "focal"
-  when: ansible_distribution_release == 'ulyana' or ansible_distribution_release == 'ulyssa' or ansible_distribution_release == 'uma' or ansible_distribution_release == 'una'
+  when: ansible_distribution_release == 'ulyana' or ansible_distribution_release == 'ulyssa' or ansible_distribution_release == 'uma' or
+    ansible_distribution_release == 'una'
 
 - name: "override 'os_codename' if OS is Linux Mint 21.x"
   set_fact:
     os_codename: "jammy"
-  when: ansible_distribution_release == 'vanessa' or ansible_distribution_release == 'vera' or ansible_distribution_release == 'victoria' or ansible_distribution_release == 'virginia'
+  when: ansible_distribution_release == 'vanessa' or ansible_distribution_release == 'vera' or ansible_distribution_release == 'victoria' or
+    ansible_distribution_release == 'virginia'
 
 - name: "override 'os_codename' if OS is Linux Mint 22.x"
   set_fact:

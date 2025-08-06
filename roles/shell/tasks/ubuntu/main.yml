@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 #- name: "check if shell is valid"
 #  fail:
 #    msg: "invalid shell '{{ valet_sh_config.default_shell }}'"

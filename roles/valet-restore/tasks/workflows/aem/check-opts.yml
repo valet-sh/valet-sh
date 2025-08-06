@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » check-opts | check if '--identifier' opt is set"
   set_fact:
     valet_opt_instance_identifier: "{{ valet_cli_opts_item | regex_search('identifier=(.+)', '\\1') }}"

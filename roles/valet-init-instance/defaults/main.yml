@@ -19,7 +19,8 @@ valet_sh_default_project_name: "{{ valet_sh_config.hub_project }}"
 #valet_sh_default_project_branch: "master"
 valet_sh_project_hub_fqdn: "gitlab.{{ valet_project_name }}.{{ valet_sh_config.hub_domain }}"
 
-valet_sh_default_project_git_clone_command: "ssh://git@{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_config.hub_gitlab_ssh_port }}/{{ valet_project_name }}/{{ valet_sh_default_project_name }}.git"
+valet_sh_default_project_git_clone_command: "ssh://git@{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_config.hub_gitlab_ssh_port }}/{{ valet_project_name }}/{{ valet_sh_default_project_name
+  }}.git"
 
 valet_sh_service_rabbitmq_user: admin
 valet_sh_service_rabbitmq_password: admin
@@ -34,16 +35,15 @@ valet_sh_service_mysql_host_presets:
   mariadb106: "127.0.0.1:3319"
   mariadb114: "127.0.0.1:3329"
 
-
 valet_sh_aem_local_cache_dirname: ".aemcache"
 valet_sh_aem_local_cache_dir: "{{ current_home }}/{{ valet_sh_aem_local_cache_dirname }}"
 valet_sh_aem_sdk_local_cache_dir: "{{ valet_sh_aem_local_cache_dir }}/aem-sdk"
 
-
 aem_adobe_universal_service_nodejs_binary_url_default: https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz
 aem_adobe_universal_service_nodejs_binary_url_mac_x86: https://nodejs.org/dist/v22.12.0/node-v22.12.0-darwin-x64.tar.gz
 aem_adobe_universal_service_nodejs_binary_url_mac_arm64: https://nodejs.org/dist/v22.12.0/node-v22.12.0-darwin-arm64.tar.gz
-aem_adobe_universal_service_nodejs_binary_url: "{{ lookup('vars', 'aem_adobe_universal_service_nodejs_binary_url'+'_' + current_os + '_' + current_arch, default=aem_adobe_universal_service_nodejs_binary_url_default) }}"
+aem_adobe_universal_service_nodejs_binary_url: "{{ lookup('vars', 'aem_adobe_universal_service_nodejs_binary_url'+'_' + current_os + '_' + current_arch, default=aem_adobe_universal_service_nodejs_binary_url_default)
+  }}"
 aem_adobe_universal_service_vhost_server_name: adobe-universal-editor-service
 
 aem_adobe_universal_service_remote_file_name: "{{ file_name }}"

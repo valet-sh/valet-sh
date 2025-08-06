@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - include_tasks: partials/check-db-name-var.yml
 
 - name: "actions » export | override 'valet_db_name' variable if db name argument was given"
@@ -28,13 +27,14 @@
   when: valet_arg1 | length > 0
 
 - block:
-  - name: "actions » export | get current datetime"
-    set_fact:
-      current_datetime: "{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}" # noqa 204
+    - name: "actions » export | get current datetime"
+      set_fact:
+        current_datetime: "{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}{{ ansible_date_time.hour }}{{ ansible_date_time.minute
+          }}{{ ansible_date_time.second }}" # noqa 204
 
-  - name: "actions » export | build valet_db_filename var"
-    set_fact:
-      valet_db_filename: "{{ valet_db_name }}-{{ current_datetime }}.sql.gz"
+    - name: "actions » export | build valet_db_filename var"
+      set_fact:
+        valet_db_filename: "{{ valet_db_name }}-{{ current_datetime }}.sql.gz"
   when: valet_db_filename is not defined
 
 - name: "actions » export | create db {{ valet_db_name }} into {{ valet_current_path }}/{{ valet_db_filename }}"

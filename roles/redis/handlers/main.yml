@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: systemd | redis-server | started
   systemd:
     name: redis-server

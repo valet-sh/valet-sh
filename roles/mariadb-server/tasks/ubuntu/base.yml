@@ -14,9 +14,8 @@
 #   limitations under the License.
 ##
 ---
-
 - name: install base packages
   apt:
-   name: "{{ mariadb_server.base_packages }}"
-   state: present
+    name: "{{ mariadb_server.base_packages }}"
+    state: present
   become: true

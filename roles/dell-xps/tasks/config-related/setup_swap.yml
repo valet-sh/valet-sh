@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: Check for existing swap-partition
   shell: |
     lvdisplay | grep -i 'LV Path' | grep -i 'swap' | awk -F '/dev/' '{print $2}'
@@ -41,7 +40,7 @@
 - name: Set permissions on swapfile
   file:
     path: "{{ swapfile_path }}"
-    mode: 0600
+    mode: "0600"
   become: true
   when: not swapfile_exists.stat.exists
 

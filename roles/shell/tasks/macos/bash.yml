@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: ensure default shell is 'bash'
   user:
     name: "{{ current_user }}"

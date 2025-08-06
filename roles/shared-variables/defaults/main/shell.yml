@@ -20,4 +20,3 @@ shell_default_shell: zsh
 shell_available_shells:
   - zsh
   - bash
-

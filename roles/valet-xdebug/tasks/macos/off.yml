@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "off | get stat for xdebug configuration file"
   stat:
     path: "{{ valet_sh_prefix }}/etc/vsh-php{{ php_version_number }}/conf.d/20-xdebug.ini"

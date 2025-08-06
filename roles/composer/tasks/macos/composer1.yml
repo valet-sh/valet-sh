@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "ensure composer-1 is installed"
   get_url:
     url: https://getcomposer.org/composer-1.phar
@@ -31,6 +30,6 @@
     dest: "{{ composer1_bin }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: '0755'
+    mode: "0755"
     force: true
   become: true

@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "internal-actions » sub-handle-state | reset valet_service_name_alias variable"
   set_fact:
     valet_service_name_alias: ""
@@ -26,7 +25,6 @@
   with_dict: "{{ valet_sh_service_alias_mapping }}"
   loop_control:
     loop_var: valet_sh_service_alias_mapping_item
-
 
 - name: "internal-actions » sub-handle-state | start {{ valet_current_service_item.key }} service"
   shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ valet_current_service_item.key }}"
@@ -55,7 +53,6 @@
     - valet_service_name_alias|length > 0
     - valet_current_service_item.key not in valet_sh_service_privileged_services
     - valet_current_service_item.value|bool
-
 
 - name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
   shell: "{{ valet_sh_homebrew_bin_sudo }} services stop {{ valet_current_service_item.key }}"

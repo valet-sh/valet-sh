@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "include role"
   include_role:
     name: "{{ valet_install_default_roles_item }}"
@@ -39,5 +38,5 @@
   copy:
     src: "{{ valet_dist_path }}/{{ valet_etc_revision_filename }}"
     dest: "{{ valet_etc_revision_file }}"
-    mode: '0644'
+    mode: "0644"
     force: true

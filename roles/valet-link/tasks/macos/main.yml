@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - include_tasks: macos/link.yml
   when: valet_action == "link"
 
@@ -26,4 +25,3 @@
 
 - include_tasks: macos/links.yml
   when: valet_action == "links"
-

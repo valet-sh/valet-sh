@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: Uninstall useless packages
   apt:
     name: "{{ absent_packages }}"

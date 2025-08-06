@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: set php_version variable
   set_fact:
     php_version: "{{ current_php.version }}"
@@ -89,7 +88,6 @@
     php_cli_settings_additional: "{{ php_cli_settings_additional_default }}"
   when: current_php.config.php_cli_settings_additional is not defined
 
-
 - name: set php_fpm_conf_path variable
   set_fact:
     php_fpm_conf_path: "{{ current_php.config.php_fpm_conf_path }}"
@@ -99,7 +97,6 @@
   set_fact:
     php_fpm_conf_path: "{{ php_fpm_conf_path_default }}"
   when: current_php.config.php_fpm_conf_path is not defined
-
 
 - name: set php_fpm_pool_config variable
   set_fact:
@@ -111,7 +108,6 @@
     php_fpm_pool_config: "{{ php_fpm_pool_config_default }}"
   when: current_php.config.php_fpm_pool_config is not defined
 
-
 - name: set php_fpm_pool_config variable
   set_fact:
     php_fpm_pool_config: "{{ current_php.config.php_fpm_pool_config }}"
@@ -121,7 +117,6 @@
   set_fact:
     php_fpm_pool_config: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
   when: current_php.config.php_fpm_pool_config is not defined
-
 
 - name: set php_fpm_pool_configuration variable
   set_fact:
@@ -133,7 +128,6 @@
     php_fpm_pool_configuration: "{{ php_fpm_pool_configuration_default }}"
   when: current_php.config.php_fpm_pool_configuration is not defined
 
-
 - name: set php_fpm_settings variable
   set_fact:
     php_fpm_settings: "{{ current_php.config.php_fpm_settings }}"
@@ -144,7 +138,6 @@
     php_fpm_settings: "{{ php_fpm_settings_default }}"
   when: current_php.config.php_fpm_settings is not defined
 
-
 - name: set php_fpm_settings_additional variable
   set_fact:
     php_fpm_settings_additional: "{{ current_php.config.php_fpm_settings_additional }}"
@@ -154,4 +147,3 @@
   set_fact:
     php_fpm_settings_additional: "{{ php_fpm_settings_additional_default }}"
   when: current_php.config.php_fpm_settings_additional is not defined
-

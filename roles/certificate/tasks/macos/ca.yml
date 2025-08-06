@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "ca | check if CA '{{ certificate_ca_cert_file }}' already exists"
   stat:
     path: "{{ certificate_ca_cert_file }}"
@@ -42,7 +41,7 @@
     state: directory
     owner: root
     group: wheel
-    mode: '0755'
+    mode: "0755"
   with_items:
     - "{{ certificate_base_path }}"
     - "{{ certificate_ca_cert_path }}"
@@ -62,7 +61,7 @@
     path: "{{ certificate_ca_key_file }}"
     owner: root
     group: wheel
-    mode: '0400'
+    mode: "0400"
   become: true
 
 - name: ca | generate CA Certificate
@@ -75,6 +74,6 @@
 - name: "ca | add ca certificate to keystore"
   shell: "security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ certificate_ca_cert_file }}"
   become: true
-  when: > 
-   generate_trusted_root_ca_obj is changed or
-   update_dev_ca_force is defined and update_dev_ca_force|bool
+  when: >
+    generate_trusted_root_ca_obj is changed or
+    update_dev_ca_force is defined and update_dev_ca_force|bool

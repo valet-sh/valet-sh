@@ -14,13 +14,12 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "provide elasticsearch default configuration"
   template:
     src: "nginx/elasticsearch.conf.j2"
     dest: "/etc/nginx/conf.d/elasticsearch.conf"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify: systemd | nginx | restarted
   become: true

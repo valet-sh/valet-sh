@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: ensure zsh is installed
   apt:
     name: "{{ packages }}"

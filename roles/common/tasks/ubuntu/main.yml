@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: install common packages
   apt:
     name: "{{ packages }}"
@@ -22,8 +21,8 @@
   become: true
   vars:
     packages:
-     - git
-     - curl
+      - git
+      - curl
 
 - name: set max_map_count to 262144
   sysctl:

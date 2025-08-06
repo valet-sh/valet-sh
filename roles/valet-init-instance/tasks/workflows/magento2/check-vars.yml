@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » magento2 » check-opts | check if '--clean' opt is set"
   set_fact:
     valet_opt_flag_clean: true
@@ -62,7 +61,7 @@
     - php_version_number|length > 0
 
 - name: "workflows » magento2 » check-vars | get path of php binary"
-  shell: "which {{ php_bin_name }}"  # noqa 305 301
+  shell: "which {{ php_bin_name }}" # noqa 305 301
   register: php_bin_obj
 
 - name: "workflows » magento2 » check-vars | fail when no php binary could be found"

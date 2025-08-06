@@ -5,4 +5,4 @@
     xps_model: "XPS 13 9380"
 
   roles:
-     - {role: dell-xps }
+    - { role: dell-xps }

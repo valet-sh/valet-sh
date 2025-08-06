@@ -14,13 +14,12 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "running restore commmand"
   include_role:
     name: valet-restore
 
 - set_fact:
-    valet_link_php_target_version: "php{{ php_version_number | replace('.','') }}"
+    valet_link_php_target_version: "php{{ php_version_number | replace('.', '') }}"
   when:
     - php_version_number is defined
     - php_version_number|length > 0

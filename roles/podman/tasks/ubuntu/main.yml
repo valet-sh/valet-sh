@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: Install podman
   ansible.builtin.apt:
     name: podman

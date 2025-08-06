@@ -31,8 +31,8 @@ elasticsearch_version_8_download_url: "https://artifacts.elastic.co/downloads/el
 elasticsearch_use_plugins: true
 
 elasticsearch_plugins_default:
-    - analysis-phonetic
-    - analysis-icu
+  - analysis-phonetic
+  - analysis-icu
 elasticsearch_plugins: "{{ lookup('vars', 'elasticsearch_plugins'+'_'+current_os, default=elasticsearch_plugins_default) }}"
 
 elasticsearch_legacy_plugins_default:

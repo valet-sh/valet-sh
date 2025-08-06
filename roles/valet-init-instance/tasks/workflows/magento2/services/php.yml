@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - block:
     - name: "workflows » magento2 » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
       systemd:
@@ -30,7 +29,7 @@
 
     - name: "workflows » magento2 » services » php | prepare new config element"
       set_fact:
-        new_service_state_element: "{ 'php{{ valet_sh_project_vars.services.php.version | replace('.','') }}': true }"
+        new_service_state_element: "{ 'php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}': true }"
 
     - name: "workflows » magento2 » services » php | update service object"
       set_fact:
@@ -44,7 +43,7 @@
 
     - name: "workflows » magento2 » services » php | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » php | write new services.yml file"
       copy:
@@ -73,7 +72,7 @@
 
     - name: "workflows » magento2 » services » php | prepare new config element"
       set_fact:
-        new_service_state_element: "{ 'php{{ valet_sh_project_vars.services.php.version | replace('.','') }}': true }"
+        new_service_state_element: "{ 'php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}': true }"
 
     - name: "workflows » magento2 » services » php | update service object"
       set_fact:
@@ -87,7 +86,7 @@
 
     - name: "workflows » magento2 » services » php | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » php | write new services.yml file"
       copy:
@@ -96,7 +95,7 @@
 
     - name: "workflows » magento2 » services » php | wait for php-fpm to be reachable"
       wait_for:
-        path: "/tmp/vsh-php{{ valet_sh_project_vars.services.php.version | replace('.','') }}.sock"
+        path: "/tmp/vsh-php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}.sock"
         delay: 5
   when:
     - current_os == "mac"

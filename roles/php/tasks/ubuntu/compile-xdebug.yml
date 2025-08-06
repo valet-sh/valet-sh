@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: fail when no xdebug version is set
   fail:
     msg: "no xdebug version set"
@@ -22,7 +21,7 @@
 
 - name: "install php-dev and pecl package when required"
   apt:
-    name: ["php{{ php_version }}-dev","php-pear", "build-essential"]
+    name: ["php{{ php_version }}-dev", "php-pear", "build-essential"]
     state: present
   become: true
 
@@ -37,7 +36,7 @@
     src: "https://github.com/xdebug/xdebug/archive/{{ current_php.compile_xdebug.version }}.tar.gz"
     dest: "{{ xdebug_tmp_directory_obj.path }}"
     remote_src: true
-    extra_opts: [ --strip-components=1 ]
+    extra_opts: [--strip-components=1]
 
 - name: "run phpize on xdebug module source"
   command: "/usr/bin/phpize{{ php_version }}"
@@ -74,5 +73,3 @@
     path: "{{ xdebug_tmp_directory_obj.path }}"
     state: absent
   become: true
-
-

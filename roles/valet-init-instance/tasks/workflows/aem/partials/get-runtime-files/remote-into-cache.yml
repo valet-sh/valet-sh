@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » partials » get-runtime-files | check if '{{ cache_dir }}/{{ file_name }}' is in cache"
   stat:
     path: "{{ cache_dir }}/{{ file_name }}"
@@ -37,7 +36,7 @@
 
     - name: "workflows » aem » partials » get-runtime-files | set known_host hash field name'"
       set_fact:
-        valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
+        valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port | string }}"
       when: valet_sh_hub_port != 22 or valet_sh_hub_port != "22"
 
     - name: "workflows » aem » partials » get-runtime-files | set known_host hash field name'"
@@ -70,5 +69,6 @@
         state: directory
 
     - name: "workflows » aem » partials » get-runtime-files | load '{{ remote_dir }}/{{ file_name }}' into cache"
-      shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ remote_dir }}/{{ file_name }} {{ cache_dir }}/{{ file_name }}" # noqa 204
+      shell: "rsync -aL -e 'ssh -p {{ valet_sh_hub_port }}' {{ valet_sh_hub_user }}@{{ valet_sh_hub_host }}:{{ remote_dir }}/{{ file_name }} {{ cache_dir }}/{{ file_name
+        }}" # noqa 204
   when: not cache_file_obj.stat.exists|bool

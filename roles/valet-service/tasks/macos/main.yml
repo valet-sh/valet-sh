@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - include_tasks: "macos/internal-actions/migrations.yml"
   when: valet_sh_service_internal_action|bool
 

@@ -9,7 +9,6 @@
 # @usage: "valet.sh init-instance
 
 ---
-
 - name: "init-instance"
   hosts: local
   gather_facts: true

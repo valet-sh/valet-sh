@@ -14,10 +14,10 @@
 #   limitations under the License.
 ##
 ---
-
-- name: "workflows » aem » project-deployment | wait until author instance 'http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp' is reachable"
+- name: "workflows » aem » project-deployment | wait until author instance 'http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp'
+    is reachable"
   uri:
-    url: 'http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp'
+    url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp"
     url_username: "{{ valet_sh_aem_author_user }}"
     url_password: "{{ valet_sh_aem_author_password }}"
     return_content: true
@@ -29,9 +29,10 @@
   delay: 10
   register: author_uri_output
 
-- name: "workflows » aem » project-deployment | wait until publish instance 'http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/crx/packmgr/service.jsp' is reachable"
+- name: "workflows » aem » project-deployment | wait until publish instance 'http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/crx/packmgr/service.jsp'
+    is reachable"
   uri:
-    url: 'http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/crx/packmgr/service.jsp'
+    url: "http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/crx/packmgr/service.jsp"
     url_username: "{{ valet_sh_aem_publish_user }}"
     url_password: "{{ valet_sh_aem_publish_password }}"
     return_content: true

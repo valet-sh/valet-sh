@@ -27,6 +27,6 @@ opensearch_version_2_download_url: "https://artifacts.opensearch.org/releases/bu
 opensearch_use_plugins: true
 
 opensearch_plugins_default:
-    - analysis-phonetic
-    - analysis-icu
+  - analysis-phonetic
+  - analysis-icu
 opensearch_plugins: "{{ lookup('vars', 'opensearch_plugins'+'_'+current_os, default=opensearch_plugins_default) }}"

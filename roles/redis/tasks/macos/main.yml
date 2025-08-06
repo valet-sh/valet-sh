@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 #- name: "ensure redis is installed"
 #  homebrew:
 #    name: redis
@@ -23,4 +22,3 @@
 - name: "ensure redis is installed"
   shell: "{{ valet_sh_homebrew_bin }} install redis"
   notify: brew | redis | restarted
-

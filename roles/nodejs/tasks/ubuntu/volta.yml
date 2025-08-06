@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "ensure nvm is not enabled in '{{ current_home }}/{{ shellrc_file }}'"
   blockinfile:
     path: "{{ current_home }}/{{ shellrc_file }}"
@@ -42,11 +41,10 @@
   when: shellrc_file_obj.stat.exists
 
 - name: "ensure 'node@{{ node_version }}' is installed"
-  shell: '{{ current_home }}/.volta/bin/volta install node@{{ node_version }}'
+  shell: "{{ current_home }}/.volta/bin/volta install node@{{ node_version }}"
   args:
     executable: /bin/bash
     chdir: "{{ current_home }}"
   environment:
     VOLTA_HOME: "{{ current_home }}/.volta"
     PATH: "{{ current_home }}/.volta/bin:$PATH"
-

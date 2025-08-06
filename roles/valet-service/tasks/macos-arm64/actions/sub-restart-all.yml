@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "set 'valet_current_service_name' var"
   set_fact:
     valet_current_service_name: "{{ valet_current_service_item.key }}"
@@ -63,4 +62,3 @@
 - name: "actions » restart | restart {{ valet_current_service_name }} service"
   shell: "{{ valet_sh_homebrew_current_bin }} services restart {{ valet_current_service_name_alias }}"
   when: valet_current_service_name_alias|length > 0 and (valet_current_service_name not in valet_sh_service_privileged_services)
-

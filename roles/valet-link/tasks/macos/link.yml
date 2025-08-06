@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - include_tasks: "macos/partials/load-valet-sh-file.yml"
   when: valet_sh_project_vars is not defined
 
@@ -47,7 +46,7 @@
 - block:
     - name: "link | set empty array 'new_valet_links'"
       set_fact:
-        new_valet_links: [ ]
+        new_valet_links: []
 
     - name: "link | add existing links to 'new_valet_links' array"
       set_fact:
@@ -59,7 +58,7 @@
       set_fact:
         valet_links_obj:
           valet_links:
-            links_index: "{{ valet_links_obj.valet_links.links_index | difference ([link_name]) }}"
+            links_index: "{{ valet_links_obj.valet_links.links_index | difference([link_name]) }}"
             links: "{{ new_valet_links }}"
   when: "link_name in valet_links_obj.valet_links.links_index"
 
@@ -78,7 +77,7 @@
 
 - name: "link | check for php version in .valet-sh.yml file"
   set_fact:
-    current_php_version: "php{{ valet_sh_project_vars.services.php.version | replace('.','') }}"
+    current_php_version: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.services is defined
@@ -133,11 +132,10 @@
   vars:
     cert_prefix: "{{ link_name }}"
 
-
 - block:
     - name: Set fact for restart_php_service
       set_fact:
-       restart_php_service: "vsh-{{ current_php_version }}"
+        restart_php_service: "vsh-{{ current_php_version }}"
 
     - name: "actions » restart | restart {{ restart_php_service }} (running as root)"
       shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ restart_php_service }}"
@@ -183,4 +181,4 @@
 
 - name: unset 'cert_prefix' variable
   set_fact:
-    cert_prefix: "{{ non_existent|default(None) }}"
+    cert_prefix: "{{ non_existent | default(None) }}"

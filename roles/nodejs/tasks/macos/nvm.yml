@@ -14,12 +14,11 @@
 #   limitations under the License.
 ##
 ---
-
 - name: ensure nvm home dir exists
   file:
     path: "{{ current_home }}/.nvm"
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: check if nvm.sh already exists
   stat:
@@ -71,4 +70,3 @@
   args:
     executable: /bin/bash
   when: nvm_installation_obj.changed
-

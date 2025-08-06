@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "fail when os is not ubuntu 20.04 or 22.04"
   fail:
     msg: "only Ubuntu 20.04 and 22.04 is supported for XPS15 9500!"
@@ -108,19 +107,19 @@
 - name: enable fan speed with lm-sensors
   lineinfile:
     path: /etc/modprobe.d/dell-smm-hwmon.conf
-    line: 'options dell-smm-hwmon restricted=0 force=1'
+    line: "options dell-smm-hwmon restricted=0 force=1"
     create: true
   become: true
 
 - name: enable dell specific module
   lineinfile:
     path: /etc/modules
-    line: 'dell-smm-hwmon'
+    line: "dell-smm-hwmon"
   become: true
 
 - name: ensure psmouse module is blacklisted
   copy:
-    content: 'blacklist psmouse'
+    content: "blacklist psmouse"
     dest: "/etc/modprobe.d/psmouse.conf"
   become: true
 
@@ -180,14 +179,14 @@
 
 - name: "ensure fingerprint driver is installed"
   apt:
-    name: ['oem-somerville-melisa-meta', 'libfprint-2-tod1-goodix', 'oem-somerville-meta']
+    name: ["oem-somerville-melisa-meta", "libfprint-2-tod1-goodix", "oem-somerville-meta"]
     state: present
   become: true
   when: ansible_distribution_release == "focal"
 
 - name: "ensure fingerprint driver is installed"
   apt:
-    name: ['libfprint-2-tod1', 'oem-somerville-meta']
+    name: ["libfprint-2-tod1", "oem-somerville-meta"]
     state: present
   become: true
   when: ansible_distribution_release == "jammy"

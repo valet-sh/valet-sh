@@ -14,10 +14,9 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "replace 'ssl http2' with 'ssl' in '{{ nginx_vhosts_obj_item.path }}'"
   ansible.builtin.replace:
     path: "{{ nginx_vhosts_obj_item.path }}"
-    regexp: 'ssl http2;'
-    replace: 'ssl;'
+    regexp: "ssl http2;"
+    replace: "ssl;"
   notify: brew | nginx | restarted

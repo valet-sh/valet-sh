@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "ensure composer-2 is installed"
   get_url:
     url: https://getcomposer.org/composer-2.phar
@@ -29,6 +28,6 @@
   template:
     src: "composer2.j2"
     dest: "{{ composer2_bin }}"
-    mode: '0755'
+    mode: "0755"
     force: true
   become: true

@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » neos » services » node | set default node version"
   set_fact:
     valet_sh_node_version: "{{ valet_sh_default_node_version }}"
@@ -35,4 +34,3 @@
 #  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ valet_sh_node_version }}" # noqa 301
 #  args:
 #    chdir: "{{ valet_current_path }}"
-

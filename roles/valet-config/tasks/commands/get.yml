@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "commands » get | fail when no 'valet_config_key' is set"
   fail:
     msg: "no config key was given"
@@ -44,11 +43,11 @@
 
 - name: "commands » get | add config to array"
   set_fact:
-    valet_config_list: "{{ valet_config_list + [[ valet_config_key, valet_config_value ]] }}"
+    valet_config_list: "{{ valet_config_list + [[valet_config_key, valet_config_value]] }}"
 
 - name: "commands » get | print table based on 'valet_config_list' array"
   vsh-table:
-    headers: ['Key', 'Value']
+    headers: ["Key", "Value"]
     rows: "{{ valet_config_list }}"
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint

@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - debug:
     msg: "{{ valet_current_service_item }}"
 
@@ -57,4 +56,3 @@
 - name: "actions » restart | restart {{ valet_current_service_name }} service"
   shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_current_service_name_alias }}"
   when: valet_current_service_name_alias|length > 0 and (valet_current_service_name not in valet_sh_service_privileged_services)
-

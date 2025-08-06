@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » check-opts | check if '--skip-restore' opt is set"
   set_fact:
     valet_opt_flag_force_reinstall: true

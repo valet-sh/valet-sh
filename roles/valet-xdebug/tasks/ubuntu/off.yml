@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "off | get stat for xdebug cli configuration file"
   stat:
     path: "/etc/php/{{ php_version_number }}/cli/conf.d/20-xdebug.ini"

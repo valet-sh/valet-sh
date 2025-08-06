@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: systemd | daemon-reload
   systemd:
     daemon_reload: true

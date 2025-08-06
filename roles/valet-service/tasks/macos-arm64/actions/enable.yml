@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "actions » enable | set default homebrew bin"
   set_fact:
     valet_sh_homebrew_current_bin: "{{ valet_sh_homebrew_bin }}"
@@ -82,7 +81,7 @@
 
 - name: "actions » enable | transform object into nice yaml output"
   set_fact:
-    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
 - name: "actions » enable | write new services.yml file"
   copy:

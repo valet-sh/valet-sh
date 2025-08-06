@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem | register hub host"
   add_host:
     hostname: hub
@@ -29,7 +28,7 @@
 
 - name: "workflows » aem | set known_host hash field name'"
   set_fact:
-    valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port|string }}"
+    valet_sh_known_host_hashed_name: "[{{ valet_sh_hub_host }}]:{{ valet_sh_hub_port | string }}"
   when: valet_sh_hub_port != 22 or valet_sh_hub_port != "22"
 
 - name: "workflows » aem | set known_host hash field name'"

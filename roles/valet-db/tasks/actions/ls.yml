@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "actions » ls | get list of mysql databases"
   shell: "{{ valet_db_mysql_client_binary }} -B --disable-column-names --execute 'show databases'" # noqa 305 301
   register: mysql_query_show_databases_obj
@@ -29,12 +28,12 @@
 
 - name: "actions » ls | add existing databases to array 'valet_list'"
   set_fact:
-    valet_list: "{{ valet_list + [[ item ]] }}"
+    valet_list: "{{ valet_list + [[item]] }}"
   with_items: "{{ valet_current_databases }}"
 
 - name: "actions » ls | | show existing databases"
   vsh-table:
-    headers: ['Datebase name']
+    headers: ["Datebase name"]
     rows: "{{ valet_list }}"
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint

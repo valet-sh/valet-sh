@@ -14,12 +14,11 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "provide default vhost template landing page"
   template:
     src: "default-vhost/index.html.j2"
     dest: "{{ valet_sh_default_vhost_root }}/index.html"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true

@@ -14,18 +14,17 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » partials » get-runtime-files | get aem-sdk from remote"
   include_tasks: remote-into-cache.yml
   vars:
     file_name: "aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip"
-    remote_dir: "{{ valet_sh_project_vars.hub.common_path | trim  }}/.aem/aem-sdk"
+    remote_dir: "{{ valet_sh_project_vars.hub.common_path | trim }}/.aem/aem-sdk"
     cache_dir: "{{ valet_sh_aem_sdk_local_cache_dir }}"
 
 - name: "workflows » aem » partials » get-runtime-files | get cif-addon from remote"
   include_tasks: remote-into-cache.yml
   vars:
     file_name: "aem-cif-addon-{{ valet_sh_aem_addons.cif }}.zip"
-    remote_dir: "{{ valet_sh_project_vars.hub.common_path | trim  }}/.aem/addons/cif"
+    remote_dir: "{{ valet_sh_project_vars.hub.common_path | trim }}/.aem/addons/cif"
     cache_dir: "{{ valet_sh_aem_local_cache_dir }}/addons/cif"
   when: valet_sh_aem_addons.cif is defined

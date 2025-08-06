@@ -24,7 +24,6 @@
 # valet.sh config remove varname
 #
 ---
-
 - name: "config"
   hosts: local
   gather_facts: true

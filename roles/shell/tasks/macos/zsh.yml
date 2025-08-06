@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: Cloning  oh-my-zsh
   git:
     repo: "https://github.com/robbyrussell/oh-my-zsh"

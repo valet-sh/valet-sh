@@ -14,12 +14,10 @@
 #   limitations under the License.
 ##
 ---
-
 - block:
-
-    - name:  "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
+    - name: "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
       set_fact:
-        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}"
+        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
       systemd:
@@ -49,7 +47,7 @@
 
     - name: "workflows » magento2 » services » mysql | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » mysql | write new services.yml file"
       copy:
@@ -68,10 +66,9 @@
     - valet_sh_project_vars.services.mysql.version is defined
 
 - block:
-
-    - name:  "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
+    - name: "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
       set_fact:
-        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}"
+        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
       systemd:
@@ -101,7 +98,7 @@
 
     - name: "workflows » magento2 » services » mysql | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » mysql | write new services.yml file"
       copy:
@@ -119,12 +116,10 @@
     - valet_sh_project_vars.services.mariadb is defined
     - valet_sh_project_vars.services.mariadb.version is defined
 
-
 - block:
-
-    - name:  "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
+    - name: "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
       set_fact:
-        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}"
+        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
       shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
@@ -150,7 +145,7 @@
 
     - name: "workflows » magento2 » services » mysql | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » mysql | write new services.yml file"
       copy:
@@ -168,10 +163,9 @@
     - valet_sh_project_vars.services.mysql.version is defined
 
 - block:
-
-    - name:  "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
+    - name: "workflows » magento2 » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
       set_fact:
-        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}"
+        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
       shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mariadb_current_name }}"
@@ -197,7 +191,7 @@
 
     - name: "workflows » magento2 » services » mysql | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » mysql | write new services.yml file"
       copy:

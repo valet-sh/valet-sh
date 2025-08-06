@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - block:
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started and enabled"
       systemd:
@@ -44,7 +43,7 @@
 
     - name: "workflows » magento2 » services » elasticsearch | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » elasticsearch | write new services.yml file"
       copy:
@@ -91,7 +90,7 @@
 
     - name: "workflows » magento2 » services » elasticsearch | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » elasticsearch | write new services.yml file"
       copy:
@@ -108,7 +107,6 @@
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.opensearch is defined
     - valet_sh_project_vars.services.opensearch.version is defined
-
 
 - block:
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
@@ -135,7 +133,7 @@
 
     - name: "workflows » magento2 » services » elasticsearch | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » elasticsearch | write new services.yml file"
       copy:
@@ -177,7 +175,7 @@
 
     - name: "workflows » magento2 » services » elasticsearch | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » elasticsearch | write new services.yml file"
       copy:

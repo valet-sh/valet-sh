@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » partials » setup-instances | extract 'aem-cif-addon-{{ valet_sh_aem_addons.cif }}.zip' to '{{ runtime_tmp_dir }}'"
   unarchive:
     src: "{{ valet_sh_aem_local_cache_dir }}/addons/cif/aem-cif-addon-{{ valet_sh_aem_addons.cif }}.zip"
@@ -25,7 +24,8 @@
     path: "{{ valet_sh_aem_author_dir }}/crx-quickstart/install"
     state: directory
 
-- name: "workflows » aem » partials » setup-instances | copy 'cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-authorfar.far' to '{{ valet_sh_aem_author_dir }}/install/'"
+- name: "workflows » aem » partials » setup-instances | copy 'cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-authorfar.far' to '{{ valet_sh_aem_author_dir
+    }}/install/'"
   copy:
     src: "{{ valet_sh_aem_runtime_tmp_dir }}/cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-authorfar.far"
     dest: "{{ valet_sh_aem_author_dir }}/crx-quickstart/install/"
@@ -35,7 +35,8 @@
     path: "{{ valet_sh_aem_publish_dir }}/crx-quickstart/install"
     state: directory
 
-- name: "workflows » aem » partials » setup-instances | copy 'cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-publishfar.far' to '{{ valet_sh_aem_author_dir }}/install/'"
+- name: "workflows » aem » partials » setup-instances | copy 'cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-publishfar.far' to '{{ valet_sh_aem_author_dir
+    }}/install/'"
   copy:
     src: "{{ valet_sh_aem_runtime_tmp_dir }}/cif-cloud-ready-feature-pkg-{{ valet_sh_aem_addons.cif }}-cq-commerce-addon-publishfar.far"
     dest: "{{ valet_sh_aem_publish_dir }}/crx-quickstart/install/"

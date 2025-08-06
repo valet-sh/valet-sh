@@ -14,9 +14,8 @@
 #   limitations under the License.
 ##
 ---
-
 - name: install base packages
   apt:
-   name: "{{ mysql_community_server.base_packages }}"
-   state: present
+    name: "{{ mysql_community_server.base_packages }}"
+    state: present
   become: true

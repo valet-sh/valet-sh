@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "define path to php error log"
   set_fact:
     php_error_log_path: "/tmp/php_errors.log"

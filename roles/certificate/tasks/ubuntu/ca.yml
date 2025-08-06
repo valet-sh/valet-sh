@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "ca | check if CA '{{ certificate_ca_cert_file }}' already exists"
   stat:
     path: "{{ certificate_ca_cert_file }}"
@@ -42,7 +41,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   with_items:
     - "{{ certificate_base_path }}"
     - "{{ certificate_ca_cert_path }}"
@@ -62,7 +61,7 @@
     path: "{{ certificate_ca_key_file }}"
     owner: root
     group: root
-    mode: '0400'
+    mode: "0400"
   become: true
 
 - name: "ca | generate CA Certificate"
@@ -75,7 +74,7 @@
   copy:
     src: "{{ certificate_ca_cert_file }}"
     dest: "{{ certificate_trusted_root_ca_path }}/valet-sh_development_CA.crt"
-    mode: '0644'
+    mode: "0644"
   register: copy_ca_to_trusted_root_ca_path_obj
   become: true
 

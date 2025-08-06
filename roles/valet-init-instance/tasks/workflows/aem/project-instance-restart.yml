@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » project-instance-restart | restart instances"
   include_role:
     name: valet-exec

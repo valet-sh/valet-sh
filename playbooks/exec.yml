@@ -13,7 +13,6 @@
 # valet.sh exec ls
 #
 ---
-
 - name: "exec"
   hosts: local
   gather_facts: true

@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "ensure vsh-opensearch1 is installed"
   shell: "{{ valet_sh_homebrew_bin }} install vsh-opensearch1"
 

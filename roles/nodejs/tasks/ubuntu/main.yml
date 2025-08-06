@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "gather package facts"
   package_facts:
     manager: "auto"

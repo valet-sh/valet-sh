@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "check if valet_current_path variable is set"
   fail:
     msg: "valet_current_path variable is not set"

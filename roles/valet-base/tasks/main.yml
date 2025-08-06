@@ -14,14 +14,13 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "create valet base dirs"
   file:
     path: "{{ current_valet_base_dir }}"
     state: directory
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: '0755'
+    mode: "0755"
   become: true
   with_items: "{{ valet_base_dirs }}"
   loop_control:
@@ -34,7 +33,7 @@
 
 - name: "transform object into nice yaml output"
   set_fact:
-    valet_links_list_stub: "{{ valet_links_stub | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+    valet_links_list_stub: "{{ valet_links_stub | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
   when: not valet_etc_links_file_obj.stat.exists
 
 - name: "write new links.yml file"
@@ -45,11 +44,11 @@
 
 - name: "ensure valet links file exists"
   file:
-    dest:  "{{ valet_etc_links_file }}"
+    dest: "{{ valet_etc_links_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    state: "{{ 'file' if  valet_etc_links_file_obj.stat.exists else 'touch' }}"
-    mode: '0755'
+    state: "{{ 'file' if valet_etc_links_file_obj.stat.exists else 'touch' }}"
+    mode: "0755"
   become: true
 
 - name: "get stat for {{ valet_etc_config_file }}"
@@ -59,21 +58,21 @@
 
 - name: "ensure valet config file exists"
   file:
-    dest:  "{{ valet_etc_config_file }}"
+    dest: "{{ valet_etc_config_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    state: "{{ 'file' if  valet_etc_config_file_obj.stat.exists else 'touch' }}"
-    mode: '0755'
+    state: "{{ 'file' if valet_etc_config_file_obj.stat.exists else 'touch' }}"
+    mode: "0755"
   become: true
 
 - name: "ensure valet services file exists"
   template:
     src: "services.yml.j2"
-    dest:  "{{ valet_etc_services_file }}"
+    dest: "{{ valet_etc_services_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     force: false
-    mode: '0644'
+    mode: "0644"
 
 - name: "include valet config file"
   include_vars:

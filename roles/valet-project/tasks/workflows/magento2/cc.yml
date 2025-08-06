@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » magento2 » project-cc | clear cache folders"
   file:
     path: "{{ valet_sh_project_src_path }}/{{ current_project_cache_path_item }}"

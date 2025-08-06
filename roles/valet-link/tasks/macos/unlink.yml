@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "unlink | check if link_name variable is set"
   fail:
     msg: "link_name variable is not set"
@@ -53,7 +52,7 @@
       set_fact:
         valet_links_obj:
           valet_links:
-            links_index: "{{ valet_links_obj.valet_links.links_index | difference (link_name) }}"
+            links_index: "{{ valet_links_obj.valet_links.links_index | difference(link_name) }}"
             links: "{{ new_valet_links }}"
   when: "link_name in valet_links_obj.valet_links.links_index"
 

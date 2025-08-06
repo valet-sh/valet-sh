@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » magento2 » check-vars | set default path to project source"
   set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}"

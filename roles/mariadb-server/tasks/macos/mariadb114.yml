@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: set current mariadb base vars
   set_fact:
     current_mariadb_version_key: "11.4"
@@ -27,7 +26,7 @@
   template:
     src: "{{ mariadb114_template_dot_my }}"
     dest: "{{ current_home }}/.my{{ current_mariadb_version_key }}.cnf"
-    mode: '0644'
+    mode: "0644"
   with_first_found:
     - "macos/mariadb114/.my.cnf.j2"
   loop_control:
@@ -37,7 +36,7 @@
   template:
     src: "{{ mariadb114_template_mysql }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb114/conf.d/mysql.cnf"
-    mode: '0644'
+    mode: "0644"
   with_first_found:
     - "macos/{{ current_mariadb_key }}/mysql.cnf.j2"
   loop_control:
@@ -47,7 +46,7 @@
   template:
     src: "{{ mariadb114_template_mysqldump }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb114/conf.d/mysqldump.cnf"
-    mode: '0644'
+    mode: "0644"
   with_first_found:
     - "macos/{{ current_mariadb_key }}/mysqldump.cnf.j2"
     - "{{ current_mariadb_key }}/mysqldump.cnf.j2"
@@ -58,7 +57,7 @@
   template:
     src: "{{ mariadb114_template_mysqld }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-{{ current_mariadb_key }}/conf.d/mysqld.cnf"
-    mode: '0644'
+    mode: "0644"
   with_first_found:
     - "macos/{{ current_mariadb_key }}/mysqld.cnf.j2"
     - "{{ current_mariadb_key }}/mysqld.cnf.j2"

@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "actions » list | include valet services file"
   include_vars:
     file: "{{ valet_etc_services_file }}"
@@ -30,22 +29,17 @@
 
 - name: "actions » list | add services to array"
   set_fact:
-    valet_sh_service_state_list: "{{ valet_sh_service_state_list + [[ valet_sh_services_current_states_item.key, valet_sh_services_current_states_item.value ]] }}"
+    valet_sh_service_state_list: "{{ valet_sh_service_state_list + [[valet_sh_services_current_states_item.key, valet_sh_services_current_states_item.value]] }}"
   with_dict: "{{ valet_sh_services_current_states }}"
   loop_control:
     loop_var: valet_sh_services_current_states_item
 
 - name: "actions » list | print table based on 'valet_sh_service_state_list' array"
   vsh-table:
-    headers: ['Service', 'State']
+    headers: ["Service", "State"]
     rows: "{{ valet_sh_service_state_list }}"
   tags:
-  - skip_ansible_lint
-
-
-
-
-
+    - skip_ansible_lint
 
 - name: "actions » list | get service defaults"
   set_fact:
@@ -57,14 +51,14 @@
 
 - name: "actions » list | add services to array"
   set_fact:
-    valet_sh_service_defaults_list: "{{ valet_sh_service_defaults_list + [[ valet_sh_services_current_defaults_item.value ]] }}"
+    valet_sh_service_defaults_list: "{{ valet_sh_service_defaults_list + [[valet_sh_services_current_defaults_item.value]] }}"
   with_dict: "{{ valet_sh_services_current_defaults }}"
   loop_control:
     loop_var: valet_sh_services_current_defaults_item
 
 - name: "actions » list | print table based on 'valet_sh_service_defaults_list' array"
   vsh-table:
-    headers: ['Default-Service']
+    headers: ["Default-Service"]
     rows: "{{ valet_sh_service_defaults_list }}"
   tags:
-  - skip_ansible_lint
+    - skip_ansible_lint

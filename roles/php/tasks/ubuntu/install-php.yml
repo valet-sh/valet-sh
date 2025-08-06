@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: fail when php version is not set
   fail:
     msg: "version variable is not defined"
@@ -39,7 +38,7 @@
 
 - name: ensure xdebug php package can be installed
   file:
-    path: "/etc/apt/preferences.d/valet-sh-php{{ php_version|replace('.', '-') }}-xdebug"
+    path: "/etc/apt/preferences.d/valet-sh-php{{ php_version | replace('.', '-') }}-xdebug"
     state: absent
   become: true
 
@@ -89,11 +88,11 @@
 
 - name: create php_errors.log file
   file:
-    dest:  "{{ php_error_log_path }}"
+    dest: "{{ php_error_log_path }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    state: "{{ 'file' if  php_error_log_file_obj.stat.exists else 'touch' }}"
-    mode: '0755'
+    state: "{{ 'file' if php_error_log_file_obj.stat.exists else 'touch' }}"
+    mode: "0755"
   become: true
 
 - name: set php cli configuration
@@ -102,9 +101,9 @@
     dest: "{{ php_cli_conf_path }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   with_first_found:
-  - "ubuntu/99-cli.conf.j2"
+    - "ubuntu/99-cli.conf.j2"
   loop_control:
     loop_var: inside_item
   become: true
@@ -115,9 +114,9 @@
     dest: "{{ php_fpm_conf_path }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   with_first_found:
-  - "ubuntu/99-fpm.conf.j2"
+    - "ubuntu/99-fpm.conf.j2"
   notify: "systemd | {{ php_version_string }}-fpm | restarted"
   loop_control:
     loop_var: inside_item
@@ -140,9 +139,9 @@
     dest: "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
-  when: 'php_version in native_xdebug2_versions'
+  when: "php_version in native_xdebug2_versions"
 
 - name: ensure xdebug3 config is deployed
   template:
@@ -150,9 +149,9 @@
     dest: "/etc/php/{{ php_version }}/mods-available/xdebug3.ini"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
-  when: 'php_version in native_xdebug3_versions'
+  when: "php_version in native_xdebug3_versions"
 
 - name: ensure compiled xdebug2 config is deployed
   template:
@@ -160,6 +159,6 @@
     dest: "/etc/php/{{ php_version }}/mods-available/xdebug2.ini"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
-  when: 'php_version in compiled_xdebug2_versions'
+  when: "php_version in compiled_xdebug2_versions"

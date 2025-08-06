@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "ensure vsh-mariadb106 is installed"
   shell: "{{ valet_sh_homebrew_bin }} install vsh-mariadb106"
 
@@ -22,7 +21,7 @@
   template:
     src: "{{ mariadb106_template_dot_my }}"
     dest: "{{ current_home }}/.my10.6.cnf"
-    mode: '0644'
+    mode: "0644"
   with_first_found:
     - "macos/mariadb106/.my.cnf.j2"
   loop_control:
@@ -32,7 +31,7 @@
   template:
     src: "{{ mariadb106_template_mysql }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb106/conf.d/mysql.cnf"
-    mode: '0644'
+    mode: "0644"
   with_first_found:
     - "macos/mariadb106/mysql.cnf.j2"
   loop_control:
@@ -42,7 +41,7 @@
   template:
     src: "{{ mariadb106_template_mysqldump }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb106/conf.d/mysqldump.cnf"
-    mode: '0644'
+    mode: "0644"
   with_first_found:
     - "macos/mariadb106/mysqldump.cnf.j2"
     - "mariadb106/mysqldump.cnf.j2"
@@ -53,7 +52,7 @@
   template:
     src: "{{ mariadb106_template_mysqld }}"
     dest: "{{ valet_sh_prefix }}/etc/vsh-mariadb106/conf.d/mysqld.cnf"
-    mode: '0644'
+    mode: "0644"
   with_first_found:
     - "macos/mariadb106/mysqld.cnf.j2"
     - "mariadb106/mysqld.cnf.j2"

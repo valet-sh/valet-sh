@@ -13,10 +13,10 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » sub-install-package | install package '{{ valet_sh_aem_restore_current_packagename }}.zip'"
   uri:
-    url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service/.json/etc/packages/{{ valet_sh_project_vars.instance.sync.groupname }}/{{ valet_sh_aem_restore_current_packagename }}.zip"
+    url: "http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service/.json/etc/packages/{{ valet_sh_project_vars.instance.sync.groupname
+      }}/{{ valet_sh_aem_restore_current_packagename }}.zip"
     method: POST
     body_format: "form-multipart"
     body:
@@ -29,7 +29,6 @@
     headers:
       Content-Type: multipart/form-data
   register: install_package_obj
-
 
 #- name: "workflows » aem » sub-install-package | install package '{{ valet_sh_aem_restore_current_packagename }}.zip'"
 #  uri:

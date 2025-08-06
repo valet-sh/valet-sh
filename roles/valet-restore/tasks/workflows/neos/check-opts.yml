@@ -13,7 +13,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » neos » check-opts | check if '--skip-db' opt is set"
   set_fact:
     valet_opt_flag_skip_db: true

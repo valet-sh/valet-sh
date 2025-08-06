@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "internal-actions » migrations | include valet services file"
   include_vars:
     file: "{{ valet_etc_services_file }}"
@@ -31,7 +30,8 @@
 
 - name: "internal-actions » migrations | remove blacklisted services from default list"
   set_fact:
-    valet_sh_services_updates_defaults: "{{ valet_sh_services_updates_defaults | combine({valet_sh_services_obj_defaults_item.key: valet_sh_services_obj_defaults_item.value}) }}"
+    valet_sh_services_updates_defaults: "{{ valet_sh_services_updates_defaults | combine({valet_sh_services_obj_defaults_item.key: valet_sh_services_obj_defaults_item.value})
+      }}"
   when: valet_sh_services_obj_defaults_item.key not in valet_sh_blacklisted_service
   loop: "{{ valet_sh_services_obj.defaults | dict2items }}"
   loop_control:
@@ -45,7 +45,7 @@
 
 - name: "internal-actions » migrations | transform object into nice yaml output"
   set_fact:
-    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
 - name: "internal-actions » migrations | write new services.yml file"
   copy:

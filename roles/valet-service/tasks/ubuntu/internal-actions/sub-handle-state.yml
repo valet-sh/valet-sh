@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "internal-actions » sub-handle-state | reset valet_service_name_alias variable"
   set_fact:
     valet_service_name_alias: ""

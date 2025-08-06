@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » project-link | delegate link command"
   include_role:
     name: valet-link

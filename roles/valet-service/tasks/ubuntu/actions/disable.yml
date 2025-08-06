@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "actions » disable | fail when no service name was given"
   fail:
     msg: "no service name was given"
@@ -76,7 +75,6 @@
     - valet_service_name_alias|length > 0
     - valet_service_name not in valet_sh_service_system_scoped_services
 
-
 - name: "actions » disable | include valet services file"
   include_vars:
     file: "{{ valet_etc_services_file }}"
@@ -98,7 +96,7 @@
 
 - name: "actions » disable | transform object into nice yaml output"
   set_fact:
-    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
 - name: "actions » disable | write new services.yml file"
   copy:

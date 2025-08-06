@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: set current mariadb base path
   set_fact:
     current_mariadb_base_path: "{{ mariadb_server.base_path }}106"
@@ -31,7 +30,7 @@
     path: "{{ current_mariadb_base_directory }}"
     owner: "valet"
     group: "valet"
-    mode: '0755'
+    mode: "0755"
     state: directory
   become: true
   with_items:
@@ -51,7 +50,7 @@
   template:
     src: "ubuntu/{{ current_mariadb_key }}/.my.cnf.j2"
     dest: "{{ current_home }}/.my{{ current_mariadb_version_key }}.cnf"
-    mode: '0644'
+    mode: "0644"
 
 - name: "provide my.cnf configuration file"
   template:
@@ -59,7 +58,7 @@
     dest: "{{ current_mariadb_etc_path }}/my.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: '0644'
+    mode: "0644"
   notify: "systemd | {{ current_mariadb_key }} | restarted"
 
 - name: "provide mysqld.cnf configuration file"
@@ -68,14 +67,14 @@
     dest: "{{ current_mariadb_etc_conf_path }}/mysqld.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: '0644'
+    mode: "0644"
   notify: "systemd | {{ current_mariadb_key }} | restarted"
 
 - name: "ensure user systemd directory exists"
   file:
     path: "{{ current_home }}/.config/systemd/user"
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: "Provide systemd service for {{ current_mariadb_key }} container"
   ansible.builtin.template:
@@ -83,7 +82,7 @@
     dest: "{{ current_home }}/.config/systemd/user/{{ current_mariadb_key }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: '0644'
+    mode: "0644"
   notify: "systemd | {{ current_mariadb_key }} | restarted"
 
 - name: "provide mariadb{{ current_mariadb_version_key }} mysql client"
@@ -92,7 +91,7 @@
     dest: "/usr/local/bin/mariadb{{ current_mariadb_version_key }}"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: "provide mariadump{{ current_mariadb_version_key }} client"
@@ -101,7 +100,7 @@
     dest: "/usr/local/bin/mariadump{{ current_mariadb_version_key }}"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: "provide mariaadmin{{ current_mariadb_version_key }} client"
@@ -110,7 +109,7 @@
     dest: "/usr/local/bin/mariaadmin{{ current_mariadb_version_key }}"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: "Ensure {{ current_mariadb_key }} is started"

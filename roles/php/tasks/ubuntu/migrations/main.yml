@@ -14,12 +14,11 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "migrations | ensure old config files are deleted"
   file:
-    dest:  "{{ php_cli_custom_config_item }}"
+    dest: "{{ php_cli_custom_config_item }}"
     state: "absent"
-    mode: '0755'
+    mode: "0755"
   become: true
   with_items:
     - "/etc/php/5.6/cli/conf.d/99-custom.ini"

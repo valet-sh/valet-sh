@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - include_tasks: composer1.yml
 
 - include_tasks: composer2.yml
@@ -23,7 +22,7 @@
   template:
     src: "composer-wrapper.j2"
     dest: "/usr/local/bin/composer"
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: "get stat for '/usr/local/bin/composer-php'"

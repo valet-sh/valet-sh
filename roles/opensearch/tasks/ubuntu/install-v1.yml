@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: set current opensearch base path
   set_fact:
     current_opensearch_base_path: "{{ opensearch_base_path }}1"
@@ -26,74 +25,73 @@
   register: current_opensearch_base_path_obj
 
 - block:
+    - name: "Pull {{ current_opensearch_key }} image"
+      containers.podman.podman_image:
+        name: "docker.io/opensearchproject/opensearch:1.3.1"
+        pull: true
+        state: present
 
-  - name: "Pull {{ current_opensearch_key }} image"
-    containers.podman.podman_image:
-      name: "docker.io/opensearchproject/opensearch:1.3.1"
-      pull: true
-      state: present
+    - name: "Create {{ current_opensearch_key }} volume directory"
+      file:
+        path: "{{ item }}"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
+        mode: "0755"
+        state: directory
+      loop:
+        - "{{ current_opensearch_base_path }}/config"
 
-  - name: "Create {{ current_opensearch_key }} volume directory"
-    file:
-      path: "{{ item }}"
-      owner: "{{ current_user }}"
-      group: "{{ current_group }}"
-      mode: '0755'
-      state: directory
-    loop:
-      - "{{ current_opensearch_base_path }}/config"
+    - name: "provide {{ current_opensearch_key }} configuration"
+      template:
+        src: "config/{{ current_opensearch_key }}.yml.j2"
+        dest: "{{ current_opensearch_base_path }}/config/opensearch.yml"
+        mode: "0644"
+      notify: "systemd | opensearch1 | restarted"
 
-  - name: "provide {{ current_opensearch_key }} configuration"
-    template:
-      src: "config/{{ current_opensearch_key }}.yml.j2"
-      dest: "{{ current_opensearch_base_path }}/config/opensearch.yml"
-      mode: '0644'
-    notify: "systemd | opensearch1 | restarted"
+    - name: "ensure user systemd directory exists"
+      file:
+        path: "{{ current_home }}/.config/systemd/user"
+        state: directory
+        mode: "0755"
 
-  - name: "ensure user systemd directory exists"
-    file:
-      path: "{{ current_home }}/.config/systemd/user"
-      state: directory
-      mode: '0755'
+    - name: provide systemd service for {{ current_opensearch_key }} container
+      ansible.builtin.template:
+        src: "systemd/{{ current_opensearch_key }}.service.j2"
+        dest: "{{ current_home }}/.config/systemd/user/{{ current_opensearch_key }}.service"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
+        mode: "0644"
+      notify: "systemd | opensearch1 | restarted"
 
-  - name: provide systemd service for {{ current_opensearch_key }} container
-    ansible.builtin.template:
-      src: "systemd/{{ current_opensearch_key }}.service.j2"
-      dest: "{{ current_home }}/.config/systemd/user/{{ current_opensearch_key }}.service"
-      owner: "{{ current_user }}"
-      group: "{{ current_group }}"
-      mode: '0644'
-    notify: "systemd | opensearch1 | restarted"
+    - name: "Ensure {{ current_opensearch_key }} is started"
+      systemd:
+        name: "{{ current_opensearch_key }}"
+        state: started
+        daemon_reload: true
+        scope: user
 
-  - name: "Ensure {{ current_opensearch_key }} is started"
-    systemd:
-      name: "{{ current_opensearch_key }}"
-      state: started
-      daemon_reload: true
-      scope: user
+    - name: "Wait for {{ current_opensearch_key }} to be ready"
+      uri:
+        url: "http://localhost:9221/_cluster/health"
+        method: GET
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 20
+      delay: 3
 
-  - name: "Wait for {{ current_opensearch_key }} to be ready"
-    uri:
-      url: "http://localhost:9221/_cluster/health"
-      method: GET
-      status_code: 200
-    register: result
-    until: result.status == 200
-    retries: 20
-    delay: 3
+    - name: "install plugins"
+      containers.podman.podman_container_exec:
+        name: "{{ current_opensearch_key }}"
+        command: "/usr/share/opensearch/bin/opensearch-plugin install {{ current_opensearch_plugin }}"
+      with_items: "{{ opensearch_plugins }}"
+      loop_control:
+        loop_var: current_opensearch_plugin
+      when: not current_opensearch_base_path_obj.stat.exists
+      notify: "systemd | opensearch1 | restarted"
 
-  - name: "install plugins"
-    containers.podman.podman_container_exec:
-      name: "{{ current_opensearch_key }}"
-      command: "/usr/share/opensearch/bin/opensearch-plugin install {{ current_opensearch_plugin }}"
-    with_items: "{{ opensearch_plugins }}"
-    loop_control:
-      loop_var: current_opensearch_plugin
-    when: not current_opensearch_base_path_obj.stat.exists
-    notify: "systemd | opensearch1 | restarted"
-
-  - name: Stop {{ current_opensearch_key }} container after plugin installation
-    ansible.builtin.systemd:
-      name: "{{ current_opensearch_key }}"
-      state: stopped
-      scope: user
+    - name: Stop {{ current_opensearch_key }} container after plugin installation
+      ansible.builtin.systemd:
+        name: "{{ current_opensearch_key }}"
+        state: stopped
+        scope: user

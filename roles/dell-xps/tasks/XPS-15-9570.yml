@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: ensure universe repository is enabled
   shell: "add-apt-repository -y universe"
   become: true
@@ -124,21 +123,21 @@
 
 - name: Enable power saving tweaks for Intel chip
   copy:
-    content: 'options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1 enable_psr=0'
+    content: "options i915 enable_fbc=1 enable_guc=3 disable_power_well=0 fastboot=1 enable_psr=0"
     dest: "/etc/modprobe.d/i915.conf"
   become: true
 
 - name: enable fan speed with lm-sensors
   lineinfile:
     path: /etc/modprobe.d/dell-smm-hwmon.conf
-    line: 'options dell-smm-hwmon restricted=0 force=1'
+    line: "options dell-smm-hwmon restricted=0 force=1"
     create: true
   become: true
 
 - name: enable dell specific module
   lineinfile:
     path: /etc/modules
-    line: 'dell-smm-hwmon'
+    line: "dell-smm-hwmon"
   become: true
 
 - name: "run update-initramfs -u"
@@ -206,7 +205,7 @@
     dest: "/lib/systemd/system-sleep/touchpad"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: install Ubuntu Hardware Enablement Stack

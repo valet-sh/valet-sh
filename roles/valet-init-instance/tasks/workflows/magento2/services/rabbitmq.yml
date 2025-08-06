@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - block:
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
       systemd:
@@ -45,7 +44,7 @@
 
     - name: "workflows » magento2 » services » rabbitmq | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » rabbitmq | write new services.yml file"
       copy:
@@ -129,7 +128,7 @@
 
     - name: "workflows » magento2 » services » rabbitmq | transform object into nice yaml output"
       set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
 
     - name: "workflows » magento2 » services » rabbitmq | write new services.yml file"
       copy:

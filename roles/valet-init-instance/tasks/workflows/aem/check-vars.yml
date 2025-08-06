@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - name: "workflows » aem » check-vars | set default path to project source"
   set_fact:
     valet_sh_project_src_path: "{{ valet_current_path }}"
@@ -28,17 +27,17 @@
 
 - name: "workflows » aem » check-vars | set hub port"
   set_fact:
-    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim }}"
   when: valet_sh_project_vars.hub.port is defined
 
 - name: "workflows » aem » check-vars | set hub host"
   set_fact:
-    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim }}"
   when: valet_sh_project_vars.hub.host is defined
 
 - name: "workflows » aem » check-vars | set hub user"
   set_fact:
-    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim }}"
   when: valet_sh_project_vars.hub.user is defined
 
 - name: "workflows » aem » check-vars | set hub data path"
@@ -48,15 +47,15 @@
 
 - name: "workflows » aem » check-vars | set hub port"
   set_fact:
-    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim  }}"
+    valet_sh_hub_port: "{{ valet_sh_project_vars.hub.port | trim }}"
   when: valet_sh_project_vars.hub.port is defined
 
 - name: "workflows » aem » check-vars | set hub host"
   set_fact:
-    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim  }}"
+    valet_sh_hub_host: "{{ valet_sh_project_vars.hub.host | trim }}"
   when: valet_sh_project_vars.hub.host is defined
 
 - name: "workflows » aem » check-vars | set hub user"
   set_fact:
-    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim  }}"
+    valet_sh_hub_user: "{{ valet_sh_project_vars.hub.user | trim }}"
   when: valet_sh_project_vars.hub.user is defined

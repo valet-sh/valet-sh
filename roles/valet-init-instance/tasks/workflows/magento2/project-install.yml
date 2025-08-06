@@ -14,7 +14,6 @@
 #   limitations under the License.
 ##
 ---
-
 - block:
     - name: "workflows » magento2 » project-install | clear cache folders"
       file:
