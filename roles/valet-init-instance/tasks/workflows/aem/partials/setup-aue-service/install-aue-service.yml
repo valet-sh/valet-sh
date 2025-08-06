@@ -124,7 +124,7 @@
 
     - name: reload nginx
       systemd:
-        daemon_reload: yes
+        daemon_reload: true
         name: nginx
         state: reloaded
       become: true

@@ -39,40 +39,40 @@
 - name: "actions » enable | enable {{ valet_service_name }} service (system-scoped)"
   systemd:
     name: "{{ valet_service_name }}"
-    enabled: yes
+    enabled: true
     state: started
   become: true
-  when: 
+  when:
     - valet_service_name_alias|length == 0
     - valet_service_name in valet_sh_service_system_scoped_services
 
 - name: "actions » enable | enable {{ valet_service_name }} service (user-scoped)"
   systemd:
     name: "{{ valet_service_name }}"
-    enabled: yes
+    enabled: true
     state: started
     scope: user
-  when: 
+  when:
     - valet_service_name_alias|length == 0
     - valet_service_name not in valet_sh_service_system_scoped_services
 
 - name: "actions » enable | enable {{ valet_service_name }} service (system-scoped)"
   systemd:
     name: "{{ valet_service_name_alias }}"
-    enabled: yes
+    enabled: true
     state: started
   become: true
-  when: 
+  when:
     - valet_service_name_alias|length > 0
     - valet_service_name in valet_sh_service_system_scoped_services
 
 - name: "actions » enable | enable {{ valet_service_name }} service (user-scoped)"
   systemd:
     name: "{{ valet_service_name_alias }}"
-    enabled: yes
+    enabled: true
     state: started
     scope: user
-  when: 
+  when:
     - valet_service_name_alias|length > 0
     - valet_service_name not in valet_sh_service_system_scoped_services
 

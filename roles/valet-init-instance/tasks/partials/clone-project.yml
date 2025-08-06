@@ -98,7 +98,7 @@
 #- name: "partials » clone-project | ensure ssh-key for '{{ valet_sh_project_hub_fqdn }}:{{ valet_sh_config.hub_gitlab_ssh_port }}' is in known_hosts"
 #  lineinfile:
 #    dest: ~/.ssh/known_hosts
-#    create: yes
+#    create: true
 #    state: present
 #    line: "{{ lookup('pipe', 'ssh-keyscan -tecdsa -p' + (valet_sh_config.hub_gitlab_ssh_port|string) + ' ' + valet_sh_project_hub_fqdn) }}"
 

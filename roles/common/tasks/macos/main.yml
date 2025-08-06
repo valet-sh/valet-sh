@@ -20,7 +20,7 @@
     name: vm.max_map_count
     value: "262144"
     state: present
-    reload: no
+    reload: false
   become: true
 
 - name: set fs.inotify.max_user_watches to 1048576
@@ -28,7 +28,7 @@
     name: fs.inotify.max_user_watches
     value: "1048576"
     state: present
-    reload: no
+    reload: false
   become: true
 
 - name: ensure homebrew is installed

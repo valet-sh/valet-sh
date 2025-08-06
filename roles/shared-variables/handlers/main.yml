@@ -17,33 +17,33 @@
 
 - name: systemd | reload
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
   become: true
 
 - name: systemd | nginx | started
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: nginx
     state: started
   become: true
 
 - name: systemd | nginx | stopped
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: nginx
     state: stopped
   become: true
 
 - name: systemd | nginx | restarted
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: nginx
     state: restarted
   become: true
 
 - name: systemd | nginx | reloaded
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: nginx
     state: reloaded
   become: true

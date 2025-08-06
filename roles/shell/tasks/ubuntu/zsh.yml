@@ -40,7 +40,7 @@
   copy:
     src: "~/.oh-my-zsh/templates/zshrc.zsh-template"
     dest: "{{ current_home }}/.zshrc"
-    force: no
+    force: false
   when: cloning is changed
 
 - name: load aliases file in .zshrc
@@ -63,7 +63,7 @@
       emulate sh
       . ~/.profile
       emulate zsh
-    create: yes
+    create: true
   when: zsh_zprofile_obj.stat.exists == False
 
 - name: change default shell to zsh for current user

@@ -33,7 +33,7 @@
 
 - name: "db"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars:
     valet_action: "{{ cli.args[0] | default() }}"
     valet_current_path: "{{ lookup('env','OLDPWD') }}"

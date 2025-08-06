@@ -28,7 +28,7 @@
   get_url:
     url: "{{ item.value.url }}"
     dest: "{{ item.value.dest }}"
-    force: yes
+    force: true
   become: true
   with_dict: "{{ atheros_firmware }}"
   when:

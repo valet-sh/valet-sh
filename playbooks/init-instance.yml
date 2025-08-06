@@ -12,11 +12,11 @@
 
 - name: "init-instance"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars_prompt:
     - name: "ansible_become_pass"
       prompt: "[sudo] Password"
-      private: yes
+      private: true
   vars:
     valet_current_path: "{{ lookup('env','OLDPWD') }}"
     valet_project_name: "{{ cli.args[0] | default() }}"

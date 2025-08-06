@@ -20,8 +20,8 @@
     url: 'http://localhost:{{ valet_sh_project_vars.instance.author_port }}/crx/packmgr/service.jsp'
     url_username: "{{ valet_sh_aem_author_user }}"
     url_password: "{{ valet_sh_aem_author_password }}"
-    return_content: yes
-    validate_certs: no
+    return_content: true
+    validate_certs: false
     status_code:
       - 200
   until: author_uri_output.status == 200
@@ -34,8 +34,8 @@
     url: 'http://localhost:{{ valet_sh_project_vars.instance.publish_port }}/crx/packmgr/service.jsp'
     url_username: "{{ valet_sh_aem_publish_user }}"
     url_password: "{{ valet_sh_aem_publish_password }}"
-    return_content: yes
-    validate_certs: no
+    return_content: true
+    validate_certs: false
     status_code:
       - 200
   until: publish_uri_output.status == 200

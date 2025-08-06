@@ -17,28 +17,28 @@
 
 - name: systemd | NetworkManager | started
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: NetworkManager
     state: started
   become: true
 
 - name: systemd | NetworkManager | stopped
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: NetworkManager
     state: stopped
   become: true
 
 - name: systemd | NetworkManager | reload
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: NetworkManager
     state: reloaded
   become: true
 
 - name: systemd | NetworkManager | restarted
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: NetworkManager
     state: restarted
   become: true

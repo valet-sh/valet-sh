@@ -30,7 +30,7 @@
     copy:
       src: "{{ valet_current_path }}/{{ valet_sh_project_vars.instance.processed_config }}"
       dest: "{{ valet_sh_project_src_path }}/app/etc/env.php"
-      remote_src: yes
+      remote_src: true
     when: magento2_env_php_obj.stat.exists|bool
   when: valet_sh_project_vars.instance.processed_config is defined
 

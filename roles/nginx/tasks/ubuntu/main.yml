@@ -24,7 +24,7 @@
 - name: "ensure nginx is enabled"
   systemd:
     name: nginx
-    enabled: yes
+    enabled: true
   become: true
 
 - name: Generate dhparams file
@@ -77,7 +77,7 @@
     owner: root
     group: root
     mode: '0644'
-    force: no
+    force: false
   become: true
 
 - name: set 'cert_prefix' variable

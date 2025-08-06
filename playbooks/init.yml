@@ -13,7 +13,7 @@
 
 - name: "init"
   hosts: local
-  gather_facts: True
+  gather_facts: true
   vars:
     valet_action: init
     valet_current_path: "{{ lookup('env','OLDPWD') }}"

@@ -19,7 +19,7 @@
   systemd:
     name: mysql
     state: stopped
-    enabled: no
-    masked: yes
+    enabled: false
+    masked: true
   become: true
   failed_when: false

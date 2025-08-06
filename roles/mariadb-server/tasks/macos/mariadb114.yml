@@ -82,5 +82,5 @@
     config_file: "/tmp/noexistent.cnf"
     name: "root"
     password: "{{ mariadb_server_default_root_password }}"
-    check_implicit_admin: yes
+    check_implicit_admin: true
     state: present

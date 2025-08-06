@@ -19,7 +19,7 @@
   vars_prompt:
     - name: "ansible_become_pass"
       prompt: "[sudo] Password"
-      private: yes
+      private: true
   roles:
     - sudo-permission-check
     - valet-install

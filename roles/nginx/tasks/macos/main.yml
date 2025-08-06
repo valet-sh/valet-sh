@@ -63,7 +63,7 @@
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: '0644'
-    force: no
+    force: false
   become: true
 
 - name: set 'cert_prefix' variable
@@ -91,7 +91,7 @@
 - name: "read nginx configurations in '{{ valet_sh_prefix }}/etc/nginx/conf.d/'"
   find:
     paths: "{{ valet_sh_prefix }}/etc/nginx/conf.d/"
-    recurse: no
+    recurse: false
     file_type: file
   register: nginx_vhosts_obj
 

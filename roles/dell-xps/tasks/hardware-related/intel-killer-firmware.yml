@@ -26,7 +26,7 @@
     - name: "enable graphic drivers ppa"
       apt_repository:
         repo: ppa:canonical-hwe-team/backport-iwlwifi
-        update_cache: yes
+        update_cache: true
       become: true
 
     - name: "install 'backport-iwlwifi-dkms' package"
@@ -38,7 +38,7 @@
 - name: "enable graphic drivers ppa"
   apt_repository:
     repo: ppa:canonical-hwe-team/backport-iwlwifi
-    update_cache: yes
+    update_cache: true
     state: absent
   become: true
   when: ansible_distribution_release != "bionic"

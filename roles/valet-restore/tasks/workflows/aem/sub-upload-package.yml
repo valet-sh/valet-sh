@@ -71,8 +71,8 @@
 #      mime_type: application/octet-stream
 #    user: "{{ valet_sh_aem_author_user }}"
 #    password: "{{ valet_sh_aem_author_password }}"
-#    force_basic_auth: yes
-#    return_content: yes
+#    force_basic_auth: true
+#    return_content: true
 #    headers:
 #      Content-Type: multipart/form-data
 #  register: upload_package_obj

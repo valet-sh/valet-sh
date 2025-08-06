@@ -44,7 +44,7 @@
   find:
     paths: "{{ valet_sh_aem_runtime_tmp_dir }}"
     patterns: "aem-sdk-dispatcher-tools-(.*)-unix.sh$"
-    use_regex: yes
+    use_regex: true
   register: dispatcher_maskeself_script_find
 
 - name: "workflows » aem » partials » setup-instances | set dispatcher_maskeself_script path"
@@ -74,7 +74,7 @@
     paths: "{{ valet_sh_aem_runtime_tmp_dir }}"
     file_type: directory
     patterns: "dispatcher-sdk-(.*)$"
-    use_regex: yes
+    use_regex: true
   register: dispatcher_tools_folder_find
 
 - name: "workflows » aem » partials » setup-instances | set dispatcher_tools path"

@@ -31,7 +31,7 @@
 - name: "ensure 'gulp' and 'n' is not installed globally"
   npm:
     name: "{{ nvm_uninstall_global_packages_item }}"
-    global: yes
+    global: true
     state: absent
   with_items:
     - "n"
@@ -84,4 +84,3 @@
   when:
     - valet_sh_config.default_nvm is defined
     - valet_sh_config.default_nvm == "volta"
-

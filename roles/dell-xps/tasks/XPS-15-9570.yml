@@ -21,7 +21,7 @@
 
 - name: Update all packages to the latest version
   apt:
-    update_cache: yes
+    update_cache: true
     upgrade: dist
   become: true
 
@@ -59,7 +59,7 @@
 - name: "enable graphic drivers ppa"
   apt_repository:
     repo: ppa:graphics-drivers/ppa
-    update_cache: yes
+    update_cache: true
     state: present
   become: true
   when: ansible_distribution_release == "bionic"
@@ -67,7 +67,7 @@
 - name: "disable graphic drivers ppa"
   apt_repository:
     repo: ppa:graphics-drivers/ppa
-    update_cache: yes
+    update_cache: true
     state: absent
   become: true
   when: ansible_distribution_release != "bionic"
@@ -91,14 +91,14 @@
 
 - apt_repository:
     repo: ppa:eh5/pulseaudio-a2dp
-    update_cache: yes
+    update_cache: true
     state: present
   become: true
   when: ansible_distribution_release == "bionic"
 
 - apt_repository:
     repo: ppa:eh5/pulseaudio-a2dp
-    update_cache: yes
+    update_cache: true
     state: absent
   become: true
   when: ansible_distribution_release != "bionic"
@@ -179,7 +179,7 @@
 
 - name: disable gnome tracker apps
   systemd:
-    masked: yes
+    masked: true
     name: "{{ ubuntu_gnome_tracker_apps_item }}"
   with_items:
     - tracker-extract.desktop

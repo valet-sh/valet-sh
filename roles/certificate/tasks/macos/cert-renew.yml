@@ -18,7 +18,7 @@
 - name: "cert-renew | read certificates in '{{ certificate_server_cert_path }}'"
   find:
     paths: "{{ certificate_server_cert_path }}"
-    recurse: no
+    recurse: false
     file_type: directory
   register: available_dev_certs
 

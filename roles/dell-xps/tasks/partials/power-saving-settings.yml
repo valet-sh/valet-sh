@@ -35,12 +35,12 @@
 
 - name: trigger systemd to reread configs
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
   become: true
 
 - name: enable power saving settings service
   systemd:
     name: valet-sh-power-saving-settings.service
     state: started
-    enabled: yes
+    enabled: true
   become: true
