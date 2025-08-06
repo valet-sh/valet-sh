@@ -12,3 +12,4 @@
 /log
 /venv
 /collections
+.ansible
