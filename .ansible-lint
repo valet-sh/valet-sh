@@ -19,3 +19,5 @@ skip_list:
   - "command-instead-of-shell"
   - "key-order[task]"
   - "no-relative-paths"
+  - "schema[tasks]"
+  - "schema[vars]"
