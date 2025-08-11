@@ -25,6 +25,7 @@ import time
 import sys
 import logging
 import itertools
+import atexit
 
 from ansible import constants as C
 
@@ -61,6 +62,23 @@ CURSOR_SHOW = "\033[?25h"
 
 print(CURSOR_SHOW, end="")
 
+class Cursor:
+    def __init__(self):
+        self.hidden = False
+
+    def hide(self):
+        if not self.hidden:
+            print(CURSOR_HIDE, end="", flush=True)
+            self.hidden = True
+
+    def show(self):
+        if self.hidden:
+            print(CURSOR_SHOW, end="", flush=True)
+            self.hidden = False
+
+    def __del__(self):
+        self.show()
+
 class LogDisplay(Display):
     def display(self, msg, color=None, stderr=False, screen_only=False, log_only=False, newline=True):
         msg2 = to_bytes(msg.lstrip(u'\n'))
@@ -79,10 +97,21 @@ class CallbackModule(CallbackModule_default):
 
     def __init__(self):
         super(CallbackModule, self).__init__()
+        self.cursor = Cursor()
         self._output = 1
         self._spinner = itertools.cycle(["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"])
         if not self._debug_enabled():
             self._display = LogDisplay()
+
+        atexit.register(self.cursor.show)
+        signal.signal(signal.SIGINT, self._signal_handler)
+        signal.signal(signal.SIGTERM, self._signal_handler)
+
+    def _signal_handler(self, signum, frame):
+        print(FLUSH, end="\n")
+        self.cursor.show()
+        signal.signal(signum, signal.SIG_DFL)
+        os.kill(os.getpid(), signum)
 
     def v2_playbook_on_task_start(self, task, is_conditional):
         if not self._debug_enabled():
@@ -97,7 +126,8 @@ class CallbackModule(CallbackModule_default):
         super(CallbackModule, self).v2_playbook_on_play_start(play)
         if not self._debug_enabled():
             name = play.get_name().strip()
-            print(BLUE + "▶ " + BOLD + name + RESET + CURSOR_HIDE, end="\n")
+            print(BLUE + "▶ " + BOLD + name + RESET, end="\n")
+            self.cursor.hide()
 
     def v2_runner_on_start(self, host, task):
         self._plugin_options = C.config.get_plugin_options("callback", "default")
@@ -109,7 +139,8 @@ class CallbackModule(CallbackModule_default):
                 if key == 'vsh_stdout':
                     self._output = 0
                     print(FLUSH, end="\n")
-                    print(result._result[key] + CURSOR_SHOW)
+                    print(result._result[key], end="")
+                    self.cursor.show()
         super(CallbackModule, self).v2_runner_on_ok(result)
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
@@ -131,7 +162,8 @@ class CallbackModule(CallbackModule_default):
             if not ignore_errors:
                 print(FLUSH)
                 print(RED + "✘ " + vsh_msg + RESET, end="\n")
-                print(BLUE + "ℹ " + "check /usr/local/valet-sh/valet-sh/log/debug.log" + RESET + CURSOR_SHOW, end="\n")
+                print(BLUE + "ℹ " + "check /usr/local/valet-sh/valet-sh/log/debug.log" + RESET, end="\n")
+                self.cursor.show()
         super(CallbackModule, self).v2_runner_on_failed(result, ignore_errors)
 
     def v2_runner_on_unreachable(self, result):
@@ -150,11 +182,11 @@ class CallbackModule(CallbackModule_default):
 
             print(FLUSH)
             print(RED + "✘ " + vsh_msg + RESET, end="\n")
-            print(BLUE + "ℹ " + "check /usr/local/valet-sh/valet-sh/log/debug.log" + RESET + CURSOR_SHOW, end="\n")
+            print(BLUE + "ℹ " + "check /usr/local/valet-sh/valet-sh/log/debug.log" + RESET, end="\n")
+            self.cursor.show()
         super(CallbackModule, self).v2_runner_on_unreachable(result)
 
     def v2_playbook_on_stats(self, stats):
-        # noinspection PyInterpreter
         if not self._debug_enabled():
             hosts = sorted(stats.processed.keys())
             for h in hosts:
@@ -162,5 +194,6 @@ class CallbackModule(CallbackModule_default):
                 if (t['failures'] == 0) & (t['unreachable'] == 0) & (self._output == 1):
                     self._output = 0
                     print(FLUSH)
-                    print(GREEN + "✔ done" + RESET + CURSOR_SHOW, end="\n")
+                    print(GREEN + "✔ done" + RESET, end="\n")
+            self.cursor.show()
         super(CallbackModule, self).v2_playbook_on_stats(stats)
