@@ -22,7 +22,7 @@
   register: current_cert9_cert_file_obj
 
 - name: "ca | get current certificate information"
-  shell: 'certutil -L -a -n "TechDivision Development CA" -d sql:{{ current_cert9_file_item | dirname }} > {{ current_cert9_cert_file_obj.path }}'
+  shell: 'certutil -L -a -n "TechDivision Development CA" -d sql:"{{ current_cert9_file_item | dirname }}" > {{ current_cert9_cert_file_obj.path }}'
   failed_when: false
   register: certutil_info_command_obj
 
