@@ -1,0 +1,18 @@
+---
+
+service:
+  name:
+    ubuntu: "vsh-mariadb104"
+    mac: "vsh-mariadb104"
+  scope:
+    ubuntu: "user"
+    mac: "user"
+
+configuration:
+  docker_image: "docker.io/library/mariadb:10.4"
+  ports:
+    mariadb: 3317
+  base_path: "/usr/local/valet-sh/packages/mariadb104"
+  default_root_password: "root"
+  default_user: "mysql"
+  default_group: "mysql"

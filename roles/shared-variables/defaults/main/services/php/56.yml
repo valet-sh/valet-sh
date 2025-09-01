@@ -1,0 +1,16 @@
+---
+
+service:
+  name:
+    ubuntu: "php5.6-fpm"
+    mac: "vsh-php56"
+  scope:
+    ubuntu: "system"
+    mac: "user"
+
+configuration:
+  package_names:
+    ubuntu: ["php5.6-fpm", "php5.6-cli"]
+    mac: ["php5.6-fpm", "php5.6-cli"]
+  config_paths:
+    ubuntu: ["/etc/php/5.6"]

@@ -1,0 +1,18 @@
+---
+
+service:
+  name:
+    ubuntu: "vsh-mysql80"
+    mac: "vsh-mysql80"
+  scope:
+    ubuntu: "user"
+    mac: "user"
+
+configuration:
+  docker_image: "docker.io/library/mysql:8.0"
+  ports:
+    mysql: 3308
+  base_path: "/usr/local/valet-sh/packages/mysql80"
+  default_root_password: "root"
+  default_user: "mysql"
+  default_group: "mysql"

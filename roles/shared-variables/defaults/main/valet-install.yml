@@ -15,25 +15,6 @@
 ##
 ---
 
-valet_install_default_roles_default:
-  - common
-  - certificate
-  - dnsmasq
-  - podman
-  - elasticsearch
-  - opensearch
-  - shell
-  - nginx
-  - redis
-  - php
-  - nodejs
-  - mailhog
-  - mysql-community-server
-  - mariadb-server
-  - magerun
-  - rabbitmq
-  - composer
-  - google-chrome
 valet_install_default_roles_mac:
   - common
   - certificate
@@ -51,4 +32,27 @@ valet_install_default_roles_mac:
   - magerun
   - rabbitmq
   - composer
-valet_install_default_roles: "{{ lookup('vars', 'valet_install_default_roles' + '_' + current_os, default=valet_install_default_roles_default) }}"
+valet_install_default_roles: "{{ valet_install_default_roles_mac }}"
+
+valet_install_core_roles_default:
+  - common
+  - certificate
+  - dnsmasq
+  - podman
+  - nginx
+  - shell
+  - nodejs
+  - magerun
+  - composer
+
+valet_install_core_roles_mac:
+  - common
+  - certificate
+  - dnsmasq
+  - nginx
+  - shell
+  - nodejs
+  - magerun
+  - composer
+
+valet_install_core_roles: "{{ lookup('vars', 'valet_install_core_roles' + '_' + current_os, default=valet_install_core_roles_default) }}"

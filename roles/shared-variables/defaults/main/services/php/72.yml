@@ -1,0 +1,16 @@
+---
+
+service:
+  name:
+    ubuntu: "php7.2-fpm"
+    mac: "vsh-php72"
+  scope:
+    ubuntu: "system"
+    mac: "user"
+
+configuration:
+  package_names:
+    ubuntu: ["php7.2-fpm", "php7.2-cli"]
+    mac: ["php7.2-fpm", "php7.2-cli"]
+  config_paths:
+    ubuntu: ["/etc/php/7.2"]

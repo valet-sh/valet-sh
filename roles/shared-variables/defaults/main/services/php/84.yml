@@ -1,0 +1,16 @@
+---
+
+service:
+  name:
+    ubuntu: "php8.4-fpm"
+    mac: "vsh-php84"
+  scope:
+    ubuntu: "system"
+    mac: "user"
+
+configuration:
+  package_names:
+    ubuntu: ["php8.4-fpm", "php8.4-cli"]
+    mac: ["php8.4-fpm", "php8.4-cli"]
+  config_paths:
+    ubuntu: ["/etc/php/8.4"]

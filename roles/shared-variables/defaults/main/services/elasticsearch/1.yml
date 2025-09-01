@@ -1,0 +1,18 @@
+---
+
+service:
+  name:
+    ubuntu: "vsh-elasticsearch1"
+    mac: "vsh-elasticsearch1"
+  scope:
+    ubuntu: "user"
+    mac: "user"
+
+configuration:
+  docker_image: "docker.io/elasticsearch:1.7.6"
+  ports:
+    http: 9201
+  base_path: "/usr/local/valet-sh/packages/elasticsearch1"
+  plugins:
+    default_plugins: ["analysis-phonetic", "analysis-icu"]
+    install_command: "/usr/share/elasticsearch/bin/plugin install {{ name }} --url {{ url }}"

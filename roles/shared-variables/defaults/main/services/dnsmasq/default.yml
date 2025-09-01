@@ -1,0 +1,9 @@
+---
+
+service:
+  name:
+    ubuntu: "dnsmasq"
+    mac: "vsh-dnsmasq"
+  scope:
+    ubuntu: "system"
+    mac: "user"

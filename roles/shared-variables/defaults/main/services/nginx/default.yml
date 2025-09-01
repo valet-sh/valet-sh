@@ -1,0 +1,9 @@
+---
+
+service:
+  name:
+    ubuntu: "nginx"
+    mac: "vsh-nginx"
+  scope:
+    ubuntu: "user"
+    mac: "user"

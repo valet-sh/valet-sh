@@ -1,0 +1,16 @@
+---
+
+service:
+  name:
+    ubuntu: "php7.3-fpm"
+    mac: "vsh-php73"
+  scope:
+    ubuntu: "system"
+    mac: "user"
+
+configuration:
+  package_names:
+    ubuntu: ["php7.3-fpm", "php7.3-cli"]
+    mac: ["php7.3-fpm", "php7.3-cli"]
+  config_paths:
+    ubuntu: ["/etc/php/7.3"]
