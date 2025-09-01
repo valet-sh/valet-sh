@@ -19,68 +19,68 @@
     daemon_reload: true
     scope: user
 
-- name: systemd | mysql57 | started
+- name: systemd | vsh-mysql57 | started
   ansible.builtin.systemd:
-    name: mysql57
+    name: "{{ current_mysql_systemd_name }}"
     daemon_reload: true
     state: started
-    scope: user
+    scope: "{{ current_mysql_systemd_scope }}"
 
-- name: systemd | mysql57 | stopped
+- name: systemd | vsh-mysql57 | stopped
   ansible.builtin.systemd:
-    name: mysql57
+    name: "{{ current_mysql_systemd_name }}"
     daemon_reload: true
     state: stopped
-    scope: user
+    scope: "{{ current_mysql_systemd_scope }}"
 
-- name: systemd | mysql57 | restarted
+- name: systemd | vsh-mysql57 | restarted
   ansible.builtin.systemd:
-    name: mysql57
+    name: "{{ current_mysql_systemd_name }}"
     daemon_reload: true
     state: restarted
-    scope: user
+    scope: "{{ current_mysql_systemd_scope }}"
 
-- name: systemd | mysql80 | started
+- name: systemd | vsh-mysql80 | started
   ansible.builtin.systemd:
-    name: mysql80
+    name: "{{ current_mysql_systemd_name }}"
     daemon_reload: true
     state: started
-    scope: user
+    scope: "{{ current_mysql_systemd_scope }}"
 
-- name: systemd | mysql80 | stopped
+- name: systemd | vsh-mysql80 | stopped
   ansible.builtin.systemd:
-    name: mysql80
+    name: "{{ current_mysql_systemd_name }}"
     daemon_reload: true
     state: stopped
-    scope: user
+    scope: "{{ current_mysql_systemd_scope }}"
 
-- name: systemd | mysql80 | restarted
+- name: systemd | vsh-mysql80 | restarted
   ansible.builtin.systemd:
-    name: mysql80
+    name: "{{ current_mysql_systemd_name }}"
     daemon_reload: true
     state: restarted
-    scope: user
+    scope: "{{ current_mysql_systemd_name }}"
 
-- name: systemd | mysql84 | started
+- name: systemd | vsh-mysql84 | started
   ansible.builtin.systemd:
-    name: mysql84
+    name: "{{ current_mysql_systemd_name }}"
     daemon_reload: true
     state: started
-    scope: user
+    scope: "{{ current_mysql_systemd_scope }}"
 
-- name: systemd | mysql84 | stopped
+- name: systemd | vsh-mysql84 | stopped
   ansible.builtin.systemd:
-    name: mysql84
+    name: "{{ current_mysql_systemd_name }}"
     daemon_reload: true
     state: stopped
-    scope: user
+    scope: "{{ current_mysql_systemd_scope }}"
 
-- name: systemd | mysql84 | restarted
+- name: systemd | vsh-mysql84 | restarted
   ansible.builtin.systemd:
-    name: mysql84
+    name: "{{ current_mysql_systemd_name }}"
     daemon_reload: true
     state: restarted
-    scope: user
+    scope: "{{ current_mysql_systemd_scope }}"
 
 - name: brew | vsh-mysql57 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql57"

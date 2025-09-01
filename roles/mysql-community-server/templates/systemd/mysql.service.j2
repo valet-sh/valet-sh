@@ -1,0 +1,28 @@
+[Unit]
+Description=MySQL 5.7 Community Server
+After=network-online.target local-fs.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+NotifyAccess=all
+Restart=always
+RestartSec=5s
+TimeoutStartSec=0
+TimeoutStopSec=30
+
+ExecStart=/usr/bin/podman run \
+    --replace \
+    --rm \
+    --name vsh-{{ current_mysql_service.canonical }} \
+    --volume vsh-{{ current_mysql_service.canonical }}-data:/var/lib/mysql \
+    --volume vsh-{{ current_mysql_etc_path }}/my.cnf:/etc/mysql/my.cnf:z \
+    --volume vsh-{{ current_mysql_etc_conf_path }}:/etc/mysql/conf.d:z \
+    --publish {{ current_mysql_service.configuration.ports.mysql }}:3306 \
+    --env MYSQL_ROOT_PASSWORD={{ current_mysql_service.configuration.default_root_password }} \
+    {{ current_mysql_service.configuration.docker_image }}
+ExecReload=/usr/bin/podman restart vsh-{{ current_mysql_service.canonical }}
+ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_mysql_service.canonical }}
+
+[Install]
+WantedBy=default.target

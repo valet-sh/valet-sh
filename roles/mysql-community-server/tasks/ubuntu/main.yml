@@ -14,11 +14,30 @@
 #   limitations under the License.
 ##
 ---
+
+
+
 - ansible.builtin.include_tasks: migrations/main.yml
 - ansible.builtin.include_tasks: base.yml
-- ansible.builtin.include_tasks: install-57.yml
-- ansible.builtin.include_tasks: install-80.yml
-- ansible.builtin.include_tasks: install-84.yml
+
+- name: "Install MySQL {{ item.version }}"
+  ansible.builtin.include_tasks: install-mysql.yml
+  vars:
+    current_mysql_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
+
+- name: "Uninstall MySQL {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-mysql.yml
+  vars:
+    current_mysql_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_uninstall_services is defined
+    - valet_uninstall_services | length > 0
+
 - name: ensure mysql wrapper script is up2date
   ansible.builtin.template:
     src: "wrapper/mysql-wrapper.j2"

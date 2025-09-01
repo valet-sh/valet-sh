@@ -14,16 +14,11 @@
 #   limitations under the License.
 ##
 ---
+
 - name: set current mysql base path
   ansible.builtin.set_fact:
-    current_mysql_base_path: "{{ mysql_community_server.base_path }}57"
-    current_mysql_version_key: "5.7"
-    current_mysql_key: "mysql57"
-
-- name: set curent dist path
-  ansible.builtin.set_fact:
-    current_mysql_etc_path: "{{ current_mysql_base_path }}/etc"
-    current_mysql_etc_conf_path: "{{ current_mysql_base_path }}/etc/conf.d"
+    current_mysql_base_path: "{{ current_mysql_service.base_paths }}"
+    current_mysql_service.canonical: "vsh-{{ current_mysql_service.canonical }}"
 
 - name: "create basic directories"
   ansible.builtin.file:
@@ -34,39 +29,39 @@
     state: directory
   become: true
   with_items:
-    - "{{ current_mysql_base_path }}"
-    - "{{ current_mysql_etc_path }}"
-    - "{{ current_mysql_etc_conf_path }}"
+    - "{{ current_mysql_service.configuration.base_path }}"
+    - "{{ current_mysql_service.configuration.base_path }}/etc"
+    - "{{ current_mysql_service.configuration.base_path }}/etc/conf.d"
   loop_control:
     loop_var: current_mysql_base_directory
 
-- name: "Pull {{ current_mysql_key }} image"
+- name: "Pull vsh-{{ current_mysql_service.canonical }} image"
   containers.podman.podman_image:
-    name: "{{ mysql_community_server_57.image }}"
+    name: "{{ current_mysql_service.configuration.docker_images }}"
     pull: true
     state: present
 
 - name: "provide .my.cnf configuration file"
   ansible.builtin.template:
-    src: "{{ current_mysql_key }}/.my.cnf.j2"
-    dest: "{{ current_home }}/.my5.7.cnf"
+    src: "{{ current_mysql_service.canonical }}/.my.cnf.j2"
+    dest: "{{ current_home }}/.my{{ current_mysql_service.version }}.cnf"
     mode: "0644"
 
 - name: "provide my.cnf configuration file"
   ansible.builtin.template:
-    src: "{{ current_mysql_key }}/my.cnf.j2"
-    dest: "{{ current_mysql_etc_path }}/my.cnf"
+    src: "{{ current_mysql_service.canonical }}/my.cnf.j2"
+    dest: "{{ current_mysql_service.configuration.base_path }}/etc/my.cnf"
     mode: "0644"
-  notify: "systemd | {{ current_mysql_key }} | restarted"
+  notify: "systemd | vsh-{{ current_mysql_service.canonical }} | restarted"
 
 - name: "provide mysqld.cnf configuration file"
   ansible.builtin.template:
-    src: "{{ current_mysql_key }}/mysqld.cnf.j2"
-    dest: "{{ current_mysql_etc_conf_path }}/mysqld.cnf"
+    src: "{{ current_mysql_service.canonical }}/mysqld.cnf.j2"
+    dest: "{{ current_mysql_service.configuration.base_path }}/etc/conf.d/mysqld.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | {{ current_mysql_key }} | restarted"
+  notify: "systemd | vsh-{{ current_mysql_service.canonical }} | restarted"
 
 - name: "ensure user systemd directory exists"
   ansible.builtin.file:
@@ -74,45 +69,45 @@
     state: directory
     mode: "0755"
 
-- name: "provide {{ current_mysql_key }} systemd unit file"
+- name: "provide vsh-{{ current_mysql_service.canonical }} systemd unit file"
   ansible.builtin.template:
-    src: "systemd/{{ current_mysql_key }}.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/{{ current_mysql_key }}.service"
+    src: "systemd/mysql.service.j2"
+    dest: "{{ current_home }}/.config/systemd/user/{{ current_mysql_service.canonical }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | {{ current_mysql_key }} | restarted"
+  notify: "systemd | vsh-{{ current_mysql_service.canonical }} | restarted"
 
-- name: "provide {{ current_mysql_key }} mysql client"
+- name: "provide vsh-{{ current_mysql_service.canonical }} mysql client"
   ansible.builtin.template:
     src: "wrapper/mysql.j2"
-    dest: "/usr/local/bin/mysql{{ current_mysql_version_key }}"
+    dest: "/usr/local/bin/mysql{{ current_mysql_service.version }}"
     owner: root
     group: root
     mode: "0755"
   become: true
 
-- name: "provide mysqldump{{ current_mysql_version_key }} client"
+- name: "provide mysqldump{{ current_mysql_service.version }} client"
   ansible.builtin.template:
     src: "wrapper/mysqldump.j2"
-    dest: "/usr/local/bin/mysqldump{{ current_mysql_version_key }}"
+    dest: "/usr/local/bin/mysqldump{{ current_mysql_service.version }}"
     owner: root
     group: root
     mode: "0755"
   become: true
 
-- name: "provide mysqladmin{{ current_mysql_version_key }} client"
+- name: "provide mysqladmin{{ current_mysql_service.version }} client"
   ansible.builtin.template:
     src: "wrapper/mysqladmin.j2"
-    dest: "/usr/local/bin/mysqladmin{{ current_mysql_version_key }}"
+    dest: "/usr/local/bin/mysqladmin{{ current_mysql_service.version }}"
     owner: root
     group: root
     mode: "0755"
   become: true
 
-- name: "Ensure {{ current_mysql_key }} is started"
+- name: "Ensure vsh-{{ current_mysql_service.canonical }} is started"
   ansible.builtin.systemd:
-    name: "{{ current_mysql_key }}"
+    name: "{{ current_mysql_service.service.name }}"
     state: started
     daemon_reload: true
     scope: user
@@ -120,17 +115,17 @@
 - name: Test MySQL connection and get info
   community.mysql.mysql_info:
     login_host: "127.0.0.1"
-    login_port: "{{ mysql_community_server_57.port }}"
-    login_user: root
-    login_password: "{{ mysql_community_server.default_root_password }}"
+    login_port: "{{ current_mysql_service.configuration.ports.mysql }}"
+    login_user: "root"
+    login_password: "{{ current_mysql_service.configuration.default_root_password }}"
   register: mysql_status
   until: mysql_status is succeeded
   retries: 30
   delay: 3
 
-- name: Stop {{ current_mysql_key }} service after installation
+- name: Stop vsh-{{ current_mysql_service.canonical }} service after installation
   when: mysql_status is succeeded
   ansible.builtin.systemd:
-    name: "{{ current_mysql_key }}"
+    name: "{{ current_mysql_service.service.name }}"
     state: stopped
-    scope: user
+    scope: "{{ current_mysql_service.service.scope }}"
