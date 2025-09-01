@@ -14,13 +14,54 @@
 #   limitations under the License.
 ##
 ---
-- name: "include role"
+- name: "resolve requested services"
+  vsh_service_resolver:
+    service: "{{ valet_install_services }}"
+    current_os: "{{ current_os }}"
+  register: valet_resolved_install_services
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
+
+- name: Debug valet_resolved_install_services
+  ansible.builtin.debug:
+    var: valet_resolved_install_services
+
+- name: "set roles to install"
+  ansible.builtin.set_fact:
+    valet_install_roles_to_install: "{{ valet_resolved_install_services.services | map(attribute='role_name') | list | unique }}"
+  when:
+    - valet_resolved_install_services is defined
+    - valet_resolved_install_services.services is defined
+
+- name: "set core roles to install"
+  ansible.builtin.set_fact:
+    valet_install_core_roles_to_install: "{{ valet_install_core_roles | default([]) }}"
+
+- name: "install core roles"
   ansible.builtin.include_role:
-    name: "{{ valet_install_default_roles_item }}"
-    public: true
-  with_items: "{{ valet_install_default_roles }}"
+    name: "{{ valet_install_core_roles_item }}"
+  loop: "{{ valet_install_core_roles_to_install }}"
   loop_control:
-    loop_var: valet_install_default_roles_item
+    loop_var: valet_install_core_roles_item
+  when:
+    - valet_install_core_roles_to_install | length > 0
+    - valet_install_roles_to_install is not defined or valet_install_roles_to_install | length == 0
+
+- name: "include service-specific roles"
+  ansible.builtin.include_role:
+    name: "{{ valet_install_roles_item }}"
+  vars:
+    valet_resolved_service: "{{ valet_resolved_install_services | combine({'services': valet_resolved_install_services.services | selectattr('role_name', 'equalto', valet_install_roles_item) | list}) }}"
+  loop: "{{ valet_install_roles_to_install | default([]) }}"
+  loop_control:
+    loop_var: valet_install_roles_item
+  when:
+    - valet_install_roles_to_install is defined
+    - valet_install_roles_to_install | length > 0
+    - valet_install_roles_item not in valet_install_core_roles_to_install
+    - valet_resolved_install_services is defined
+    - valet_resolved_install_services.services is defined
 
 - name: "include role"
   ansible.builtin.include_role:
@@ -28,11 +69,11 @@
   vars:
     valet_sh_service_internal_action: true
     valet_service_action: "handle"
+    valet_sh_newly_installed_services: "{{ valet_resolved_install_services | default({}) }}"
 
 - name: "include certificate role"
   ansible.builtin.include_role:
     name: "certificate"
-    public: true
 
 - name: "ensure revision is up2date"
   ansible.builtin.copy:
