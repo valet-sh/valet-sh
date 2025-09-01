@@ -14,13 +14,13 @@ TimeoutStopSec=30
 ExecStart=/usr/bin/podman run \
     --replace \
     --rm \
-    --name rabbitmq \
-    --volume rabbitmq:/var/lib/rabbitmq \
-    --publish 5672:5672 \
-    --publish 15672:15672 \
-    docker.io/library/rabbitmq:3.12.14-management
-ExecReload=/usr/bin/podman restart rabbitmq
-ExecStop=/usr/bin/podman stop --time 10 rabbitmq
+    --name vsh-{{ current_rabbitmq_service.canonical }} \
+    --volume vsh-{{ current_rabbitmq_service.canonical }}:/var/lib/rabbitmq \
+    --publish {{ current_rabbitmq_service.configuration.ports.amqp }}:5672 \
+    --publish {{ current_rabbitmq_service.configuration.ports.http }}:15672 \
+    {{ current_rabbitmq_service.configuration.docker_image }}
+ExecReload=/usr/bin/podman restart vsh-{{ current_rabbitmq_service.canonical }}
+ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_rabbitmq_service.canonical }}
 
 [Install]
 WantedBy=default.target

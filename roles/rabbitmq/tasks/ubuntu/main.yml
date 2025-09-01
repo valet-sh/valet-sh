@@ -14,53 +14,21 @@
 #   limitations under the License.
 ##
 ---
-- name: Pull rabbitmq-server image
-  containers.podman.podman_image:
-    name: "docker.io/rabbitmq:3.12.14-management"
-    pull: true
-    state: present
 
-- name: "ensure user systemd directory exists"
-  ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user"
-    state: directory
-    mode: "0755"
+- name: "Install RabbitMQ {{ item.version }}"
+  ansible.builtin.include_tasks: install-rabbitmq.yml
+  vars:
+    current_rabbitmq_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
 
-- name: Provide systemd service for rabbitmq-server container
-  ansible.builtin.template:
-    src: "systemd/rabbitmq-server.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/rabbitmq-server.service"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "systemd | rabbitmq-server | restarted"
-
-- name: ensure rabbitmq-server is running and enabled
-  ansible.builtin.systemd:
-    name: rabbitmq-server
-    state: started
-    enabled: true
-    scope: user
-
-- name: set 'cert_prefix' variable
-  ansible.builtin.set_fact:
-    cert_prefix: "rabbitmq"
-
-- name: "generate ssl-certificate for rabbitmq.{{ development_tld }}"
-  ansible.builtin.include_role:
-    name: certificate
-    public: true
-
-- name: provide nginx vhost configuration for rabbitmq management plugin
-  ansible.builtin.template:
-    src: "rabbitmq.conf.j2"
-    dest: "/etc/nginx/conf.d/rabbitmq.conf"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: systemd | nginx | reloaded
-  become: true
-
-- name: unset 'cert_prefix' variable
-  ansible.builtin.set_fact:
-    cert_prefix: "{{ non_existent | default(None) }}"
+- name: "Uninstall RabbitMQ {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-rabbitmq.yml
+  vars:
+    current_rabbitmq_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_uninstall_services is defined
+    - valet_uninstall_services | length > 0
