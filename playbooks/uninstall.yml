@@ -1,0 +1,30 @@
+#
+# valet.sh | uninstall
+#
+# @author: "Johann Zelger"
+# @author: "Philipp Dittert"
+# @command: "uninstall"
+# @platform: macOS Ubuntu
+# @description: "uninstall certain services from the development stack"
+# @usage: "valet.sh uninstall [services]"
+# @help:
+#
+# uninstall: uninstall and configure the default development stack
+# valet.sh uninstall
+#
+# uninstall with specific services: uninstall only specified services
+# valet.sh uninstall elasticsearch7 php81 mysql57
+#
+---
+- name: "uninstall"
+  hosts: local
+  gather_facts: true
+  vars:
+    valet_uninstall_services: "{{ cli.args | join(' ') if cli.args is defined and cli.args | length > 0 else '' }}"
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "[sudo] Password"
+      private: true
+  roles:
+    - sudo-permission-check
+    - valet-uninstall
