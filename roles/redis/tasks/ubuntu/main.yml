@@ -14,29 +14,21 @@
 #   limitations under the License.
 ##
 ---
-- name: Ensure redis-tools are installed natively
-  ansible.builtin.apt:
-    name: "redis-tools"
-    state: present
-  become: true
 
-- name: Pull redis-server image
-  containers.podman.podman_image:
-    name: "docker.io/library/redis:8.0.3"
-    pull: true
-    state: present
+- name: "Install Redis-Server {{ item.version }}"
+  ansible.builtin.include_tasks: install-redis-server.yml
+  vars:
+    current_redis_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
 
-- name: "ensure user systemd directory exists"
-  ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user"
-    state: directory
-    mode: "0755"
-
-- name: Provide systemd service for redis-server container
-  ansible.builtin.template:
-    src: "systemd/redis.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/redis-server.service"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "systemd | redis-server | restarted"
+- name: "Uninstall Redis-Server {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-redis-server.yml
+  vars:
+    current_redis_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_uninstall_services is defined
+    - valet_uninstall_services | length > 0
