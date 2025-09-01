@@ -15,6 +15,21 @@
 ##
 ---
 - ansible.builtin.include_tasks: base.yml
-- ansible.builtin.include_tasks: install-104.yml
-- ansible.builtin.include_tasks: install-106.yml
-- ansible.builtin.include_tasks: install-114.yml
+
+- name: "Install MariaDB-Server {{ item.version }}"
+  ansible.builtin.include_tasks: install-mariadb-server.yml
+  vars:
+    current_mariadb_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
+
+- name: "Uninstall MariaDB-Server {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-mariadb-server.yml
+  vars:
+    current_mariadb_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_uninstall_services is defined
+    - valet_uninstall_services | length > 0

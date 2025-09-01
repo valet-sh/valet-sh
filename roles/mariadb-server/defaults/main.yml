@@ -37,13 +37,3 @@ mariadb_server_ubuntu_noble:
 mariadb_server: "{{ lookup('vars', 'mariadb_server_' + current_os + '_' + os_codename, default=mariadb_server_default) }}"
 
 mariadb_server_default_root_password: "root"
-
-mariadb_server_104:
-  image: "docker.io/library/mariadb:10.4"
-  port: 3317
-mariadb_server_106:
-  image: "docker.io/library/mariadb:10.6"
-  port: 3319
-mariadb_server_114:
-  image: "docker.io/library/mariadb:11.4"
-  port: 3329

@@ -19,68 +19,68 @@
     daemon_reload: true
     scope: user
 
-- name: systemd | mariadb104 | started
+- name: systemd | vsh-mariadb104 | started
   ansible.builtin.systemd:
-    name: mariadb104
+    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
     state: started
-    scope: user
+    scope: "{{ current_mariadb_systemd_scope }}"
 
-- name: systemd | mariadb104 | stopped
+- name: systemd | vsh-mariadb104 | stopped
   ansible.builtin.systemd:
-    name: mariadb104
+    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
     state: stopped
-    scope: user
+    scope: "{{ current_mariadb_systemd_scope }}"
 
-- name: systemd | mariadb104 | restarted
+- name: systemd | vsh-mariadb104 | restarted
   ansible.builtin.systemd:
-    name: mariadb104
+    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
     state: restarted
-    scope: user
+    scope: "{{ current_mariadb_systemd_scope }}"
 
-- name: systemd | mariadb106 | started
+- name: systemd | vsh-mariadb106 | started
   ansible.builtin.systemd:
-    name: mariadb106
+    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
     state: started
-    scope: user
+    scope: "{{ current_mariadb_systemd_scope }}"
 
-- name: systemd | mariadb106 | stopped
+- name: systemd | vsh-mariadb106 | stopped
   ansible.builtin.systemd:
-    name: mariadb106
+    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
     state: stopped
-    scope: user
+    scope: "{{ current_mariadb_systemd_scope }}"
 
-- name: systemd | mariadb106 | restarted
+- name: systemd | vsh-mariadb106 | restarted
   ansible.builtin.systemd:
-    name: mariadb106
+    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
     state: restarted
-    scope: user
+    scope: "{{ current_mariadb_systemd_scope }}"
 
-- name: systemd | mariadb114 | started
+- name: systemd | vsh-mariadb114 | started
   ansible.builtin.systemd:
-    name: mariadb114
+    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
     state: started
-    scope: user
+    scope: "{{ current_mariadb_systemd_scope }}"
 
-- name: systemd | mariadb114 | stopped
+- name: systemd | vsh-mariadb114 | stopped
   ansible.builtin.systemd:
-    name: mariadb114
+    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
     state: stopped
-    scope: user
+    scope: "{{ current_mariadb_systemd_scope }}"
 
-- name: systemd | mariadb114 | restarted
+- name: systemd | vsh-mariadb114 | restarted
   ansible.builtin.systemd:
-    name: mariadb114
+    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
     state: restarted
-    scope: user
+    scope: "{{ current_mariadb_systemd_scope }}"
 
 - name: brew | vsh-mariadb104 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb104"
