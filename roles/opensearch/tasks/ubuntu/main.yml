@@ -14,5 +14,21 @@
 #   limitations under the License.
 ##
 ---
-- ansible.builtin.include_tasks: install-v1.yml
-- ansible.builtin.include_tasks: install-v2.yml
+
+- name: "Install Opensearch {{ item.version }}"
+  ansible.builtin.include_tasks: install-opensearch.yml
+  vars:
+    current_opensearch_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
+
+- name: "Uninstall Opensearch {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-opensearch.yml
+  vars:
+    current_opensearch_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_uninstall_services is defined
+    - valet_uninstall_services | length > 0

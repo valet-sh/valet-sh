@@ -14,63 +14,64 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | opensearch1 | started
+- name: systemd | vsh-opensearch1 | started
   ansible.builtin.systemd:
     daemon_reload: true
-    name: opensearch1
+    name: "{{ current_opensearch_systemd_name }}"
     state: started
-    scope: user
+    scope: "{{ current_opensearch_systemd_scope }}"
 
-- name: systemd | opensearch1 | stopped
+- name: systemd | vsh-opensearch1 | stopped
   ansible.builtin.systemd:
     daemon_reload: true
-    name: opensearch1
+    name: "{{ current_opensearch_systemd_name }}"
     state: stopped
-    scope: user
+    scope: "{{ current_opensearch_systemd_scope }}"
 
-- name: systemd | opensearch1 | restarted
+- name: systemd | vsh-opensearch1 | restarted
   ansible.builtin.systemd:
     daemon_reload: true
-    name: opensearch1
+    name: "{{ current_opensearch_systemd_name }}"
     state: restarted
-    scope: user
+    scope: "{{ current_opensearch_systemd_scope }}"
 
-- name: systemd | opensearch1 | reloaded
+- name: systemd | vsh-opensearch1 | reloaded
   ansible.builtin.systemd:
     daemon_reload: true
-    name: opensearch1
+    name: "{{ current_opensearch_systemd_name }}"
     state: restarted
-    scope: user
+    scope: "{{ current_opensearch_systemd_scope }}"
 
 - name: brew | vsh-opensearch1 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch1"
-- name: systemd | opensearch2 | started
+
+- name: systemd | vsh-opensearch2 | started
   ansible.builtin.systemd:
     daemon_reload: true
-    name: opensearch2
+    name: "{{ current_opensearch_systemd_name }}"
     state: started
-    scope: user
+    scope: "{{ current_opensearch_systemd_scope }}"
 
-- name: systemd | opensearch2 | stopped
+- name: systemd | vsh-opensearch2 | stopped
   ansible.builtin.systemd:
     daemon_reload: true
-    name: opensearch2
+    name: "{{ current_opensearch_systemd_name }}"
     state: stopped
-    scope: user
+    scope: "{{ current_opensearch_systemd_scope }}"
 
-- name: systemd | opensearch2 | restarted
+- name: systemd | vsh-opensearch2 | restarted
   ansible.builtin.systemd:
     daemon_reload: true
-    name: opensearch2
+    name: "{{ current_opensearch_systemd_name }}"
     state: restarted
-    scope: user
+    scope: "{{ current_opensearch_systemd_scope }}"
 
-- name: systemd | opensearch2 | reloaded
+- name: systemd | vsh-opensearch2 | reloaded
   ansible.builtin.systemd:
     daemon_reload: true
-    name: opensearch2
+    name: "{{ current_opensearch_systemd_name }}"
     state: restarted
-    scope: user
+    scope: "{{ current_opensearch_systemd_scope }}"
 
 - name: brew | vsh-opensearch2 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"

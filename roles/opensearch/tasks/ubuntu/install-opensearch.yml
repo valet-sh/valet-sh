@@ -1,0 +1,91 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "get stats for dir {{ current_opensearch_service.configuration.base_path }}"
+  ansible.builtin.stat:
+    path: "{{ current_opensearch_service.configuration.base_path }}"
+  register: current_opensearch_base_path_obj
+
+- block:
+    - name: "Pull vsh-{{ current_opensearch_service.canonical }} image"
+      containers.podman.podman_image:
+        name: "{{ current_opensearch_service.configuration.docker_image }}"
+        pull: true
+        state: present
+
+    - name: "Create vsh-{{ current_opensearch_service.canonical }} config directory"
+      ansible.builtin.file:
+        path: "{{ current_opensearch_service.configuration.base_path }}/config"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
+        mode: "0755"
+        state: directory
+
+    - name: "provide vsh-{{ current_opensearch_service.canonical }} configuration"
+      ansible.builtin.template:
+        src: "config/{{ current_opensearch_service.canonical }}.yml.j2"
+        dest: "{{ current_opensearch_service.configuration.base_path }}/config/opensearch.yml"
+        mode: "0644"
+      notify: "systemd | vsh-{{ current_opensearch_service.canonical }} | restarted"
+
+    - name: "ensure user systemd directory exists"
+      ansible.builtin.file:
+        path: "{{ current_home }}/.config/systemd/user"
+        state: directory
+        mode: "0755"
+
+    - name: Provide systemd service for vsh-{{ current_opensearch_service.canonical }} container
+      ansible.builtin.template:
+        src: "systemd/{{ current_opensearch_service.canonical }}.service.j2"
+        dest: "{{ current_home }}/.config/systemd/user/{{ current_opensearch_service.service.name }}.service"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
+        mode: "0644"
+      notify: "systemd | vsh-{{ current_opensearch_service.canonical }} | restarted"
+
+    - name: "Ensure vsh-{{ current_opensearch_service.canonical }} is started"
+      ansible.builtin.systemd:
+        name: "{{ current_opensearch_service.service.name }}"
+        state: started
+        daemon_reload: true
+        scope: "{{ current_opensearch_service.service.scope }}"
+
+    - name: "Wait for vsh-{{ current_opensearch_service.canonical }} to be ready"
+      ansible.builtin.uri:
+        url: "http://localhost:{{ current_opensearch_service.configuration.ports.http }}/_cluster/health"
+        method: GET
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 20
+      delay: 3
+
+    - name: "install plugins"
+      containers.podman.podman_container_exec:
+        name: "{{ current_opensearch_service.canonical }}"
+        command: "{{ current_opensearch_service.configuration.plugins.install_command | replace('{{ name }}', current_opensearch_plugin) }}"
+      with_items: "{{ current_opensearch_service.configuration.plugins.default_plugins }}"
+      loop_control:
+        loop_var: current_opensearch_plugin
+      notify: "systemd | vsh-{{ current_opensearch_service.canonical }} | restarted"
+      when: not current_opensearch_base_path_obj.stat.exists
+
+    - name: Stop vsh-{{ current_opensearch_service.canonical }} container after plugin installation
+      ansible.builtin.systemd:
+        name: "{{ current_opensearch_service.service.name }}"
+        state: stopped
+        scope: "{{ current_opensearch_service.service.scope }}"

@@ -14,14 +14,14 @@ TimeoutStopSec=30
 ExecStart=/usr/bin/podman run \
     --replace \
     --rm \
-    --name {{ current_opensearch_key }} \
-    --volume {{ current_opensearch_key }}-data:/usr/share/opensearch/data \
-    --volume /usr/local/valet-sh/packages/opensearch1/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z \
-    --publish 9221:9221 \
+    --name vsh-{{ current_opensearch_service.canonical }} \
+    --volume vsh-{{ current_opensearch_service.canonical }}-data:/usr/share/opensearch/data \
+    --volume vsh-{{ current_opensearch_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z \
+    --publish vsh-{{ current_opensearch_service.configuration.ports.http }}:9221 \
     --env "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
-    docker.io/opensearchproject/opensearch:1.3.1
-ExecReload=/usr/bin/podman restart {{ current_opensearch_key }}
-ExecStop=/usr/bin/podman stop --time 10 {{ current_opensearch_key }}
+    {{ current_opensearch_service.configuration.docker_image }}
+ExecReload=/usr/bin/podman restart vsh-{{ current_opensearch_service.canonical }}
+ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_opensearch_service.canonical }}
 
 [Install]
 WantedBy=default.target
