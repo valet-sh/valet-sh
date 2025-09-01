@@ -14,26 +14,27 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | mailhog | started
+
+- name: "systemd | vsh-mailhog | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: mailhog
+    name: "{{ current_mailhog_service.service.name }}"
     state: started
-    scope: user
+    scope: "{{ current_mailhog_service.service.scope }}"
 
-- name: systemd | mailhog | stopped
+- name: "systemd | vsh-mailhog | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: mailhog
+    name: "{{ current_mailhog_service.service.name }}"
     state: stopped
-    scope: user
+    scope: "{{ current_mailhog_service.service.scope }}"
 
-- name: systemd | mailhog | restarted
+- name: "systemd | vsh-mailhog | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: mailhog
+    name: "{{ current_mailhog_service.service.name }}"
     state: restarted
-    scope: user
+    scope: "{{ current_mailhog_service.service.scope }}"
 
 - name: brew | mailhog | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"

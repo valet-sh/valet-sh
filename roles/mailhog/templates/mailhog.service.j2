@@ -15,18 +15,18 @@ TimeoutStopSec=30
 ExecStart=/usr/bin/podman run \
     --replace \
     --rm \
-    --name mailhog \
-    --publish 8025:8025 \
-    --publish 1025:1025 \
+    --name vsh-mailhog \
+    --publish {{ current_mailhog_service.configuration.ports.http }}:8025 \
+    --publish {{ current_mailhog_service.configuration.ports.smtp }}:1025 \
     --volume mailhog:/maildir \
-    docker.io/mailhog/mailhog:latest \
-    -api-bind-addr=0.0.0.0:8025 \
-    -ui-bind-addr=0.0.0.0:8025 \
-    -smtp-bind-addr=0.0.0.0:1025 \
+    {{ current_mailhog_service.configuration.docker_image }} \
+    -api-bind-addr=0.0.0.0:{{ current_mailhog_service.configuration.ports.http }} \
+    -ui-bind-addr=0.0.0.0:{{ current_mailhog_service.configuration.ports.http }} \
+    -smtp-bind-addr=0.0.0.0:{{ current_mailhog_service.configuration.ports.smtp }} \
     -storage=maildir \
     -maildir-path=/maildir
-ExecReload=/usr/bin/podman restart mailhog
-ExecStop=/usr/bin/podman stop --time 10 mailhog
+    ExecReload=/usr/bin/podman restart vsh-{{ current_mailhog_service.canonical }}
+ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_mailhog_service.canonical }}
 
 [Install]
 WantedBy=default.target

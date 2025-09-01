@@ -14,54 +14,21 @@
 #   limitations under the License.
 ##
 ---
-- name: Pull mailhog image
-  containers.podman.podman_image:
-    name: "docker.io/mailhog/mailhog:latest"
-    pull: true
-    state: present
 
-- name: "ensure user systemd directory exists"
-  ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user"
-    state: directory
-    mode: "0755"
+- name: "Install Mailhog {{ item.version }}"
+  ansible.builtin.include_tasks: install-mailhog.yml
+  vars:
+    current_mailhog_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
 
-- name: provide systemd service for mailhog container
-  ansible.builtin.template:
-    src: "mailhog.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/mailhog.service"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "systemd | mailhog | restarted"
-
-- name: set 'cert_prefix' variable
-  ansible.builtin.set_fact:
-    cert_prefix: "mailhog"
-
-- name: "generate ssl-certificate for {{ cert_prefix }}"
-  ansible.builtin.include_role:
-    name: certificate
-    public: true
-
-- name: provide init script for mailhog
-  ansible.builtin.template:
-    src: "mailhog.conf.j2"
-    dest: "/etc/nginx/conf.d/mailhog.conf"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: systemd | nginx | reloaded
-  become: true
-
-- name: unset 'cert_prefix' variable
-  ansible.builtin.set_fact:
-    cert_prefix: "{{ non_existent | default(None) }}"
-
-- name: ensure mailhog is enabled and started
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: mailhog
-    enabled: true
-    state: started
-    scope: user
+- name: "Uninstall Mailhog {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-mailhog.yml
+  vars:
+    current_mailhog_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_uninstall_services is defined
+    - valet_uninstall_services | length > 0
