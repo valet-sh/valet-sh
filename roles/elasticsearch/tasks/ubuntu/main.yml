@@ -14,9 +14,21 @@
 #   limitations under the License.
 ##
 ---
-- ansible.builtin.include_tasks: install-v1.yml
-- ansible.builtin.include_tasks: install-v2.yml
-- ansible.builtin.include_tasks: install-v5.yml
-- ansible.builtin.include_tasks: install-v6.yml
-- ansible.builtin.include_tasks: install-v7.yml
-- ansible.builtin.include_tasks: install-v8.yml
+
+- name: "Install Elasticsearch {{ item.version }}"
+  ansible.builtin.include_tasks: install-elasticsearch.yml
+  vars:
+    current_elasticsearch_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
+
+- name: "Uninstall Elasticsearch {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-elasticsearch.yml
+  vars:
+    current_elasticsearch_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_uninstall_services is defined
+    - valet_uninstall_services | length > 0

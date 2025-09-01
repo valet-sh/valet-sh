@@ -14,173 +14,38 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | elasticsearch1 | started
+
+- name: "systemd | vsh-{{ current_elasticsearch_service.canonical }} | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: elasticsearch1
+    name: "{{ current_elasticsearch_service.service.name }}"
     state: started
-    scope: user
+    scope: "{{ current_elasticsearch_service.service.scope }}"
+  listen: "systemd | vsh-elasticsearch | started"
 
-- name: systemd | elasticsearch1 | stopped
+- name: "systemd | vsh-{{ current_elasticsearch_service.canonical }} | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: elasticsearch1
+    name: "{{ current_elasticsearch_service.service.name }}"
     state: stopped
-    scope: user
+    scope: "{{ current_elasticsearch_service.service.scope }}"
+  listen: "systemd | vsh-elasticsearch | stopped"
 
-- name: systemd | elasticsearch1 | restarted
+- name: "systemd | vsh-{{ current_elasticsearch_service.canonical }} | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: elasticsearch1
+    name: "{{ current_elasticsearch_service.service.name }}"
     state: restarted
-    scope: user
+    scope: "{{ current_elasticsearch_service.service.scope }}"
+  listen: "systemd | vsh-elasticsearch | restarted"
 
-- name: systemd | elasticsearch1 | reloaded
+- name: "systemd | vsh-{{ current_elasticsearch_service.canonical }} | reloaded"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: elasticsearch1
+    name: "{{ current_elasticsearch_service.service.name }}"
     state: restarted
-    scope: user
-
-- name: systemd | elasticsearch2 | started
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch2
-    state: started
-    scope: user
-
-- name: systemd | elasticsearch2 | stopped
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch2
-    state: stopped
-    scope: user
-
-- name: systemd | elasticsearch2 | restarted
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch2
-    state: restarted
-    scope: user
-
-- name: systemd | elasticsearch2 | reloaded
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch2
-    state: restarted
-    scope: user
-
-- name: systemd | elasticsearch5 | started
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch5
-    state: started
-    scope: user
-
-- name: systemd | elasticsearch5 | stopped
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch5
-    state: stopped
-    scope: user
-
-- name: systemd | elasticsearch5 | restarted
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch5
-    state: restarted
-    scope: user
-
-- name: systemd | elasticsearch5 | reloaded
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch5
-    state: restarted
-    scope: user
-
-- name: systemd | elasticsearch6 | started
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch6
-    state: started
-    scope: user
-
-- name: systemd | elasticsearch6 | stopped
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch6
-    state: stopped
-    scope: user
-
-- name: systemd | elasticsearch6 | restarted
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch6
-    state: restarted
-    scope: user
-
-- name: systemd | elasticsearch6 | reloaded
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch6
-    state: restarted
-    scope: user
-
-- name: systemd | elasticsearch7 | started
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch7
-    state: started
-    scope: user
-
-- name: systemd | elasticsearch7 | stopped
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch7
-    state: stopped
-    scope: user
-
-- name: systemd | elasticsearch7 | restarted
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch7
-    state: restarted
-    scope: user
-
-- name: systemd | elasticsearch7 | reloaded
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch7
-    state: restarted
-    scope: user
-
-- name: systemd | elasticsearch8 | started
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch8
-    state: started
-    scope: user
-
-- name: systemd | elasticsearch8 | stopped
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch8
-    state: stopped
-    scope: user
-
-- name: systemd | elasticsearch8 | restarted
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch8
-    state: restarted
-    scope: user
-
-- name: systemd | elasticsearch8 | reloaded
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch8
-    state: restarted
-    scope: user
+    scope: "{{ current_elasticsearch_service.service.scope }}"
+  listen: "systemd | vsh-elasticsearch | reloaded"
 
 - name: brew | vsh-elasticsearch5 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch5"
