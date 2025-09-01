@@ -35,7 +35,7 @@
   gather_facts: true
   vars:
     valet_service_action: "{{ cli.args[0] | default() }}"
-    valet_service_name: "{{ cli.args[1] | default() }}"
+    valet_service_name: "{{ cli.args[1] }}"
   vars_prompt:
     - name: "ansible_become_pass"
       prompt: "[sudo] Password"
