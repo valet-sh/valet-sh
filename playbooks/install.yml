@@ -6,16 +6,22 @@
 # @command: "install"
 # @platform: macOS Ubuntu
 # @description: "Install and configure the default development stack"
-# @usage: "valet.sh install"
+# @usage: "valet.sh install [services]"
 # @help:
 #
 # install: install and configure the default development stack
 # valet.sh install
 #
+# install with specific services: install only specified services plus core services
+# valet.sh install elasticsearch7,php81,mysql57
+# valet.sh install "elasticsearch7 php81 mysql57"
+#
 ---
 - name: "install"
   hosts: local
   gather_facts: true
+  vars:
+    valet_install_services: "{{ cli.args | join(' ') if cli.args is defined and cli.args | length > 0 else '' }}"
   vars_prompt:
     - name: "ansible_become_pass"
       prompt: "[sudo] Password"
