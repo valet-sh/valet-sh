@@ -21,86 +21,19 @@
   ansible.builtin.set_fact:
     valet_current_service_name: "{{ valet_current_service_item.key }}"
 
-- name: "actions » restart | check fuzzy service names"
-  ansible.builtin.set_fact:
-    valet_current_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
-  when: valet_current_service_name in valet_sh_available_php_versions_alias_mapping_item.1
-  with_subelements:
-    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
-    - aliases
+- name: "actions » restart | resolve current service name and configuration"
+  vsh_service_resolver:
+    service: "{{ valet_current_service_name }}"
+    current_os: "{{ current_os }}"
+  register: valet_current_resolved_service
+
+- name: "actions » restart | restart resolved services"
+  ansible.builtin.systemd:
+    name: "{{ service_item.service.name }}"
+    state: restarted
+    scope: "{{ service_item.service.scope }}"
+    daemon_reload: true
+  loop: "{{ valet_current_resolved_service.services | default([]) }}"
   loop_control:
-    loop_var: valet_sh_available_php_versions_alias_mapping_item
-
-- name: "actions » restart | reset valet_service_name_alias variable"
-  ansible.builtin.set_fact:
-    valet_current_service_name_alias: ""
-
-- name: "actions » restart | check for alias service name"
-  ansible.builtin.set_fact:
-    valet_current_service_name_alias: "{{ item.value }}"
-  when: item.key == valet_current_service_name
-  with_dict: "{{ valet_sh_service_alias_mapping }}"
-
-- block:
-    - name: "actions » restart | stop {{ valet_current_service_name }} service (system-scoped)"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name }}"
-        state: stopped
-      become: true
-
-    - name: "actions » restart | start {{ valet_current_service_name }} service (system-scoped)"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name }}"
-        state: started
-      become: true
-  when:
-    - valet_current_service_name_alias|length == 0
-    - valet_current_service_name in valet_sh_service_system_scoped_services
-
-- block:
-    - name: "actions » restart | stop {{ valet_current_service_name }} service (user-scoped)"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name }}"
-        state: stopped
-        scope: user
-
-    - name: "actions » restart | start {{ valet_current_service_name }} service (user-scoped)"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name }}"
-        state: started
-        scope: user
-  when:
-    - valet_current_service_name_alias|length == 0
-    - valet_current_service_name not in valet_sh_service_system_scoped_services
-
-- block:
-    - name: "actions » restart | stop {{ valet_current_service_name }} service (system-scoped)"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name_alias }}"
-        state: stopped
-      become: true
-
-    - name: "actions » restart | start {{ valet_current_service_name }} service (system-scoped)"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name_alias }}"
-        state: started
-      become: true
-  when:
-    - valet_current_service_name_alias|length > 0
-    - valet_current_service_name in valet_sh_service_system_scoped_services
-
-- block:
-    - name: "actions » restart | stop {{ valet_current_service_name }} service (user-scoped)"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name_alias }}"
-        state: stopped
-        scope: user
-
-    - name: "actions » restart | start {{ valet_current_service_name }} service (user-scoped)"
-      ansible.builtin.systemd:
-        name: "{{ valet_current_service_name_alias }}"
-        state: started
-        scope: user
-  when:
-    - valet_current_service_name_alias|length > 0
-    - valet_current_service_name not in valet_sh_service_system_scoped_services
+    loop_var: service_item
+  when: valet_current_resolved_service is defined and valet_current_resolved_service.services is defined

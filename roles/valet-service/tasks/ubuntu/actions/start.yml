@@ -19,54 +19,13 @@
     msg: "no service name was given"
   when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
-- name: "actions » start | check fuzzy service names"
-  ansible.builtin.set_fact:
-    valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
-  when: valet_service_name in valet_sh_available_php_versions_alias_mapping_item.1
-  with_subelements:
-    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
-    - aliases
+- name: "actions » start | start resolved services"
+  ansible.builtin.systemd:
+    name: "{{ service_item.service.name }}"
+    state: started
+    scope: "{{ service_item.service.scope }}"
+    daemon_reload: true
+  loop: "{{ valet_resolved_service.services | default([]) }}"
   loop_control:
-    loop_var: valet_sh_available_php_versions_alias_mapping_item
-
-- name: "actions » start | check for alias service name"
-  ansible.builtin.set_fact:
-    valet_service_name_alias: "{{ item.value }}"
-  when: item.key == valet_service_name
-  with_dict: "{{ valet_sh_service_alias_mapping }}"
-
-- name: "actions » start | start {{ valet_service_name }} service (system-scoped)"
-  ansible.builtin.systemd:
-    name: "{{ valet_service_name }}"
-    state: started
-  become: true
-  when:
-    - valet_service_name_alias|length == 0
-    - valet_service_name in valet_sh_service_system_scoped_services
-
-- name: "actions » start | start {{ valet_service_name }} service (user-scoped)"
-  ansible.builtin.systemd:
-    name: "{{ valet_service_name }}"
-    state: started
-    scope: user
-  when:
-    - valet_service_name_alias|length == 0
-    - valet_service_name not in valet_sh_service_system_scoped_services
-
-- name: "actions » start | start {{ valet_service_name }} service (system-scoped)"
-  ansible.builtin.systemd:
-    name: "{{ valet_service_name_alias }}"
-    state: started
-  become: true
-  when:
-    - valet_service_name_alias|length > 0
-    - valet_service_name in valet_sh_service_system_scoped_services
-
-- name: "actions » start | start {{ valet_service_name }} service (user-scoped)"
-  ansible.builtin.systemd:
-    name: "{{ valet_service_name_alias }}"
-    state: started
-    scope: user
-  when:
-    - valet_service_name_alias|length > 0
-    - valet_service_name not in valet_sh_service_system_scoped_services
+    loop_var: service_item
+  when: valet_resolved_service is defined and valet_resolved_service.services is defined
