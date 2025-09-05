@@ -1,0 +1,8 @@
+skip_list:
+    - "var-naming[no-role-prefix]"
+    - "schema[meta]"
+    - "schema[playbook]"
+    - "name[template]"
+    - "yaml[line-length]"
+    - "no-changed-when"
+    - "ignore-errors"

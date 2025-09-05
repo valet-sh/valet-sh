@@ -1,0 +1,182 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+- name: Add valkey group
+  ansible.builtin.group:
+    name: valkey
+    state: present
+  become: true
+
+- name: Add valkey user
+  ansible.builtin.user:
+    name: valkey
+    shell: /usr/sbin/nologin
+    home: /nonexistent
+    group: valkey
+  become: true
+
+- name: Set current valkey base path
+  ansible.builtin.set_fact:
+    current_valkey_base_path: "{{ valet_packages_path }}/valkey8"
+    current_valkey_version_key: "8"
+    current_valkey_key: "valkey8"
+
+- name: Set current dist path
+  ansible.builtin.set_fact:
+    current_valkey_dist_path: "{{ current_valkey_base_path }}/dist"
+    current_valkey_etc_path: "{{ current_valkey_base_path }}/etc"
+    current_valkey_etc_conf_path: "{{ current_valkey_base_path }}/etc/conf.d"
+    current_valkey_data_path: "{{ current_valkey_base_path }}/data"
+
+- name: "Create basic directories"
+  ansible.builtin.file:
+    path: "{{ current_valkey_base_directory }}"
+    owner: "valkey"
+    group: "valkey"
+    mode: "0755"
+    state: directory
+  become: true
+  with_items:
+    - "{{ current_valkey_base_path }}"
+    - "{{ current_valkey_dist_path }}"
+    - "{{ current_valkey_etc_path }}"
+    - "/var/log/valkey"
+  loop_control:
+    loop_var: current_valkey_base_directory
+
+- name: "Create data directory '{{ current_valkey_data_path }}'"
+  ansible.builtin.file:
+    path: "{{ current_valkey_data_path }}"
+    owner: "valkey"
+    group: "valkey"
+    mode: "0700"
+    state: directory
+  become: true
+
+- name: "Provide valkey.cnf configuration file"
+  ansible.builtin.template:
+    src: "ubuntu/{{ current_valkey_key }}.conf.j2"
+    dest: "{{ current_valkey_etc_path }}/valkey.conf"
+    owner: "valkey"
+    group: "valkey"
+    mode: "0644"
+  become: true
+  notify: "Systemd | {{ current_valkey_key }} | restarted"
+
+- name: "Provide {{ current_valkey_key }} systemd unit file"
+  ansible.builtin.template:
+    src: "ubuntu/{{ current_valkey_key }}.service.j2"
+    dest: "/etc/systemd/system/{{ current_valkey_key }}-server.service"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: "Systemd | {{ current_valkey_key }} | restarted"
+
+- name: "Provide {{ current_valkey_key }} client"
+  ansible.builtin.template:
+    src: "ubuntu/valkey8-cli.j2"
+    dest: "/usr/local/bin/{{ current_valkey_key }}-cli"
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+###
+### dist installation
+###
+
+- name: Set default value for var 'current_valkey_dist_is_latest'
+  ansible.builtin.set_fact:
+    current_valkey_dist_is_latest: false
+
+- name: "Get stats for dir '{{ current_valkey_dist_path }}/package.sig'"
+  ansible.builtin.stat:
+    path: "{{ current_valkey_dist_path }}/package.sig"
+  register: current_valkey_package_sig_status_obj
+
+- name: "Block"
+  when: current_valkey_package_sig_status_obj.stat.exists
+  block:
+    - name: "Read package.sig file"
+      ansible.builtin.slurp:
+        src: "{{ current_valkey_dist_path }}/package.sig"
+      register: current_valkey_package_sig_obj
+
+    - name: Override value for 'current_valkey_dist_is_latest'
+      ansible.builtin.set_fact:
+        current_valkey_dist_is_latest: true
+      when: (current_valkey_package_sig_obj['content'] | b64decode) == valkey_server_8.package_signature
+
+- name: "Block"
+  when: not current_valkey_dist_is_latest|bool
+  block:
+    - name: "Ensure '{{ current_valkey_key }}' is stopped"
+      ansible.builtin.systemd:
+        name: "{{ current_valkey_key }}"
+        state: stopped
+      become: true
+
+    - name: "Ensure dist folder '{{ current_valkey_dist_path }}' is deleted"
+      ansible.builtin.file:
+        path: "{{ current_valkey_dist_path }}"
+        state: absent
+      become: true
+
+    - name: "Ensure dist folder '{{ current_valkey_dist_path }}' is created"
+      ansible.builtin.file:
+        path: "{{ current_valkey_dist_path }}"
+        owner: "valkey"
+        group: "valkey"
+        mode: "0755"
+        state: directory
+      become: true
+
+    - name: Extract valkey archive
+      ansible.builtin.unarchive:
+        src: "{{ valkey_server_8.package_url }}"
+        dest: "{{ current_valkey_dist_path }}"
+        extra_opts: [--strip-components=1]
+        remote_src: true
+      become: true
+      become_user: "valkey"
+
+    - name: "Delete valkey release tar.gz"
+      ansible.builtin.file:
+        path: "/tmp/{{ valkey_server_8.package_url | basename }}"
+        state: absent
+
+    - name: "Ensure {{ current_valkey_key }} enabled"
+      ansible.builtin.systemd:
+        name: "{{ current_valkey_key }}"
+        enabled: true
+        daemon_reload: true
+      become: true
+
+    - name: "Persist package signing key"
+      ansible.builtin.copy:
+        content: "{{ valkey_server_8.package_signature }}"
+        dest: "{{ current_valkey_dist_path }}/package.sig"
+        mode: "0755"
+      become: true
+      become_user: "valkey"
+
+- name: "Ensure {{ current_valkey_key }}-server is restarted"
+  ansible.builtin.systemd:
+    name: "{{ current_valkey_key }}-server"
+    daemon_reload: true
+    state: restarted
+  become: true

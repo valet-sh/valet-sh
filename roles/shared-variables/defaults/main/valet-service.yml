@@ -148,6 +148,7 @@ valet_sh_service_state_preset_default:
   - mariadb114: false
   - rabbitmq: false
   - redis: true
+  - valkey8: false
   - nginx: true
 valet_sh_service_state_preset_mac:
   - elasticsearch1: false
@@ -177,6 +178,7 @@ valet_sh_service_state_preset_mac:
   - mariadb114: false
   - rabbitmq: false
   - redis: true
+  - valkey8: false
   - nginx: true
   - dnsmasq: true
 valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
@@ -209,6 +211,7 @@ valet_sh_service_privileged_services_default:
   - mariadb114
   - rabbitmq
   - redis
+  - valkey8
   - nginx
 valet_sh_service_privileged_services_mac:
   - nginx
@@ -316,6 +319,7 @@ valet_sh_service_alias_mapping_default:
   php84: "php8.4-fpm"
   rabbitmq: "rabbitmq-server"
   redis: "redis-server"
+  valkey8: "valkey8-server"
 valet_sh_service_alias_mapping_mac:
   mysql57: "vsh-mysql57"
   mysql80: "vsh-mysql80"
@@ -342,12 +346,15 @@ valet_sh_service_alias_mapping_mac:
   elasticsearch8: "vsh-elasticsearch8"
   opensearch1: "vsh-opensearch1"
   opensearch2: "vsh-opensearch2"
+  valkey8: "vsh-valkey8"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
 
 valet_sh_service_rosetta2_emulation:
   rabbitmq: false
   nginx: true
   dnsmasq: true
+  redis: true
+  valkey8: true
   mysql57: true
   mysql80: true
   mysql84: true
