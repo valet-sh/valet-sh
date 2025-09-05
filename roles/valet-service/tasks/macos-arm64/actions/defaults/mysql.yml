@@ -43,7 +43,7 @@
   set_fact:
     valet_service_name_version: "{{ valet_service_name[-4:-2] }}.{{ valet_service_name[-2] }}"
     valet_service_base_name: "mariadb"
-  when: valet_service_name == "mariadb1011
+  when: valet_service_name == "mariadb1011"
 
 - block:
   - name: "create symlinks for default mysql"
