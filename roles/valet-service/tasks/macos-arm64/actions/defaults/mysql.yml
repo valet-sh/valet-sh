@@ -39,6 +39,11 @@
     valet_service_base_name: "mariadb"
   when: valet_service_name is search("mariadb")
 
+- name: set valet_service_name version if service is mariadb1011 (dirty hack)
+  set_fact:
+    valet_service_name_version: "{{ valet_service_name[-4:-2] }}.{{ valet_service_name[-2] }}"
+    valet_service_base_name: "mariadb"
+  when: valet_service_name == "mariadb1011
 
 - block:
   - name: "create symlinks for default mysql"

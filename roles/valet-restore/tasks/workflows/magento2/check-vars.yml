@@ -102,6 +102,15 @@
 
 - name: "workflows » magento2 » check-vars | override mysql server port configuration"
   set_fact:
+    valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mariadb1011 }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mariadb is defined
+    - valet_sh_project_vars.services.mariadb.version is defined
+    - valet_sh_project_vars.services.mariadb.version == 10.11
+
+- name: "workflows » magento2 » check-vars | override mysql server port configuration"
+  set_fact:
     valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mariadb114 }}"
   when:
     - valet_sh_project_vars.services is defined

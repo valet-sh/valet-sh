@@ -21,4 +21,6 @@
 
 - include_tasks: install-106.yml
 
+- include_tasks: install-1011.yml
+
 - include_tasks: install-114.yml

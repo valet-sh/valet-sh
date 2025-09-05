@@ -61,6 +61,7 @@ valet_sh_service_defaultable_services_default:
       - mysql80
       - mysql84
       - mariadb104
+      - mariadb1011
       - mariadb106
       - mariadb114
   - scope: xdebug
@@ -107,6 +108,7 @@ valet_sh_service_defaultable_services_mac:
       - mysql84
       - mariadb104
       - mariadb106
+      - mariadb1011
       - mariadb114
   - scope: xdebug
     default: xdebug3
@@ -145,6 +147,7 @@ valet_sh_service_state_preset_default:
   - mysql84: false
   - mariadb104: false
   - mariadb106: false
+  - mariadb1011: false
   - mariadb114: false
   - rabbitmq: false
   - redis: true
@@ -175,6 +178,7 @@ valet_sh_service_state_preset_mac:
   - mysql84: false
   - mariadb104: false
   - mariadb106: false
+  - mariadb1011: false
   - mariadb114: false
   - rabbitmq: false
   - redis: true
@@ -208,6 +212,7 @@ valet_sh_service_privileged_services_default:
   - mysql84
   - mariadb104
   - mariadb106
+  - mariadb1011
   - mariadb114
   - rabbitmq
   - redis
@@ -299,6 +304,11 @@ valet_sh_service_fuzzy_alias_mapping:
       - "mariadb10.6"
       - "MARIADB10.6"
       - "MARIADB106"
+  - target: mariadb1011
+    aliases:
+      - "mariadb10.11"
+      - "MARIADB10.11"
+      - "MARIADB1011"
   - target: mariadb114
     aliases:
       - "mariadb11.4"
@@ -326,6 +336,7 @@ valet_sh_service_alias_mapping_mac:
   mysql84: "vsh-mysql84"
   mariadb104: "vsh-mariadb104"
   mariadb106: "vsh-mariadb106"
+  mariadb1011: "vsh-mariadb1011"
   mariadb114: "vsh-mariadb114"
   php56: "vsh-php56"
   php70: "vsh-php70"
@@ -360,6 +371,7 @@ valet_sh_service_rosetta2_emulation:
   mysql84: true
   mariadb104: true
   mariadb106: true
+  mariadb1011: true
   mariadb114: true
   php56: true
   php70: true
