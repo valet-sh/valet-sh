@@ -17,24 +17,37 @@
 ###########################
 ## start handle service states
 
-- name: "internal-actions » handle | flush handlers"
-  ansible.builtin.meta: flush_handlers
-- name: "internal-actions » handle | include valet services file"
-  ansible.builtin.include_vars:
-    file: "{{ valet_etc_services_file }}"
-    name: valet_sh_services_obj
+- name: Debug valet_sh_newly_installed_services
+  ansible.builtin.debug:
+    var: valet_sh_newly_installed_services
 
-- name: "internal-actions » handle | update service object"
+# - name: "internal-actions » handle | flush handlers"
+#   ansible.builtin.meta: flush_handlers
+
+- name: "internal-actions » handle | set valet_all_services from newly installed services"
   ansible.builtin.set_fact:
-    valet_sh_service_target_states: "{{ valet_sh_service_state_preset | combine(valet_sh_services_obj.states) }}"
+    valet_all_services: "{{ valet_sh_newly_installed_services.services | default([]) }}"
 
-- name: "internal-actions » handle | handle state for each service"
-  ansible.builtin.include_tasks: sub-handle-state.yml
-  vars:
-    valet_current_service_item: "{{ valet_sh_service_state_target_item }}"
-  with_dict: "{{ valet_sh_service_target_states }}"
+- name: "internal-actions » handle | extract canonical names"
+  ansible.builtin.set_fact:
+    valet_canonical_names: "{{ valet_all_services | map(attribute='canonical') | list }}"
+
+- name: "internal-actions » handle | set services as enabled using vsh_service_state module"
+  vsh_service_state:
+    action: "set_enabled"
+    canonical_names: "{{ valet_canonical_names }}"
+
+- name: "internal-actions » handle | enable resolved services"
+  ansible.builtin.systemd:
+    name: "{{ service_item.service.name }}"
+    state: started
+    enabled: true
+    scope: "{{ service_item.service.scope }}"
+    daemon_reload: true
+  loop: "{{ valet_all_services }}"
   loop_control:
-    loop_var: valet_sh_service_state_target_item
+    loop_var: service_item
+  when: service_item.service.name is defined
 
 ## end handle services states
 ########################
@@ -42,28 +55,31 @@
 #######################
 ## start handle defaults
 
-- name: "internal-actions » handle | create dict 'valet_sh_service_default_services'"
-  ansible.builtin.set_fact:
-    valet_sh_service_default_services: {}
+- name: "internal-actions » handle | include valet services file to check existing defaults"
+  ansible.builtin.include_vars:
+    file: "{{ valet_etc_services_file }}"
+    name: valet_sh_services_obj
 
-- name: "internal-actions » handle | handle defaults for each service"
-  ansible.builtin.include_tasks: sub-handle-defaults.yml
-  vars:
-    valet_sh_service_current_service_item: "{{ valet_sh_service_defaultable_services_item }}"
-  with_items: "{{ valet_sh_service_defaultable_services }}"
+- name: "internal-actions » handle | set default only for services without existing defaults"
+  vsh_service_state:
+    action: "set_default"
+    service_name: "{{ service_item.service_name }}"
+    canonical_names: "{{ service_item.canonical }}"
+  loop: "{{ valet_all_services }}"
   loop_control:
-    loop_var: valet_sh_service_defaultable_services_item
+    loop_var: service_item
+  when:
+    - service_item.defaultable | default(false)
+    - service_item.service_name not in (valet_sh_services_obj.services.defaults.keys() | default([]))
 
-- name: "internal-actions » handle | update service defaults object"
-  ansible.builtin.set_fact:
-    valet_sh_service_target_defaults: "{{ valet_sh_service_default_services | combine(valet_sh_services_obj.defaults) }}"
-
-- ansible.builtin.include_tasks: "ubuntu/actions/default.yml"
+- name: "internal-actions » handle | run default action for defaultable services"
+  ansible.builtin.include_tasks: "ubuntu/actions/default.yml"
   vars:
-    valet_service_name: "{{ valet_sh_service_defaults_target_item.value }}"
-  with_dict: "{{ valet_sh_service_target_defaults }}"
+    valet_service_name: "{{ service_item.canonical }}"
+  loop: "{{ valet_all_services }}"
   loop_control:
-    loop_var: valet_sh_service_defaults_target_item
+    loop_var: service_item
+  when: service_item.defaultable | default(false)
 
 ## end handle defaults
 ########################
