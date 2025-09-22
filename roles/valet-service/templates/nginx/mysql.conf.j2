@@ -26,5 +26,5 @@ upstream mysql84 {
 
 server {
     listen 127.0.0.1:3306;
-    proxy_pass {{ valet_service_name }};
+    proxy_pass {{ valet_service_name_full }};
 }
