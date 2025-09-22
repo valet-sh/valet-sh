@@ -23,7 +23,7 @@
 
 - name: "actions » restart | resolve current service name and configuration"
   vsh_service_resolver:
-    service: "{{ valet_current_service_name }}"
+    services: ["{{ valet_current_service_name }}"]
     current_os: "{{ current_os }}"
   register: valet_current_resolved_service
 

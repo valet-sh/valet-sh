@@ -21,44 +21,54 @@
 
 - name: "actions » list | include valet services file"
   ansible.builtin.set_fact:
-    valet_sh_services_current_states: "{{ valet_sh_service_state_preset | combine(valet_sh_services_obj.states) }}"
+    valet_sh_services_current_defaults: "{{ valet_sh_services_obj.services.defaults }}"
+    valet_sh_services_current_states: "{{ valet_sh_services_obj.services.states }}"
+    valet_sh_services_current_installed: "{{ valet_sh_services_obj.services.installed }}"
 
 - name: "actions » list | set empty array 'valet_sh_service_state_list'"
   ansible.builtin.set_fact:
-    valet_sh_service_state_list: []
-
-- name: "actions » list | add services to array"
-  ansible.builtin.set_fact:
-    valet_sh_service_state_list: "{{ valet_sh_service_state_list + [[valet_sh_services_current_states_item.key, valet_sh_services_current_states_item.value]] }}"
-  with_dict: "{{ valet_sh_services_current_states }}"
-  loop_control:
-    loop_var: valet_sh_services_current_states_item
-
-- name: "actions » list | print table based on 'valet_sh_service_state_list' array"
-  vsh-table:
-    headers: ["Service", "State"]
-    rows: "{{ valet_sh_service_state_list }}"
-  tags:
-    - skip_ansible_lint
-
-- name: "actions » list | get service defaults"
-  ansible.builtin.set_fact:
-    valet_sh_services_current_defaults: "{{ valet_sh_services_obj.defaults }}"
-
-- name: "actions » list | set empty array 'valet_sh_service_defaults_list'"
-  ansible.builtin.set_fact:
     valet_sh_service_defaults_list: []
+    valet_sh_service_state_list: []
+    valet_sh_service_installed_list: []
 
 - name: "actions » list | add services to array"
   ansible.builtin.set_fact:
-    valet_sh_service_defaults_list: "{{ valet_sh_service_defaults_list + [[valet_sh_services_current_defaults_item.value]] }}"
+    valet_sh_service_defaults_list: "{{ valet_sh_service_defaults_list + [[ valet_sh_services_current_defaults_item.key, valet_sh_services_current_defaults_item.value ]] }}"
   with_dict: "{{ valet_sh_services_current_defaults }}"
   loop_control:
     loop_var: valet_sh_services_current_defaults_item
 
+- name: "actions » list | add services to array"
+  ansible.builtin.set_fact:
+    valet_sh_service_state_list: "{{ valet_sh_service_state_list + [[ valet_sh_services_current_states_item.key, valet_sh_services_current_states_item.value]] }}"
+  with_dict: "{{ valet_sh_services_current_states }}"
+  loop_control:
+    loop_var: valet_sh_services_current_states_item
+
+- name: "actions » list | extract service names from dictionary"
+  ansible.builtin.set_fact:
+    valet_sh_service_installed_list: "{{ valet_sh_service_installed_list + [ [ valet_sh_services_current_installed_item.key] ] }}"
+  with_dict: "{{ valet_sh_services_current_installed }}"
+  loop_control:
+    loop_var: valet_sh_services_current_installed_item
+
+- name: "actions » list | print table based on 'valet_sh_service_installed_list' array"
+  vsh-table:
+    headers: ["Service - Installed"]
+    rows: "{{ valet_sh_service_installed_list }}"
+  tags:
+    - skip_ansible_lint
+
+- name: "actions » list | print table based on 'valet_sh_service_state_list' array"
+  vsh-table:
+    headers: ["Service", "Autostart (0=disabled, 1=enabled)"]
+    rows: "{{ valet_sh_service_state_list }}"
+  tags:
+    - skip_ansible_lint
+
 - name: "actions » list | print table based on 'valet_sh_service_defaults_list' array"
   vsh-table:
-    headers: ["Default-Service"]
+    headers: ["Default", "Service Name"]
     rows: "{{ valet_sh_service_defaults_list }}"
   tags:
     - skip_ansible_lint

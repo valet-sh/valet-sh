@@ -15,18 +15,28 @@
 ##
 ---
 
-- name: "actions » stop | fail when no service name was given"
-  ansible.builtin.fail:
-    msg: "no service name was given"
-  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
-
 - name: "actions » stop | stop resolved services"
   ansible.builtin.systemd:
-    name: "{{ service_item.systemd.name }}"
+    name: "{{ service_item.service.name }}"
     state: stopped
     scope: "{{ service_item.service.scope }}"
     daemon_reload: true
-  loop: "{{ valet_resolved_service.services | default([]) }}"
+  loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item
-  when: valet_resolved_service is defined and valet_resolved_service.services is defined
+
+- name: Debug valet_all_services
+  ansible.builtin.debug:
+    var: valet_all_services
+
+- name: "actions » stop | stop all resolved services"
+  ansible.builtin.systemd:
+    name: "{{ service_item.service.name }}"
+    state: stopped
+    enabled: false
+    scope: "{{ service_item.service.scope }}"
+    daemon_reload: true
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: service_item
+  when: "'--all' in valet_cli_opts"

@@ -14,10 +14,6 @@
 #   limitations under the License.
 ##
 ---
-- name: "actions » start | fail when no service name was given"
-  ansible.builtin.fail:
-    msg: "no service name was given"
-  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
 
 - name: "actions » start | start resolved services"
   ansible.builtin.systemd:
@@ -25,7 +21,6 @@
     state: started
     scope: "{{ service_item.service.scope }}"
     daemon_reload: true
-  loop: "{{ valet_resolved_service.services | default([]) }}"
+  loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item
-  when: valet_resolved_service is defined and valet_resolved_service.services is defined

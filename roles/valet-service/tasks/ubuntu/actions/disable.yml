@@ -17,8 +17,24 @@
 
 - name: "actions » disable | fail when no service name was given"
   ansible.builtin.fail:
-    msg: "no service name was given"
-  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
+    msg: "supplied no service names"
+  when: (valet_service_names is not defined) or (valet_service_names | length == 0)
+
+- name: "actions » disable | check if service is installed"
+  vsh_service_state:
+    action: "is_installed"
+    canonical_names: "{{ valet_canonical_names }}"
+  register: service_installation_check
+
+- name: "actions » disable | fail if service is not installed"
+  ansible.builtin.fail:
+    msg: "services '{{ service_installation_check.checked_canonical_names | join(', ') }}' are not installed. Please install them first."
+  when: not service_installation_check.is_installed
+
+- name: "actions » disable | set services as disabled using vsh_service_state module"
+  vsh_service_state:
+    action: "set_disabled"
+    canonical_names: "{{ valet_canonical_names }}"
 
 - name: "actions » disable | disable resolved services"
   ansible.builtin.systemd:
@@ -27,36 +43,6 @@
     enabled: false
     scope: "{{ service_item.service.scope }}"
     daemon_reload: true
-  loop: "{{ valet_resolved_service.services | default([]) }}"
+  loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item
-  when: valet_resolved_service is defined and valet_resolved_service.services is defined
-
-- name: "actions » disable | include valet services file"
-  ansible.builtin.include_vars:
-    file: "{{ valet_etc_services_file }}"
-    name: valet_sh_services_obj
-
-- name: "actions » disable | prepare new config element"
-  ansible.builtin.set_fact:
-    new_service_state_element: "{ '{{ valet_service_name }}': false }"
-
-- name: "actions » disable | update service object"
-  ansible.builtin.set_fact:
-    valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
-
-- name: "actions » disable | merge objects"
-  ansible.builtin.set_fact:
-    valet_sh_services_obj:
-      states: "{{ valet_sh_services_updated_states }}"
-      defaults: "{{ valet_sh_services_obj.defaults }}"
-
-- name: "actions » disable | transform object into nice yaml output"
-  ansible.builtin.set_fact:
-    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
-
-- name: "actions » disable | write new services.yml file"
-  ansible.builtin.copy:
-    content: "{{ valet_etc_services_list }}"
-    dest: "{{ valet_etc_services_file }}"
-  become: true
