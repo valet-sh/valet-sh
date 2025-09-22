@@ -21,6 +21,7 @@
   gather_facts: true
   vars:
     valet_uninstall_services: "{{ cli.args | join(' ') if cli.args is defined and cli.args | length > 0 else '' }}"
+    valet_cli_opts: "{{ cli.opts | default([]) }}"
   vars_prompt:
     - name: "ansible_become_pass"
       prompt: "[sudo] Password"
