@@ -40,7 +40,7 @@
         src: "config/{{ current_opensearch_service.canonical }}.yml.j2"
         dest: "{{ current_opensearch_service.configuration.base_path }}/config/opensearch.yml"
         mode: "0644"
-      notify: "systemd | vsh-{{ current_opensearch_service.canonical }} | restarted"
+      notify: "systemd | vsh-opensearch | restarted"
 
     - name: "ensure user systemd directory exists"
       ansible.builtin.file:
@@ -55,7 +55,7 @@
         owner: "{{ current_user }}"
         group: "{{ current_group }}"
         mode: "0644"
-      notify: "systemd | vsh-{{ current_opensearch_service.canonical }} | restarted"
+      notify: "systemd | vsh-opensearch | restarted"
 
     - name: "Ensure vsh-{{ current_opensearch_service.canonical }} is started"
       ansible.builtin.systemd:
@@ -76,12 +76,12 @@
 
     - name: "install plugins"
       containers.podman.podman_container_exec:
-        name: "{{ current_opensearch_service.canonical }}"
+        name: "vsh-{{ current_opensearch_service.canonical }}"
         command: "{{ current_opensearch_service.configuration.plugins.install_command | replace('{{ name }}', current_opensearch_plugin) }}"
       with_items: "{{ current_opensearch_service.configuration.plugins.default_plugins }}"
       loop_control:
         loop_var: current_opensearch_plugin
-      notify: "systemd | vsh-{{ current_opensearch_service.canonical }} | restarted"
+      notify: "systemd | vsh-opensearch | restarted"
       when: not current_opensearch_base_path_obj.stat.exists
 
     - name: Stop vsh-{{ current_opensearch_service.canonical }} container after plugin installation
@@ -89,3 +89,8 @@
         name: "{{ current_opensearch_service.service.name }}"
         state: stopped
         scope: "{{ current_opensearch_service.service.scope }}"
+
+    - name: "Mark vsh-{{ current_opensearch_service.canonical }} as installed in the services file"
+      vsh_service_state:
+        action: "add_installed"
+        canonical_names: "{{ current_opensearch_service.canonical }}"
