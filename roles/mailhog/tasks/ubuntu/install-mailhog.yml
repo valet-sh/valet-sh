@@ -66,3 +66,8 @@
     enabled: true
     state: started
     scope: "{{ current_mailhog_service.service.scope }}"
+
+- name: "Add mailhog to installed services"
+  vsh_service_state:
+    action: "add_installed"
+    canonical_names: "{{ current_mailhog_service.canonical }}"
