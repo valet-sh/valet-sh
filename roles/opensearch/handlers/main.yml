@@ -14,64 +14,49 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | vsh-opensearch1 | started
+- name: "systemd | vsh-opensearch | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ current_opensearch_systemd_name }}"
+    name: "{{ opensearch_item.service.name }}"
     state: started
-    scope: "{{ current_opensearch_systemd_scope }}"
+    scope: "{{ opensearch_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^opensearch.*') }}"
+  loop_control:
+    loop_var: opensearch_item
+  listen: "systemd | vsh-opensearch | started"
 
-- name: systemd | vsh-opensearch1 | stopped
+- name: "systemd | vsh-opensearch | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ current_opensearch_systemd_name }}"
+    name: "{{ opensearch_item.service.name }}"
     state: stopped
-    scope: "{{ current_opensearch_systemd_scope }}"
+    scope: "{{ opensearch_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^opensearch.*') }}"
+  loop_control:
+    loop_var: opensearch_item
+  listen: "systemd | vsh-opensearch | stopped"
 
-- name: systemd | vsh-opensearch1 | restarted
+- name: "systemd | vsh-opensearch | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ current_opensearch_systemd_name }}"
+    name: "{{ opensearch_item.service.name }}"
     state: restarted
-    scope: "{{ current_opensearch_systemd_scope }}"
+    scope: "{{ opensearch_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^opensearch.*') }}"
+  loop_control:
+    loop_var: opensearch_item
+  listen: "systemd | vsh-opensearch | restarted"
 
-- name: systemd | vsh-opensearch1 | reloaded
+- name: "systemd | vsh-opensearch | reloaded"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ current_opensearch_systemd_name }}"
+    name: "{{ opensearch_item.service.name }}"
     state: restarted
-    scope: "{{ current_opensearch_systemd_scope }}"
-
-- name: brew | vsh-opensearch1 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch1"
-
-- name: systemd | vsh-opensearch2 | started
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: "{{ current_opensearch_systemd_name }}"
-    state: started
-    scope: "{{ current_opensearch_systemd_scope }}"
-
-- name: systemd | vsh-opensearch2 | stopped
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: "{{ current_opensearch_systemd_name }}"
-    state: stopped
-    scope: "{{ current_opensearch_systemd_scope }}"
-
-- name: systemd | vsh-opensearch2 | restarted
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: "{{ current_opensearch_systemd_name }}"
-    state: restarted
-    scope: "{{ current_opensearch_systemd_scope }}"
-
-- name: systemd | vsh-opensearch2 | reloaded
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: "{{ current_opensearch_systemd_name }}"
-    state: restarted
-    scope: "{{ current_opensearch_systemd_scope }}"
+    scope: "{{ opensearch_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^opensearch.*') }}"
+  loop_control:
+    loop_var: opensearch_item
+  listen: "systemd | vsh-opensearch | reloaded"
 
 - name: brew | vsh-opensearch2 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"
