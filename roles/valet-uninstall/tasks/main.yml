@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2025 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,35 +14,14 @@
 #   limitations under the License.
 ##
 ---
-- name: "resolve requested services"
-  vsh_service_resolver:
-    service: "{{ valet_uninstall_services }}"
-    current_os: "{{ current_os }}"
-  register: valet_resolved_uninstall_services
+
+- name: "uninstall » include uninstall-resolved-services.yml«"
+  ansible.builtin.include_tasks: uninstall-resolved-services.yml
   when:
     - valet_uninstall_services is defined
     - valet_uninstall_services | length > 0
+    - not '--all' in valet_cli_opts
 
-- name: Debug valet_resolved_uninstall_services
-  ansible.builtin.debug:
-    var: valet_resolved_uninstall_services
-
-- name: "set roles to uninstall"
-  ansible.builtin.set_fact:
-    valet_uninstall_roles_to_uninstall: "{{ valet_resolved_uninstall_services.services | map(attribute='role_name') | list | unique }}"
-  when:
-    - valet_resolved_uninstall_services is defined
-    - valet_resolved_uninstall_services.services is defined
-
-- name: "include role"
-  ansible.builtin.include_role:
-    name: "{{ valet_uninstall_roles_item }}"
-    public: true
-  vars:
-    valet_resolved_service: "{{ valet_resolved_uninstall_services | combine({'services': valet_resolved_uninstall_services.services | selectattr('role_name', 'equalto', valet_uninstall_roles_item) | list}) }}"
-  with_items:
-    - "{{ valet_uninstall_roles_to_uninstall }}"
-  loop_control:
-    loop_var: valet_uninstall_roles_item
-  when:
-    - valet_resolved_uninstall_services.services | selectattr('role_name', 'equalto', valet_uninstall_roles_item) | list | length > 0
+- name: "uninstall » include uninstall-all-services.yml«"
+  ansible.builtin.include_tasks: uninstall-all-services.yml
+  when: "'--all' in valet_cli_opts"
