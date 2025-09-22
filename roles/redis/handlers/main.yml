@@ -14,26 +14,51 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | redis-server | started
+
+- name: "systemd | vsh-redis-server | started"
   ansible.builtin.systemd:
-    name: "{{ redis_server_systemd_name }}"
+    daemon_reload: true
+    name: "{{ redis_item.service.name }}"
     state: started
-    daemon_reload: true
-    scope: "{{ redis_server_systemd_scope }}"
+    scope: "{{ redis_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop_control:
+    loop_var: redis_item
+  listen: "systemd | vsh-redis-server | started"
 
-- name: systemd | redis-server | stopped
+- name: "systemd | vsh-redis-server | stopped"
   ansible.builtin.systemd:
-    name: "{{ redis_server_systemd_name }}"
+    daemon_reload: true
+    name: "{{ redis_item.service.name }}"
     state: stopped
-    daemon_reload: true
-    scope: "{{ redis_server_systemd_scope }}"
+    scope: "{{ redis_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop_control:
+    loop_var: redis_item
+  listen: "systemd | vsh-redis-server | started"
 
-- name: systemd | redis-server | restarted
+- name: "systemd | vsh-redis-server | restarted"
   ansible.builtin.systemd:
-    name: "{{ redis_server_systemd_name }}"
-    state: restarted
     daemon_reload: true
-    scope: "{{ redis_server_systemd_scope }}"
+    name: "{{ redis_item.service.name }}"
+    state: restarted
+    scope: "{{ redis_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop_control:
+    loop_var: redis_item
+  listen: "systemd | vsh-redis-server | started"
+
+- name: "systemd | vsh-redis-server | reloaded"
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ redis_item.service.name }}"
+    state: restarted
+    scope: "{{ redis_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop_control:
+    loop_var: redis_item
+  listen: "systemd | vsh-redis-server | restarted"
+
 
 - name: brew | redis | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start redis"
