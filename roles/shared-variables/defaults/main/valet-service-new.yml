@@ -43,7 +43,7 @@ valet_sh_service_definitions:
 
   opensearch:
     display_name: "OpenSearch"
-    versions: ["1", "2"]
+    versions: ["1", "2", "3"]
     default_version: "2"
     role_name: "opensearch"
     defaultable: true
@@ -51,7 +51,7 @@ valet_sh_service_definitions:
   mysql:
     display_name: "MySQL"
     versions: ["5.7", "8.0", "8.4"]
-    default_version: "5.7"
+    default_version: "8.0"
     role_name: "mysql-community-server"
     defaultable: true
 
@@ -86,29 +86,9 @@ valet_sh_service_definitions:
     role_name: "dnsmasq"
     defaultable: false
 
-  mailhog:
-    display_name: "MailHog"
+  mailpit:
+    display_name: "Mailpit"
     versions: ["default"]
     default_version: "default"
-    role_name: "mailhog"
+    role_name: "mailpit"
     defaultable: false
-
-valet_sh_service_default_states:
-  enabled_services:
-    - "nginx"
-    - "php73"
-    - "redis"
-    - "mysql57"
-    - "elasticsearch6"
-  disabled_services:
-    - "rabbitmq"
-
-valet_sh_service_default_states_mac:
-  enabled_services:
-    - "nginx"
-    - "php73"
-    - "redis"
-    - "mysql57"
-    - "elasticsearch6"
-  disabled_services:
-    - "rabbitmq"
