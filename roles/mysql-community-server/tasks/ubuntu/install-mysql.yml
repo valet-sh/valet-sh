@@ -15,10 +15,21 @@
 ##
 ---
 
-- name: set current mysql base path
-  ansible.builtin.set_fact:
-    current_mysql_base_path: "{{ current_mysql_service.base_paths }}"
-    current_mysql_service.canonical: "vsh-{{ current_mysql_service.canonical }}"
+- name: debug current_mysql_service
+  ansible.builtin.debug:
+    var: current_mysql_service
+
+# TODO Maybe not needed anymore because of containerization and using exec commands
+- name: install base packages
+  ansible.builtin.apt:
+    name: "{{ mysql_base_packages }}"
+    state: present
+  become: true
+  loop_control:
+    loop_var: mysql_base_packages
+  loop:
+    - "mysql-client"
+    - "python3-pymysql"
 
 - name: "create basic directories"
   ansible.builtin.file:
@@ -30,6 +41,7 @@
   become: true
   with_items:
     - "{{ current_mysql_service.configuration.base_path }}"
+    - "{{ current_mysql_service.configuration.base_path }}/user"
     - "{{ current_mysql_service.configuration.base_path }}/etc"
     - "{{ current_mysql_service.configuration.base_path }}/etc/conf.d"
   loop_control:
@@ -37,14 +49,14 @@
 
 - name: "Pull vsh-{{ current_mysql_service.canonical }} image"
   containers.podman.podman_image:
-    name: "{{ current_mysql_service.configuration.docker_images }}"
+    name: "{{ current_mysql_service.configuration.docker_image }}"
     pull: true
     state: present
 
 - name: "provide .my.cnf configuration file"
   ansible.builtin.template:
     src: "{{ current_mysql_service.canonical }}/.my.cnf.j2"
-    dest: "{{ current_home }}/.my{{ current_mysql_service.version }}.cnf"
+    dest: "{{ current_mysql_service.configuration.base_path }}/user/.my.cnf"
     mode: "0644"
 
 - name: "provide my.cnf configuration file"
@@ -52,7 +64,7 @@
     src: "{{ current_mysql_service.canonical }}/my.cnf.j2"
     dest: "{{ current_mysql_service.configuration.base_path }}/etc/my.cnf"
     mode: "0644"
-  notify: "systemd | vsh-{{ current_mysql_service.canonical }} | restarted"
+  notify: "systemd | vsh-mysql | restarted"
 
 - name: "provide mysqld.cnf configuration file"
   ansible.builtin.template:
@@ -61,7 +73,7 @@
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | vsh-{{ current_mysql_service.canonical }} | restarted"
+  notify: "systemd | vsh-mysql | restarted"
 
 - name: "ensure user systemd directory exists"
   ansible.builtin.file:
@@ -72,11 +84,11 @@
 - name: "provide vsh-{{ current_mysql_service.canonical }} systemd unit file"
   ansible.builtin.template:
     src: "systemd/mysql.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/{{ current_mysql_service.canonical }}.service"
+    dest: "{{ current_home }}/.config/systemd/user/{{ current_mysql_service.service.name }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | vsh-{{ current_mysql_service.canonical }} | restarted"
+  notify: "systemd | vsh-mysql | restarted"
 
 - name: "provide vsh-{{ current_mysql_service.canonical }} mysql client"
   ansible.builtin.template:
@@ -129,3 +141,8 @@
     name: "{{ current_mysql_service.service.name }}"
     state: stopped
     scope: "{{ current_mysql_service.service.scope }}"
+
+- name: "Mark vsh-{{ current_mysql_service.canonical }} as installed in the services file"
+  vsh_service_state:
+    action: "add_installed"
+    canonical_names: "{{ current_mysql_service.canonical }}"
