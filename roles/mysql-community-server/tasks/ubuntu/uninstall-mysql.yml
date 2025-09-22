@@ -33,10 +33,16 @@
       containers.podman.podman_volume:
         name: "vsh-{{ current_mysql_service.canonical }}-data"
         state: absent
+      when: "'--purge' in valet_cli_opts"
 
     - name: "Remove vsh-{{ current_mysql_service.canonical }} systemd service"
       ansible.builtin.file:
         path: "{{ current_home }}/.config/systemd/user/{{ current_mysql_service.service.name }}.service"
+        state: absent
+
+    - name: "Remove vsh-{{ current_mysql_service.canonical }} default.target.wants symlink"
+      ansible.builtin.file:
+        path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_mysql_service.service.name }}.service"
         state: absent
 
     - name: "Remove vsh-{{ current_mysql_service.canonical }} configurations"
@@ -49,3 +55,9 @@
         name: "{{ current_mysql_service.configuration.docker_image }}"
         state: absent
         force: true
+      when: "'--purge' in valet_cli_opts"
+
+    - name: "Remove vsh-{{ current_mysql_service.canonical }} from installed services"
+      vsh_service_state:
+        action: "remove_installed"
+        canonical_names: "{{ current_mysql_service.canonical }}"
