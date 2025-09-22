@@ -14,13 +14,3 @@
 #   limitations under the License.
 ##
 ---
-- name: install base packages
-  ansible.builtin.apt:
-    name: "{{ mysql_base_packages }}"
-    state: present
-  become: true
-  loop_control:
-    loop_var: mysql_base_packages
-  loop:
-    - "mysql-client"
-    - "python3-pymysql"

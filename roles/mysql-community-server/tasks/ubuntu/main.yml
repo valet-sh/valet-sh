@@ -18,7 +18,6 @@
 
 
 - ansible.builtin.include_tasks: migrations/main.yml
-- ansible.builtin.include_tasks: base.yml
 
 - name: "Install MySQL {{ item.version }}"
   ansible.builtin.include_tasks: install-mysql.yml
@@ -37,24 +36,3 @@
   when:
     - valet_uninstall_services is defined
     - valet_uninstall_services | length > 0
-
-- name: ensure mysql wrapper script is up2date
-  ansible.builtin.template:
-    src: "wrapper/mysql-wrapper.j2"
-    dest: "/usr/local/bin/mysql"
-    mode: "0755"
-  become: true
-
-- name: ensure mysqladmin wrapper script is up2date
-  ansible.builtin.template:
-    src: "wrapper/mysqladmin-wrapper.j2"
-    dest: "/usr/local/bin/mysqladmin"
-    mode: "0755"
-  become: true
-
-- name: ensure mysqldump wrapper script is up2date
-  ansible.builtin.template:
-    src: "wrapper/mysqldump-wrapper.j2"
-    dest: "/usr/local/bin/mysqldump"
-    mode: "0755"
-  become: true
