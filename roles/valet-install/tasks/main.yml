@@ -16,7 +16,7 @@
 ---
 - name: "resolve requested services"
   vsh_service_resolver:
-    service: "{{ valet_install_services }}"
+    services: ["{{ valet_install_services }}"]
     current_os: "{{ current_os }}"
   register: valet_resolved_install_services
   when:
@@ -51,6 +51,7 @@
 - name: "include service-specific roles"
   ansible.builtin.include_role:
     name: "{{ valet_install_roles_item }}"
+    public: true
   vars:
     valet_resolved_service: "{{ valet_resolved_install_services | combine({'services': valet_resolved_install_services.services | selectattr('role_name', 'equalto', valet_install_roles_item) | list}) }}"
   loop: "{{ valet_install_roles_to_install | default([]) }}"
@@ -63,9 +64,13 @@
     - valet_resolved_install_services is defined
     - valet_resolved_install_services.services is defined
 
+# TODO: Needs to be discussed if we want to keep this or if a install is really just the install
+# and the handling of services would be done by calling the valet.sh service commands explicitly
+
 - name: "include role"
   ansible.builtin.include_role:
     name: "valet-service"
+    public: true
   vars:
     valet_sh_service_internal_action: true
     valet_service_action: "handle"
