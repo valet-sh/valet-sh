@@ -43,6 +43,12 @@ def resolve_service_version(service_name, requested_version, service_meta):
     available_versions = service_meta.get('versions', [])
     default_version = service_meta.get('default_version')
 
+    if not available_versions:
+        if default_version:
+            return default_version
+        else:
+            return 'default'
+
     if not requested_version:
         if default_version:
             return default_version
@@ -64,7 +70,6 @@ def resolve_service_version(service_name, requested_version, service_meta):
 
 def build_service_config(service_name, version, service_meta, detailed_config, current_os):
     version_compact = version.replace('.', '') if version else ''
-    canonical = f"{service_name}{version_compact}"
 
     if version and version.lower() not in ['latest', 'default']:
         canonical = f"{service_name}{version_compact}"
@@ -77,6 +82,7 @@ def build_service_config(service_name, version, service_meta, detailed_config, c
         'canonical': canonical,
         'display_name': service_meta.get('display_name', service_name),
         'defaultable': service_meta.get('defaultable', False),
+        'group': service_meta.get('group'),
         'matched_pattern': 'definitions_lookup'
     }
 
@@ -123,8 +129,7 @@ def resolve_service(service_input, definitions, services_dir, current_os):
 
 def main():
     module_args = dict(
-        services=dict(type='list', required=False),
-        service=dict(type='str', required=False),
+        services=dict(type='list', required=True),
         definitions_file=dict(
             type='str',
             required=False,
@@ -149,19 +154,10 @@ def main():
         supports_check_mode=True
     )
 
-    services_input = module.params['services'] or []
-    single_service = module.params['service']
+    services_input = module.params['services']
     definitions_file = module.params['definitions_file']
     services_dir = module.params['services_dir']
     current_os = module.params['current_os']
-
-    if single_service:
-        services_input = [single_service]
-
-
-    # TODO: Empty input will install core role set and does not fail here
-    if not services_input:
-        module.fail_json(msg="No service provided. Please specify at least one service.")
 
     if len(services_input) == 1 and (',' in services_input[0] or ' ' in services_input[0]):
         service_parts = []
