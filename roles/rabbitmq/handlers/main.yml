@@ -14,33 +14,53 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | rabbitmq-server | started
+- name: systemd | vsh-rabbitmq-server | started
   ansible.builtin.systemd:
-    name: "{{ rabbitmq_systemd_name }}"
+    name: "{{ rabbitmq_item.service.name }}"
     state: started
-    scope: "{{ rabbitmq_systemd_scope }}"
+    scope: "{{ rabbitmq_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
+  loop_control:
+    loop_var: rabbitmq_item
+  listen: "systemd | vsh-rabbitmq-server | started"
 
-- name: systemd | rabbitmq-server | stopped
+- name: systemd | vsh-rabbitmq-server | stopped
   ansible.builtin.systemd:
-    name: "{{ rabbitmq_systemd_name }}"
+    name: "{{ rabbitmq_item.service.name }}"
     state: stopped
-    scope: "{{ rabbitmq_systemd_scope }}"
+    scope: "{{ rabbitmq_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
+  loop_control:
+    loop_var: rabbitmq_item
+  listen: "systemd | vsh-rabbitmq-server | stopped"
 
-- name: systemd | rabbitmq-server | restarted
+- name: systemd | vsh-rabbitmq-server | restarted
   ansible.builtin.systemd:
-    name: "{{ rabbitmq_systemd_name }}"
+    name: "{{ rabbitmq_item.service.name }}"
     state: restarted
-    scope: "{{ rabbitmq_systemd_scope }}"
+    scope: "{{ rabbitmq_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
+  loop_control:
+    loop_var: rabbitmq_item
+  listen: "systemd | vsh-rabbitmq-server | restarted"
 
-- name: systemd | rabbitmq-server | reloaded
+- name: systemd | vsh-rabbitmq-server | reloaded
   ansible.builtin.systemd:
-    name: "{{ rabbitmq_systemd_name }}"
+    name: "{{ rabbitmq_item.service.name }}"
     state: reloaded
-    scope: "{{ rabbitmq_systemd_scope }}"
+    scope: "{{ rabbitmq_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
+  loop_control:
+    loop_var: rabbitmq_item
+  listen: "systemd | vsh-rabbitmq-server | reloaded"
 
-- name: systemd | rabbitmq-server | full-restart
+- name: systemd | vsh-rabbitmq-server | full-restart
   ansible.builtin.systemd:
-    name: "{{ rabbitmq_systemd_name }}"
+    name: "{{ rabbitmq_item.service.name }}"
     state: restarted
     daemon_reload: true
-    scope: "{{ rabbitmq_systemd_scope }}"
+    scope: "{{ rabbitmq_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
+  loop_control:
+    loop_var: rabbitmq_item
+  listen: "systemd | vsh-rabbitmq-server | full-restart"
