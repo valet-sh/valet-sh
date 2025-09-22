@@ -2,7 +2,7 @@
 user = root
 password=root
 protocol=tcp
-port={{ current_mariadb_service.configuration.ports.mariadb }}
+port=3306
 host=127.0.0.1
 default-character-set = utf8mb4
 
@@ -10,7 +10,7 @@ default-character-set = utf8mb4
 user = root
 password=root
 protocol=tcp
-port={{ current_mariadb_service.configuration.ports.mariadb }}
+port=3306
 host=127.0.0.1
 quick
 quote-names
@@ -21,6 +21,6 @@ default-character-set = utf8mb4
 user = root
 password=root
 protocol=tcp
-port={{ current_mariadb_service.configuration.ports.mariadb }}
+port=3306
 host=127.0.0.1
 default-character-set = utf8mb4
