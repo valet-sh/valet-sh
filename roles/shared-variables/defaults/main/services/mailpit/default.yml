@@ -1,0 +1,15 @@
+---
+
+service:
+  name:
+    ubuntu: "vsh-mailpit"
+    mac: "vsh-mailpit"
+  scope:
+    ubuntu: "user"
+    mac: "user"
+
+configuration:
+  docker_image: "docker.io/axllent/mailpit:latest"
+  ports:
+    http: 8025
+    smtp: 1025

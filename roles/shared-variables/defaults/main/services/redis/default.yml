@@ -9,6 +9,6 @@ service:
     mac: "user"
 
 configuration:
-  docker_image: "docker.io/redis/redis:latest"
+  docker_image: "docker.io/library/redis:latest"
   ports:
     redis: 6379

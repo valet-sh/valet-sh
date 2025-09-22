@@ -9,7 +9,7 @@ service:
     mac: "user"
 
 configuration:
-  docker_image: "docker.io/rabbitmq/rabbitmq:3.12.14-management"
+  docker_image: "docker.io/rabbitmq:3.12.14-management"
   ports:
     http: 15672
     amqp: 5672

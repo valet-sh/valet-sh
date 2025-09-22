@@ -2,18 +2,18 @@
 
 service:
   name:
-    ubuntu: "vsh-opensearch1"
-    mac: "vsh-opensearch1"
+    ubuntu: "vsh-opensearch3"
+    mac: "vsh-opensearch3"
   scope:
     ubuntu: "user"
     mac: "user"
 
 configuration:
-  docker_image: "docker.io/opensearchproject/opensearch:1.3.1"
+  docker_image: "docker.io/opensearchproject/opensearch:3.2.0"
   ports:
-    http: 9221
-    transport: 9321
-  base_path: "/usr/local/valet-sh/packages/opensearch1"
+    http: 9223
+    transport: 9323
+  base_path: "/usr/local/valet-sh/packages/opensearch3"
   plugins:
     default_plugins: ["analysis-phonetic", "analysis-icu"]
     install_command: "/usr/share/opensearch/bin/opensearch-plugin install {{ name }}"
