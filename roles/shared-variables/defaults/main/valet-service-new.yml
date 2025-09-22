@@ -74,6 +74,13 @@ valet_sh_service_definitions:
     role_name: "redis"
     defaultable: false
 
+  valkey:
+    display_name: "Valkey"
+    versions: ["8"]
+    default_version: "8"
+    role_name: "valkey"
+    defaultable: false
+
   rabbitmq:
     display_name: "RabbitMQ"
     versions: ["default"]

@@ -1,0 +1,14 @@
+---
+
+service:
+  name:
+    ubuntu: "vsh-valkey"
+    mac: "vsh-valkey"
+  scope:
+    ubuntu: "user"
+    mac: "user"
+
+configuration:
+  docker_image: "docker.io/valkey/valkey:8"
+  ports:
+    valkey: 6389
