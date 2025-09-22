@@ -15,10 +15,6 @@
 ##
 ---
 
-- name: "Set current_elasticsearch_service_handler_name"
-  ansible.builtin.set_fact:
-    current_elasticsearch_service_handler_name: "vsh-{{ current_elasticsearch_service.canonical }}"
-
 - name: "get stats for dir {{ current_elasticsearch_service.configuration.base_path }}"
   ansible.builtin.stat:
     path: "{{ current_elasticsearch_service.configuration.base_path }}"
@@ -98,3 +94,8 @@
         name: "{{ current_elasticsearch_service.service.name }}"
         state: stopped
         scope: "{{ current_elasticsearch_service.service.scope }}"
+
+    - name: "Mark vsh-{{ current_elasticsearch_service.canonical }} as installed in the services file"
+      vsh_service_state:
+        action: "add_installed"
+        canonical_names: "{{ current_elasticsearch_service.canonical }}"
