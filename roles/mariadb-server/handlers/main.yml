@@ -19,68 +19,49 @@
     daemon_reload: true
     scope: user
 
-- name: systemd | vsh-mariadb104 | started
+- name: "systemd | vsh-mariadb | started"
   ansible.builtin.systemd:
-    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
+    name: "{{ mariadb_item.service.name }}"
     state: started
-    scope: "{{ current_mariadb_systemd_scope }}"
+    scope: "{{ mariadb_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mariadb.*') }}"
+  loop_control:
+    loop_var: mariadb_item
+  listen: "systemd | vsh-mariadb | started"
 
-- name: systemd | vsh-mariadb104 | stopped
+- name: "systemd | vsh-mariadb | stopped"
   ansible.builtin.systemd:
-    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
+    name: "{{ mariadb_item.service.name }}"
     state: stopped
-    scope: "{{ current_mariadb_systemd_scope }}"
+    scope: "{{ mariadb_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mariadb.*') }}"
+  loop_control:
+    loop_var: mariadb_item
+  listen: "systemd | vsh-mariadb | stopped"
 
-- name: systemd | vsh-mariadb104 | restarted
+- name: "systemd | vsh-mariadb | restarted"
   ansible.builtin.systemd:
-    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
+    name: "{{ mariadb_item.service.name }}"
     state: restarted
-    scope: "{{ current_mariadb_systemd_scope }}"
+    scope: "{{ mariadb_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mariadb.*') }}"
+  loop_control:
+    loop_var: mariadb_item
+  listen: "systemd | vsh-mariadb | restarted"
 
-- name: systemd | vsh-mariadb106 | started
+- name: "systemd | vsh-mariadb | reloaded"
   ansible.builtin.systemd:
-    name: "{{ current_mariadb_systemd_name }}"
     daemon_reload: true
-    state: started
-    scope: "{{ current_mariadb_systemd_scope }}"
-
-- name: systemd | vsh-mariadb106 | stopped
-  ansible.builtin.systemd:
-    name: "{{ current_mariadb_systemd_name }}"
-    daemon_reload: true
-    state: stopped
-    scope: "{{ current_mariadb_systemd_scope }}"
-
-- name: systemd | vsh-mariadb106 | restarted
-  ansible.builtin.systemd:
-    name: "{{ current_mariadb_systemd_name }}"
-    daemon_reload: true
+    name: "{{ mariadb_item.service.name }}"
     state: restarted
-    scope: "{{ current_mariadb_systemd_scope }}"
-
-- name: systemd | vsh-mariadb114 | started
-  ansible.builtin.systemd:
-    name: "{{ current_mariadb_systemd_name }}"
-    daemon_reload: true
-    state: started
-    scope: "{{ current_mariadb_systemd_scope }}"
-
-- name: systemd | vsh-mariadb114 | stopped
-  ansible.builtin.systemd:
-    name: "{{ current_mariadb_systemd_name }}"
-    daemon_reload: true
-    state: stopped
-    scope: "{{ current_mariadb_systemd_scope }}"
-
-- name: systemd | vsh-mariadb114 | restarted
-  ansible.builtin.systemd:
-    name: "{{ current_mariadb_systemd_name }}"
-    daemon_reload: true
-    state: restarted
-    scope: "{{ current_mariadb_systemd_scope }}"
+    scope: "{{ mariadb_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mariadb.*') }}"
+  loop_control:
+    loop_var: mariadb_item
+  listen: "systemd | vsh-mariadb | reloaded"
 
 - name: brew | vsh-mariadb104 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb104"
