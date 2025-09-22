@@ -41,3 +41,8 @@
     group: "{{ current_group }}"
     mode: "0644"
   notify: "systemd | vsh-redis-server | restarted"
+
+- name: "Mark vsh-{{ current_redis_service.canonical }} as installed in the services file"
+  vsh_service_state:
+    action: "add_installed"
+    canonical_names: "{{ current_redis_service.canonical }}"
