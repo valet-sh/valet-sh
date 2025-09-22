@@ -44,14 +44,14 @@
 
     - name: ensure mysqladmin wrapper script is up2date
       ansible.builtin.template:
-        src: "wrappers/mysqladmin-wrapper.j2"
+        src: "wrappers/mysql/mysqladmin-wrapper.j2"
         dest: "/usr/local/bin/mysqladmin"
         mode: "0755"
       become: true
 
     - name: ensure mysqldump wrapper script is up2date
       ansible.builtin.template:
-        src: "wrappers/mysqldump-wrapper.j2"
+        src: "wrappers/mysql/mysqldump-wrapper.j2"
         dest: "/usr/local/bin/mysqldump"
         mode: "0755"
       become: true
