@@ -15,36 +15,48 @@
 ##
 ---
 
-- name: "systemd | vsh-{{ current_elasticsearch_service.canonical }} | started"
+- name: "systemd | vsh-elasticsearch | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ current_elasticsearch_service.service.name }}"
+    name: "{{ elasticsearch_item.service.name }}"
     state: started
-    scope: "{{ current_elasticsearch_service.service.scope }}"
+    scope: "{{ elasticsearch_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop_control:
+    loop_var: elasticsearch_item
   listen: "systemd | vsh-elasticsearch | started"
 
-- name: "systemd | vsh-{{ current_elasticsearch_service.canonical }} | stopped"
+- name: "systemd | vsh-elasticsearch | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ current_elasticsearch_service.service.name }}"
+    name: "{{ elasticsearch_item.service.name }}"
     state: stopped
-    scope: "{{ current_elasticsearch_service.service.scope }}"
+    scope: "{{ elasticsearch_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop_control:
+    loop_var: elasticsearch_item
   listen: "systemd | vsh-elasticsearch | stopped"
 
-- name: "systemd | vsh-{{ current_elasticsearch_service.canonical }} | restarted"
+- name: "systemd | vsh-elasticsearch | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ current_elasticsearch_service.service.name }}"
+    name: "{{ elasticsearch_item.service.name }}"
     state: restarted
-    scope: "{{ current_elasticsearch_service.service.scope }}"
+    scope: "{{ elasticsearch_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop_control:
+    loop_var: elasticsearch_item
   listen: "systemd | vsh-elasticsearch | restarted"
 
-- name: "systemd | vsh-{{ current_elasticsearch_service.canonical }} | reloaded"
+- name: "systemd | vsh-elasticsearch | reloaded"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ current_elasticsearch_service.service.name }}"
+    name: "{{ elasticsearch_item.service.name }}"
     state: restarted
-    scope: "{{ current_elasticsearch_service.service.scope }}"
+    scope: "{{ elasticsearch_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop_control:
+    loop_var: elasticsearch_item
   listen: "systemd | vsh-elasticsearch | reloaded"
 
 - name: brew | vsh-elasticsearch5 | restarted
