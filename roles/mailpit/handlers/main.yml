@@ -1,0 +1,56 @@
+##
+#   Copyright 2025 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "systemd | vsh-mailpit | stopped"
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ mailpit_item.service.name }}"
+    state: stopped
+    scope: "{{ mailpit_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mailpit.*') }}"
+  loop_control:
+    loop_var: mailpit_item
+  listen: "systemd | vsh-mailpit | stopped"
+
+- name: "systemd | vsh-mailpit | started"
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ mailpit_item.service.name }}"
+    state: started
+    scope: "{{ mailpit_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mailpit.*') }}"
+  loop_control:
+    loop_var: mailpit_item
+  listen: "systemd | vsh-mailpit | started"
+
+- name: "systemd | vsh-mailpit | restarted"
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ mailpit_item.service.name }}"
+    state: restarted
+    scope: "{{ mailpit_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mailpit.*') }}"
+  loop_control:
+    loop_var: mailpit_item
+  listen: "systemd | vsh-mailpit | restarted"
+
+- name: brew | mailpit | stopped
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop mailpit"
+- name: brew | mailpit | started
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start mailpit"
+- name: brew | mailpit | restart
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart mailpit"

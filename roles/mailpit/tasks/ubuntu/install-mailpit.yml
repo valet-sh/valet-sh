@@ -1,0 +1,73 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: Pull mailpit image
+  containers.podman.podman_image:
+    name: "{{ current_mailpit_service.configuration.docker_image }}"
+    pull: true
+    state: present
+
+- name: "ensure user systemd directory exists"
+  ansible.builtin.file:
+    path: "{{ current_home }}/.config/systemd/user"
+    state: directory
+    mode: "0755"
+
+- name: provide systemd service for mailpit container
+  ansible.builtin.template:
+    src: "mailpit.service.j2"
+    dest: "{{ current_home }}/.config/systemd/user/{{ current_mailpit_service.service.name }}.service"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+  notify: "systemd | vsh-mailpit | restarted"
+
+- name: set 'cert_prefix' variable
+  ansible.builtin.set_fact:
+    cert_prefix: "mailpit"
+
+- name: "generate ssl-certificate for {{ cert_prefix }}"
+  ansible.builtin.include_role:
+    name: certificate
+    public: true
+
+- name: provide init script for mailpit
+  ansible.builtin.template:
+    src: "mailpit.conf.j2"
+    dest: "/etc/nginx/conf.d/mailpit.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: systemd | nginx | reloaded
+  become: true
+
+- name: unset 'cert_prefix' variable
+  ansible.builtin.set_fact:
+    cert_prefix: "{{ non_existent | default(None) }}"
+
+- name: ensure mailpit is enabled and started
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ current_mailpit_service.service.name }}"
+    enabled: true
+    state: started
+    scope: "{{ current_mailpit_service.service.scope }}"
+
+- name: "Add mailpit to installed services"
+  vsh_service_state:
+    action: "add_installed"
+    canonical_names: "{{ current_mailpit_service.canonical }}"
