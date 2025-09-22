@@ -16,8 +16,9 @@ ExecStart=/usr/bin/podman run \
     --rm \
     --name vsh-{{ current_mysql_service.canonical }} \
     --volume vsh-{{ current_mysql_service.canonical }}-data:/var/lib/mysql \
-    --volume vsh-{{ current_mysql_etc_path }}/my.cnf:/etc/mysql/my.cnf:z \
-    --volume vsh-{{ current_mysql_etc_conf_path }}:/etc/mysql/conf.d:z \
+    --volume {{ current_mysql_service.configuration.base_path }}/etc/my.cnf:/etc/mysql/my.cnf:z \
+    --volume {{ current_mysql_service.configuration.base_path }}/etc/conf.d:/etc/mysql/conf.d:z \
+    --volume {{ current_mysql_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:z \
     --publish {{ current_mysql_service.configuration.ports.mysql }}:3306 \
     --env MYSQL_ROOT_PASSWORD={{ current_mysql_service.configuration.default_root_password }} \
     {{ current_mysql_service.configuration.docker_image }}
