@@ -14,6 +14,15 @@
 #   limitations under the License.
 ##
 ---
+
+- name: "extract version from canonical name for elasticsearch/opensearch"
+  set_fact:
+    valet_service_name_version: "{{ item.version }}"
+    valet_service_base_name: "{{ item.service_name }}"
+    valet_service_name_full: "{{ item.canonical }}"
+  when: item.service_name in ['elasticsearch', 'opensearch']
+  loop: "{{ valet_all_services }}"
+
 - name: "provide elasticsearch default configuration"
   template:
     src: "nginx/elasticsearch.conf.j2"

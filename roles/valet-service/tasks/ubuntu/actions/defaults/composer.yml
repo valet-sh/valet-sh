@@ -14,9 +14,12 @@
 #   limitations under the License.
 ##
 ---
+
 - name: set valet_service_name version
   set_fact:
-    valet_service_name_version: "{{ valet_service_name[-1] }}"
+    valet_service_name_version: "{{ item.version }}"
+  when: item.service_name in ['composer']
+  loop: "{{ valet_all_services }}"
 
 - name: "create symlink for default composer"
   file:
