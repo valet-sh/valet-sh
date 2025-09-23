@@ -1,5 +1,5 @@
 [Unit]
-Description=MySQL 5.7 Community Server
+Description=MySQL {{ current_mysql_service.version}} Community Server
 After=network-online.target local-fs.target
 Wants=network-online.target
 
