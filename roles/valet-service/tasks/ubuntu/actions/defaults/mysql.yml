@@ -28,11 +28,13 @@
 
 - name: "extract version from canonical name for mysql/mariadb"
   set_fact:
-    valet_service_name_version: "{{ item.version }}"
-    valet_service_base_name: "{{ item.service_name }}"
-    valet_service_name_full: "{{ item.canonical }}"
-  when: item.service_name in ['mysql', 'mariadb']
+    valet_service_name_version: "{{ mysql_extract.version }}"
+    valet_service_base_name: "{{ mysql_extract.service_name }}"
+    valet_service_name_full: "{{ mysql_extract.canonical }}"
+  when: mysql_extract.service_name in ['mysql', 'mariadb']
   loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: mysql_extract
 
 - block:
     - name: ensure mysql wrapper script is up2date
