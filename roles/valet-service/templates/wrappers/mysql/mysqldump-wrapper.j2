@@ -1,7 +1,7 @@
 #!/bin/bash
 
-AVAILABLE_MYSQL_VERSIONS='5.7 8.0 8.4'
-AVAILABLE_MARIADB_VERSIONS='10.4 10.6 10.11 11.4'
+AVAILABLE_MYSQL_VERSIONS='{{ valet_sh_service_definitions.mysql.versions | join(" ") }}'
+AVAILABLE_MARIADB_VERSIONS='{{ valet_sh_service_definitions.mariadb.versions | join(" ") }}'
 
 function get_target_version {
     VALET_SH_FILE=$1
