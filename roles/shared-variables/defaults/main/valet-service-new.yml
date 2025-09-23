@@ -57,7 +57,7 @@ valet_sh_service_definitions:
 
   mariadb:
     display_name: "MariaDB"
-    versions: ["10.4", "10.6", "11.4"]
+    versions: ["10.4", "10.6", "10.11", "11.4"]
     default_version: "10.4"
     role_name: "mariadb-server"
     defaultable: true
