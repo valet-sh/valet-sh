@@ -1,5 +1,5 @@
 [Unit]
-Description=MariaDB 11.4 Server
+Description=MariaDB {{ current_mariadb_service.version }} Server
 After=network-online.target local-fs.target
 Wants=network-online.target
 
