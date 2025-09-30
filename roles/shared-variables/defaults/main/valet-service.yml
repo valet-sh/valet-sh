@@ -40,6 +40,7 @@ valet_sh_service_defaultable_services_default:
       - elasticsearch8
       - opensearch1
       - opensearch2
+      - opensearch3
   - scope: php
     default: php73
     values:
@@ -86,6 +87,7 @@ valet_sh_service_defaultable_services_mac:
       - elasticsearch8
       - opensearch1
       - opensearch2
+      - opensearch3
   - scope: php
     default: php73
     values:
@@ -131,6 +133,7 @@ valet_sh_service_state_preset_default:
   - elasticsearch8: false
   - opensearch1: false
   - opensearch2: false
+  - opensearch3: false
   - php56: false
   - php70: false
   - php71: false
@@ -162,6 +165,7 @@ valet_sh_service_state_preset_mac:
   - elasticsearch8: false
   - opensearch1: false
   - opensearch2: false
+  - opensearch3: false
   - php56: false
   - php70: false
   - php71: false
@@ -196,6 +200,7 @@ valet_sh_service_privileged_services_default:
   - elasticsearch8
   - opensearch1
   - opensearch2
+  - opensearch3
   - php56
   - php70
   - php71
@@ -357,6 +362,7 @@ valet_sh_service_alias_mapping_mac:
   elasticsearch8: "vsh-elasticsearch8"
   opensearch1: "vsh-opensearch1"
   opensearch2: "vsh-opensearch2"
+  opensearch3: "vsh-opensearch3"
   valkey8: "vsh-valkey8"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
 
@@ -392,3 +398,4 @@ valet_sh_service_rosetta2_emulation:
   elasticsearch8: true
   opensearch1: true
   opensearch2: true
+  opensearch3: true

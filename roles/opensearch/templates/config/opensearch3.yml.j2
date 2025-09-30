@@ -1,0 +1,9 @@
+network.host: 127.0.0.1
+http.port: 9223
+transport.host: 127.0.0.1
+transport.port: 9323
+path.logs: "{{ opensearch_base_path }}3/logs"
+path.data: "{{ opensearch_base_path }}3/data"
+discovery.type: "single-node"
+cluster.name: opensearch3
+plugins.security.disabled: true
