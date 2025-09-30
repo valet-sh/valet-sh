@@ -36,11 +36,41 @@
     state: restarted
   become: true
 
+- name: systemd | mailpit | started
+  systemd:
+    daemon_reload: yes
+    name: mailpit
+    state: started
+  become: true
+
+- name: systemd | mailpit | stopped
+  systemd:
+    daemon_reload: yes
+    name: mailpit
+    state: stopped
+  become: true
+
+- name: systemd | mailpit | restarted
+  systemd:
+    daemon_reload: yes
+    name: mailpit
+    state: restarted
+  become: true
+
 - name: brew | mailhog | stopped
-  shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"
+  shell: "{{ valet_sh_homebrew_bin }} services stop mailpit"
 
 - name: brew | mailhog | started
-  shell: "{{ valet_sh_homebrew_bin }} services start mailhog"
+  shell: "{{ valet_sh_homebrew_bin }} services start mailpit"
 
 - name: brew | mailhog | restart
-  shell: "{{ valet_sh_homebrew_bin }} services restart mailhog"
+  shell: "{{ valet_sh_homebrew_bin }} services restart mailpit"
+
+- name: brew | mailpit | stopped
+  shell: "{{ valet_sh_homebrew_bin }} services stop mailpit"
+
+- name: brew | mailpit | started
+  shell: "{{ valet_sh_homebrew_bin }} services start mailpit"
+
+- name: brew | mailpit | restart
+  shell: "{{ valet_sh_homebrew_bin }} services restart mailpit"

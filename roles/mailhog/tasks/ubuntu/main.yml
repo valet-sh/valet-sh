@@ -15,24 +15,47 @@
 ##
 ---
 
-- name: install mailhog
-  get_url:
-    url: "{{ mailhog_release_url }}"
-    dest: "{{ mailhog_bin_target }}"
-    force: no
-    mode: 0755
-    owner: root
-    group: root
+- name: "Ensure mailhog is stopped"
+  systemd:
+    daemon_reload: yes
+    name: mailhog
+    state: stopped
+  become: true
+  ignore_errors: true
+
+- name: ensure '/etc/systemd/system/mailhog.service' file is absent
+  file:
+    path: "/etc/systemd/system/mailhog.service"
+    state: absent
   become: true
 
-- name: provide init script for mailhog
+- name: ensure '/usr/local/bin/mailhog' file is absent
+  file:
+    path: "/usr/local/bin/mailhog"
+    state: absent
+  become: true
+
+- name: "ensure mailpit dist directory exists"
+  file:
+    path: "{{ mailpit_dist_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: "Extract mailpit binary to '{{ mailpit_dist_dir }}'"
+  unarchive:
+    src: "{{ mailpit_release_url }}"
+    dest: "{{ mailpit_dist_dir }}"
+    extra_opts: [--strip-components=1]
+    remote_src: yes
+
+- name: provide init script for mailpit
   template:
-    src: "mailhog.service.j2"
-    dest: "/etc/systemd/system/mailhog.service"
+    src: "mailpit.service.j2"
+    dest: "/etc/systemd/system/mailpit.service"
     owner: root
     group: root
     mode: '0644'
-  notify: systemd | mailhog | restarted
+  notify: systemd | mailpit | restarted
   become: true
 
 - name: set 'cert_prefix' variable
@@ -58,10 +81,33 @@
   set_fact:
     cert_prefix: "{{ non_existent|default(None) }}"
 
-- name: ensure mailhog is enabled and started
+- name: set 'cert_prefix' variable
+  set_fact:
+    cert_prefix: "mailpit"
+
+- name: "generate ssl-certificate for {{ cert_prefix }}"
+  include_role:
+    name: certificate
+    public: true
+
+- name: provide init script for mailpit
+  template:
+    src: "mailpit.conf.j2"
+    dest: "/etc/nginx/conf.d/mailpit.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: systemd | nginx | reloaded
+  become: true
+
+- name: unset 'cert_prefix' variable
+  set_fact:
+    cert_prefix: "{{ non_existent|default(None) }}"
+
+- name: ensure mailpit is enabled and started
   systemd:
     daemon_reload: yes
-    name: mailhog
+    name: mailpit
     enabled: true
     state: started
   become: true
