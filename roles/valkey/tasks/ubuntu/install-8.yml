@@ -85,6 +85,14 @@
     mode: "0644"
   become: true
   notify: "Systemd | {{ current_valkey_key }} | restarted"
+  register: valkey_systemd_service_file_obj
+
+- name: Reload Systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+  when: valkey_systemd_service_file_obj.changed
+
 
 - name: "Provide {{ current_valkey_key }} client"
   ansible.builtin.template:
@@ -124,9 +132,9 @@
 - name: "Block"
   when: not current_valkey_dist_is_latest|bool
   block:
-    - name: "Ensure '{{ current_valkey_key }}' is stopped"
+    - name: "Ensure '{{ current_valkey_key }}-server' is stopped"
       ansible.builtin.systemd:
-        name: "{{ current_valkey_key }}"
+        name: "{{ current_valkey_key }}-server"
         state: stopped
       become: true
 
@@ -161,7 +169,7 @@
 
     - name: "Ensure {{ current_valkey_key }} enabled"
       ansible.builtin.systemd:
-        name: "{{ current_valkey_key }}"
+        name: "{{ current_valkey_key }}-server"
         enabled: true
         daemon_reload: true
       become: true
