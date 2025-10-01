@@ -24,3 +24,5 @@
 - include_tasks: services/mysql.yml
 
 - include_tasks: services/node.yml
+
+- include_tasks: services/valkey.yml
