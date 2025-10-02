@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2025 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
 ##
 ---
 
-- name: "install composer"
-  ansible.builtin.include_tasks: install-composer.yml
-  when:
-    - valet_install_core_roles_to_install is defined
-    - valet_install_core_roles_to_install | length > 0
+- name: "Ensure composer1 is absent"
+  ansible.builtin.file:
+    path: "{{ composer1_bin }}"
+    state: absent
+  become: true
 
-- name: "uninstall composer"
-  ansible.builtin.include_tasks: uninstall-composer.yml
-  when:
-    - valet_uninstall_services is defined
-    - valet_uninstall_services | length > 0
+- name: "Ensure composer2 is absent"
+  ansible.builtin.file:
+    path: "{{ composer2_bin }}"
+    state: absent
+  become: true
