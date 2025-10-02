@@ -54,7 +54,7 @@
 
 - name: "workflows » magento2 » check-vars | override mysql client configuration"
   ansible.builtin.set_fact:
-    valet_sh_project_mysql_client_configuration: "{{ current_home }}/.my{{ valet_sh_project_vars.services.mysql.version }}.cnf"
+    valet_sh_project_mysql_client_configuration: "{{ valet_packages_path_default }}/mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}/user/.my.cnf"
   when:
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mysql is defined
@@ -62,7 +62,7 @@
 
 - name: "workflows » magento2 » check-vars | override mariadb client configuration"
   ansible.builtin.set_fact:
-    valet_sh_project_mysql_client_configuration: "{{ current_home }}/.my{{ valet_sh_project_vars.services.mariadb.version }}.cnf"
+    valet_sh_project_mysql_client_configuration: "{{ valet_packages_path_default }}/mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}/user/.my.cnf"
   when:
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mariadb is defined
