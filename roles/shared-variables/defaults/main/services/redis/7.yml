@@ -1,0 +1,14 @@
+---
+
+service:
+  name:
+    ubuntu: "vsh-redis-server"
+    mac: "vsh-redis"
+  scope:
+    ubuntu: "user"
+    mac: "user"
+
+configuration:
+  docker_image: "docker.io/library/redis:7"
+  ports:
+    redis: 6379
