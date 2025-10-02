@@ -14,32 +14,36 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | NetworkManager | started
+- name: Systemd | NetworkManager | started
   ansible.builtin.systemd:
     daemon_reload: true
     name: NetworkManager
     state: started
+    scope: system
   become: true
 
-- name: systemd | NetworkManager | stopped
+- name: Systemd | NetworkManager | stopped
   ansible.builtin.systemd:
     daemon_reload: true
     name: NetworkManager
     state: stopped
+    scope: system
   become: true
 
-- name: systemd | NetworkManager | reload
+- name: Systemd | NetworkManager | reload
   ansible.builtin.systemd:
     daemon_reload: true
     name: NetworkManager
     state: reloaded
+    scope: system
   become: true
 
-- name: systemd | NetworkManager | restarted
+- name: Systemd | NetworkManager | restarted
   ansible.builtin.systemd:
     daemon_reload: true
     name: NetworkManager
     state: restarted
+    scope: system
   become: true
 
 - name: brew | dnsmasq | restarted
