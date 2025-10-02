@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2025 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
 #   limitations under the License.
 ##
 ---
+- name: Install podman
+  ansible.builtin.apt:
+    name: podman
+    state: present
 
-- name: "install podman"
-  ansible.builtin.include_tasks: install-podman.yml
-  when:
-    - valet_install_core_roles_to_install is defined
-    - valet_install_core_roles_to_install | length > 0
-
-- name: "uninstall podman"
-  ansible.builtin.include_tasks: uninstall-podman.yml
-  when:
-    - valet_uninstall_services is defined
-    - valet_uninstall_services | length > 0
+- name: Enable linger
+  ansible.builtin.command: loginctl enable-linger {{ current_user }}
