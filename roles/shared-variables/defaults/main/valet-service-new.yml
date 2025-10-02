@@ -29,73 +29,60 @@ valet_sh_service_allowed_actions: "{{ lookup('vars', 'valet_sh_service_allowed_a
 valet_sh_service_definitions:
   php:
     display_name: "PHP"
-    default_version: "7.3"
     versions: ["5.6", "7.0", "7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
     role_name: "php"
-    defaultable: true
 
   elasticsearch:
     display_name: "Elasticsearch"
     versions: ["1", "2", "5", "6", "7", "8"]
-    default_version: "6"
     role_name: "elasticsearch"
-    defaultable: true
+    family_name: "search_engine"
 
   opensearch:
     display_name: "OpenSearch"
     versions: ["1", "2", "3"]
-    default_version: "2"
     role_name: "opensearch"
-    defaultable: true
+    family_name: "search_engine"
 
   mysql:
     display_name: "MySQL"
     versions: ["5.7", "8.0", "8.4"]
-    default_version: "8.0"
     role_name: "mysql-community-server"
-    defaultable: true
+    family_name: "database"
 
   mariadb:
     display_name: "MariaDB"
     versions: ["10.4", "10.6", "10.11", "11.4"]
-    default_version: "10.4"
     role_name: "mariadb-server"
-    defaultable: true
+    family_name: "database"
 
   nginx:
     display_name: "Nginx"
     role_name: "nginx"
-    defaultable: false
 
   redis:
     display_name: "Redis"
-    versions: ["default"]
-    default_version: "default"
+    versions: ["6", "7"]
     role_name: "redis"
-    defaultable: false
+    family_name: "cache"
 
   valkey:
     display_name: "Valkey"
     versions: ["8"]
-    default_version: "8"
     role_name: "valkey"
-    defaultable: false
+    family_name: "cache"
 
   rabbitmq:
     display_name: "RabbitMQ"
-    versions: ["default"]
-    default_version: "default"
+    versions: ["3.12"]
     role_name: "rabbitmq"
-    defaultable: false
 
   dnsmasq:
     display_name: "Dnsmasq"
     role_name: "dnsmasq"
-    defaultable: false
+    enable_allowed: false
 
   mailpit:
     display_name: "Mailpit"
-    versions: ["default"]
-    default_version: "default"
+    versions: ["latest"]
     role_name: "mailpit"
-    defaultable: false
