@@ -19,28 +19,28 @@
     daemon_reload: true
   become: true
 
-- name: systemd | nginx | started
+- name: systemd | vsh-nginx | started
   ansible.builtin.systemd:
     daemon_reload: true
     name: nginx
     state: started
   become: true
 
-- name: systemd | nginx | stopped
+- name: systemd | vsh-nginx | stopped
   ansible.builtin.systemd:
     daemon_reload: true
     name: nginx
     state: stopped
   become: true
 
-- name: systemd | nginx | restarted
+- name: systemd | vsh-nginx | restarted
   ansible.builtin.systemd:
     daemon_reload: true
     name: nginx
     state: restarted
   become: true
 
-- name: systemd | nginx | reloaded
+- name: systemd | vsh-nginx | reloaded
   ansible.builtin.systemd:
     daemon_reload: true
     name: nginx
