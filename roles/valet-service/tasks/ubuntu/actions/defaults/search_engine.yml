@@ -32,5 +32,5 @@
     owner: root
     group: root
     mode: "0644"
-  notify: systemd | nginx | restarted
+  notify: systemd | vsh-nginx | restarted
   become: true

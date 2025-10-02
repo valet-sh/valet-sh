@@ -81,6 +81,13 @@
   when: valet_service_base_name == "mysql"
 
 - block:
+    - name: ensure mysql wrapper script is up2date
+      ansible.builtin.template:
+        src: "wrappers/mysql/mysql-wrapper.j2"
+        dest: "/usr/local/bin/mysql"
+        mode: "0755"
+      become: true
+
     - name: "create symlinks for default mysql"
       file:
         src: "/usr/local/bin/mariadb{{ valet_service_name_version }}"
@@ -120,5 +127,5 @@
     owner: root
     group: root
     mode: "0644"
-  notify: systemd | nginx | restarted
+  notify: systemd | vsh-nginx | restarted
   become: true
