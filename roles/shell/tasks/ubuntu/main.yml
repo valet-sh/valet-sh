@@ -26,6 +26,9 @@
     default_shell: "{{ valet_sh_config.default_shell }}"
   when: valet_sh_config.default_shell is defined
 
+  # TODO: Is it intentional to use default_shell instead of shell_default_shell here?
+  # As those tasks would never be executed with default_shell
+
 - ansible.builtin.include_tasks: ubuntu/bash.yml
   when:
     - default_shell is defined
