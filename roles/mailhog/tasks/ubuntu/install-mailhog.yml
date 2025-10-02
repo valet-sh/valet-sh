@@ -52,7 +52,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: systemd | nginx | reloaded
+  notify: systemd | vsh-nginx | reloaded
   become: true
 
 - name: unset 'cert_prefix' variable
