@@ -26,17 +26,23 @@
 
 - name: "set all services to uninstall"
   ansible.builtin.set_fact:
+    valet_uninstall_core_roles: "{{ valet_install_core_roles }}"
     valet_uninstall_services: "{{ valet_all_services.services.installed | join(' ') }}"
   when:
     - valet_all_services is defined
     - valet_all_services.services is defined
+
+- name: Debug set to uninstall
+  ansible.builtin.debug:
+    msg:
+      - "valet_uninstall_core_roles: {{ valet_uninstall_core_roles }}"
+      - "valet_uninstall_services: {{ valet_uninstall_services }}"
 
 - name: "resolve requested services"
   vsh_service_resolver:
     services: "{{ valet_uninstall_services }}"
     current_os: "{{ current_os }}"
   register: valet_resolved_uninstall_services
-
 
 - name: "set roles to uninstall"
   ansible.builtin.set_fact:
@@ -52,6 +58,7 @@
   vars:
     valet_resolved_service: "{{ valet_resolved_uninstall_services | combine({'services': valet_resolved_uninstall_services.services | selectattr('role_name', 'equalto', valet_uninstall_roles_item) | list}) }}"
   with_items:
+    - "{{ valet_uninstall_core_roles }}"
     - "{{ valet_uninstall_roles_to_uninstall }}"
   loop_control:
     loop_var: valet_uninstall_roles_item
