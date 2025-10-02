@@ -14,40 +14,33 @@
 #   limitations under the License.
 ##
 ---
+
 - ansible.builtin.include_tasks: "migrations/main.yml"
-- name: ensure apt-transport-https is installed
-  ansible.builtin.apt:
-    name: apt-transport-https
-    state: present
-  become: true
 
-- name: use php ppa (Ubuntu)
-  ansible.builtin.apt_repository:
-    repo: "ppa:ondrej/php"
-    codename: "{{ os_codename }}"
-  become: true
+- name: debug php versions
+  ansible.builtin.debug:
+    var: valet_resolved_service.services
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
 
-- name: "install defined php versions"
+- name: "install php {{ item.version }}"
   ansible.builtin.include_tasks: install-php.yml
   vars:
-    current_php: "{{ php_multi_item }}"
-  with_items: "{{ php_multi }}"
-  loop_control:
-    loop_var: php_multi_item
+    current_php: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_install_services is defined
+    - valet_install_services | length > 0
 
-- name: "install php-imagick"
-  ansible.builtin.apt:
-    name: php-imagick
-    state: present
-  become: true
-
-- name: "set default php cli version"
-  community.general.alternatives:
-    name: php
-    path: "/usr/bin/php{{ item.version }}"
-  with_items: "{{ php_multi }}"
-  when: (item.default is defined) and (item.default is true)
-  become: true
+- name: "uninstall php {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-php.yml
+  vars:
+    current_php: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when:
+    - valet_uninstall_services is defined
+    - valet_uninstall_services | length > 0
 
 - name: ensure php wrapper script is up2date
   ansible.builtin.template:

@@ -1,0 +1,57 @@
+##
+#   Copyright 2025 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: fail when php version is not set
+  ansible.builtin.fail:
+    msg: "version variable is not defined"
+  when: (current_php.version is not defined) or (current_php.version == "")
+
+- name: set php_version variable
+  ansible.builtin.set_fact:
+    php_version: "{{ current_php.version }}"
+
+- name: "override default configuration for current php"
+  ansible.builtin.include_tasks: override-config.yml
+
+- name: "ensure '{{ php_version_string }}-fpm' is stopped"
+  ansible.builtin.systemd:
+    name: "{{ php_version_string }}-fpm"
+    state: stopped
+  become: true
+
+- name: "ensure '{{ php_version_string }}-common' is absent"
+  ansible.builtin.apt:
+    name: "{{ php_version_string }}-common"
+    purge: true
+    state: absent
+  become: true
+
+- name: ensure php configuration is absent
+  ansible.builtin.file:
+    path: "{{ php_version_path_item }}"
+    state: absent
+  with_items:
+    - "/etc/php/{{ php_version }}"
+    - "/etc/apt/preferences.d/valet-sh-php{{ php_version | replace('.', '-') }}-xdebug"
+  loop_control:
+    loop_var: php_version_path_item
+  become: true
+
+- name: "Remove vsh-{{ current_php.canonical }} from installed services"
+  vsh_service_state:
+    action: "remove_installed"
+    canonical_names: "{{ current_php.canonical }}"
