@@ -12,5 +12,3 @@ def test_example(host):
     assert file.exists
     assert file.user == 'root'
     assert file.group == 'root'
-
-# TODO: Update this
