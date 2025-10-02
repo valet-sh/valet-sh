@@ -5,5 +5,5 @@ service:
     ubuntu: "nginx"
     mac: "vsh-nginx"
   scope:
-    ubuntu: "user"
+    ubuntu: "system"
     mac: "user"
