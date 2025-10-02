@@ -15,46 +15,53 @@
 ##
 ---
 - block:
-    - name: "workflows » neos » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
+    - name: "workflows » neos » services » elasticsearch | check if elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version  }} is installed"
+      vsh_service_state:
+        action: "is_installed"
+        canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+      register: elasticsearch_installed
+
+    - name: "workflows » neos » services » elasticsearch | resolve elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} service"
+      vsh_service_resolver:
+        services: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+        current_os: "{{ current_os }}"
+      register: elasticsearch_install
+
+    - name: "workflows » neos » services » elasticsearch | include service-specific roles"
+      ansible.builtin.include_role:
+        name: "elasticsearch"
+        public: true
+      vars:
+        valet_resolved_service: "{{ elasticsearch_install }}"
+        valet_install_services: ["elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"]
+      when: not elasticsearch_installed.is_installed
+
+    - name: "workflows » neos » services » elasticsearch | include valet-service role to set defaults"
+      ansible.builtin.include_role:
+        name: "valet-service"
+        public: true
+      vars:
+        valet_sh_service_internal_action: true
+        valet_service_action: "handle"
+        valet_sh_newly_installed_services: "{{ elasticsearch_install }}"
+
+    - name: "workflows » neos » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started and enabled"
       ansible.builtin.systemd:
-        name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+        name: "vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
         state: started
         enabled: true
-      become: true
+        scope: user
 
-    - name: "workflows » neos » services » elasticsearch | include valet services file"
-      ansible.builtin.include_vars:
-        file: "{{ valet_etc_services_file }}"
-        name: valet_sh_services_obj
+    - name: "workflows » neos » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as default"
+      vsh_service_state:
+        action: "set_default"
+        service_name: "elasticsearch"
+        canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
-    - name: "workflows » neos » services » elasticsearch | prepare new config element"
-      ansible.builtin.set_fact:
-        new_service_state_element: "{ 'elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}': true }"
-
-    - name: "workflows » neos » services » elasticsearch | update service object"
-      ansible.builtin.set_fact:
-        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
-
-    - name: "workflows » neos » services » elasticsearch | merge objects"
-      ansible.builtin.set_fact:
-        valet_sh_services_obj:
-          states: "{{ valet_sh_services_updated_states }}"
-          defaults: "{{ valet_sh_services_obj.defaults }}"
-
-    - name: "workflows » neos » services » elasticsearch | transform object into nice yaml output"
-      ansible.builtin.set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
-
-    - name: "workflows » neos » services » elasticsearch | write new services.yml file"
-      ansible.builtin.copy:
-        content: "{{ valet_etc_services_list }}"
-        dest: "{{ valet_etc_services_file }}"
-      become: true
-
-    - name: "workflows » neos » services » elasticsearch | wait for elasticsearch to be reachable"
-      ansible.builtin.wait_for:
-        port: "{{ valet_sh_elasticsearch_ports[valet_sh_project_vars.services.elasticsearch.version] }}"
-        delay: 5
+    - name: "workflows » neos » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as enabled"
+      vsh_service_state:
+        action: "set_enabled"
+        canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
     - name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_elasticsearch_version' var"
       ansible.builtin.set_fact:

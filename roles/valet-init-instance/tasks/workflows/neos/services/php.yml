@@ -15,6 +15,36 @@
 ##
 ---
 - block:
+    - name: "workflows » neos » services » php | check if php{{ valet_sh_project_vars.services.php.version }} is installed"
+      vsh_service_state:
+        action: "is_installed"
+        canonical_names: "php{{ valet_sh_project_vars.services.php.version }}"
+      register: php_installed
+
+    - name: "workflows » neos » services » php | resolve php{{ valet_sh_project_vars.services.php.version }} service"
+      vsh_service_resolver:
+        services: "php{{ valet_sh_project_vars.services.php.version }}"
+        current_os: "{{ current_os }}"
+      register: php_install
+
+    - name: "include service-specific roles"
+      ansible.builtin.include_role:
+        name: "php"
+        public: true
+      vars:
+        valet_resolved_service: "{{ php_install }}"
+        valet_install_services: ["php{{ valet_sh_project_vars.services.php.version }}"]
+      when: not php_installed.is_installed
+
+    - name: "workflows » neos » services » php | include valet-service role to set defaults"
+      ansible.builtin.include_role:
+        name: "valet-service"
+        public: true
+      vars:
+        valet_sh_service_internal_action: true
+        valet_service_action: "handle"
+        valet_sh_newly_installed_services: "{{ php_install }}"
+
     - name: "workflows » neos » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
       ansible.builtin.systemd:
         name: "php{{ valet_sh_project_vars.services.php.version }}-fpm"
@@ -27,29 +57,16 @@
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
 
-    - name: "workflows » neos » services » php | prepare new config element"
-      ansible.builtin.set_fact:
-        new_service_state_element: "{ 'php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}': true }"
+    - name: "workflows » neos » services » php | set php{{ valet_sh_project_vars.services.php.version }} as default"
+      vsh_service_state:
+        action: "set_default"
+        service_name: "php"
+        canonical_names: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
 
-    - name: "workflows » neos » services » php | update service object"
-      ansible.builtin.set_fact:
-        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
-
-    - name: "workflows » neos » services » php | merge objects"
-      ansible.builtin.set_fact:
-        valet_sh_services_obj:
-          states: "{{ valet_sh_services_updated_states }}"
-          defaults: "{{ valet_sh_services_obj.defaults }}"
-
-    - name: "workflows » neos » services » php | transform object into nice yaml output"
-      ansible.builtin.set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
-
-    - name: "workflows » neos » services » php | write new services.yml file"
-      ansible.builtin.copy:
-        content: "{{ valet_etc_services_list }}"
-        dest: "{{ valet_etc_services_file }}"
-      become: true
+    - name: "workflows » neos » services » php | set php{{ valet_sh_project_vars.services.php.version }} as enabled"
+      vsh_service_state:
+        action: "set_enabled"
+        canonical_names: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
 
     - name: "workflows » neos » services » php | wait for php-fpm to be reachable"
       ansible.builtin.wait_for:
