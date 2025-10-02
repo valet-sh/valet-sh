@@ -14,269 +14,54 @@
 #   limitations under the License.
 ##
 ---
-- name: "systemd | php5.6-fpm | started"
+
+- name: "systemd | vsh-php | started"
   ansible.builtin.systemd:
-    name: "php5.6-fpm"
+    daemon_reload: true
+    name: "{{ php_item.service.name }}"
     state: started
-  become: true
+    scope: "{{ php_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^php.*') }}"
+  become: "{{ php_item.service.scope == 'system' }}"
+  loop_control:
+    loop_var: php_item
+  listen: "systemd | vsh-php | started"
 
-- name: "systemd | php5.6-fpm | stopped"
+- name: "systemd | vsh-php | stopped"
   ansible.builtin.systemd:
-    name: "php5.6-fpm"
+    daemon_reload: true
+    name: "{{ php_item.service.name }}"
     state: stopped
-  become: true
+    scope: "{{ php_item.service.scope }}"
+  become: "{{ php_item.service.scope == 'system' }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^php.*') }}"
+  loop_control:
+    loop_var: php_item
+  listen: "systemd | vsh-php | stopped"
 
-- name: "systemd | php5.6-fpm | restarted"
+- name: "systemd | vsh-php | restarted"
   ansible.builtin.systemd:
-    name: "php5.6-fpm"
+    daemon_reload: true
+    name: "{{ php_item.service.name }}"
     state: restarted
-  become: true
+    scope: "{{ php_item.service.scope }}"
+  become: "{{ php_item.service.scope == 'system' }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^php.*') }}"
+  loop_control:
+    loop_var: php_item
+  listen: "systemd | vsh-php | restarted"
 
-- name: "systemd | php5.6-fpm | reloaded"
+- name: "systemd | vsh-php | reloaded"
   ansible.builtin.systemd:
-    name: "php5.6-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php7.0-fpm | started"
-  ansible.builtin.systemd:
-    name: "php7.0-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php7.0-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php7.0-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php7.0-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php7.0-fpm"
+    daemon_reload: true
+    name: "{{ php_item.service.name }}"
     state: restarted
-  become: true
-
-- name: "systemd | php7.0-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php7.0-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php7.1-fpm | started"
-  ansible.builtin.systemd:
-    name: "php7.1-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php7.1-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php7.1-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php7.1-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php7.1-fpm"
-    state: restarted
-  become: true
-
-- name: "systemd | php7.1-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php7.1-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php7.2-fpm | started"
-  ansible.builtin.systemd:
-    name: "php7.2-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php7.2-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php7.2-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php7.2-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php7.2-fpm"
-    state: restarted
-  become: true
-
-- name: "systemd | php7.2-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php7.2-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php7.3-fpm | started"
-  ansible.builtin.systemd:
-    name: "php7.3-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php7.3-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php7.3-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php7.3-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php7.3-fpm"
-    state: restarted
-  become: true
-
-- name: "systemd | php7.3-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php7.3-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php7.4-fpm | started"
-  ansible.builtin.systemd:
-    name: "php7.4-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php7.4-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php7.4-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php7.4-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php7.4-fpm"
-    state: restarted
-  become: true
-
-- name: "systemd | php7.4-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php7.4-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php8.0-fpm | started"
-  ansible.builtin.systemd:
-    name: "php8.0-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php8.0-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php8.0-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php8.0-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php8.0-fpm"
-    state: restarted
-  become: true
-
-- name: "systemd | php8.0-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php8.0-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php8.1-fpm | started"
-  ansible.builtin.systemd:
-    name: "php8.1-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php8.1-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php8.1-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php8.1-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php8.1-fpm"
-    state: restarted
-  become: true
-
-- name: "systemd | php8.1-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php8.1-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php8.2-fpm | started"
-  ansible.builtin.systemd:
-    name: "php8.2-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php8.2-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php8.2-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php8.2-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php8.2-fpm"
-    state: restarted
-  become: true
-
-- name: "systemd | php8.2-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php8.2-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php8.3-fpm | started"
-  ansible.builtin.systemd:
-    name: "php8.3-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php8.3-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php8.3-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php8.3-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php8.3-fpm"
-    state: restarted
-  become: true
-
-- name: "systemd | php8.3-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php8.3-fpm"
-    state: reloaded
-  become: true
-
-- name: "systemd | php8.4-fpm | started"
-  ansible.builtin.systemd:
-    name: "php8.4-fpm"
-    state: started
-  become: true
-
-- name: "systemd | php8.4-fpm | stopped"
-  ansible.builtin.systemd:
-    name: "php8.4-fpm"
-    state: stopped
-  become: true
-
-- name: "systemd | php8.4-fpm | restarted"
-  ansible.builtin.systemd:
-    name: "php8.4-fpm"
-    state: restarted
-  become: true
-
-- name: "systemd | php8.4-fpm | reloaded"
-  ansible.builtin.systemd:
-    name: "php8.4-fpm"
-    state: reloaded
-  become: true
+    scope: "{{ php_item.service.scope }}"
+  become: "{{ php_item.service.scope == 'system' }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^php.*') }}"
+  loop_control:
+    loop_var: php_item
+  listen: "systemd | vsh-php | reloaded"
 
 - name: brew | vsh-php56 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
