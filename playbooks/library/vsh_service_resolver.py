@@ -81,8 +81,8 @@ def build_service_config(service_name, version, service_meta, detailed_config, c
         'role_name': service_meta.get('role_name', service_name),
         'canonical': canonical,
         'display_name': service_meta.get('display_name', service_name),
-        'defaultable': service_meta.get('defaultable', False),
-        'group': service_meta.get('group'),
+        'enable_allowed': service_meta.get('enable_allowed', False),
+        'family_name': service_meta.get('family_name'),
         'matched_pattern': 'definitions_lookup'
     }
 
