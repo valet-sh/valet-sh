@@ -26,6 +26,8 @@
     valet_list: "{{ valet_list + [[ item.name, item.path, item.ssl, item.phpVersion | default(''), item.template | default('') ]] }}"
   with_items: "{{ valet_links_obj.valet_links.links }}"
 
+- include_tasks: "macos/partials/update-default-vhost-template.yml"
+
 - name: "links | print table based on 'valet_list' array"
   vsh-table:
     headers: ['Name', 'Path', 'SSL', 'PHP-Version', 'Application']
