@@ -1,5 +1,5 @@
 ##
-#   Copyright 2023 TechDivision GmbH
+#   Copyright 2025 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,72 +14,15 @@
 #   limitations under the License.
 ##
 ---
-- name: "gather package facts"
-  ansible.builtin.package_facts:
-    manager: "auto"
 
-- name: "set default value if npm is installed from repo"
-  ansible.builtin.set_fact:
-    nodejs_npm_is_installed_from_repo: false
-
-- name: "check if npm is installed from repo"
-  ansible.builtin.set_fact:
-    nodejs_npm_is_installed_from_repo: true
-  when: "'npm' in ansible_facts.packages"
-
-- name: "ensure 'gulp' and 'n' is not installed globally"
-  community.general.npm:
-    name: "{{ nvm_uninstall_global_packages_item }}"
-    global: true
-    state: absent
-  with_items:
-    - "n"
-    - "gulp"
-  loop_control:
-    loop_var: nvm_uninstall_global_packages_item
-  when: nodejs_npm_is_installed_from_repo
-
-- name: ensure nodejs and npm is not installed
-  ansible.builtin.apt:
-    name: "{{ packages }}"
-    state: absent
-  vars:
-    packages:
-      - nodejs
-      - npm
-  become: true
-
-- name: check for .bashrc or .zshrc file
-  ansible.builtin.set_fact:
-    shellrc_file: ".zshrc"
-  when: valet_sh_config.default_shell is not defined or valet_sh_config.default_shell != "bash"
-
-- name: check for .bashrc or .zshrc file
-  ansible.builtin.set_fact:
-    shellrc_file: ".bashrc"
+- name: "install nodejs"
+  ansible.builtin.include_tasks: install-nodejs.yml
   when:
-    - valet_sh_config.default_shell is defined
-    - valet_sh_config.default_shell == "bash"
+    - valet_install_core_roles_to_install is defined
+    - valet_install_core_roles_to_install | length > 0
 
-- name: "check if '{{ shellrc_file }}' exists in home directory"
-  ansible.builtin.stat:
-    path: "{{ current_home }}/{{ shellrc_file }}"
-  register: shellrc_file_obj
-
-- name: "ensure nvm blockinfile is removed from '{{ current_home }}/{{ shellrc_file }}'"
-  ansible.builtin.blockinfile:
-    path: "{{ current_home }}/{{ shellrc_file }}"
-    state: absent
-    block: |
-      export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  when: shellrc_file_obj.stat.exists
-
-- ansible.builtin.include_tasks: nvm.yml
-  when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"
-
-- ansible.builtin.include_tasks: volta.yml
+- name: "uninstall nodejs"
+  ansible.builtin.include_tasks: uninstall-nodejs.yml
   when:
-    - valet_sh_config.default_nvm is defined
-    - valet_sh_config.default_nvm == "volta"
+    - valet_uninstall_services is defined
+    - valet_uninstall_services | length > 0
