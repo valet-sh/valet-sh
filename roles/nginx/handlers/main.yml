@@ -14,33 +14,54 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | nginx | started
+
+- name: "systemd | vsh-nginx | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: nginx
+    name: "{{ nginx_item.service.name }}"
     state: started
-  become: true
+    scope: "{{ nginx_item.service.scope }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^nginx.*') }}"
+  become: "{{ nginx_item.service.scope == 'system' }}"
+  loop_control:
+    loop_var: nginx_item
+  listen: "systemd | vsh-nginx | started"
 
-- name: systemd | nginx | stopped
+- name: "systemd | vsh-nginx | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: nginx
+    name: "{{ nginx_item.service.name }}"
     state: stopped
-  become: true
+    scope: "{{ nginx_item.service.scope }}"
+  become: "{{ nginx_item.service.scope == 'system' }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^nginx.*') }}"
+  loop_control:
+    loop_var: nginx_item
+  listen: "systemd | vsh-nginx | stopped"
 
-- name: systemd | nginx | restarted
+- name: "systemd | vsh-nginx | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: nginx
+    name: "{{ nginx_item.service.name }}"
     state: restarted
-  become: true
+    scope: "{{ nginx_item.service.scope }}"
+  become: "{{ nginx_item.service.scope == 'system' }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^nginx.*') }}"
+  loop_control:
+    loop_var: nginx_item
+  listen: "systemd | vsh-nginx | restarted"
 
-- name: systemd | nginx | reloaded
+- name: "systemd | vsh-nginx | reloaded"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: nginx
-    state: reloaded
-  become: true
+    name: "{{ nginx_item.service.name }}"
+    state: restarted
+    scope: "{{ nginx_item.service.scope }}"
+  become: "{{ nginx_item.service.scope == 'system' }}"
+  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^nginx.*') }}"
+  loop_control:
+    loop_var: nginx_item
+  listen: "systemd | vsh-nginx | reloaded"
 
 - name: brew | nginx | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart nginx"
