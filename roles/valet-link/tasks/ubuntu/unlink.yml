@@ -35,7 +35,7 @@
       ansible.builtin.file:
         path: "/etc/nginx/conf.d/{{ link_name }}.{{ development_tld }}.conf"
         state: absent
-      notify: systemd | nginx | reloaded
+      notify: systemd | vsh-nginx | reloaded
       become: true
 
     - name: "unlink | set empty array 'new_valet_links'"
