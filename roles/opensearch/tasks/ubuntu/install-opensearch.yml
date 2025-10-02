@@ -74,6 +74,7 @@
       retries: 20
       delay: 3
 
+    # TODO: Plugins are somehow missing after installation and stopping the container, we might need to use a volume for the plugins
     - name: "install plugins"
       containers.podman.podman_container_exec:
         name: "vsh-{{ current_opensearch_service.canonical }}"
