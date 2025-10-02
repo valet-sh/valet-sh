@@ -19,6 +19,16 @@ def save_services_file(services_file, content):
     except Exception as e:
         raise Exception(f"Failed to save services file {services_file}: {str(e)}")
 
+def load_service_definitions(service_definitions_file):
+    if not os.path.exists(service_definitions_file):
+        raise Exception(f"Service definitions file not found: {service_definitions_file}")
+    try:
+        with open(service_definitions_file, 'r') as f:
+            content = yaml.safe_load(f) or {}
+        return content.get('valet_sh_service_definitions', {})
+    except Exception as e:
+        raise Exception(f"Failed to load service definitions file {service_definitions_file}: {str(e)}")
+
 def main():
     module_args = dict(
         action=dict(type='str', required=True, choices=[
@@ -32,7 +42,12 @@ def main():
             type='str',
             required=False,
             default='/usr/local/valet-sh/etc/services.yml'
-        )
+        ),
+        service_definitions_file=dict(
+            type='str',
+            required=False,
+            default='/usr/local/valet-sh/valet-sh/roles/shared-variables/defaults/main/valet-service-new.yml'
+        ),
     )
 
     result = dict(
@@ -52,6 +67,8 @@ def main():
     if isinstance(canonical_names, str):
         canonical_names = [canonical_names]
     service_name = module.params['service_name']
+    service_definitions = load_service_definitions(module.params['service_definitions_file'])
+    service_family_name = service_definitions.get(service_name, {}).get('family_name')
     services_file = module.params['services_file']
 
     if module.check_mode:
@@ -86,25 +103,13 @@ def main():
                 module.fail_json(msg="set_default requires service_name and canonical_names")
             canonical_name = canonical_names[0]
             if canonical_name in services_content['services']['installed']:
-                current_default = services_content['services']['defaults'].get(service_name)
+                target_key = service_family_name if service_family_name else service_name
 
-                conflict_map = {
-                    'mysql': 'mariadb',
-                    'mariadb': 'mysql',
-                    'elasticsearch': 'opensearch',
-                    'opensearch': 'elasticsearch'
-                }
-
-                if service_name in conflict_map:
-                    conflicting_service = conflict_map[service_name]
-                    if conflicting_service in services_content['services']['defaults']:
-                        del services_content['services']['defaults'][conflicting_service]
-                        result['changed'] = True
-
+                current_default = services_content['services']['defaults'].get(target_key)
                 if current_default != canonical_name:
-                    services_content['services']['defaults'][service_name] = canonical_name
+                    services_content['services']['defaults'][target_key] = canonical_name
                     result['changed'] = True
-                result['message'] = f"Set {canonical_name} as default for {service_name}"
+                result['message'] = f"Set {canonical_name} as default for {target_key}"
             else:
                 module.fail_json(msg=f"Cannot set {canonical_name} as default - not installed")
 
