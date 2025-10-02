@@ -22,20 +22,31 @@
     - (valet_all_services | selectattr('service_name', 'equalto', item.service_name) | list | length) > 1
   loop: "{{ valet_all_services }}"
 
-- name: "actions » default | check if service is defaultable"
-  fail:
-    msg: "Service {{ item.service_name }} is not defaultable. Cannot set as default."
+- name: "actions » default | update valet_all_services with only the first service from loop when multiple versions are available"
+  set_fact:
+    valet_all_services: "{{ valet_all_services | unique(attribute='service_name') }}"
   when:
-    - (valet_all_services | selectattr('defaultable', 'equalto', false) | list | length) > 0
+    - valet_sh_service_definitions[item.service_name].versions is defined
+    - valet_sh_service_definitions[item.service_name].versions | length > 1
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: item
+
+- name: "actions » default | check which service specific default tasks are available"
+  ansible.builtin.stat:
+    path: "{{ role_path }}/tasks/ubuntu/actions/defaults/{{ item.family_name | default(item.service_name, true) }}.yml"
+  register: service_default_tasks
   loop: "{{ valet_all_services }}"
 
+- name: "actions » default | set fact valet_all_services_defaults with only services which have default tasks"
+  set_fact:
+    valet_all_services_defaults: "{{ valet_all_services_defaults | default([]) + [ item.item ] }}"
+  when: item.stat.exists
+  loop: "{{ service_default_tasks.results }}"
+
 - name: "actions » default | include service specific default tasks"
-  ansible.builtin.include_tasks: "ubuntu/actions/defaults/{{ service_map[item.service_name] | default(item.service_name) }}.yml"
-  loop: "{{ valet_all_services }}"
-  vars:
-    service_map:
-      mariadb: mysql
-      opensearch: elasticsearch
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/ubuntu/actions/defaults/{{ item.family_name | default(item.service_name, true) }}.yml"
+  loop: "{{ valet_all_services_defaults }}"
 
 - name: "actions » default | set service as default using vsh_service_state module"
   vsh_service_state:

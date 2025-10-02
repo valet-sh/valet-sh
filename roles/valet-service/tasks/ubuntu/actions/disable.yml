@@ -43,6 +43,7 @@
     enabled: false
     scope: "{{ service_item.service.scope }}"
     daemon_reload: true
+  become: "{{ service_item.service.scope == 'system' }}"
   loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item

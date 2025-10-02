@@ -32,10 +32,17 @@
   ansible.builtin.set_fact:
     valet_canonical_names: "{{ valet_all_services | map(attribute='canonical') | list }}"
 
+    # TODO: First wins, multiple service installation will only set the first service from the same
+    # family as enabled/default
+
 - name: "internal-actions » handle | set services as enabled using vsh_service_state module"
   vsh_service_state:
     action: "set_enabled"
     canonical_names: "{{ valet_canonical_names }}"
+
+- name: debug valet_all_services
+  ansible.builtin.debug:
+    var: valet_all_services
 
 - name: "internal-actions » handle | enable resolved services"
   ansible.builtin.systemd:
@@ -44,10 +51,11 @@
     enabled: true
     scope: "{{ service_item.service.scope }}"
     daemon_reload: true
+  become: "{{ service_item.service.scope == 'system' }}"
   loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item
-  when: service_item.service.name is defined
+  when: service_item.service.name is defined and service_item.enable_allowed
 
 ## end handle services states
 ########################
@@ -69,17 +77,20 @@
   loop_control:
     loop_var: service_item
   when:
-    - service_item.defaultable | default(false)
+    - valet_sh_service_definitions[service_item.service_name].versions is defined
+    - valet_sh_service_definitions[service_item.service_name].versions | length > 1
     - service_item.service_name not in (valet_sh_services_obj.services.defaults.keys() | default([]))
 
-- name: "internal-actions » handle | run default action for defaultable services"
+- name: "internal-actions » handle | run default action for services with multiple versions"
   ansible.builtin.include_tasks: "ubuntu/actions/default.yml"
   vars:
     valet_service_name: "{{ service_item.canonical }}"
   loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item
-  when: service_item.defaultable | default(false)
+  when:
+    - valet_sh_service_definitions[service_item.service_name].versions is defined
+    - valet_sh_service_definitions[service_item.service_name].versions | length > 1
 
 ## end handle defaults
 ########################

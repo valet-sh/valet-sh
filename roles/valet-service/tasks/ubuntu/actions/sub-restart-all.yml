@@ -33,6 +33,7 @@
     state: restarted
     scope: "{{ service_item.service.scope }}"
     daemon_reload: true
+  become: "{{ service_item.service.scope == 'system' }}"
   loop: "{{ valet_current_resolved_service.services | default([]) }}"
   loop_control:
     loop_var: service_item
