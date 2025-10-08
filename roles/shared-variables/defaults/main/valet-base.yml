@@ -198,6 +198,7 @@ valet_sh_elasticsearch_ports: "{{ lookup('vars', 'valet_sh_elasticsearch_ports'+
 valet_sh_opensearch_ports_default:
   1: 9221
   2: 9222
+  3: 9223
 valet_sh_opensearch_ports: "{{ lookup('vars', 'valet_sh_opensearch_ports'+'_'+current_os, default=valet_sh_opensearch_ports_default) }}"
 
 valet_sh_php_sockets_default:
@@ -232,6 +233,7 @@ valet_sh_service_mysql_port_presets_default:
   mysql84: "3309"
   mariadb104: "3317"
   mariadb106: "3319"
+  mariadb1011: "3324"
   mariadb114: "3329"
 valet_sh_service_mysql_port_presets: "{{ lookup('vars', 'valet_sh_service_mysql_port_presets'+'_'+current_os, default=valet_sh_service_mysql_port_presets_default) }}"
 

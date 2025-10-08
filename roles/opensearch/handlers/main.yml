@@ -76,3 +76,35 @@
 
 - name: brew | vsh-opensearch2 | restarted
   shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"
+
+
+- name: systemd | opensearch3 | started
+  systemd:
+    daemon_reload: yes
+    name: opensearch3
+    state: started
+  become: true
+
+- name: systemd | opensearch3 | stopped
+  systemd:
+    daemon_reload: yes
+    name: opensearch3
+    state: stopped
+  become: true
+
+- name: systemd | opensearch3 | restarted
+  systemd:
+    daemon_reload: yes
+    name: opensearch3
+    state: restarted
+  become: true
+
+- name: systemd | opensearch3 | reloaded
+  systemd:
+    daemon_reload: yes
+    name: opensearch3
+    state: restarted
+  become: true
+
+- name: brew | vsh-opensearch3 | restarted
+  shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch3"

@@ -30,8 +30,10 @@ valet_sh_service_mysql_collation_string_mysql80: 'SET default_collation_for_utf8
 valet_sh_service_mysql_host_presets:
   mysql57: "127.0.0.1:3307"
   mysql80: "127.0.0.1:3308"
+  mysql84: "127.0.0.1:3309"
   mariadb104: "127.0.0.1:3317"
   mariadb106: "127.0.0.1:3319"
+  mariadb1011: "127.0.0.1:3324"
   mariadb114: "127.0.0.1:3329"
 
 

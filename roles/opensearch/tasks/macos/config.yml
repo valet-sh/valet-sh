@@ -15,30 +15,44 @@
 ##
 ---
 
-- name: "set 'Xms' in '/usr/local/etc/vsh-opensearch1/jvm.options' to 2GB"
+- name: "set 'Xms' in '/usr/local/etc/vsh-opensearch1/jvm.options' to 4GB"
   lineinfile:
     path: "/usr/local/etc/vsh-opensearch1/jvm.options"
     regexp: '^-Xms'
     line: "-Xms4g"
   notify: "brew | vsh-opensearch1 | restarted"
 
-- name: "set 'Xmx' in '/usr/local/etc/vsh-opensearch1/jvm.options' to 2GB"
+- name: "set 'Xmx' in '/usr/local/etc/vsh-opensearch1/jvm.options' to 4GB"
   lineinfile:
     path: "/usr/local/etc/vsh-opensearch1/jvm.options"
     regexp: '^-Xmx'
     line: "-Xmx4g"
   notify: "brew | vsh-opensearch1 | restarted"
 
-- name: "set 'Xms' in '/usr/local/etc/vsh-opensearch2/jvm.options' to 2GB"
+- name: "set 'Xms' in '/usr/local/etc/vsh-opensearch2/jvm.options' to 4GB"
   lineinfile:
     path: "/usr/local/etc/vsh-opensearch2/jvm.options"
     regexp: '^-Xms'
     line: "-Xms4g"
   notify: "brew | vsh-opensearch2 | restarted"
 
-- name: "set 'Xmx' in '/usr/local/etc/vsh-opensearch2/jvm.options' to 2GB"
+- name: "set 'Xmx' in '/usr/local/etc/vsh-opensearch2/jvm.options' to 4GB"
   lineinfile:
     path: "/usr/local/etc/vsh-opensearch2/jvm.options"
     regexp: '^-Xmx'
     line: "-Xmx4g"
   notify: "brew | vsh-opensearch2 | restarted"
+
+- name: "set 'Xms' in '/usr/local/etc/vsh-opensearch3/jvm.options' to 4GB"
+  lineinfile:
+    path: "/usr/local/etc/vsh-opensearch3/jvm.options"
+    regexp: '^-Xms'
+    line: "-Xms4g"
+  notify: "brew | vsh-opensearch3 | restarted"
+
+- name: "set 'Xmx' in '/usr/local/etc/vsh-opensearch3/jvm.options' to 4GB"
+  lineinfile:
+    path: "/usr/local/etc/vsh-opensearch3/jvm.options"
+    regexp: '^-Xmx'
+    line: "-Xmx4g"
+  notify: "brew | vsh-opensearch3 | restarted"

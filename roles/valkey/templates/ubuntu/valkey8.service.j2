@@ -1,0 +1,50 @@
+[Unit]
+Description=Advanced key-value store
+After=network.target
+Documentation=https://valkey.io/docs/, man:valkey-server(1)
+
+[Service]
+Type=notify
+ExecStart={{ current_valkey_dist_path }}/bin/valkey-server {{ current_valkey_etc_path }}/valkey.conf --supervised systemd --daemonize no
+PIDFile=/run/valkey/valkey8-server.pid
+TimeoutStopSec=0
+Restart=always
+User=valkey
+Group=valkey
+RuntimeDirectory=valkey
+RuntimeDirectoryMode=2755
+
+UMask=007
+PrivateTmp=true
+LimitNOFILE=65535
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=-{{ current_valkey_data_path }}
+ReadWritePaths=-/var/log/valkey
+ReadWritePaths=-/var/run/valkey
+
+CapabilityBoundingSet=
+LockPersonality=true
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+PrivateUsers=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectProc=invisible
+RemoveIPC=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~ @privileged @resources
+
+[Install]
+WantedBy=multi-user.target
+Alias=valkey.service

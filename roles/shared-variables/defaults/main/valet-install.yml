@@ -24,6 +24,7 @@ valet_install_default_roles_default:
   - shell
   - nginx
   - redis
+  - valkey
   - php
   - nodejs
   - mailhog
@@ -42,6 +43,7 @@ valet_install_default_roles_mac:
   - shell
   - nginx
   - redis
+  - valkey
   - php
   - nodejs
   - mailhog

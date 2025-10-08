@@ -40,6 +40,7 @@ valet_sh_service_defaultable_services_default:
       - elasticsearch8
       - opensearch1
       - opensearch2
+      - opensearch3
   - scope: php
     default: php73
     values:
@@ -61,6 +62,7 @@ valet_sh_service_defaultable_services_default:
       - mysql80
       - mysql84
       - mariadb104
+      - mariadb1011
       - mariadb106
       - mariadb114
   - scope: xdebug
@@ -85,6 +87,7 @@ valet_sh_service_defaultable_services_mac:
       - elasticsearch8
       - opensearch1
       - opensearch2
+      - opensearch3
   - scope: php
     default: php73
     values:
@@ -107,6 +110,7 @@ valet_sh_service_defaultable_services_mac:
       - mysql84
       - mariadb104
       - mariadb106
+      - mariadb1011
       - mariadb114
   - scope: xdebug
     default: xdebug3
@@ -129,6 +133,7 @@ valet_sh_service_state_preset_default:
   - elasticsearch8: false
   - opensearch1: false
   - opensearch2: false
+  - opensearch3: false
   - php56: false
   - php70: false
   - php71: false
@@ -145,9 +150,11 @@ valet_sh_service_state_preset_default:
   - mysql84: false
   - mariadb104: false
   - mariadb106: false
+  - mariadb1011: false
   - mariadb114: false
   - rabbitmq: false
   - redis: true
+  - valkey8: false
   - nginx: true
 valet_sh_service_state_preset_mac:
   - elasticsearch1: false
@@ -158,6 +165,7 @@ valet_sh_service_state_preset_mac:
   - elasticsearch8: false
   - opensearch1: false
   - opensearch2: false
+  - opensearch3: false
   - php56: false
   - php70: false
   - php71: false
@@ -174,9 +182,11 @@ valet_sh_service_state_preset_mac:
   - mysql84: false
   - mariadb104: false
   - mariadb106: false
+  - mariadb1011: false
   - mariadb114: false
   - rabbitmq: false
   - redis: true
+  - valkey8: false
   - nginx: true
   - dnsmasq: true
 valet_sh_service_state_preset: "{{ lookup('vars', 'valet_sh_service_state_preset'+'_'+current_os, default=valet_sh_service_state_preset_default) }}"
@@ -190,6 +200,7 @@ valet_sh_service_privileged_services_default:
   - elasticsearch8
   - opensearch1
   - opensearch2
+  - opensearch3
   - php56
   - php70
   - php71
@@ -206,9 +217,11 @@ valet_sh_service_privileged_services_default:
   - mysql84
   - mariadb104
   - mariadb106
+  - mariadb1011
   - mariadb114
   - rabbitmq
   - redis
+  - valkey8
   - nginx
 valet_sh_service_privileged_services_mac:
   - nginx
@@ -296,6 +309,11 @@ valet_sh_service_fuzzy_alias_mapping:
       - "mariadb10.6"
       - "MARIADB10.6"
       - "MARIADB106"
+  - target: mariadb1011
+    aliases:
+      - "mariadb10.11"
+      - "MARIADB10.11"
+      - "MARIADB1011"
   - target: mariadb114
     aliases:
       - "mariadb11.4"
@@ -316,12 +334,14 @@ valet_sh_service_alias_mapping_default:
   php84: "php8.4-fpm"
   rabbitmq: "rabbitmq-server"
   redis: "redis-server"
+  valkey8: "valkey8-server"
 valet_sh_service_alias_mapping_mac:
   mysql57: "vsh-mysql57"
   mysql80: "vsh-mysql80"
   mysql84: "vsh-mysql84"
   mariadb104: "vsh-mariadb104"
   mariadb106: "vsh-mariadb106"
+  mariadb1011: "vsh-mariadb1011"
   mariadb114: "vsh-mariadb114"
   php56: "vsh-php56"
   php70: "vsh-php70"
@@ -342,17 +362,22 @@ valet_sh_service_alias_mapping_mac:
   elasticsearch8: "vsh-elasticsearch8"
   opensearch1: "vsh-opensearch1"
   opensearch2: "vsh-opensearch2"
+  opensearch3: "vsh-opensearch3"
+  valkey8: "vsh-valkey8"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping'+'_'+current_os, default=valet_sh_service_alias_mapping_default) }}"
 
 valet_sh_service_rosetta2_emulation:
   rabbitmq: false
   nginx: true
   dnsmasq: true
+  redis: true
+  valkey8: true
   mysql57: true
   mysql80: true
   mysql84: true
   mariadb104: true
   mariadb106: true
+  mariadb1011: true
   mariadb114: true
   php56: true
   php70: true
@@ -373,3 +398,4 @@ valet_sh_service_rosetta2_emulation:
   elasticsearch8: true
   opensearch1: true
   opensearch2: true
+  opensearch3: true
