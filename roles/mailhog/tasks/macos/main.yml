@@ -15,7 +15,15 @@
 ##
 ---
 
-- name: "ensure mailhog is installed"
+- name: "ensure mailhog is stopped"
+  shell: "{{ valet_sh_homebrew_bin }} services stop mailhog"
+  ignore_errors: true
+
+- name: "ensure vsh-mailhog is stopped"
+  shell: "{{ valet_sh_homebrew_bin }} services stop  vsh-mailhog"
+  ignore_errors: true
+
+- name: "ensure mailhog is uninstalled"
   shell: "{{ valet_sh_homebrew_bin }} uninstall mailhog"
   ignore_errors: true
 

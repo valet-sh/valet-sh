@@ -45,7 +45,6 @@
   unarchive:
     src: "{{ mailpit_release_url }}"
     dest: "{{ mailpit_dist_dir }}"
-    extra_opts: [--strip-components=1]
     remote_src: yes
 
 - name: provide init script for mailpit
