@@ -468,8 +468,6 @@ php_cli_conf_path_default: "/etc/php/{{ php_version }}/cli/conf.d/95-valet-sh.in
 php_fpm_conf_path_default: "/etc/php/{{ php_version }}/fpm/conf.d/95-valet-sh.ini"
 php_fpm_pool_config_default: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
 
-mailpit_bin_target: "/usr/local/bin/mailpit"
-
 php_cli_settings_default:
   - conf: "date.timezone"
     value: "Europe/Berlin"
