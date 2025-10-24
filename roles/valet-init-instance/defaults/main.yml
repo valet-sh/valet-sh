@@ -36,6 +36,8 @@ valet_sh_service_mysql_host_presets:
   mariadb1011: "127.0.0.1:3324"
   mariadb114: "127.0.0.1:3329"
 
+valet_sh_service_valkey_port_presets:
+  valkey8: "127.0.0.1:6389"
 
 valet_sh_aem_local_cache_dirname: ".aemcache"
 valet_sh_aem_local_cache_dir: "{{ current_home }}/{{ valet_sh_aem_local_cache_dirname }}"
