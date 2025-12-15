@@ -32,4 +32,11 @@
 - include_tasks: "workflows/aem/main.yml"
   when: valet_sh_project_vars.instance.type == "aem"
 
+- include_tasks: "workflows/orocrm/main.yml"
+  when: valet_sh_project_vars.instance.type == "orocrm"
+
 # @TODO: fail when no project workflow was included
+- fail:
+    msg: "no project workflow found for type '{{ valet_sh_project_vars.instance.type }}'"
+  when:
+    - valet_sh_project_vars.instance.type not in ['magento1','magento2','neos','aem','orocrm']

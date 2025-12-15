@@ -158,6 +158,7 @@
     - include_tasks: templates/aem.yml
     - include_tasks: templates/shopware6.yml
     - include_tasks: templates/magento1.yml
+    - include_tasks: templates/orocrm.yml
     - include_tasks: templates/fallback.yml
   when: not template_found
 
