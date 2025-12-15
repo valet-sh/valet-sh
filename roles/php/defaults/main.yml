@@ -459,7 +459,7 @@ php_modules:
   - "xdebug"
   - "sqlite3"
   - "imagick"
-
+  - "pgsql"
 
 php_error_log_path: "/tmp/php_errors.log"
 php_version_string_default: "php{{ php_version }}"
