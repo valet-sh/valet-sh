@@ -471,7 +471,6 @@ php_multi:
         - "xmlrpc"
         - "xml"
         - "readline"
-        - "opcache"
         - "mysql"
         - "intl"
         - "gd"
