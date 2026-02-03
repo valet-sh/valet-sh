@@ -26,6 +26,13 @@
   file:
     path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/mods-available"
     state: directory
+    mode: '0755'
+
+- name: "ensure directory '{{ valet_sh_prefix }}/etc/{{ current_php }}/conf.d' exists"
+  file:
+    path: "{{ valet_sh_prefix }}/etc/{{ current_php }}/conf.d"
+    state: directory
+    mode: '0755'
 
 - name: ensure xdebug.ini configuration is deleted
   file:
