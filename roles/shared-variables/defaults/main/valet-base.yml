@@ -145,6 +145,14 @@ available_php_versions_alias_mapping:
       - "PHP84"
       - "PHP8.4"
     origin: "php84"
+  - aliases:
+      - "85"
+      - "8.5"
+      - "php85"
+      - "php8.5"
+      - "PHP85"
+      - "PHP8.5"
+    origin: "php85"
 
 available_php_versions_default:
   - "php56"
@@ -158,6 +166,7 @@ available_php_versions_default:
   - "php82"
   - "php83"
   - "php84"
+  - "php85"
 
 available_php_versions: "{{ lookup('vars', 'available_php_versions'+'_'+current_os, default=available_php_versions_default) }}"
 
@@ -213,6 +222,7 @@ valet_sh_php_sockets_default:
   php82: /var/run/php/php8.2-fpm.sock
   php83: /var/run/php/php8.3-fpm.sock
   php84: /var/run/php/php8.4-fpm.sock
+  php85: /var/run/php/php8.5-fpm.sock
 valet_sh_php_sockets_mac:
   php56: /tmp/vsh-php56.sock
   php70: /tmp/vsh-php70.sock
@@ -225,6 +235,7 @@ valet_sh_php_sockets_mac:
   php82: /tmp/vsh-php82.sock
   php83: /tmp/vsh-php83.sock
   php84: /tmp/vsh-php84.sock
+  php85: /tmp/vsh-php85.sock
 valet_sh_php_sockets: "{{ lookup('vars', 'valet_sh_php_sockets'+'_'+current_os, default=valet_sh_php_sockets_default) }}"
 
 valet_sh_service_mysql_port_presets_default:
