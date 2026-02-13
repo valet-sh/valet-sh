@@ -33,8 +33,13 @@
   when:
     - default_shell is defined
     - default_shell == "bash"
+    - valet_install_services is defined
 
 - ansible.builtin.include_tasks: ubuntu/zsh.yml
   when:
     - default_shell is defined
     - default_shell == "zsh"
+    - valet_install_services is defined
+
+- ansible.builtin.include_tasks: ubuntu/uninstall.yml
+  when: valet_uninstall_services is defined

@@ -36,13 +36,13 @@
 - name: Provide systemd service for vsh-valkey container
   ansible.builtin.template:
     src: "systemd/valkey.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/{{ current_valkey_service.service.name }}.service"
+    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_valkey_service.canonical }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
   notify: "systemd | vsh-valkey | restarted"
 
 - name: "Mark vsh-{{ current_valkey_service.canonical }} as installed in the services file"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "add_installed"
     canonical_names: "{{ current_valkey_service.canonical }}"

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2026 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,26 +14,11 @@
 #   limitations under the License.
 ##
 ---
-- name: install common packages
-  ansible.builtin.apt:
-    name: "{{ packages }}"
-    state: present
-  become: true
-  vars:
-    packages:
-      - git
-      - curl
 
-- name: set max_map_count to 262144
-  ansible.posix.sysctl:
-    name: vm.max_map_count
-    value: "262144"
-    state: present
-  become: true
+- name: "Setup common"
+  ansible.builtin.include_tasks: install-common.yml
+  when: valet_install_services is defined
 
-- name: set fs.inotify.max_user_watches to 1048576
-  ansible.posix.sysctl:
-    name: fs.inotify.max_user_watches
-    value: "1048576"
-    state: present
-  become: true
+- name: "Remove common"
+  ansible.builtin.include_tasks: uninstall-common.yml
+  when: valet_uninstall_services is defined

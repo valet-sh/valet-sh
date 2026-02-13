@@ -16,21 +16,20 @@
 ---
 - block:
     - name: "workflows » magento2 » services » php | check if php{{ valet_sh_project_vars.services.php.version }} is installed"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "is_installed"
         canonical_names: "php{{ valet_sh_project_vars.services.php.version }}"
       register: php_installed
 
     - name: "workflows » magento2 » services » php | resolve php{{ valet_sh_project_vars.services.php.version }} service"
-      vsh_service_resolver:
-        services: "php{{ valet_sh_project_vars.services.php.version }}"
+      vsh_bundle_resolver:
+        name: "php{{ valet_sh_project_vars.services.php.version }}"
         current_os: "{{ current_os }}"
       register: php_install
 
     - name: "include service-specific roles"
       ansible.builtin.include_role:
         name: "php"
-        public: true
       vars:
         valet_resolved_service: "{{ php_install }}"
         valet_install_services: ["php{{ valet_sh_project_vars.services.php.version }}"]
@@ -39,7 +38,6 @@
     - name: "workflows » magento2 » services » php | include valet-service role to set defaults"
       ansible.builtin.include_role:
         name: "valet-service"
-        public: true
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
@@ -48,7 +46,7 @@
     - name: "workflows » magento2 » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
       ansible.builtin.systemd:
         name: "php{{ valet_sh_project_vars.services.php.version }}-fpm"
-        state: started
+        state: restarted
         enabled: true
       become: true
 
@@ -58,13 +56,13 @@
         name: valet_sh_services_obj
 
     - name: "workflows » magento2 » services » php | set php{{ valet_sh_project_vars.services.php.version }} as default"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_default"
-        service_name: "php"
+        name: "php"
         canonical_names: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » php | set php{{ valet_sh_project_vars.services.php.version }} as enabled"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_enabled"
         canonical_names: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
 

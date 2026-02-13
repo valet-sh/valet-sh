@@ -29,10 +29,13 @@
         name: "vsh-{{ current_elasticsearch_service.canonical }}"
         state: absent
 
-    - name: "Remove vsh-{{ current_elasticsearch_service.canonical }} volume"
+    - name: "Remove vsh-{{ current_elasticsearch_service.canonical }} volumes"
       containers.podman.podman_volume:
-        name: "vsh-{{ current_elasticsearch_service.canonical }}-data"
+        name: "{{ item }}"
         state: absent
+      loop:
+        - "vsh-{{ current_elasticsearch_service.canonical }}-data"
+        - "vsh-{{ current_elasticsearch_service.canonical }}-plugins"
       when: "'--purge' in valet_cli_opts"
 
     - name: "Remove vsh-{{ current_elasticsearch_service.canonical }} systemd service"
@@ -58,6 +61,6 @@
       when: "'--purge' in valet_cli_opts"
 
     - name: "Remove vsh-{{ current_elasticsearch_service.canonical }} from installed services"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "remove_installed"
         canonical_names: "{{ current_elasticsearch_service.canonical }}"

@@ -44,6 +44,6 @@
   become: true
 
 - name: "Remove dnsmasq from installed services"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "remove_installed"
     canonical_names: "dnsmasq"

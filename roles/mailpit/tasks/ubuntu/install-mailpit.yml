@@ -68,6 +68,6 @@
     scope: "{{ current_mailpit_service.service.scope }}"
 
 - name: "Add mailpit to installed services"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "add_installed"
     canonical_names: "{{ current_mailpit_service.canonical }}"

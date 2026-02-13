@@ -21,28 +21,19 @@
   ansible.builtin.debug:
     var: valet_sh_newly_installed_services
 
-# - name: "internal-actions » handle | flush handlers"
-#   ansible.builtin.meta: flush_handlers
-
 - name: "internal-actions » handle | set valet_all_services from newly installed services"
   ansible.builtin.set_fact:
-    valet_all_services: "{{ valet_sh_newly_installed_services.services | default([]) }}"
+    valet_all_services: "{{ (valet_sh_newly_installed_services.packages | default([])) + (valet_sh_newly_installed_services.services | default([])) | unique(attribute='name') }}"
 
 - name: "internal-actions » handle | extract canonical names"
   ansible.builtin.set_fact:
     valet_canonical_names: "{{ valet_all_services | map(attribute='canonical') | list }}"
 
-    # TODO: First wins, multiple service installation will only set the first service from the same
-    # family as enabled/default
-
-- name: "internal-actions » handle | set services as enabled using vsh_service_state module"
-  vsh_service_state:
+- name: "internal-actions » handle | set services as enabled using vsh_bundle_state module"
+  vsh_bundle_state:
     action: "set_enabled"
     canonical_names: "{{ valet_canonical_names }}"
-
-- name: debug valet_all_services
-  ansible.builtin.debug:
-    var: valet_all_services
+  when: valet_all_services | selectattr('type', 'equalto', 'service') | list | length > 0
 
 - name: "internal-actions » handle | enable resolved services"
   ansible.builtin.systemd:
@@ -52,7 +43,7 @@
     scope: "{{ service_item.service.scope }}"
     daemon_reload: true
   become: "{{ service_item.service.scope == 'system' }}"
-  loop: "{{ valet_all_services }}"
+  loop: "{{ valet_all_services| selectattr('type', 'equalto', 'service') | list }}"
   loop_control:
     loop_var: service_item
   when: service_item.service.name is defined and service_item.enable_allowed
@@ -68,29 +59,22 @@
     file: "{{ valet_etc_services_file }}"
     name: valet_sh_services_obj
 
-- name: "internal-actions » handle | set default only for services without existing defaults"
-  vsh_service_state:
-    action: "set_default"
-    service_name: "{{ service_item.service_name }}"
-    canonical_names: "{{ service_item.canonical }}"
+- name: "internal-actions » handle | filter bundles with multiple versions for default handling"
+  ansible.builtin.set_fact:
+    valet_all_services_for_defaults: "{{ valet_all_services_for_defaults | default([]) + [service_item] }}"
   loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item
   when:
-    - valet_sh_service_definitions[service_item.service_name].versions is defined
-    - valet_sh_service_definitions[service_item.service_name].versions | length > 1
-    - service_item.service_name not in (valet_sh_services_obj.services.defaults.keys() | default([]))
+    - valet_sh_bundle_definitions[service_item.type ~ 's'][service_item.name].versions | default([]) | length > 1
 
-- name: "internal-actions » handle | run default action for services with multiple versions"
+- name: "internal-actions » handle | set valet_all_services to defaultable bundles"
+  ansible.builtin.set_fact:
+    valet_all_services: "{{ valet_all_services_for_defaults | default([]) }}"
+
+- name: "internal-actions » handle | run default action for bundles with multiple versions"
   ansible.builtin.include_tasks: "ubuntu/actions/default.yml"
-  vars:
-    valet_service_name: "{{ service_item.canonical }}"
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item
-  when:
-    - valet_sh_service_definitions[service_item.service_name].versions is defined
-    - valet_sh_service_definitions[service_item.service_name].versions | length > 1
+  when: valet_all_services | length > 0
 
 ## end handle defaults
 ########################

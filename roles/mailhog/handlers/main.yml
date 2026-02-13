@@ -21,7 +21,7 @@
     name: "{{ current_mailhog_service.service.name }}"
     state: started
     scope: "{{ current_mailhog_service.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mailhog.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailhog.*') }}"
   loop_control:
     loop_var: mailhog_item
   listen:: "systemd | vsh-mailhog | stopped"
@@ -32,7 +32,7 @@
     name: "{{ current_mailhog_service.service.name }}"
     state: stopped
     scope: "{{ current_mailhog_service.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mailhog.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailhog.*') }}"
   loop_control:
     loop_var: mailhog_item
   listen:: "systemd | vsh-mailhog | started"
@@ -43,7 +43,7 @@
     name: "{{ current_mailhog_service.service.name }}"
     state: restarted
     scope: "{{ current_mailhog_service.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^mailhog.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailhog.*') }}"
   loop_control:
     loop_var: mailhog_item
   listen:: "systemd | vsh-mailhog | restarted"

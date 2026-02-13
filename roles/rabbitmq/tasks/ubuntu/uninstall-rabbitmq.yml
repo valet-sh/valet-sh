@@ -36,12 +36,12 @@
 
 - name: Remove rabbitmq systemd service
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/{{ current_rabbitmq_service.service.name }}.service"
+    path: "{{ current_home }}/.config/systemd/user/vsh-{{ current_rabbitmq_service.canonical }}.service"
     state: absent
 
 - name: "Remove vsh-{{ current_rabbitmq_service.canonical }} default.target.wants symlink"
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_rabbitmq_service.service.name }}.service"
+    path: "{{ current_home }}/.config/systemd/user/default.target.wants/vsh-{{ current_rabbitmq_service.canonical }}.service"
     state: absent
 
 - name: Remove rabbitmq image
@@ -52,6 +52,6 @@
   when: "'--purge' in valet_cli_opts"
 
 - name: "Remove vsh-{{ current_rabbitmq_service.canonical }} from installed services"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "remove_installed"
     canonical_names: "{{ current_rabbitmq_service.canonical }}"

@@ -1,0 +1,69 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- block:
+    - name: "workflows » magento2 » services » redis | set var 'valet_sh_service_redis_current_name'"
+      ansible.builtin.set_fact:
+        valet_sh_service_redis_current_name: "redis{{ valet_sh_project_vars.services.redis.version | default(valet_sh_bundle_definitions.services.redis.default_version) | replace('.', '') }}"
+
+    - name: "workflows » magento2 » services » redis | check if {{ valet_sh_service_redis_current_name }} is installed"
+      vsh_bundle_state:
+        action: "is_installed"
+        canonical_names: "{{ valet_sh_service_redis_current_name }}"
+      register: redis_installed
+
+    - name: "workflows » magento2 » services » redis | resolve {{ valet_sh_service_redis_current_name }} service"
+      vsh_bundle_resolver:
+        name: "{{ valet_sh_service_redis_current_name }}"
+        current_os: "{{ current_os }}"
+      register: redis_install
+
+    - name: "include service-specific roles"
+      ansible.builtin.include_role:
+        name: "redis"
+      vars:
+        valet_resolved_service: "{{ redis_install }}"
+        valet_install_services: ["{{ valet_sh_service_redis_current_name }}"]
+      when: not redis_installed.is_installed
+
+    - name: "workflows » magento2 » services » redis | include valet-service role to set defaults"
+      ansible.builtin.include_role:
+        name: "valet-service"
+      vars:
+        valet_sh_service_internal_action: true
+        valet_service_action: "handle"
+        valet_sh_newly_installed_services: "{{ redis_install }}"
+
+    - name: "workflows » magento2 » services » redis | ensure redis is started"
+      ansible.builtin.systemd:
+        name: vsh-{{ valet_sh_service_redis_current_name }}
+        state: restarted
+        enabled: true
+        scope: user
+
+    - name: "workflows » magento2 » services » redis | set redis as enabled"
+      vsh_bundle_state:
+        action: "set_enabled"
+        canonical_names: "redis"
+
+    - name: "workflows » magento2 » services » redis | wait for redis to be reachable"
+      ansible.builtin.wait_for:
+        port: "{{ valet_sh_redis_ports[valet_sh_project_vars.services.redis.version] | default(6379) }}"
+        delay: 5
+
+  when:
+    - current_os == "ubuntu"

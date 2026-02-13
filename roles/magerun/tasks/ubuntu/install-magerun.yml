@@ -33,3 +33,8 @@
     mode: "0755"
     force: true
   become: true
+
+- name: Mark magerun as installed in the bundle file
+  vsh_bundle_state:
+    action: "add_installed"
+    name: "magerun"

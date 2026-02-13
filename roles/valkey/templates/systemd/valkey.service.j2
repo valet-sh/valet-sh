@@ -15,7 +15,7 @@ ExecStart=/usr/bin/podman run \
     --replace \
     --rm \
     --name vsh-{{ current_valkey_service.canonical }} \
-    --volume {{ current_valkey_service.canonical }}:/data \
+    --volume vsh-{{ current_valkey_service.canonical }}:/data \
     --publish {{ current_valkey_service.configuration.ports.valkey }}:6379 \
     {{ current_valkey_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_valkey_service.canonical }}

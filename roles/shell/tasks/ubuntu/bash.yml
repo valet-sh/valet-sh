@@ -19,3 +19,8 @@
     name: "{{ current_user }}"
     shell: /bin/bash
   become: true
+
+- name: Mark shell as installed
+  vsh_bundle_state:
+    action: "add_installed"
+    name: "shell"

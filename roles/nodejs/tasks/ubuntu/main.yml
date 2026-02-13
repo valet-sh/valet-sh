@@ -17,12 +17,8 @@
 
 - name: "install nodejs"
   ansible.builtin.include_tasks: install-nodejs.yml
-  when:
-    - valet_install_core_roles_to_install is defined
-    - valet_install_core_roles_to_install | length > 0
+  when: valet_install_services is defined
 
 - name: "uninstall nodejs"
   ansible.builtin.include_tasks: uninstall-nodejs.yml
-  when:
-    - valet_uninstall_services is defined
-    - valet_uninstall_services | length > 0
+  when: valet_uninstall_services is defined

@@ -15,16 +15,6 @@
 ##
 ---
 
-- name: "extract version from canonical name for elasticsearch/opensearch"
-  set_fact:
-    valet_service_name_version: "{{ elasticsearch_extract.version }}"
-    valet_service_base_name: "{{ elasticsearch_extract.service_name }}"
-    valet_service_name_full: "{{ elasticsearch_extract.canonical }}"
-  when: elasticsearch_extract.service_name in ['elasticsearch', 'opensearch']
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: elasticsearch_extract
-
 - name: "provide elasticsearch default configuration"
   template:
     src: "nginx/elasticsearch.conf.j2"

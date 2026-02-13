@@ -1,0 +1,5 @@
+---
+
+configuration:
+  bin_path_default: "/usr/local/bin/composer2"
+  phar_bin: "/usr/local/bin/composer2.phar"

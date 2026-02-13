@@ -1,0 +1,123 @@
+##
+#   Copyright 2023 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+valet_sh_bundle_definitions:
+  services:
+    php:
+      display_name: "PHP"
+      versions: ["5.6", "7.0", "7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]
+      role_name: "php"
+      kind: "optional"
+      type: "service"
+    elasticsearch:
+      display_name: "Elasticsearch"
+      versions: ["1", "2", "5", "6", "7", "8"]
+      role_name: "elasticsearch"
+      family_name: "search_engine"
+      kind: "optional"
+      type: "service"
+    opensearch:
+      display_name: "OpenSearch"
+      versions: ["1", "2", "3"]
+      role_name: "opensearch"
+      family_name: "search_engine"
+      kind: "optional"
+      type: "service"
+    mysql:
+      display_name: "MySQL"
+      versions: ["5.7", "8.0", "8.4"]
+      role_name: "mysql-community-server"
+      family_name: "database"
+      kind: "optional"
+      type: "service"
+    mariadb:
+      display_name: "MariaDB"
+      versions: ["10.4", "10.6", "10.11", "11.4"]
+      role_name: "mariadb-server"
+      family_name: "database"
+      kind: "optional"
+      type: "service"
+    nginx:
+      display_name: "Nginx"
+      role_name: "nginx"
+      kind: "essential"
+      type: "service"
+    redis:
+      display_name: "Redis"
+      versions: ["6", "7"]
+      default_version: "6"
+      role_name: "redis"
+      family_name: "cache"
+      kind: "optional"
+      type: "service"
+    valkey:
+      display_name: "Valkey"
+      versions: ["8"]
+      role_name: "valkey"
+      family_name: "cache"
+      kind: "optional"
+      type: "service"
+    rabbitmq:
+      display_name: "RabbitMQ"
+      versions: ["3.12", "3.13", "4.1"]
+      default_version: "3.12"
+      role_name: "rabbitmq"
+      kind: "optional"
+      type: "service"
+    dnsmasq:
+      display_name: "Dnsmasq"
+      role_name: "dnsmasq"
+      enable_allowed: false
+      kind: "essential"
+      type: "service"
+    mailpit:
+      display_name: "Mailpit"
+      versions: ["latest"]
+      role_name: "mailpit"
+      kind: "optional"
+      type: "service"
+  packages:
+    common:
+      role_name: "common"
+      kind: "essential"
+      type: "package"
+    certificate:
+      role_name: "certificate"
+      kind: "essential"
+      type: "package"
+    shell:
+      role_name: "shell"
+      kind: "essential"
+      type: "package"
+    podman:
+      role_name: "podman"
+      kind: "essential"
+      type: "package"
+      os: ["linux"]
+    nodejs:
+      role_name: "nodejs"
+      kind: "optional"
+      type: "package"
+    magerun:
+      role_name: "magerun"
+      kind: "optional"
+      type: "package"
+    composer:
+      role_name: "composer"
+      versions: ["1", "2"]
+      kind: "optional"
+      type: "package"

@@ -26,6 +26,7 @@ valet_sh_service_allowed_actions_default:
   - stop
   - default
   - list
+  - test
 valet_sh_service_allowed_actions: "{{ lookup('vars', 'valet_sh_service_allowed_actions' + '_' + current_os, default=valet_sh_service_allowed_actions_default) }}"
 
 valet_sh_service_defaultable_services_default:
@@ -217,8 +218,6 @@ valet_sh_service_privileged_services_mac:
 valet_sh_service_privileged_services: "{{ lookup('vars', 'valet_sh_service_privileged_services' + '_' + current_os, default=valet_sh_service_privileged_services_default)
   }}"
 
-
-# TODO: Remove when module is integrated into the role
 valet_sh_service_fuzzy_alias_mapping:
   - target: php56
     aliases:
@@ -306,7 +305,6 @@ valet_sh_service_fuzzy_alias_mapping:
       - "MARIADB11.4"
       - "MARIADB114"
 
-# TODO: Remove when module is integrated into the role
 valet_sh_service_alias_mapping_default:
   php56: "php5.6-fpm"
   php70: "php7.0-fpm"
@@ -349,7 +347,6 @@ valet_sh_service_alias_mapping_mac:
   opensearch2: "vsh-opensearch2"
 valet_sh_service_alias_mapping: "{{ lookup('vars', 'valet_sh_service_alias_mapping' + '_' + current_os, default=valet_sh_service_alias_mapping_default) }}"
 
-# TODO: Remove when module is integrated into the role
 valet_sh_service_system_scoped_services_default: []
 valet_sh_service_system_scoped_services_ubuntu:
   - php56

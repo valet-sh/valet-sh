@@ -15,50 +15,48 @@
 ##
 ---
 
-# TODO: Version currently needs to be set to '' meaning it will get the only specified
-# version from the valet-service-new.yml file (3.12). Only needed when in the .valet-sh.yml
-# a version is defined
-
 - block:
-    - name: "workflows » magento2 » services » rabbitmq | check if rabbitmq{{ valet_sh_project_vars.services.rabbitmq.version | default('') }} is installed"
-      vsh_service_state:
+    - name: "workflows » magento2 » services » rabbitmq | set var 'valet_sh_service_rabbitmq_current_name'"
+      ansible.builtin.set_fact:
+        valet_sh_service_rabbitmq_current_name: "rabbitmq{{ valet_sh_project_vars.services.rabbitmq.version | default(valet_sh_bundle_definitions.services.rabbitmq.default_version) | replace('.', '') }}"
+
+    - name: "workflows » magento2 » services » rabbitmq | check if {{ valet_sh_service_rabbitmq_current_name }} is installed"
+      vsh_bundle_state:
         action: "is_installed"
-        canonical_names: "rabbitmq{{ valet_sh_project_vars.services.rabbitmq.version | default('') }}"
+        canonical_names: "{{ valet_sh_service_rabbitmq_current_name }}"
       register: rabbitmq_installed
 
-    - name: "workflows » magento2 » services » rabbitmq | resolve rabbitmq{{ valet_sh_project_vars.services.rabbitmq.version | default('') }} service"
-      vsh_service_resolver:
-        services: "rabbitmq{{ valet_sh_project_vars.services.rabbitmq.version | default('') }}"
+    - name: "workflows » magento2 » services » rabbitmq | resolve {{ valet_sh_service_rabbitmq_current_name }} service"
+      vsh_bundle_resolver:
+        name: "{{ valet_sh_service_rabbitmq_current_name }}"
         current_os: "{{ current_os }}"
       register: rabbitmq_install
+
+    - name: "include service-specific roles"
+      ansible.builtin.include_role:
+        name: "rabbitmq"
+      vars:
+        valet_resolved_service: "{{ rabbitmq_install }}"
+        valet_install_services: ["{{ valet_sh_service_rabbitmq_current_name }}"]
+      when: not rabbitmq_installed.is_installed
 
     - name: "workflows » magento2 » services » rabbitmq | include valet-service role to set defaults"
       ansible.builtin.include_role:
         name: "valet-service"
-        public: true
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
         valet_sh_newly_installed_services: "{{ rabbitmq_install }}"
 
-    - name: "include service-specific roles"
-      ansible.builtin.include_role:
-        name: "rabbitmq"
-        public: true
-      vars:
-        valet_resolved_service: "{{ rabbitmq_install }}"
-        valet_install_services: ["rabbitmq{{ valet_sh_project_vars.services.rabbitmq.version | default('') }}"]
-      when: not rabbitmq_installed.is_installed
-
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
       ansible.builtin.systemd:
-        name: vsh-rabbitmq-server
+        name: "vsh-{{ valet_sh_service_rabbitmq_current_name }}"
         state: restarted
         enabled: true
         scope: user
 
     - name: "workflows » magento2 » services » rabbitmq | set rabbitmq as enabled"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_enabled"
         canonical_names: "rabbitmq"
 
@@ -88,7 +86,7 @@
     # TODO: Install pip package requests to runtime and
     # update runtime to Ansible 11.9.0 to be able to use the commmunity.rabbitmq module in
     # version 1.6.0 which allows setting login_host, login_user and login_password parameters which
-    # allow us to not rely on the rabbitmqctl package being installed
+    # allow us to not rely on the rabbitmqctl package being installed and install with pip requests package
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq vhost exists"
       community.rabbitmq.rabbitmq_vhost:

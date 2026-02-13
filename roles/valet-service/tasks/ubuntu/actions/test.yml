@@ -1,0 +1,25 @@
+---
+
+- name: "Set essential services and packages if valet_install_service is empty"
+  ansible.builtin.set_fact:
+    valet_essential_services: "{{ valet_sh_bundle_definitions.services | dict2items | selectattr('value.kind', 'equalto', 'essential') | map(attribute='key') | list }}"
+    valet_essential_packages: "{{ valet_sh_bundle_definitions.packages | dict2items | selectattr('value.kind', 'equalto', 'essential') | map(attribute='key') | list }}"
+  when: valet_install_services is not defined or valet_install_services | length == 0
+
+- name: "Set services to install if valet_install_service is not defined or empty"
+  ansible.builtin.set_fact:
+    valet_install_services: "{{ valet_essential_services + valet_essential_packages }}"
+  when: valet_install_services is not defined or valet_install_services | length == 0
+
+- name: Check if installed
+  vsh_bundle_state:
+    action: "is_installed"
+    name: "{{ bundle_name }}"
+  register: bundle_installation_check
+  loop: "{{ valet_install_services }}"
+  loop_control:
+    loop_var: bundle_name
+
+- name: Filter not installed services
+  debug:
+    msg: "Not installed: {{ bundle_installation_check.results | selectattr('is_installed', 'equalto', false) | map(attribute='bundle_name') | list }}"

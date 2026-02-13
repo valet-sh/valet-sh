@@ -15,8 +15,13 @@
 ##
 ---
 
-- name: "actions » enable | set services as enabled using vsh_service_state module"
-  vsh_service_state:
+- name: "actions » enable | fail when service defintion is not defined"
+  ansible.builtin.fail:
+    msg: "service definition is not defined cannot enable service"
+  when: valet_all_services.0.service is not defined
+
+- name: "actions » enable | set services as enabled using vsh_bundle_state module"
+  vsh_bundle_state:
     action: "set_enabled"
     canonical_names: "{{ valet_canonical_names }}"
 
@@ -37,11 +42,11 @@
 - name: "actions » enable | enable resolved services"
   ansible.builtin.systemd:
     name: "{{ service_item.service.name }}"
-    state: stopped
-    enabled: false
+    state: started
+    enabled: true
     scope: "{{ service_item.service.scope }}"
     daemon_reload: true
-  become: "{{ service_item.service.scope == 'system' }"
+  become: "{{ service_item.service.scope == 'system' }}"
   loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item

@@ -53,6 +53,6 @@
     loop_var: valet_sh_service_nginx_item
 
 - name: "Remove nginx from installed services"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "remove_installed"
     canonical_names: "nginx"

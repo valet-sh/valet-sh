@@ -20,7 +20,7 @@
 
 - name: "actions » partials » switch-target-db-host | override my.cnf config path"
   ansible.builtin.set_fact:
-    valet_db_mysql_target_config_file: "{{ current_home }}/.my5.7.cnf"
+    valet_db_mysql_target_config_file: "{{ valet_packages_path_default }}/mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}/user/.my.cnf"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.services is defined
@@ -30,7 +30,7 @@
 
 - name: "actions » partials » switch-target-db-host | override my.cnf config path"
   ansible.builtin.set_fact:
-    valet_db_mysql_target_config_file: "{{ current_home }}/.my8.0.cnf"
+    valet_db_mysql_target_config_file: "{{ valet_packages_path_default }}/mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}/user/.my.cnf"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.services is defined
@@ -40,7 +40,7 @@
 
 - name: "actions » partials » switch-target-db-host | override my.cnf config path"
   ansible.builtin.set_fact:
-    valet_db_mysql_target_config_file: "{{ current_home }}/.my10.4.cnf"
+    valet_db_mysql_target_config_file: "{{ valet_packages_path_default }}/mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}/user/.my.cnf"
   when:
     - valet_sh_project_vars is defined
     - valet_sh_project_vars.services is defined

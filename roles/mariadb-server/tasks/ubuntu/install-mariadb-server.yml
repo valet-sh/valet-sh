@@ -133,6 +133,6 @@
     scope: "{{ current_mariadb_service.service.scope }}"
 
 - name: "Mark vsh-{{ current_mariadb_service.canonical }} as installed in the services file"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "add_installed"
     canonical_names: "{{ current_mariadb_service.canonical }}"

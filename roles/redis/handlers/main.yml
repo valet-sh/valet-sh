@@ -21,7 +21,7 @@
     name: "{{ redis_item.service.name }}"
     state: started
     scope: "{{ redis_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
   loop_control:
     loop_var: redis_item
   listen: "systemd | vsh-redis-server | started"
@@ -32,7 +32,7 @@
     name: "{{ redis_item.service.name }}"
     state: stopped
     scope: "{{ redis_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
   loop_control:
     loop_var: redis_item
   listen: "systemd | vsh-redis-server | started"
@@ -43,7 +43,7 @@
     name: "{{ redis_item.service.name }}"
     state: restarted
     scope: "{{ redis_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
   loop_control:
     loop_var: redis_item
   listen: "systemd | vsh-redis-server | started"
@@ -54,7 +54,7 @@
     name: "{{ redis_item.service.name }}"
     state: restarted
     scope: "{{ redis_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
   loop_control:
     loop_var: redis_item
   listen: "systemd | vsh-redis-server | restarted"

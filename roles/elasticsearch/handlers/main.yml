@@ -21,7 +21,7 @@
     name: "{{ elasticsearch_item.service.name }}"
     state: started
     scope: "{{ elasticsearch_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
   loop_control:
     loop_var: elasticsearch_item
   listen: "systemd | vsh-elasticsearch | started"
@@ -32,7 +32,7 @@
     name: "{{ elasticsearch_item.service.name }}"
     state: stopped
     scope: "{{ elasticsearch_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
   loop_control:
     loop_var: elasticsearch_item
   listen: "systemd | vsh-elasticsearch | stopped"
@@ -43,7 +43,7 @@
     name: "{{ elasticsearch_item.service.name }}"
     state: restarted
     scope: "{{ elasticsearch_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
   loop_control:
     loop_var: elasticsearch_item
   listen: "systemd | vsh-elasticsearch | restarted"
@@ -54,7 +54,7 @@
     name: "{{ elasticsearch_item.service.name }}"
     state: restarted
     scope: "{{ elasticsearch_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
   loop_control:
     loop_var: elasticsearch_item
   listen: "systemd | vsh-elasticsearch | reloaded"

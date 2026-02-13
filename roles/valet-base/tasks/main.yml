@@ -65,9 +65,9 @@
     mode: "0755"
   become: true
 
-- name: "ensure valet services file exists"
+- name: "ensure valet bundle file exists"
   ansible.builtin.template:
-    src: "services.yml.j2"
+    src: "bundles.yml.j2"
     dest: "{{ valet_etc_services_file }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"

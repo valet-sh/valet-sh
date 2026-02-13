@@ -15,14 +15,8 @@
 ##
 ---
 
-- name: set valet_service_name_version
-  set_fact:
-    valet_service_name_version: "{{ item.version }}"
-  when: item.service_name in ['php']
-  loop: "{{ valet_all_services }}"
-
-- name: "set default php cli version to php{{ valet_service_name_version }}"
+- name: "set default php cli version to php{{ item.version }}"
   alternatives:
     name: php
-    path: "/usr/bin/php{{ valet_service_name_version }}"
+    path: "/usr/bin/php{{ item.version }}"
   become: true

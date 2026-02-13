@@ -1,0 +1,49 @@
+##
+#   Copyright 2026 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "Block"
+  block:
+    - name: "actions » stop | include valet bundle file"
+      ansible.builtin.include_vars:
+        file: "{{ valet_etc_services_file }}"
+        name: valet_stop_all_services
+
+    - name: "actions » stop | set all enabled services to stop"
+      ansible.builtin.set_fact:
+        valet_stop_all_enabled: "{{ valet_stop_all_services.bundles.services.states.keys() | list }}"
+
+    - name: "actions » stop | resolve all enabled services to stop"
+      vsh_bundle_resolver:
+        name: "{{ valet_stop_all_enabled }}"
+        current_os: "{{ current_os }}"
+      register: vsh_resolver
+
+    # QUESTION: Should we exclude essential services from stopping when --all is given?
+    - name: "actions » stop | set all enabled services to stop except essential services"
+      ansible.builtin.set_fact:
+        vsh_resolver_filtered: "{{ vsh_resolver.services | rejectattr('kind', 'equalto', 'essential') | list }}"
+
+    - name: "actions » stop | stop all resolved services"
+      ansible.builtin.systemd:
+        name: "{{ service_item.service.name }}"
+        state: stopped
+        scope: "{{ service_item.service.scope }}"
+        daemon_reload: true
+      become: "{{ service_item.service.scope == 'system' }}"
+      loop: "{{ vsh_resolver_filtered }}"
+      loop_control:
+        loop_var: service_item

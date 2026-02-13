@@ -15,66 +15,56 @@
 ##
 ---
 
-- name: Check valet_install_services and split to core and services variables
-  ansible.builtin.set_fact:
-    valet_core_roles_to_install: "{{ valet_install_services.split() | select('in', valet_install_core_roles) | list }}"
-    valet_service_roles_to_install: "{{ valet_install_services.split() | difference(valet_install_core_roles) | list }}"
-  when:
-    - valet_install_services is defined
-    - valet_install_services | length > 0
-
-- name: "set core roles to install"
-  ansible.builtin.set_fact:
-    valet_install_core_roles_to_install: "{{ valet_core_roles_to_install if (valet_core_roles_to_install is defined and valet_core_roles_to_install | length > 0) else valet_install_core_roles }}"
-
-- name: "install core roles"
-  ansible.builtin.include_role:
-    name: "{{ valet_install_core_roles_item }}"
-  loop: "{{ valet_install_core_roles_to_install }}"
-  loop_control:
-    loop_var: valet_install_core_roles_item
-  when:
-    - valet_install_core_roles_to_install | length > 0
-    - not (valet_service_roles_to_install is defined and valet_service_roles_to_install | length > 0)
-
-- name: "resolve requested services"
-  vsh_service_resolver:
-    services: "{{ valet_service_roles_to_install }}"
-    current_os: "{{ current_os }}"
-  register: valet_resolved_install_services
-  when:
-    - valet_service_roles_to_install is defined
-    - valet_service_roles_to_install | length > 0
-
-- name: Debug valet_resolved_install_services
+- name: Debug valet_install_services
   ansible.builtin.debug:
-    var: valet_resolved_install_services
+    var: valet_install_services
 
-- name: "set roles to install"
+- name: "Set essential services and packages if valet_install_service is empty"
   ansible.builtin.set_fact:
-    valet_install_roles_to_install: "{{ valet_resolved_install_services.services | map(attribute='role_name') | list | unique }}"
-  when:
-    - valet_resolved_install_services is defined
-    - valet_resolved_install_services.services is defined
+    valet_essential_packages: "{{ valet_sh_bundle_definitions.packages | dict2items | selectattr('value.kind', 'equalto', 'essential') | map(attribute='key') | list }}"
+    valet_essential_services: "{{ valet_sh_bundle_definitions.services | dict2items | selectattr('value.kind', 'equalto', 'essential') | map(attribute='key') | list }}"
+  when: valet_install_services is not defined or valet_install_services | length == 0
 
-- name: "include service-specific roles"
-  ansible.builtin.include_role:
-    name: "{{ valet_install_roles_item }}"
-    public: true
-  vars:
-    valet_resolved_service: "{{ valet_resolved_install_services | combine({'services': valet_resolved_install_services.services | selectattr('role_name', 'equalto', valet_install_roles_item) | list}) }}"
-  loop: "{{ valet_install_roles_to_install | default([]) }}"
+- name: "Set services to install if valet_install_service is not defined or empty"
+  ansible.builtin.set_fact:
+    valet_install_services_essentials: "{{ valet_essential_packages + valet_essential_services }}"
+  when: valet_install_services is not defined or valet_install_services | length == 0
+
+- name: Check if installed
+  vsh_bundle_state:
+    action: "is_installed"
+    name: "{{ bundle_name }}"
+  register: bundle_install_check
+  loop: "{{ valet_install_services_essentials }}"
   loop_control:
-    loop_var: valet_install_roles_item
-  when:
-    - valet_install_roles_to_install is defined
-    - valet_install_roles_to_install | length > 0
-    - valet_install_roles_item not in valet_install_core_roles_to_install
-    - valet_resolved_install_services is defined
-    - valet_resolved_install_services.services is defined
+    loop_var: bundle_name
+  when: valet_install_services is not defined or valet_install_services | length == 0 and valet_install_services_essentials is defined and valet_install_services_essentials | length > 0
 
-# TODO: Needs to be discussed if we want to keep this or if a install is really just the install
-# and the handling of services would be done by calling the valet.sh service commands explicitly
+- name: "Filter not installed services"
+  ansible.builtin.set_fact:
+    valet_install_services: "{{ bundle_install_check.results | selectattr('is_installed', 'equalto', false) | map(attribute='bundle_name') | list }}"
+  when: valet_install_services is not defined or valet_install_services | length == 0
+
+- name: Debug services to install
+  ansible.builtin.debug:
+    var: valet_install_services
+
+- name: "Resolve Services to Install"
+  vsh_bundle_resolver:
+    name: "{{ valet_install_services }}"
+    current_os: "{{ current_os }}"
+  register: vsh_resolver
+
+- name: "Install Service Roles"
+  ansible.builtin.include_role:
+    name: "{{ role_item }}"
+  vars:
+    valet_resolved_service:
+      services: "{{ vsh_resolver.services | selectattr('role_name', 'equalto', role_item) | list }}"
+      packages: "{{ vsh_resolver.packages | selectattr('role_name', 'equalto', role_item) | list }}"
+  loop: "{{ (vsh_resolver.packages + vsh_resolver.services ) | map(attribute='role_name') | unique | list }}"
+  loop_control:
+    loop_var: role_item
 
 - name: "include role"
   ansible.builtin.include_role:
@@ -83,7 +73,7 @@
   vars:
     valet_sh_service_internal_action: true
     valet_service_action: "handle"
-    valet_sh_newly_installed_services: "{{ valet_resolved_install_services | default({}) }}"
+    valet_sh_newly_installed_services: "{{ (vsh_resolver.packages + vsh_resolver.services) | default([]) }}"
 
 - name: "ensure revision is up2date"
   ansible.builtin.copy:

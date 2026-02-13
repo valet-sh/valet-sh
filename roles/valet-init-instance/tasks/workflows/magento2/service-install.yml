@@ -14,8 +14,13 @@
 #   limitations under the License.
 ##
 ---
+# TODO check  install of services rabbitmq/redis when no default versions is set
+# because in 3.x its possible to define those version and install multiple versions of those services
+
 - ansible.builtin.include_tasks: services/elasticsearch.yml
 - ansible.builtin.include_tasks: services/rabbitmq.yml
 - ansible.builtin.include_tasks: services/php.yml
 - ansible.builtin.include_tasks: services/mysql.yml
+- ansible.builtin.include_tasks: services/redis.yml
 - ansible.builtin.include_tasks: services/node.yml
+- ansible.builtin.include_tasks: services/composer.yml

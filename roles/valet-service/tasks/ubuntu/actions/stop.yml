@@ -15,6 +15,10 @@
 ##
 ---
 
+- name: "actions » stop | include sub-stop-all task when service name is all"
+  ansible.builtin.include_tasks: "ubuntu/actions/sub-stop-all.yml"
+  when: "'--all' in valet_cli_opts"
+
 - name: "actions » stop | stop resolved services"
   ansible.builtin.systemd:
     name: "{{ service_item.service.name }}"
@@ -24,21 +28,5 @@
   become: "{{ service_item.service.scope == 'system' }}"
   loop: "{{ valet_all_services }}"
   loop_control:
-    loop_var: service_item
-
-- name: Debug valet_all_services
-  ansible.builtin.debug:
-    var: valet_all_services
-
-- name: "actions » stop | stop all resolved services"
-  ansible.builtin.systemd:
-    name: "{{ service_item.service.name }}"
-    state: stopped
-    enabled: false
-    scope: "{{ service_item.service.scope }}"
-    daemon_reload: true
-  become: "{{ service_item.service.scope == 'system' }}"
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item
-  when: "'--all' in valet_cli_opts"
+    loop_var: service_iter
+  when: "'--all' not in valet_cli_opts"

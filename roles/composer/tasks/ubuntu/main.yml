@@ -15,14 +15,16 @@
 ##
 ---
 
-- name: "install composer"
+- name: "install composer {{ item.version }}"
   ansible.builtin.include_tasks: install-composer.yml
-  when:
-    - valet_install_core_roles_to_install is defined
-    - valet_install_core_roles_to_install | length > 0
+  vars:
+    current_composer_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.packages }}"
+  when: valet_install_services is defined
 
-- name: "uninstall composer"
+- name: "uninstall composer {{ item.version }}"
   ansible.builtin.include_tasks: uninstall-composer.yml
-  when:
-    - valet_uninstall_services is defined
-    - valet_uninstall_services | length > 0
+  vars:
+    current_composer_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.packages}}"
+  when: valet_uninstall_services is defined

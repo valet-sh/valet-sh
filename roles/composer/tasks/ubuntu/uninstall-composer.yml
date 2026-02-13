@@ -26,3 +26,13 @@
     path: "{{ composer2_bin }}"
     state: absent
   become: true
+
+- name: "Remove composer from installed services"
+  vsh_bundle_state:
+    action: "remove_installed"
+    name: "composer1"
+
+- name: "Remove composer from installed services"
+  vsh_bundle_state:
+    action: "remove_installed"
+    name: "composer2"

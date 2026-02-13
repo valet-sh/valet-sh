@@ -83,3 +83,8 @@
   when:
     - valet_sh_config.default_nvm is defined
     - valet_sh_config.default_nvm == "volta"
+
+- name: Mark nodejs as installed in the bundle file
+  vsh_bundle_state:
+    action: "add_installed"
+    canonical_names: "nodejs"

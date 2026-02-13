@@ -52,6 +52,6 @@
   when: "'--purge' in valet_cli_opts"
 
 - name: Remove mailhog from installed services
-  vsh_service_state:
+  vsh_bundle_state:
     action: "remove_installed"
     canonical_names: "{{ current_mailhog_service.canonical }}"

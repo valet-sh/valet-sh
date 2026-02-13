@@ -21,7 +21,7 @@
     name: "{{ nginx_item.service.name }}"
     state: started
     scope: "{{ nginx_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^nginx.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^nginx.*') }}"
   become: "{{ nginx_item.service.scope == 'system' }}"
   loop_control:
     loop_var: nginx_item
@@ -34,7 +34,7 @@
     state: stopped
     scope: "{{ nginx_item.service.scope }}"
   become: "{{ nginx_item.service.scope == 'system' }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^nginx.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^nginx.*') }}"
   loop_control:
     loop_var: nginx_item
   listen: "systemd | vsh-nginx | stopped"
@@ -46,7 +46,7 @@
     state: restarted
     scope: "{{ nginx_item.service.scope }}"
   become: "{{ nginx_item.service.scope == 'system' }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^nginx.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^nginx.*') }}"
   loop_control:
     loop_var: nginx_item
   listen: "systemd | vsh-nginx | restarted"
@@ -58,7 +58,7 @@
     state: restarted
     scope: "{{ nginx_item.service.scope }}"
   become: "{{ nginx_item.service.scope == 'system' }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^nginx.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^nginx.*') }}"
   loop_control:
     loop_var: nginx_item
   listen: "systemd | vsh-nginx | reloaded"

@@ -31,7 +31,7 @@
 
     - name: "Remove vsh-{{ current_mariadb_service.canonical }}-data volume"
       containers.podman.podman_volume:
-        name: "{{ current_mariadb_service.canonical }}-data"
+        name: "vsh-{{ current_mariadb_service.canonical }}-data"
         state: absent
       when: "'--purge' in valet_cli_opts"
 
@@ -59,6 +59,6 @@
 
 
     - name: "Remove vsh-{{ current_mariadb_service.canonical }} from installed services"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "remove_installed"
         canonical_names: "{{ current_mariadb_service.canonical }}"

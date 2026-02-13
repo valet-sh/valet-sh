@@ -20,14 +20,14 @@
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » neos » services » mysql | check if mysql{{ valet_sh_project_vars.services.mysql.version }} is installed"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "is_installed"
         canonical_names: "{{ valet_sh_service_mysql_current_name }}"
       register: mysql_installed
 
     - name: "workflows » neos » services » mysql | resolve mysql{{ valet_sh_project_vars.services.mysql.version }} service"
-      vsh_service_resolver:
-        services: "{{ valet_sh_service_mysql_current_name }}"
+      vsh_bundle_resolver:
+        name: "{{ valet_sh_service_mysql_current_name }}"
         current_os: "{{ current_os }}"
       register: mysql_install
 
@@ -57,13 +57,13 @@
         scope: user
 
     - name: "workflows » neos » services » mysql | set {{ valet_sh_service_mysql_current_name }} as default"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_default"
-        service_name: "mysql"
+        name: "mysql"
         canonical_names: "{{ valet_sh_service_mysql_current_name }}"
 
     - name: "workflows » neos » services » mysql | set {{ valet_sh_service_mysql_current_name }} as enabled"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_enabled"
         canonical_names: "{{ valet_sh_service_mysql_current_name }}"
 
@@ -83,14 +83,14 @@
         valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » neos » services » mariadb | check if mariadb{{ valet_sh_project_vars.services.mariadb.version }} is installed"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "is_installed"
         canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
       register: mariadb_installed
 
     - name: "workflows » neos » services » mariadb | resolve mariadb{{ valet_sh_project_vars.services.mariadb.version }} service"
-      vsh_service_resolver:
-        services: "{{ valet_sh_service_mariadb_current_name }}"
+      vsh_bundle_resolver:
+        name: "{{ valet_sh_service_mariadb_current_name }}"
         current_os: "{{ current_os }}"
       register: mariadb_install
 
@@ -120,13 +120,13 @@
         scope: user
 
     - name: "workflows » neos » services » mariadb | set {{ valet_sh_service_mariadb_current_name }} as default"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_default"
-        service_name: "mariadb"
+        name: "mariadb"
         canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
 
     - name: "workflows » neos » services » mariadb | set {{ valet_sh_service_mariadb_current_name }} as enabled"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_enabled"
         canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
 

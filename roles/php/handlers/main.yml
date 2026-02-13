@@ -21,7 +21,7 @@
     name: "{{ php_item.service.name }}"
     state: started
     scope: "{{ php_item.service.scope }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^php.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^php.*') }}"
   become: "{{ php_item.service.scope == 'system' }}"
   loop_control:
     loop_var: php_item
@@ -34,7 +34,7 @@
     state: stopped
     scope: "{{ php_item.service.scope }}"
   become: "{{ php_item.service.scope == 'system' }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^php.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^php.*') }}"
   loop_control:
     loop_var: php_item
   listen: "systemd | vsh-php | stopped"
@@ -46,7 +46,7 @@
     state: restarted
     scope: "{{ php_item.service.scope }}"
   become: "{{ php_item.service.scope == 'system' }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^php.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^php.*') }}"
   loop_control:
     loop_var: php_item
   listen: "systemd | vsh-php | restarted"
@@ -58,7 +58,7 @@
     state: restarted
     scope: "{{ php_item.service.scope }}"
   become: "{{ php_item.service.scope == 'system' }}"
-  loop: "{{ valet_resolved_service.services | selectattr('canonical', 'match', '^php.*') }}"
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^php.*') }}"
   loop_control:
     loop_var: php_item
   listen: "systemd | vsh-php | reloaded"

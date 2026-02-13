@@ -1,0 +1,65 @@
+---
+
+service:
+  name:
+    ubuntu: "php8.5-fpm"
+    mac: "vsh-php85"
+  scope:
+    ubuntu: "system"
+    mac: "user"
+
+configuration:
+  package_names:
+    ubuntu: ["php8.5-fpm", "php8.5-cli"]
+    mac: ["php8.5-fpm", "php8.5-cli"]
+  config_paths:
+    ubuntu: ["/etc/php/8.5"]
+  cli_settings:
+    - conf: "date.timezone"
+      value: "Europe/Berlin"
+    - conf: "error_log"
+      value: "{{ php_error_log_path }}"
+    - conf: "sendmail_path"
+      value: "{{ mailhog_bin_target }} sendmail -t test@test"
+    - conf: "memory_limit"
+      value: "8192M"
+    - conf: "error_reporting"
+      value: "E_ALL"
+  fpm_settings:
+    - conf: "date.timezone"
+      value: "Europe/Berlin"
+    - conf: "max_execution_time"
+      value: "900"
+    - conf: "error_log"
+      value: "{{ php_error_log_path }}"
+    - conf: "memory_limit"
+      value: "512M"
+    - conf: "upload_max_filesize"
+      value: "128M"
+    - conf: "post_max_size"
+      value: "128M"
+    - conf: "max_input_vars"
+      value: "10000"
+    - conf: "sendmail_path"
+      value: "{{ mailhog_bin_target }} sendmail -t test@test"
+    - conf: "error_reporting"
+      value: "E_ALL"
+  modules:
+    - "xmlrpc"
+    - "xml"
+    - "readline"
+    - "opcache"
+    - "mysql"
+    - "intl"
+    - "gd"
+    - "fpm"
+    - "curl"
+    - "cli"
+    - "soap"
+    - "mbstring"
+    - "zip"
+    - "bcmath"
+    - "ldap"
+    - "sqlite3"
+    - "imagick"
+    - "xdebug"

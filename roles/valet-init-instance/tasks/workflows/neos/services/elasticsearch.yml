@@ -16,14 +16,14 @@
 ---
 - block:
     - name: "workflows » neos » services » elasticsearch | check if elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version  }} is installed"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "is_installed"
         canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
       register: elasticsearch_installed
 
     - name: "workflows » neos » services » elasticsearch | resolve elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} service"
-      vsh_service_resolver:
-        services: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+      vsh_bundle_resolver:
+        name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
         current_os: "{{ current_os }}"
       register: elasticsearch_install
 
@@ -53,15 +53,17 @@
         scope: user
 
     - name: "workflows » neos » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as default"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_default"
-        service_name: "elasticsearch"
+        name: "elasticsearch"
         canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
     - name: "workflows » neos » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as enabled"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_enabled"
         canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+
+    - name: "workflows"
 
     - name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_elasticsearch_version' var"
       ansible.builtin.set_fact:
@@ -118,5 +120,3 @@
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.elasticsearch is defined
     - valet_sh_project_vars.services.elasticsearch.version is defined
-
-## TODO: implement plugin installation for elasticsearch based on .valet-sh.yml file

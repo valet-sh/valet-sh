@@ -81,12 +81,12 @@
   become: true
 
 - name: "Mark nginx as installed in the services file"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "add_installed"
     canonical_names: "nginx"
 
 - name: "Mark nginx as enabled in the services file"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "set_enabled"
     canonical_names: "nginx"
 

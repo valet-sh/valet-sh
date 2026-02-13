@@ -14,11 +14,11 @@
 #   limitations under the License.
 ##
 ---
-- name: "workflows » magento2 » check-vars | set path to composer1 (default)"
+- name: "workflows » neos » check-vars | set path to composer1 (default)"
   ansible.builtin.set_fact:
     composer_bin: "{{ composer1_bin }}"
 
-- name: "workflows » magento2 » check-vars | read composer1 version from .valet-sh.yml"
+- name: "workflows » neos » check-vars | read composer1 version from .valet-sh.yml"
   ansible.builtin.set_fact:
     composer_bin: "{{ composer1_bin }}"
   when:
@@ -27,7 +27,7 @@
     - valet_sh_project_vars.services.composer.version is defined
     - valet_sh_project_vars.services.composer.version == 1
 
-- name: "workflows » magento2 » check-vars | read composer2 version from .valet-sh.yml"
+- name: "workflows » neos » check-vars | read composer2 version from .valet-sh.yml"
   ansible.builtin.set_fact:
     composer_bin: "{{ composer2_bin }}"
   when:
@@ -36,11 +36,24 @@
     - valet_sh_project_vars.services.composer.version is defined
     - valet_sh_project_vars.services.composer.version == 2
 
+- name: "workflows » neos » check-vars | read elasticsearch/opensearch plugins from .valet-sh.yml"
+  ansible.builtin.set_fact:
+    searchengine_plugins: >-
+      {{
+        valet_sh_project_vars.services.elasticsearch.plugins
+        if (valet_sh_project_vars.services.elasticsearch is defined and valet_sh_project_vars.services.elasticsearch.plugins is defined)
+        else (valet_sh_project_vars.services.opensearch.plugins | default([]))
+      }}
+    (valet_sh_project_vars.services.opensearch is defined and valet_sh_project_vars.services.opensearch.plugins is defined)
+  when:
+    - (valet_sh_project_vars.services.elasticsearch is defined and valet_sh_project_vars.services.elasticsearch.plugins is defined) or
+      (valet_sh_project_vars.services.opensearch is defined and valet_sh_project_vars.services.opensearch.plugins is defined)
+
 - name: "workflows » neos » check-vars | set default php binary name"
   ansible.builtin.set_fact:
     php_bin_name: "php"
 
-- name: "workflows » neos » check-vars | red configured php version in valet-sh.yml"
+- name: "workflows » neos » check-vars | read configured php version in valet-sh.yml"
   ansible.builtin.set_fact:
     php_version_number: "{{ valet_sh_project_vars.services.php.version }}"
   when:

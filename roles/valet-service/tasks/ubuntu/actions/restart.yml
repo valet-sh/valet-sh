@@ -15,6 +15,10 @@
 ##
 ---
 
+- name: "actions » restart | include sub-restart-all task when service name is all"
+  ansible.builtin.include_tasks: "ubuntu/actions/sub-restart-all.yml"
+  when: "'--all' in valet_cli_opts"
+
 - name: "actions » restart | restart resolved services"
   ansible.builtin.systemd:
     name: "{{ service_item.service.name }}"
@@ -25,3 +29,4 @@
   loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item
+  when: "'--all' not in valet_cli_opts"

@@ -20,15 +20,11 @@
   vars:
     current_redis_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
-  when:
-    - valet_install_services is defined
-    - valet_install_services | length > 0
+  when: valet_install_services is defined
 
 - name: "Uninstall Redis-Server {{ item.version }}"
   ansible.builtin.include_tasks: uninstall-redis-server.yml
   vars:
     current_redis_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
-  when:
-    - valet_uninstall_services is defined
-    - valet_uninstall_services | length > 0
+  when: valet_uninstall_services is defined

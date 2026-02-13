@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2026 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: "workflows » magento2 » services » node | set default node version"
   ansible.builtin.set_fact:
     valet_sh_node_version: "{{ valet_sh_default_node_version }}"
@@ -26,11 +27,46 @@
     - valet_sh_project_vars.services.node is defined
     - valet_sh_project_vars.services.node.version is defined
 
-# ansible cannot change any setting of the current shell as every "shell" or "command" module call will be executed in a
-# new separated shell. The command "nvm install 14" doesn't change the node version for the current user shell, but only
-# for the shell currently started by ansible for the module execution
+- block:
+    - name: "workflows » magento2 » services » node | check if node is installed"
+      vsh_bundle_state:
+        action: "is_installed"
+        canonical_names: "nodejs"
+      register: node_installed
 
-#- name: "workflows » magento2 » services » node | switch node version to '{{ valet_sh_node_version }}'"
-#  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ valet_sh_node_version }}"
-#  args:
-#    chdir: "{{ valet_current_path }}"
+    - name: "workflows » magento2 » services » node | resolve node service"
+      vsh_bundle_resolver:
+        name: "nodejs"
+        current_os: "{{ current_os }}"
+      register: node_install
+
+    - name: "include service-specific roles"
+      ansible.builtin.include_role:
+        name: "nodejs"
+      vars:
+        valet_resolved_service: "{{ node_install }}"
+        valet_install_services: ["node"]
+      when: not node_installed.is_installed
+
+    - name: "workflows » magento2 » services » node | include valet-service role to set defaults"
+      ansible.builtin.include_role:
+        name: "valet-service"
+      vars:
+        valet_sh_service_internal_action: true
+        valet_service_action: "handle"
+        valet_sh_newly_installed_services: "{{ node_install }}"
+
+- name: "workflows » magento2 » services » node | install node version '{{ valet_sh_node_version }}'"
+  shell: source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }}
+  args:
+    executable: /bin/bash
+  environment:
+    NVM_DIR: "{{ current_home }}/.nvm"
+
+- name: "workflows » magento2 » services » node | switch node version to '{{ valet_sh_node_version }}'"
+  shell: source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ valet_sh_node_version }}
+  args:
+    chdir: "{{ valet_current_path }}"
+    executable: /bin/bash
+  environment:
+    NVM_DIR: "{{ current_home }}/.nvm"

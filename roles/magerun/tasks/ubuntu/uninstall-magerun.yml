@@ -26,3 +26,8 @@
     path: "{{ magerun2_bin_path }}"
     state: absent
   become: true
+
+- name: "Remove magerun from installed services"
+  vsh_bundle_state:
+    action: "remove_installed"
+    canonical_names: "magerun"

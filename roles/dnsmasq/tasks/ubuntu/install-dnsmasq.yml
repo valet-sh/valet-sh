@@ -38,6 +38,6 @@
   become: true
 
 - name: "Mark dnsmasq as installed in the services file"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "add_installed"
     canonical_names: "dnsmasq"

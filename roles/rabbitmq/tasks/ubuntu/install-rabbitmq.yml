@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: Pull rabbitmq-server image
+- name: Pull rabbitmq-server {{ current_rabbitmq_service.service.version }} image
   containers.podman.podman_image:
     name: "{{ current_rabbitmq_service.configuration.docker_image }}"
     pull: true
@@ -27,16 +27,16 @@
     state: directory
     mode: "0755"
 
-- name: Provide systemd service for vsh-rabbitmq-server container
+- name: Provide systemd service for vsh-{{ current_rabbitmq_service.canonical }} container
   ansible.builtin.template:
     src: "systemd/rabbitmq-server.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/{{ current_rabbitmq_service.service.name }}.service"
+    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_rabbitmq_service.canonical }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
   notify: "systemd | vsh-rabbitmq-server | restarted"
 
-- name: ensure vsh-rabbitmq-server is running and enabled
+- name: ensure vsh-{{ current_rabbitmq_service.canonical }} is running and enabled
   ansible.builtin.systemd:
     name: "{{ current_rabbitmq_service.service.name }}"
     state: started
@@ -44,12 +44,12 @@
     scope: "{{ current_rabbitmq_service.service.scope }}"
 
 - name: "Mark vsh-{{ current_rabbitmq_service.canonical }} as installed in the services file"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "add_installed"
     canonical_names: "{{ current_rabbitmq_service.canonical }}"
 
 - name: "Mark vsh-{{ current_rabbitmq_service.canonical }} as enabled in the services file"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "set_enabled"
     canonical_names: "{{ current_rabbitmq_service.canonical }}"
 

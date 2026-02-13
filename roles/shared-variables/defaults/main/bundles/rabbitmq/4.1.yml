@@ -1,0 +1,15 @@
+---
+
+service:
+  name:
+    ubuntu: "vsh-rabbitmq41"
+    mac: "vsh-rabbitmq41"
+  scope:
+    ubuntu: "user"
+    mac: "user"
+
+configuration:
+  docker_image: "docker.io/rabbitmq:4.1-management"
+  ports:
+    http: 15672
+    amqp: 5672

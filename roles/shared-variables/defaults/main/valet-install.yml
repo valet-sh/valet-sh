@@ -37,9 +37,7 @@ valet_install_default_roles: "{{ valet_install_default_roles_mac }}"
 valet_install_core_roles_default:
   - common
   - certificate
-  - dnsmasq
   - podman
-  - nginx
   - shell
   - nodejs
   - magerun
@@ -48,8 +46,6 @@ valet_install_core_roles_default:
 valet_install_core_roles_mac:
   - common
   - certificate
-  - dnsmasq
-  - nginx
   - shell
   - nodejs
   - magerun

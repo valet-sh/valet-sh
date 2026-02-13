@@ -15,44 +15,28 @@
 ##
 ---
 
-- name: "uninstall » set core_roles to uninstall"
-  ansible.builtin.set_fact:
-    valet_uninstall_core_roles_to_uninstall:  "{{ valet_uninstall_services.split() | select('in', valet_uninstall_core_roles) | list }}"
-    valet_service_roles_to_uninstall: "{{ valet_uninstall_services.split() | difference(valet_uninstall_core_roles) | list }}"
-  when:
-    - valet_uninstall_core_roles is not defined or (valet_uninstall_core_roles is defined and valet_uninstall_core_roles | length > 0)
-
-- name: "uninstall » set core roles to uninstall"
-  ansible.builtin.set_fact:
-    valet_uninstall_core_roles_to_uninstall: "{{ valet_uninstall_core_roles_to_uninstall if (valet_uninstall_core_roles_to_uninstall is defined and valet_uninstall_core_roles_to_uninstall | length > 0) else valet_uninstall_core_roles }}"
-
-- name: "resolve requested services"
-  vsh_service_resolver:
-    services: "{{ valet_service_roles_to_uninstall }}"
+- name: "Resolve Services to Uninstall"
+  vsh_bundle_resolver:
+    name: "{{ valet_uninstall_services }}"
     current_os: "{{ current_os }}"
-  register: valet_resolved_uninstall_services
+  register: vsh_resolver
 
-- name: Debug valet_resolved_uninstall_services
-  ansible.builtin.debug:
-    var: valet_resolved_uninstall_services
-
-- name: "set roles to uninstall"
-  ansible.builtin.set_fact:
-    valet_uninstall_roles_to_uninstall: "{{ valet_resolved_uninstall_services.services | map(attribute='role_name') | list | unique }}"
-  when:
-    - valet_resolved_uninstall_services is defined
-    - valet_resolved_uninstall_services.services is defined
-
-- name: "include role"
+- name: "Uninstall Services"
   ansible.builtin.include_role:
-    name: "{{ valet_uninstall_roles_item }}"
-    public: true
+    name: "{{ role_item }}"
   vars:
-    valet_resolved_service: "{{ valet_resolved_uninstall_services | combine({'services': valet_resolved_uninstall_services.services | selectattr('role_name', 'equalto', valet_uninstall_roles_item) | list}) }}"
-  with_items:
-    - "{{ valet_uninstall_core_roles_to_uninstall }}"
-    - "{{ valet_uninstall_roles_to_uninstall }}"
+    valet_resolved_service:
+      services: "{{ vsh_resolver.services | selectattr('role_name', 'equalto', role_item) | list }}"
+  loop: "{{ vsh_resolver.services | map(attribute='role_name') | unique | list }}"
   loop_control:
-    loop_var: valet_uninstall_roles_item
-  when:
-    - valet_resolved_uninstall_services.services | selectattr('role_name', 'equalto', valet_uninstall_roles_item) | list | length > 0
+    loop_var: role_item
+
+- name: "Uninstall Packages"
+  ansible.builtin.include_role:
+    name: "{{ role_item }}"
+  vars:
+    valet_resolved_service:
+      packages: "{{ vsh_resolver.packages | selectattr('role_name', 'equalto', role_item) | list }}"
+  loop: "{{ vsh_resolver.packages | map(attribute='role_name') | unique | list }}"
+  loop_control:
+    loop_var: role_item

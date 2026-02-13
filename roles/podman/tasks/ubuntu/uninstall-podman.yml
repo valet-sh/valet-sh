@@ -18,6 +18,13 @@
   ansible.builtin.apt:
     name: podman
     state: absent
+  become: true
 
 - name: Disable linger
   ansible.builtin.command: loginctl disable-linger {{ current_user }}
+  become: true
+
+- name: Mark podman as uninstalled
+  vsh_bundle_state:
+    action: "remove_installed"
+    name: "podman"

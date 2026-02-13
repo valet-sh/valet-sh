@@ -19,7 +19,6 @@
   ansible.builtin.debug:
     var: current_mysql_service
 
-# TODO Maybe not needed anymore because of containerization and using exec commands
 - name: install base packages
   ansible.builtin.apt:
     name: "{{ mysql_base_packages }}"
@@ -143,6 +142,6 @@
     scope: "{{ current_mysql_service.service.scope }}"
 
 - name: "Mark vsh-{{ current_mysql_service.canonical }} as installed in the services file"
-  vsh_service_state:
+  vsh_bundle_state:
     action: "add_installed"
     canonical_names: "{{ current_mysql_service.canonical }}"

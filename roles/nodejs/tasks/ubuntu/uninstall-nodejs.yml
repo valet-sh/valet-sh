@@ -73,3 +73,8 @@
     - "{{ current_home }}/.nvm"
   loop_control:
     loop_var: valet_sh_service_node_item
+
+- name: Mark nodejs as uninstalled in the services file
+  vsh_bundle_state:
+    action: "remove_installed"
+    canonical_names: "nodejs"

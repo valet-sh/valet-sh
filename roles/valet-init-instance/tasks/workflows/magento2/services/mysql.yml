@@ -20,21 +20,20 @@
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mysql | check if mysql{{ valet_sh_project_vars.services.mysql.version }} is installed"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "is_installed"
         canonical_names: "{{ valet_sh_service_mysql_current_name }}"
       register: mysql_installed
 
     - name: "workflows » magento2 » services » mysql | resolve mysql{{ valet_sh_project_vars.services.mysql.version }} service"
-      vsh_service_resolver:
-        services: "{{ valet_sh_service_mysql_current_name }}"
+      vsh_bundle_resolver:
+        name: "{{ valet_sh_service_mysql_current_name }}"
         current_os: "{{ current_os }}"
       register: mysql_install
 
     - name: "include service-specific roles"
       ansible.builtin.include_role:
         name: "mysql-community-server"
-        public: true
       vars:
         valet_resolved_service: "{{ mysql_install }}"
         valet_install_services: ["{{ valet_sh_service_mysql_current_name }}"]
@@ -43,7 +42,6 @@
     - name: "workflows » magento2 » services » mysql | include valet-service role to set defaults"
       ansible.builtin.include_role:
         name: "valet-service"
-        public: true
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
@@ -57,13 +55,13 @@
         scope: user
 
     - name: "workflows » magento2 » services » mysql | set {{ valet_sh_service_mysql_current_name }} as default"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_default"
-        service_name: "mysql"
+        name: "mysql"
         canonical_names: "{{ valet_sh_service_mysql_current_name }}"
 
     - name: "workflows » magento2 » services » mysql | set {{ valet_sh_service_mysql_current_name }} as enabled"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_enabled"
         canonical_names: "{{ valet_sh_service_mysql_current_name }}"
 
@@ -83,21 +81,20 @@
         valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mariadb | check if mariadb{{ valet_sh_project_vars.services.mariadb.version }} is installed"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "is_installed"
         canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
       register: mariadb_installed
 
     - name: "workflows » magento2 » services » mariadb | resolve mariadb{{ valet_sh_project_vars.services.mariadb.version }} service"
-      vsh_service_resolver:
-        services: "{{ valet_sh_service_mariadb_current_name }}"
+      vsh_bundle_resolver:
+        name: "{{ valet_sh_service_mariadb_current_name }}"
         current_os: "{{ current_os }}"
       register: mariadb_install
 
     - name: "include service-specific roles"
       ansible.builtin.include_role:
         name: "mariadb-server"
-        public: true
       vars:
         valet_resolved_service: "{{ mariadb_install }}"
         valet_install_services: ["{{ valet_sh_service_mariadb_current_name }}"]
@@ -106,7 +103,6 @@
     - name: "workflows » magento2 » services » mariadb | include valet-service role to set defaults"
       ansible.builtin.include_role:
         name: "valet-service"
-        public: true
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
@@ -120,13 +116,13 @@
         scope: user
 
     - name: "workflows » magento2 » services » mariadb | set {{ valet_sh_service_mariadb_current_name }} as default"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_default"
-        service_name: "mariadb"
+        name: "mariadb"
         canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
 
     - name: "workflows » magento2 » services » mariadb | set {{ valet_sh_service_mariadb_current_name }} as enabled"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "set_enabled"
         canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
 

@@ -24,15 +24,11 @@
   vars:
     current_mysql_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
-  when:
-    - valet_install_services is defined
-    - valet_install_services | length > 0
+  when: valet_install_services is defined
 
 - name: "Uninstall MySQL {{ item.version }}"
   ansible.builtin.include_tasks: uninstall-mysql.yml
   vars:
     current_mysql_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
-  when:
-    - valet_uninstall_services is defined
-    - valet_uninstall_services | length > 0
+  when: valet_uninstall_services is defined

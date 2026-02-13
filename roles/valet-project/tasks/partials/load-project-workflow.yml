@@ -21,4 +21,9 @@
 - ansible.builtin.include_tasks: "workflows/magento2/main.yml"
   when: valet_sh_project_vars.instance.type == "magento2"
 
-# @TODO: fail when no project workflow was included
+- name: "partials » load-project-workflow | fail when no project workflow was included"
+  ansible.builtin.fail:
+    msg: "could not include project workflow for type '{{ valet_sh_project_vars.instance.type }}'"
+  when: >
+    (valet_sh_project_vars.instance.type != "magento2") or
+    (valet_sh_project_vars.instance.type is not defined)

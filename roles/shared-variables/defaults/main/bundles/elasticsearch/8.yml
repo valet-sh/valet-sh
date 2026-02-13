@@ -1,0 +1,20 @@
+---
+
+service:
+  name:
+    ubuntu: "vsh-elasticsearch8"
+    mac: "vsh-elasticsearch8"
+  scope:
+    ubuntu: "user"
+    mac: "user"
+
+configuration:
+  docker_image: "docker.io/elasticsearch:8.5.3"
+  ports:
+    http: 9208
+    transport: 9308
+  base_path: "/usr/local/valet-sh/packages/elasticsearch8"
+  plugins:
+    default_plugins: ["analysis-phonetic", "analysis-icu"]
+    install_command: "/usr/share/elasticsearch/bin/elasticsearch-plugin install {{ name }}"
+    list_command: "/usr/share/elasticsearch/bin/elasticsearch-plugin list"

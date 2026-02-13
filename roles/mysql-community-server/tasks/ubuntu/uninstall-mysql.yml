@@ -58,6 +58,6 @@
       when: "'--purge' in valet_cli_opts"
 
     - name: "Remove vsh-{{ current_mysql_service.canonical }} from installed services"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "remove_installed"
         canonical_names: "{{ current_mysql_service.canonical }}"

@@ -20,27 +20,21 @@
 - name: debug php versions
   ansible.builtin.debug:
     var: valet_resolved_service.services
-  when:
-    - valet_install_services is defined
-    - valet_install_services | length > 0
+  when: valet_install_services is defined
 
 - name: "install php {{ item.version }}"
   ansible.builtin.include_tasks: install-php.yml
   vars:
     current_php: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
-  when:
-    - valet_install_services is defined
-    - valet_install_services | length > 0
+  when: valet_install_services is defined
 
 - name: "uninstall php {{ item.version }}"
   ansible.builtin.include_tasks: uninstall-php.yml
   vars:
     current_php: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
-  when:
-    - valet_uninstall_services is defined
-    - valet_uninstall_services | length > 0
+  when: valet_uninstall_services is defined
 
 - name: ensure php wrapper script is up2date
   ansible.builtin.template:

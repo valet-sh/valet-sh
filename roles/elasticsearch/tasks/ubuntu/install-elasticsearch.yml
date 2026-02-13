@@ -55,7 +55,7 @@
 
     - name: "Provide systemd service for vsh-{{ current_elasticsearch_service.canonical }} container"
       ansible.builtin.template:
-        src: "systemd/{{ current_elasticsearch_service.canonical }}.service.j2"
+        src: "systemd/elasticsearch.service.j2"
         dest: "{{ current_home }}/.config/systemd/user/{{ current_elasticsearch_service.service.name }}.service"
         owner: "{{ current_user }}"
         group: "{{ current_group }}"
@@ -79,6 +79,12 @@
       retries: 15
       delay: 3
 
+    - name: "list installed plugins"
+      containers.podman.podman_container_exec:
+        name: "vsh-{{ current_elasticsearch_service.canonical }}"
+        command: "{{ current_elasticsearch_service.configuration.plugins.list_command }}"
+      register: installed_plugins
+
     - name: "install plugins"
       containers.podman.podman_container_exec:
         name: "vsh-{{ current_elasticsearch_service.canonical }}"
@@ -87,7 +93,9 @@
       loop_control:
         loop_var: current_elasticsearch_plugin
       notify: "systemd | vsh-elasticsearch | restarted"
-      when: not current_elasticsearch_base_path_obj.stat.exists
+      when:
+        - current_elasticsearch_plugin not in installed_plugins.stdout_lines
+        - "current_elasticsearch_plugin not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
 
     - name: "Stop vsh-{{ current_elasticsearch_service.canonical }} container after plugin installation"
       ansible.builtin.systemd:
@@ -96,6 +104,6 @@
         scope: "{{ current_elasticsearch_service.service.scope }}"
 
     - name: "Mark vsh-{{ current_elasticsearch_service.canonical }} as installed in the services file"
-      vsh_service_state:
+      vsh_bundle_state:
         action: "add_installed"
         canonical_names: "{{ current_elasticsearch_service.canonical }}"
