@@ -24,3 +24,8 @@
       - ca-certificates
       - libnss3-tools
   become: true
+
+- name: Mark certificate as installed
+  vsh_bundle_state:
+    action: "add_installed"
+    name: "certificate"

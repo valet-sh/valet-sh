@@ -15,17 +15,13 @@
 ##
 ---
 
-- ansible.builtin.include_tasks: ubuntu/install.yml
-  when: valet_install_services is defined
+- name: Remove certificate base directory
+  ansible.builtin.file:
+    path: "{{ certificate_base_path }}"
+    state: absent
+  become: true
 
-- ansible.builtin.include_tasks: ubuntu/ca.yml
-  when: cert_prefix is not defined and not valet_uninstall_services is defined
-
-- ansible.builtin.include_tasks: ubuntu/cert-renew.yml
-  when: cert_prefix is not defined and not valet_uninstall_services is defined
-
-- ansible.builtin.include_tasks: ubuntu/server.yml
-  when: cert_prefix is defined and not valet_uninstall_services is defined
-
-- ansible.builtin.include_tasks: ubuntu/uninstall.yml
-  when: valet_uninstall_services is defined
+- name: Mark certificate as uninstalled
+  vsh_bundle_state:
+    action: "remove_installed"
+    name: "certificate"
