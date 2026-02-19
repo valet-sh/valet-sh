@@ -106,6 +106,15 @@
       - valet_sh_project_vars.services.mysql.version is defined
       - valet_sh_project_vars.services.mysql.version == 8.0
 
+  - name: "workflows » magento2 » project-env | set custom collation string when db is mysql 8.4"
+    set_fact:
+      valet_sh_magento2_db_collation_string: "{{ valet_sh_service_mysql_collation_string_mysql84 }}"
+    when:
+      - valet_sh_project_vars.services is defined
+      - valet_sh_project_vars.services.mysql is defined
+      - valet_sh_project_vars.services.mysql.version is defined
+      - valet_sh_project_vars.services.mysql.version == 8.4
+
   - name: "workflows » magento2 » project-env | set magento2 'valet_sh_magento2_db_host' var"
     set_fact:
       valet_sh_magento2_db_host: "{{ valet_sh_service_mysql_host_presets.mysql57 }}"
@@ -118,6 +127,15 @@
       - valet_sh_project_vars.services.mysql is defined
       - valet_sh_project_vars.services.mysql.version is defined
       - valet_sh_project_vars.services.mysql.version == 8.0
+
+  - name: "workflows » magento2 » project-env | override magento2 'valet_sh_magento2_db_host' var"
+    set_fact:
+      valet_sh_magento2_db_host: "{{ valet_sh_service_mysql_host_presets.mysql84 }}"
+    when:
+      - valet_sh_project_vars.services is defined
+      - valet_sh_project_vars.services.mysql is defined
+      - valet_sh_project_vars.services.mysql.version is defined
+      - valet_sh_project_vars.services.mysql.version == 8.4
 
   - name: "workflows » magento2 » project-env | override magento2 'valet_sh_magento2_db_host' var"
     set_fact:

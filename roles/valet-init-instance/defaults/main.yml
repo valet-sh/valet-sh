@@ -26,6 +26,7 @@ valet_sh_service_rabbitmq_password: admin
 
 valet_sh_service_mysql_charset: utf8
 valet_sh_service_mysql_collation_string_mysql80: 'SET default_collation_for_utf8mb4 = "utf8mb4_general_ci";'
+valet_sh_service_mysql_collation_string_mysql84: 'SET default_collation_for_utf8mb4 = "utf8mb4_general_ci";'
 
 valet_sh_service_mysql_host_presets:
   mysql57: "127.0.0.1:3307"
@@ -37,7 +38,7 @@ valet_sh_service_mysql_host_presets:
   mariadb114: "127.0.0.1:3329"
 
 valet_sh_service_valkey_port_presets:
-  valkey8: "127.0.0.1:6389"
+  valkey8: "6389"
 
 valet_sh_aem_local_cache_dirname: ".aemcache"
 valet_sh_aem_local_cache_dir: "{{ current_home }}/{{ valet_sh_aem_local_cache_dirname }}"
