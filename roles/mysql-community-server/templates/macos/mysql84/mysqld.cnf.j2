@@ -10,10 +10,10 @@ mysqlx-bind-address = 127.0.0.1
 bind-address		= 127.0.0.1
 mysqlx_port = 33090
 port		    = 3309
-basedir		    = /usr/local/opt/vsh-mysql80/libexec
-datadir		    = /usr/local/var/vsh-mysql80
+basedir		    = /usr/local/opt/vsh-mysql84/libexec
+datadir		    = /usr/local/var/vsh-mysql84
 tmpdir		    = /tmp
-lc-messages-dir	= /usr/local/opt/vsh-mysql80/libexec/share/mysql
+lc-messages-dir	= /usr/local/opt/vsh-mysql84/libexec/share/mysql
 skip-external-locking
 
 mysql_native_password=ON
@@ -23,9 +23,10 @@ thread_stack		= 192K
 thread_cache_size       = 8
 myisam-recover-options  = BACKUP
 max_connections        = 200
-log_error = /usr/local/var/log/vsh-mysql80/error.log
+log_error = /usr/local/var/log/vsh-mysql84/error.log
 max_binlog_size   = 100M
 
+restrict_fk_on_non_standard_key=OFF
 character-set-server='utf8mb4'
 collation-server='utf8mb4_unicode_ci'
 innodb_file_per_table='1'
