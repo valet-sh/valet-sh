@@ -28,6 +28,7 @@ max_connections        = 200
 log_error = /var/log/mysql/{{ current_mysql_key }}-error.log
 max_binlog_size   = 100M
 
+restrict_fk_on_non_standard_key=OFF
 character-set-server='utf8mb4'
 collation-server='utf8mb4_unicode_ci'
 innodb_file_per_table='1'
