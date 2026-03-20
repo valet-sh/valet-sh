@@ -88,7 +88,7 @@ valet_sh_bundle_definitions:
       display_name: "Mailpit"
       versions: ["latest"]
       role_name: "mailpit"
-      kind: "optional"
+      kind: "essential"
       type: "service"
   packages:
     common:
