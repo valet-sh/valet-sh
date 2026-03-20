@@ -21,7 +21,7 @@
   hosts: local
   gather_facts: true
   vars:
-    valet_install_services: "{{ cli.args | join(' ') if cli.args is defined and cli.args | length > 0 else '' }}"
+    valet_install_services: "{{ cli.args if cli.args is defined and cli.args | length > 0 else [] }}"
   vars_prompt:
     - name: "ansible_become_pass"
       prompt: "[sudo] Password"
