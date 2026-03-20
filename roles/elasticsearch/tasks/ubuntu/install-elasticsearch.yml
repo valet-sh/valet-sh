@@ -88,14 +88,28 @@
     - name: "install plugins"
       containers.podman.podman_container_exec:
         name: "vsh-{{ current_elasticsearch_service.canonical }}"
-        command: "{{ current_elasticsearch_service.configuration.plugins.install_command | replace('{{ name }}', current_elasticsearch_plugin) }}"
+        command: "{{ current_elasticsearch_service.configuration.plugins.install_command }} {{ current_elasticsearch_plugin.name }}"
       with_items: "{{ current_elasticsearch_service.configuration.plugins.default_plugins }}"
       loop_control:
         loop_var: current_elasticsearch_plugin
       notify: "systemd | vsh-elasticsearch | restarted"
       when:
-        - current_elasticsearch_plugin not in installed_plugins.stdout_lines
-        - "current_elasticsearch_plugin not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
+        - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
+        - current_elasticsearch_plugin.url is not defined
+        - "current_elasticsearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
+
+    - name: "install plugins from url"
+      containers.podman.podman_container_exec:
+        name: "vsh-{{ current_elasticsearch_service.canonical }}"
+        command: "{{ current_elasticsearch_service.configuration.plugins.install_command }} {{ current_elasticsearch_plugin.name }} --url {{ current_elasticsearch_plugin.url }}"
+      with_items: "{{ current_elasticsearch_service.configuration.plugins.default_plugins }}"
+      loop_control:
+        loop_var: current_elasticsearch_plugin
+      notify: "systemd | vsh-elasticsearch | restarted"
+      when:
+        - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
+        - current_elasticsearch_plugin.url is defined
+        - "current_elasticsearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
 
     - name: "Stop vsh-{{ current_elasticsearch_service.canonical }} container after plugin installation"
       ansible.builtin.systemd:

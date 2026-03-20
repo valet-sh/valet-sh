@@ -15,6 +15,8 @@ configuration:
     transport: 9308
   base_path: "/usr/local/valet-sh/packages/elasticsearch8"
   plugins:
-    default_plugins: ["analysis-phonetic", "analysis-icu"]
-    install_command: "/usr/share/elasticsearch/bin/elasticsearch-plugin install {{ name }}"
+    default_plugins:
+      - name: "analysis-phonetic"
+      - name: "analysis-icu"
+    install_command: "/usr/share/elasticsearch/bin/elasticsearch-plugin install"
     list_command: "/usr/share/elasticsearch/bin/elasticsearch-plugin list"

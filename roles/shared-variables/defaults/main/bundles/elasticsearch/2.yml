@@ -14,6 +14,8 @@ configuration:
     http: 9202
   base_path: "/usr/local/valet-sh/packages/elasticsearch2"
   plugins:
-    default_plugins: ["analysis-phonetic", "analysis-icu"]
-    install_command: "/usr/share/elasticsearch/bin/plugin install {{ name }}"
+    default_plugins:
+      - name: "analysis-phonetic"
+      - name: "analysis-icu"
+    install_command: "/usr/share/elasticsearch/bin/plugin install"
     list_command: "/usr/share/elasticsearch/bin/plugin list"

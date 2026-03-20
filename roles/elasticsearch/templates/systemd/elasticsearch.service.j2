@@ -18,9 +18,9 @@ ExecStart=/usr/bin/podman run \
     --volume vsh-{{ current_elasticsearch_service.canonical }}-data:/usr/share/elasticsearch/data \
     --volume vsh-{{ current_elasticsearch_service.canonical }}-plugins:/usr/share/elasticsearch/plugins \
     --volume {{ current_elasticsearch_service.configuration.base_path }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z \
-    --publish {{ current_elasticsearch_service.configuration.ports.http }}:{{ current_elasticsearch_service.configuration.ports.http }} \
+    --publish 127.0.0.1:{{ current_elasticsearch_service.configuration.ports.http }}:{{ current_elasticsearch_service.configuration.ports.http }} \
 {% if current_elasticsearch_service.configuration.ports.transport is defined %}
-    --publish {{ current_elasticsearch_service.configuration.ports.transport }}:{{ current_elasticsearch_service.configuration.ports.transport }} \
+    --publish 127.0.0.1:{{ current_elasticsearch_service.configuration.ports.transport }}:{{ current_elasticsearch_service.configuration.ports.transport }} \
 {% endif %}
     --env "discovery.type=single-node" \
     --env "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
