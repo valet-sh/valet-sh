@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2026 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,69 +15,10 @@
 ##
 ---
 
-- name: Debug valet_install_services
-  ansible.builtin.debug:
-    var: valet_install_services
+- name: "Include install_with_args.yml"
+  ansible.builtin.include_tasks: install_with_args.yml
+  when: valet_install_services is defined and valet_install_services | length > 0
 
-- name: "Set essential services and packages if valet_install_service is empty"
-  ansible.builtin.set_fact:
-    valet_essential_packages: "{{ valet_sh_bundle_definitions.packages | dict2items | selectattr('value.kind', 'equalto', 'essential') | map(attribute='key') | list }}"
-    valet_essential_services: "{{ valet_sh_bundle_definitions.services | dict2items | selectattr('value.kind', 'equalto', 'essential') | map(attribute='key') | list }}"
+- name: "Include install_without_args.yml"
+  ansible.builtin.include_tasks: install_without_args.yml
   when: valet_install_services is not defined or valet_install_services | length == 0
-
-- name: "Set services to install if valet_install_service is not defined or empty"
-  ansible.builtin.set_fact:
-    valet_install_services_essentials: "{{ valet_essential_packages + valet_essential_services }}"
-  when: valet_install_services is not defined or valet_install_services | length == 0
-
-- name: Check if installed
-  vsh_bundle_state:
-    action: "is_installed"
-    name: "{{ bundle_name }}"
-  register: bundle_install_check
-  loop: "{{ valet_install_services_essentials }}"
-  loop_control:
-    loop_var: bundle_name
-  when: valet_install_services is not defined or valet_install_services | length == 0 and valet_install_services_essentials is defined and valet_install_services_essentials | length > 0
-
-- name: "Filter not installed services"
-  ansible.builtin.set_fact:
-    valet_install_services: "{{ bundle_install_check.results | selectattr('is_installed', 'equalto', false) | map(attribute='bundle_name') | list }}"
-  when: valet_install_services is not defined or valet_install_services | length == 0
-
-- name: Debug services to install
-  ansible.builtin.debug:
-    var: valet_install_services
-
-- name: "Resolve Services to Install"
-  vsh_bundle_resolver:
-    name: "{{ valet_install_services }}"
-    current_os: "{{ current_os }}"
-  register: vsh_resolver
-
-- name: "Install Service Roles"
-  ansible.builtin.include_role:
-    name: "{{ role_item }}"
-  vars:
-    valet_resolved_service:
-      services: "{{ vsh_resolver.services | selectattr('role_name', 'equalto', role_item) | list }}"
-      packages: "{{ vsh_resolver.packages | selectattr('role_name', 'equalto', role_item) | list }}"
-  loop: "{{ (vsh_resolver.packages + vsh_resolver.services ) | map(attribute='role_name') | unique | list }}"
-  loop_control:
-    loop_var: role_item
-
-- name: "include role"
-  ansible.builtin.include_role:
-    name: "valet-service"
-    public: true
-  vars:
-    valet_sh_service_internal_action: true
-    valet_service_action: "handle"
-    valet_sh_newly_installed_services: "{{ (vsh_resolver.packages + vsh_resolver.services) | default([]) }}"
-
-- name: "ensure revision is up2date"
-  ansible.builtin.copy:
-    src: "{{ valet_dist_path }}/{{ valet_etc_revision_filename }}"
-    dest: "{{ valet_etc_revision_file }}"
-    mode: "0644"
-    force: true
