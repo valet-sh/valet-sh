@@ -1,0 +1,59 @@
+##
+#   Copyright 2026 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: Check if installed
+  vsh_bundle_state_info:
+    state: "absent"
+    scope: "essential"
+  register: bundle_install_check
+
+- name: Debug services to install
+  ansible.builtin.debug:
+    var: bundle_install_check
+
+- name: "Resolve Services to Install"
+  vsh_bundle_resolver:
+    name: "{{ bundle_install_check.kinds + valet_install_services }}"
+    current_os: "{{ current_os }}"
+  register: vsh_resolver
+
+- name: "Install Service Roles"
+  ansible.builtin.include_role:
+    name: "{{ role_item }}"
+  vars:
+    valet_resolved_service:
+      services: "{{ vsh_resolver.services | selectattr('role_name', 'equalto', role_item) | list }}"
+      packages: "{{ vsh_resolver.packages | selectattr('role_name', 'equalto', role_item) | list }}"
+  loop: "{{ (vsh_resolver.packages + vsh_resolver.services ) | map(attribute='role_name') | unique | list }}"
+  loop_control:
+    loop_var: role_item
+
+- name: "include role"
+  ansible.builtin.include_role:
+    name: "valet-service"
+    public: true
+  vars:
+    valet_sh_service_internal_action: true
+    valet_service_action: "handle"
+    valet_sh_newly_installed_services: "{{ (vsh_resolver.packages + vsh_resolver.services) | default([]) }}"
+
+- name: "ensure revision is up2date"
+  ansible.builtin.copy:
+    src: "{{ valet_dist_path }}/{{ valet_etc_revision_filename }}"
+    dest: "{{ valet_etc_revision_file }}"
+    mode: "0644"
+    force: true
