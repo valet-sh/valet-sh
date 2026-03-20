@@ -19,7 +19,7 @@ ExecStart=/usr/bin/podman run \
     --volume {{ current_mariadb_service.configuration.base_path }}/etc/my.cnf:/etc/mysql/my.cnf:z \
     --volume {{ current_mariadb_service.configuration.base_path }}/etc/conf.d:/etc/mysql/conf.d:z \
     --volume {{ current_mariadb_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:z \
-    --publish {{ current_mariadb_service.configuration.ports.mariadb }}:3306 \
+    --publish 127.0.0.1:{{ current_mariadb_service.configuration.ports.mariadb }}:3306 \
     --env MYSQL_ROOT_PASSWORD={{ current_mariadb_service.configuration.default_root_password }} \
     {{ current_mariadb_service.configuration.docker_image }}
 

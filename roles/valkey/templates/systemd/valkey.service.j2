@@ -1,5 +1,5 @@
 [Unit]
-Description=valkey
+Description=valkey {{ current_valkey_service.canonical }}
 After=network-online.target local-fs.target
 Wants=network-online.target
 
@@ -16,7 +16,7 @@ ExecStart=/usr/bin/podman run \
     --rm \
     --name vsh-{{ current_valkey_service.canonical }} \
     --volume vsh-{{ current_valkey_service.canonical }}:/data \
-    --publish {{ current_valkey_service.configuration.ports.valkey }}:6379 \
+    --publish 127.0.0.1:{{ current_valkey_service.configuration.ports.valkey }}:6379 \
     {{ current_valkey_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_valkey_service.canonical }}
 ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_valkey_service.canonical }}

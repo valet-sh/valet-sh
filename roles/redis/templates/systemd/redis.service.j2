@@ -1,5 +1,5 @@
 [Unit]
-Description=Redis-Server
+Description=Redis-Server for {{ current_redis_service.canonical }}
 After=network-online.target local-fs.target
 Wants=network-online.target
 
@@ -16,7 +16,7 @@ ExecStart=/usr/bin/podman run \
     --rm \
     --name vsh-{{ current_redis_service.canonical }} \
     --volume vsh-{{ current_redis_service.canonical }}:/data \
-    --publish {{ current_redis_service.configuration.ports.redis }}:6379 \
+    --publish 127.0.0.1:{{ current_redis_service.configuration.ports.redis }}:6379 \
     {{ current_redis_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_redis_service.canonical }}
 ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_redis_service.canonical }}

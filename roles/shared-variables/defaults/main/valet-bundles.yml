@@ -46,7 +46,9 @@ valet_sh_bundle_definitions:
       type: "service"
     mariadb:
       display_name: "MariaDB"
-      versions: ["10.4", "10.6", "10.11", "11.4"]
+      versions: ["10.6", "10.11", "11.4"]
+      deprecated_versions: ["10.4"]
+      disabled_versions: ["10.4"]
       role_name: "mariadb-server"
       family_name: "database"
       kind: "optional"
