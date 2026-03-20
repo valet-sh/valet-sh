@@ -14,3 +14,37 @@ configuration:
     mac: ["php5.6-fpm", "php5.6-cli"]
   config_paths:
     ubuntu: ["/etc/php/5.6"]
+  cli_settings: |
+    date.timezone = Europe/Berlin
+    error_log = /tmp/php_errors.log
+    sendmail_path = /usr/sbin/sendmail -S 127.0.0.1:1025 -t test@test
+    memory_limit = 8192M
+    error_reporting = E_ALL
+  fpm_settings: |
+    date.timezone = Europe/Berlin
+    max_execution_time = 900
+    error_log = /tmp/php_errors.log
+    memory_limit = 512M
+    upload_max_filesize = 128M
+    post_max_size = 128M
+    max_input_vars = 10000
+    sendmail_path = /usr/sbin/sendmail -S 127.0.0.1:1025 -t test@test
+    error_reporting = E_ALL
+  modules:
+    - "xmlrpc"
+    - "xml"
+    - "readline"
+    - "opcache"
+    - "mysql"
+    - "json"
+    - "intl"
+    - "gd"
+    - "fpm"
+    - "curl"
+    - "cli"
+    - "soap"
+    - "mbstring"
+    - "zip"
+    - "bcmath"
+    - "ldap"
+    - "sqlite3"

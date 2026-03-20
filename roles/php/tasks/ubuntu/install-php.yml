@@ -123,31 +123,23 @@
     mode: "0755"
   become: true
 
-- name: set php cli configuration
-  ansible.builtin.template:
-    src: "{{ inside_item }}"
+- name: "ensure {{ php_version_string }} cli settings are up2date"
+  ansible.builtin.copy:
+    content: "{{ php_cli_settings }}"
     dest: "{{ php_cli_conf_path }}"
     owner: root
     group: root
     mode: "0644"
-  with_first_found:
-    - "ubuntu/99-cli.conf.j2"
-  loop_control:
-    loop_var: inside_item
   become: true
 
-- name: set php fpm configuration
-  ansible.builtin.template:
-    src: "{{ inside_item }}"
+- name: "ensure {{ php_version_string }} fpm settings are up2date"
+  ansible.builtin.copy:
+    content: "{{ php_fpm_settings }}"
     dest: "{{ php_fpm_conf_path }}"
     owner: root
     group: root
     mode: "0644"
-  with_first_found:
-    - "ubuntu/99-fpm.conf.j2"
   notify: "systemd | {{ php_version_string }}-fpm | restarted"
-  loop_control:
-    loop_var: inside_item
   become: true
 
 - name: set config setting in php pool configuration
@@ -191,19 +183,24 @@
   become: true
   when: "php_version in compiled_xdebug2_versions"
 
-- name: "install php-imagick"
-  ansible.builtin.apt:
-    name: php-imagick
-    state: present
-  become: true
+# @FIXME: php-imagick requires latest
+#- name: "install php-imagick"
+#  ansible.builtin.apt:
+#    name: php-imagick
+#    state: present
+#  become: true
 
 - name: "set default php cli version"
   community.general.alternatives:
     name: php
-    path: "/usr/bin/php{{ item.version }}"
+    path: "/usr/bin/php{{ current_php_item.version }}"
   with_items: "{{ current_php }}"
-  when: (item.defaultable is defined) and (item.defaultable is true)
   become: true
+  loop_control:
+    loop_var: current_php_item
+  when:
+    - current_php_item.defaultable is defined
+    - current_php_item.defaultable|bool
 
 - name: "Mark vsh-{{ current_php.canonical }} as installed in the services file"
   vsh_bundle_state:

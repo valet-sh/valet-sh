@@ -14,38 +14,22 @@ configuration:
     mac: ["php7.2-fpm", "php7.2-cli"]
   config_paths:
     ubuntu: ["/etc/php/7.2"]
-  cli_settings:
-    - conf: "date.timezone"
-      value: "Europe/Berlin"
-    - conf: "error_log"
-      value: "{{ php_error_log_path }}"
-    - conf: "sendmail_path"
-      value: "{{ mailhog_bin_target }} sendmail test@test"
-    - conf: "memory_limit"
-      value: "8192M"
-    - conf: "memory_limit"
-      value: "8192M"
-    - conf: "error_reporting"
-      value: "E_ALL"
-  fpm_settings:
-    - conf: "date.timezone"
-      value: "Europe/Berlin"
-    - conf: "max_execution_time"
-      value: "900"
-    - conf: "error_log"
-      value: "{{ php_error_log_path }}"
-    - conf: "memory_limit"
-      value: "512M"
-    - conf: "upload_max_filesize"
-      value: "128M"
-    - conf: "post_max_size"
-      value: "128M"
-    - conf: "max_input_vars"
-      value: "10000"
-    - conf: "sendmail_path"
-      value: "{{ mailhog_bin_target }} sendmail test@test"
-    - conf: "error_reporting"
-      value: "E_ALL"
+  cli_settings: |
+    date.timezone = Europe/Berlin
+    error_log = /tmp/php_errors.log
+    sendmail_path = /usr/sbin/sendmail -S 127.0.0.1:1025 -t test@test
+    memory_limit = 8192M
+    error_reporting = E_ALL
+  fpm_settings: |
+    date.timezone = Europe/Berlin
+    max_execution_time = 900
+    error_log = /tmp/php_errors.log
+    memory_limit = 512M
+    upload_max_filesize = 128M
+    post_max_size = 128M
+    max_input_vars = 10000
+    sendmail_path = /usr/sbin/sendmail -S 127.0.0.1:1025 -t test@test
+    error_reporting = E_ALL
   modules:
     - "xmlrpc"
     - "xml"
