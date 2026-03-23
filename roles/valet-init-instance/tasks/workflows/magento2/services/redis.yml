@@ -21,9 +21,9 @@
         valet_sh_service_redis_current_name: "redis{{ valet_sh_project_vars.services.redis.version | default(valet_sh_bundle_definitions.services.redis.default_version) | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » redis | check if {{ valet_sh_service_redis_current_name }} is installed"
-      vsh_bundle_state:
-        action: "is_installed"
-        canonical_names: "{{ valet_sh_service_redis_current_name }}"
+      vsh_bundle_state_info:
+        state: "present"
+        name: "{{ valet_sh_service_redis_current_name }}"
       register: redis_installed
 
     - name: "workflows » magento2 » services » redis | resolve {{ valet_sh_service_redis_current_name }} service"
@@ -38,7 +38,7 @@
       vars:
         valet_resolved_service: "{{ redis_install }}"
         valet_install_services: ["{{ valet_sh_service_redis_current_name }}"]
-      when: not redis_installed.is_installed
+      when: redis_installed.kinds | length == 0
 
     - name: "workflows » magento2 » services » redis | include valet-service role to set defaults"
       ansible.builtin.include_role:

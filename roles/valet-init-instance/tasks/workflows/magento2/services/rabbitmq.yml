@@ -21,9 +21,9 @@
         valet_sh_service_rabbitmq_current_name: "rabbitmq{{ valet_sh_project_vars.services.rabbitmq.version | default(valet_sh_bundle_definitions.services.rabbitmq.default_version) | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » rabbitmq | check if {{ valet_sh_service_rabbitmq_current_name }} is installed"
-      vsh_bundle_state:
-        action: "is_installed"
-        canonical_names: "{{ valet_sh_service_rabbitmq_current_name }}"
+      vsh_bundle_state_info:
+        state: "present"
+        name: "{{ valet_sh_service_rabbitmq_current_name }}"
       register: rabbitmq_installed
 
     - name: "workflows » magento2 » services » rabbitmq | resolve {{ valet_sh_service_rabbitmq_current_name }} service"
@@ -38,7 +38,7 @@
       vars:
         valet_resolved_service: "{{ rabbitmq_install }}"
         valet_install_services: ["{{ valet_sh_service_rabbitmq_current_name }}"]
-      when: not rabbitmq_installed.is_installed
+      when: rabbitmq_installed.kinds | length == 0
 
     - name: "workflows » magento2 » services » rabbitmq | include valet-service role to set defaults"
       ansible.builtin.include_role:

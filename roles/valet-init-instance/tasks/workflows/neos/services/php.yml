@@ -16,9 +16,9 @@
 ---
 - block:
     - name: "workflows » neos » services » php | check if php{{ valet_sh_project_vars.services.php.version }} is installed"
-      vsh_bundle_state:
-        action: "is_installed"
-        canonical_names: "php{{ valet_sh_project_vars.services.php.version }}"
+      vsh_bundle_state_info:
+        state: "present"
+        name: "php{{ valet_sh_project_vars.services.php.version }}"
       register: php_installed
 
     - name: "workflows » neos » services » php | resolve php{{ valet_sh_project_vars.services.php.version }} service"
@@ -34,7 +34,7 @@
       vars:
         valet_resolved_service: "{{ php_install }}"
         valet_install_services: ["php{{ valet_sh_project_vars.services.php.version }}"]
-      when: not php_installed.is_installed
+      when: php_installed.kinds | length == 0
 
     - name: "workflows » neos » services » php | include valet-service role to set defaults"
       ansible.builtin.include_role:

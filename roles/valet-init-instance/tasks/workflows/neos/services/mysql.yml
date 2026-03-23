@@ -20,9 +20,9 @@
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » neos » services » mysql | check if mysql{{ valet_sh_project_vars.services.mysql.version }} is installed"
-      vsh_bundle_state:
-        action: "is_installed"
-        canonical_names: "{{ valet_sh_service_mysql_current_name }}"
+      vsh_bundle_state_info:
+        state: "present"
+        name: "{{ valet_sh_service_mysql_current_name }}"
       register: mysql_installed
 
     - name: "workflows » neos » services » mysql | resolve mysql{{ valet_sh_project_vars.services.mysql.version }} service"
@@ -38,7 +38,7 @@
       vars:
         valet_resolved_service: "{{ mysql_install }}"
         valet_install_services: ["{{ valet_sh_service_mysql_current_name }}"]
-      when: not mysql_installed.is_installed
+      when: not mysql_installed.kinds | length == 0
 
     - name: "workflows » neos » services » mysql | include valet-service role to set defaults"
       ansible.builtin.include_role:
@@ -83,9 +83,9 @@
         valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » neos » services » mariadb | check if mariadb{{ valet_sh_project_vars.services.mariadb.version }} is installed"
-      vsh_bundle_state:
-        action: "is_installed"
-        canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
+      vsh_bundle_state_info:
+        state: "present"
+        name: "{{ valet_sh_service_mariadb_current_name }}"
       register: mariadb_installed
 
     - name: "workflows » neos » services » mariadb | resolve mariadb{{ valet_sh_project_vars.services.mariadb.version }} service"
@@ -101,7 +101,7 @@
       vars:
         valet_resolved_service: "{{ mariadb_install }}"
         valet_install_services: ["{{ valet_sh_service_mariadb_current_name }}"]
-      when: not mariadb_installed.is_installed
+      when: not mariadb_installed.kinds | length == 0
 
     - name: "workflows » neos » services » mariadb | include valet-service role to set defaults"
       ansible.builtin.include_role:

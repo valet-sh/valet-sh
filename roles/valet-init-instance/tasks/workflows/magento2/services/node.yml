@@ -29,9 +29,9 @@
 
 - block:
     - name: "workflows » magento2 » services » node | check if node is installed"
-      vsh_bundle_state:
-        action: "is_installed"
-        canonical_names: "nodejs"
+      vsh_bundle_state_info:
+        state: "present"
+        name: "nodejs"
       register: node_installed
 
     - name: "workflows » magento2 » services » node | resolve node service"
@@ -46,7 +46,7 @@
       vars:
         valet_resolved_service: "{{ node_install }}"
         valet_install_services: ["node"]
-      when: not node_installed.is_installed
+      when: node_installed.kinds | length == 0
 
     - name: "workflows » magento2 » services » node | include valet-service role to set defaults"
       ansible.builtin.include_role:

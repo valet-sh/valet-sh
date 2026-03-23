@@ -16,9 +16,9 @@
 ---
 - block:
     - name: "workflows » magento2 » services » elasticsearch | check if elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version  }} is installed"
-      vsh_bundle_state:
-        action: "is_installed"
-        canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
+      vsh_bundle_state_info:
+        state: "present"
+        name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
       register: elasticsearch_installed
 
     - name: "workflows » magento2 » services » elasticsearch | resolve elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} service"
@@ -39,7 +39,7 @@
       vars:
         valet_resolved_service: "{{ elasticsearch_install }}"
         valet_install_services: ["elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"]
-      when: not elasticsearch_installed.is_installed
+      when: elasticsearch_installed.kinds | length == 0
 
     - name: "workflows » magento2 » services » elasticsearch | include valet-service role to set defaults"
       ansible.builtin.include_role:
@@ -100,9 +100,9 @@
 
 - block:
     - name: "workflows » magento2 » services » opensearch | check if opensearch{{ valet_sh_project_vars.services.opensearch.version }} is installed"
-      vsh_bundle_state:
-        action: "is_installed"
-        canonical_names: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
+      vsh_bundle_state_info:
+        state: "present"
+        name: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
       register: opensearch_installed
 
     - name: "workflows » magento2 » services » opensearch | resolve opensearch{{ valet_sh_project_vars.services.opensearch.version }} service"
@@ -121,7 +121,7 @@
       vars:
         valet_resolved_service: "{{ opensearch_install }}"
         valet_install_services: ["opensearch{{ valet_sh_project_vars.services.opensearch.version }}"]
-      when: not opensearch_installed.is_installed
+      when: opensearch_installed.kinds | length == 0
 
     - name: "workflows » magento2 » services » opensearch | include valet-service role to set defaults"
       ansible.builtin.include_role:

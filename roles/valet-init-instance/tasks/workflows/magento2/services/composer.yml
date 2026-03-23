@@ -25,9 +25,9 @@
 
 - block:
     - name: "workflows » magento2 » services » composer | check if composer is installed"
-      vsh_bundle_state:
-        action: "is_installed"
-        canonical_names: "composer{{ valet_sh_composer_version }}"
+      vsh_bundle_state_info:
+        state: "present"
+        name: "composer{{ valet_sh_composer_version }}"
       register: composer_installed
 
     - name: "workflows » magento2 » services » composer | resolve composer service"
@@ -42,7 +42,7 @@
       vars:
         valet_resolved_service: "{{ composer_install }}"
         valet_install_services: ["composer{{ valet_sh_composer_version }}"]
-      when: not composer_installed.is_installed
+      when: composer_installed.kinds | length == 0
 
     - name: "workflows » magento2 » services » composer | include valet-service role to set defaults"
       ansible.builtin.include_role:
