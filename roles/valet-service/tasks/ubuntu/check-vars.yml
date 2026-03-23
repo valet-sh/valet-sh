@@ -64,8 +64,8 @@
 
 - name: "check-vars | check if service is installed"
   vsh_bundle_state:
-    action: "is_installed"
-    canonical_names: "{{ item }}"
+    state: "present"
+    name: "{{ item }}"
   register: service_installation_check
   when: valet_service_action != "list" and (valet_service_names is defined and valet_service_names | length > 0)
   loop: "{{ valet_canonical_names }}"
@@ -78,5 +78,5 @@
 - name: "check-vars | fail if service is not installed"
   ansible.builtin.fail:
     msg: "Services '{{ item }}' is not installed. Please install them first."
-  when: valet_service_action != "list" and not item.is_installed
+  when: valet_service_action != "list" and not item.kinds | length == 0
   loop: "{{ service_installation_check.results }}"
