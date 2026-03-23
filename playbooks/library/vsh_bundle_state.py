@@ -31,7 +31,7 @@ def main():
     module_args = dict(
         action=dict(type='str', required=True, choices=[
             'add_installed', 'remove_installed', 'set_default',
-            'set_enabled', 'set_disabled', 'is_installed'
+            'set_enabled', 'set_disabled'
         ]),
         canonical_names=dict(type='list', required=False, default=[]),
         name=dict(type='str', required=False),
@@ -43,7 +43,7 @@ def main():
         ),
     )
 
-    result = dict(changed=False, installed_services=[], is_installed=False, message='')
+    result = dict(changed=False, installed_services=[], message='')
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
 
     params = module.params
@@ -137,10 +137,6 @@ def main():
                         result['changed'] = True
             state_str = 'Enabled' if params['action'] == 'set_enabled' else 'Disabled'
             result['message'] = f"{state_str} {b_type}: {', '.join(names)}"
-
-        elif params['action'] == 'is_installed':
-            result['installed_services'] = [name for name in names if name in target['installed']]
-            result['is_installed'] = len(result['installed_services']) == len(names)
 
         if result['changed']:
             save_bundle_file(params['bundle_file'], bundle_file_content)
