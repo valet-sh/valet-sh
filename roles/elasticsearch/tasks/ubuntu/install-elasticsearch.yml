@@ -15,109 +15,105 @@
 ##
 ---
 
-- name: "get stats for dir {{ current_elasticsearch_service.configuration.base_path }}"
-  ansible.builtin.stat:
-    path: "{{ current_elasticsearch_service.configuration.base_path }}"
-  register: current_elasticsearch_base_path_obj
+- name: "Pull vsh-{{ current_elasticsearch_service.canonical }} image"
+  containers.podman.podman_image:
+    name: "{{ current_elasticsearch_service.configuration.docker_image }}"
+    pull: true
+    state: present
 
-- block:
-    - name: "Pull vsh-{{ current_elasticsearch_service.canonical }} image"
-      containers.podman.podman_image:
-        name: "{{ current_elasticsearch_service.configuration.docker_image }}"
-        pull: true
-        state: present
+- name: Debug vsh-{{ current_elasticsearch_service.canonical }}
+  ansible.builtin.debug:
+    msg: "vsh-{{ current_elasticsearch_service.canonical }}"
 
-    - name: Debug vsh-{{ current_elasticsearch_service.canonical }}
-      ansible.builtin.debug:
-        msg: "vsh-{{ current_elasticsearch_service.canonical }}"
+- name: "Create vsh-{{ current_elasticsearch_service.canonical }} config directory"
+  ansible.builtin.file:
+    path: "{{ current_elasticsearch_service.configuration.base_path }}/config"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+    state: directory
 
-    - name: "Create vsh-{{ current_elasticsearch_service.canonical }} config directory"
-      ansible.builtin.file:
-        path: "{{ current_elasticsearch_service.configuration.base_path }}/config"
-        owner: "{{ current_user }}"
-        group: "{{ current_group }}"
-        mode: "0755"
-        state: directory
+- name: "provide vsh-{{ current_elasticsearch_service.canonical }} configuration"
+  ansible.builtin.template:
+    src: "config/{{ current_elasticsearch_service.canonical }}.yml.j2"
+    dest: "{{ current_elasticsearch_service.configuration.base_path }}/config/elasticsearch.yml"
+    mode: "0644"
+  notify: "systemd | vsh-elasticsearch | restarted"
 
-    - name: "provide vsh-{{ current_elasticsearch_service.canonical }} configuration"
-      ansible.builtin.template:
-        src: "config/{{ current_elasticsearch_service.canonical }}.yml.j2"
-        dest: "{{ current_elasticsearch_service.configuration.base_path }}/config/elasticsearch.yml"
-        mode: "0644"
-      notify: "systemd | vsh-elasticsearch | restarted"
-      when: not current_elasticsearch_base_path_obj.stat.exists
+- name: "ensure user systemd directory exists"
+  ansible.builtin.file:
+    path: "{{ current_home }}/.config/systemd/user"
+    state: directory
+    mode: "0755"
 
-    - name: "ensure user systemd directory exists"
-      ansible.builtin.file:
-        path: "{{ current_home }}/.config/systemd/user"
-        state: directory
-        mode: "0755"
+- name: "Provide systemd service for vsh-{{ current_elasticsearch_service.canonical }} container"
+  ansible.builtin.template:
+    src: "systemd/elasticsearch.service.j2"
+    dest: "{{ current_home }}/.config/systemd/user/{{ current_elasticsearch_service.service.name }}.service"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+  notify: "systemd | vsh-elasticsearch | started"
 
-    - name: "Provide systemd service for vsh-{{ current_elasticsearch_service.canonical }} container"
-      ansible.builtin.template:
-        src: "systemd/elasticsearch.service.j2"
-        dest: "{{ current_home }}/.config/systemd/user/{{ current_elasticsearch_service.service.name }}.service"
-        owner: "{{ current_user }}"
-        group: "{{ current_group }}"
-        mode: "0644"
-      notify: "systemd | vsh-elasticsearch | started"
+- name: "Ensure vsh-{{ current_elasticsearch_service.canonical }} is started"
+  ansible.builtin.systemd:
+    name: "{{ current_elasticsearch_service.service.name }}"
+    state: started
+    daemon_reload: true
+    scope: "{{ current_elasticsearch_service.service.scope }}"
 
-    - name: "Ensure vsh-{{ current_elasticsearch_service.canonical }} is started"
-      ansible.builtin.systemd:
-        name: "{{ current_elasticsearch_service.service.name }}"
-        state: started
-        daemon_reload: true
-        scope: "{{ current_elasticsearch_service.service.scope }}"
+- name: "Wait for vsh-{{ current_elasticsearch_service.canonical }} to be ready"
+  ansible.builtin.uri:
+    url: "http://localhost:{{ current_elasticsearch_service.configuration.ports.http }}/_cluster/health"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 15
+  delay: 3
 
-    - name: "Wait for vsh-{{ current_elasticsearch_service.canonical }} to be ready"
-      ansible.builtin.uri:
-        url: "http://localhost:{{ current_elasticsearch_service.configuration.ports.http }}/_cluster/health"
-        method: GET
-        status_code: 200
-      register: result
-      until: result.status == 200
-      retries: 15
-      delay: 3
+- name: "list installed plugins"
+  containers.podman.podman_container_exec:
+    name: "vsh-{{ current_elasticsearch_service.canonical }}"
+    command: "{{ current_elasticsearch_service.configuration.plugins.list_command }}"
+  register: installed_plugins
 
-    - name: "list installed plugins"
-      containers.podman.podman_container_exec:
-        name: "vsh-{{ current_elasticsearch_service.canonical }}"
-        command: "{{ current_elasticsearch_service.configuration.plugins.list_command }}"
-      register: installed_plugins
+- name: "install plugins"
+  containers.podman.podman_container_exec:
+    name: "vsh-{{ current_elasticsearch_service.canonical }}"
+    command: "{{ current_elasticsearch_service.configuration.plugins.install_command }} {{ current_elasticsearch_plugin.name }}"
+  with_items: "{{ current_elasticsearch_service.configuration.plugins.default_plugins }}"
+  loop_control:
+    loop_var: current_elasticsearch_plugin
+  notify: "systemd | vsh-elasticsearch | restarted"
+  when:
+    - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
+    - current_elasticsearch_plugin.url is not defined
+    - "current_elasticsearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
 
-    - name: "install plugins"
-      containers.podman.podman_container_exec:
-        name: "vsh-{{ current_elasticsearch_service.canonical }}"
-        command: "{{ current_elasticsearch_service.configuration.plugins.install_command }} {{ current_elasticsearch_plugin.name }}"
-      with_items: "{{ current_elasticsearch_service.configuration.plugins.default_plugins }}"
-      loop_control:
-        loop_var: current_elasticsearch_plugin
-      notify: "systemd | vsh-elasticsearch | restarted"
-      when:
-        - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
-        - current_elasticsearch_plugin.url is not defined
-        - "current_elasticsearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
+- name: "install plugins from url"
+  containers.podman.podman_container_exec:
+    name: "vsh-{{ current_elasticsearch_service.canonical }}"
+    command: "{{ current_elasticsearch_service.configuration.plugins.install_command }} {{ current_elasticsearch_plugin.name }} --url {{ current_elasticsearch_plugin.url }}"
+  with_items: "{{ current_elasticsearch_service.configuration.plugins.default_plugins }}"
+  loop_control:
+    loop_var: current_elasticsearch_plugin
+  notify: "systemd | vsh-elasticsearch | restarted"
+  when:
+    - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
+    - current_elasticsearch_plugin.url is defined
+    - "current_elasticsearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
 
-    - name: "install plugins from url"
-      containers.podman.podman_container_exec:
-        name: "vsh-{{ current_elasticsearch_service.canonical }}"
-        command: "{{ current_elasticsearch_service.configuration.plugins.install_command }} {{ current_elasticsearch_plugin.name }} --url {{ current_elasticsearch_plugin.url }}"
-      with_items: "{{ current_elasticsearch_service.configuration.plugins.default_plugins }}"
-      loop_control:
-        loop_var: current_elasticsearch_plugin
-      notify: "systemd | vsh-elasticsearch | restarted"
-      when:
-        - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
-        - current_elasticsearch_plugin.url is defined
-        - "current_elasticsearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
+- name: "Flush handlers"
+  flush_handlers:
 
-    - name: "Stop vsh-{{ current_elasticsearch_service.canonical }} container after plugin installation"
-      ansible.builtin.systemd:
-        name: "{{ current_elasticsearch_service.service.name }}"
-        state: stopped
-        scope: "{{ current_elasticsearch_service.service.scope }}"
+- name: "Stop vsh-{{ current_elasticsearch_service.canonical }} container after plugin installation"
+  ansible.builtin.systemd:
+    name: "{{ current_elasticsearch_service.service.name }}"
+    state: stopped
+    scope: "{{ current_elasticsearch_service.service.scope }}"
 
-    - name: "Mark vsh-{{ current_elasticsearch_service.canonical }} as installed in the services file"
-      vsh_bundle_state:
-        action: "add_installed"
-        canonical_names: "{{ current_elasticsearch_service.canonical }}"
+- name: "Mark vsh-{{ current_elasticsearch_service.canonical }} as installed in the services file"
+  vsh_bundle_state:
+    action: "add_installed"
+    canonical_names: "{{ current_elasticsearch_service.canonical }}"

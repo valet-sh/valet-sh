@@ -18,7 +18,7 @@ ExecStart=/usr/bin/podman run \
     --volume vsh-{{ current_opensearch_service.canonical }}-data:/usr/share/opensearch/data \
     --volume vsh-{{ current_opensearch_service.canonical }}-plugins:/usr/share/opensearch/plugins \
     --volume {{ current_opensearch_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z \
-    --publish 127.0.0.1:{{ current_opensearch_service.configuration.ports.http }}:{{ current_opensearch_service.configuration.ports.http }} \
+    --network host \
     --env "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
     {{ current_opensearch_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_opensearch_service.canonical }}
