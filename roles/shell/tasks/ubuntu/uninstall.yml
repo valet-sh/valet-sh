@@ -17,5 +17,5 @@
 
 - name: Mark shell as uninstalled
   vsh_bundle_state:
-    action: "remove_installed"
+    action: "uninstalled"
     name: "shell"

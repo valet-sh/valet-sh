@@ -76,5 +76,5 @@
 
 - name: Mark nodejs as uninstalled in the services file
   vsh_bundle_state:
-    action: "remove_installed"
+    action: "uninstalled"
     canonical_names: "nodejs"

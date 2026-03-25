@@ -45,12 +45,12 @@
 
 - name: "Mark vsh-{{ current_rabbitmq_service.canonical }} as installed in the services file"
   vsh_bundle_state:
-    action: "add_installed"
+    action: "installed"
     canonical_names: "{{ current_rabbitmq_service.canonical }}"
 
 - name: "Mark vsh-{{ current_rabbitmq_service.canonical }} as enabled in the services file"
   vsh_bundle_state:
-    action: "set_enabled"
+    action: "enabled"
     canonical_names: "{{ current_rabbitmq_service.canonical }}"
 
 - name: set 'cert_prefix' variable

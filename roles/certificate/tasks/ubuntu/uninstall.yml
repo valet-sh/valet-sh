@@ -23,5 +23,5 @@
 
 - name: Mark certificate as uninstalled
   vsh_bundle_state:
-    action: "remove_installed"
+    action: "uninstalled"
     name: "certificate"

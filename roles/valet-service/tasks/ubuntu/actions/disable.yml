@@ -22,7 +22,7 @@
 
 - name: "actions » disable | set services as disabled using vsh_bundle_state module"
   vsh_bundle_state:
-    action: "set_disabled"
+    action: "disabled"
     canonical_names: "{{ valet_canonical_names }}"
 
 - name: "actions » disable | disable resolved services"

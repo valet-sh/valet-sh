@@ -204,5 +204,5 @@
 
 - name: "Mark vsh-{{ current_php.canonical }} as installed in the services file"
   vsh_bundle_state:
-    action: "add_installed"
+    action: "installed"
     canonical_names: "{{ current_php.canonical }}"

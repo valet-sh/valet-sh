@@ -54,13 +54,13 @@
 
     - name: "workflows » neos » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as default"
       vsh_bundle_state:
-        action: "set_default"
+        action: "default"
         name: "elasticsearch"
         canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
     - name: "workflows » neos » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as enabled"
       vsh_bundle_state:
-        action: "set_enabled"
+        action: "enabled"
         canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
     - name: "workflows"

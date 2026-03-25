@@ -63,6 +63,6 @@
 
 - name: "Mark composer{{ current_composer_service.version }} as installed in the bundle file"
   vsh_bundle_state:
-    action: "add_installed"
+    action: "installed"
     name: "composer"
     canonical_names: "{{ current_composer_service.canonical }}"

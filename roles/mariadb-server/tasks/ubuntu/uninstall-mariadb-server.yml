@@ -60,5 +60,5 @@
 
     - name: "Remove vsh-{{ current_mariadb_service.canonical }} from installed services"
       vsh_bundle_state:
-        action: "remove_installed"
+        action: "uninstalled"
         canonical_names: "{{ current_mariadb_service.canonical }}"

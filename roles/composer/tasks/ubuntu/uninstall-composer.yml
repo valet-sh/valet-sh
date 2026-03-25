@@ -29,10 +29,10 @@
 
 - name: "Remove composer from installed services"
   vsh_bundle_state:
-    action: "remove_installed"
+    action: "uninstalled"
     name: "composer1"
 
 - name: "Remove composer from installed services"
   vsh_bundle_state:
-    action: "remove_installed"
+    action: "uninstalled"
     name: "composer2"

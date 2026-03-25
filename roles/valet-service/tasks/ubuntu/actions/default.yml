@@ -37,7 +37,7 @@
 
 - name: "actions » default | set service as default using vsh_bundle_state module"
   vsh_bundle_state:
-    action: "set_default"
+    action: "default"
     name: "{{ item.family_name | default(item.name, true) }}"
     canonical_names: "{{ item.canonical }}"
   loop: "{{ valet_all_services }}"

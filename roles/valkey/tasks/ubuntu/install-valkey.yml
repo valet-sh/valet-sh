@@ -44,5 +44,5 @@
 
 - name: "Mark vsh-{{ current_valkey_service.canonical }} as installed in the services file"
   vsh_bundle_state:
-    action: "add_installed"
+    action: "installed"
     canonical_names: "{{ current_valkey_service.canonical }}"

@@ -22,7 +22,7 @@
 
 - name: "actions » enable | set services as enabled using vsh_bundle_state module"
   vsh_bundle_state:
-    action: "set_enabled"
+    action: "enabled"
     canonical_names: "{{ valet_canonical_names }}"
 
 - name: Debug service scopes

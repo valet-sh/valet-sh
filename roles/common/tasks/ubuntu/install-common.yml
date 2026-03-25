@@ -40,5 +40,5 @@
 
 - name: Mark common as installed
   vsh_bundle_state:
-    action: "add_installed"
+    action: "installed"
     name: "common"

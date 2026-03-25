@@ -58,13 +58,13 @@
 
     - name: "workflows » magento2 » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as default"
       vsh_bundle_state:
-        action: "set_default"
+        action: "default"
         name: "elasticsearch"
         canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
     - name: "workflows » magento2 » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as enabled"
       vsh_bundle_state:
-        action: "set_enabled"
+        action: "enabled"
         canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
     - name: "workflows » magento2 » services » elasticsearch | wait for elasticsearch to be reachable"
@@ -140,13 +140,13 @@
 
     - name: "workflows » magento2 » services » opensearch | set opensearch{{ valet_sh_project_vars.services.opensearch.version }} as default"
       vsh_bundle_state:
-        action: "set_default"
+        action: "default"
         name: "opensearch"
         canonical_names: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
 
     - name: "workflows » magento2 » services » opensearch | set opensearch{{ valet_sh_project_vars.services.opensearch.version }} as enabled"
       vsh_bundle_state:
-        action: "set_enabled"
+        action: "enabled"
         canonical_names: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
 
     - name: "workflows » magento2 » services » opensearch | wait for opensearch to be reachable"

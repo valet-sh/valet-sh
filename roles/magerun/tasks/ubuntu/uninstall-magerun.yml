@@ -29,5 +29,5 @@
 
 - name: "Remove magerun from installed services"
   vsh_bundle_state:
-    action: "remove_installed"
+    action: "uninstalled"
     canonical_names: "magerun"

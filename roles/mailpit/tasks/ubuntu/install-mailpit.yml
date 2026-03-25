@@ -69,5 +69,5 @@
 
 - name: "Add mailpit to installed services"
   vsh_bundle_state:
-    action: "add_installed"
+    action: "installed"
     canonical_names: "{{ current_mailpit_service.canonical }}"

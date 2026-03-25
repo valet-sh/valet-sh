@@ -22,5 +22,5 @@
 
 - name: Mark shell as installed
   vsh_bundle_state:
-    action: "add_installed"
+    action: "installed"
     name: "shell"

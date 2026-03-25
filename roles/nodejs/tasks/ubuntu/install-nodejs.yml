@@ -86,5 +86,5 @@
 
 - name: Mark nodejs as installed in the bundle file
   vsh_bundle_state:
-    action: "add_installed"
+    action: "installed"
     canonical_names: "nodejs"

@@ -17,5 +17,5 @@
 
 - name: Mark common as installed
   vsh_bundle_state:
-    action: "remove_installed"
+    action: "uninstalled"
     name: "common"

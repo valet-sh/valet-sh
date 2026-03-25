@@ -53,5 +53,5 @@
 
 - name: "Remove vsh-{{ current_php.canonical }} from installed services"
   vsh_bundle_state:
-    action: "remove_installed"
+    action: "uninstalled"
     canonical_names: "{{ current_php.canonical }}"

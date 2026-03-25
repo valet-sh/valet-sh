@@ -57,13 +57,13 @@
 
     - name: "workflows » magento2 » services » php | set php{{ valet_sh_project_vars.services.php.version }} as default"
       vsh_bundle_state:
-        action: "set_default"
+        action: "default"
         name: "php"
         canonical_names: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » php | set php{{ valet_sh_project_vars.services.php.version }} as enabled"
       vsh_bundle_state:
-        action: "set_enabled"
+        action: "enabled"
         canonical_names: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » php | wait for php-fpm to be reachable"

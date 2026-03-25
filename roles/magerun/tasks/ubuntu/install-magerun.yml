@@ -36,5 +36,5 @@
 
 - name: Mark magerun as installed in the bundle file
   vsh_bundle_state:
-    action: "add_installed"
+    action: "installed"
     name: "magerun"

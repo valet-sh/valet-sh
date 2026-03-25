@@ -57,7 +57,7 @@
 
     - name: "workflows » magento2 » services » redis | set redis as enabled"
       vsh_bundle_state:
-        action: "set_enabled"
+        action: "enabled"
         canonical_names: "redis"
 
     - name: "workflows » magento2 » services » redis | wait for redis to be reachable"

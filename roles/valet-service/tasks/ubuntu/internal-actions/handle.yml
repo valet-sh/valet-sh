@@ -31,7 +31,7 @@
 
 - name: "internal-actions » handle | set services as enabled using vsh_bundle_state module"
   vsh_bundle_state:
-    action: "set_enabled"
+    action: "enabled"
     canonical_names: "{{ valet_canonical_names }}"
   when: valet_all_services | selectattr('type', 'equalto', 'service') | list | length > 0
 

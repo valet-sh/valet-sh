@@ -57,7 +57,7 @@
 
     - name: "workflows » magento2 » services » rabbitmq | set rabbitmq as enabled"
       vsh_bundle_state:
-        action: "set_enabled"
+        action: "enabled"
         canonical_names: "rabbitmq"
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"

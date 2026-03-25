@@ -30,8 +30,8 @@ def find_definition(name, all_definitions):
 def main():
     module_args = dict(
         action=dict(type='str', required=True, choices=[
-            'add_installed', 'remove_installed', 'set_default',
-            'set_enabled', 'set_disabled', 'initialize_empty'
+            'installed', 'uninstalled', 'default',
+            'enabled', 'disabled', 'initialize_empty'
         ]),
         canonical_names=dict(type='list', required=False, default=[]),
         name=dict(type='str', required=False),
@@ -77,14 +77,14 @@ def main():
         if module.check_mode:
             module.exit_json(**result)
 
-        if params['action'] == 'add_installed':
+        if params['action'] == 'installed':
             for name in names:
                     if name not in target['installed']:
                         target['installed'][name] = {}
                         result['changed'] = True
             result['message'] = f"Added {b_type}: {', '.join(names)}"
 
-        elif params['action'] == 'remove_installed':
+        elif params['action'] == 'uninstalled':
             for name in names:
                 if name in target['installed']:
                     del target['installed'][name]
@@ -112,9 +112,9 @@ def main():
 
 
 
-        elif params['action'] == 'set_default':
+        elif params['action'] == 'default':
             if not params['name'] or not names:
-                module.fail_json(msg="set_default requires name and canonical_names")
+                module.fail_json(msg="default requires name and canonical_names")
             canonical_name = names[0]
             if canonical_name in target['installed']:
                 target_key = family_name if family_name else params['name']
@@ -127,15 +127,15 @@ def main():
             else:
                 module.fail_json(msg=f"Cannot set {canonical_name} as default - not installed")
 
-        elif params['action'] in ['set_enabled', 'set_disabled']:
+        elif params['action'] in ['enabled', 'disabled']:
             for name in names:
                 if name in target['installed']:
-                    desired_state = True if params['action'] == 'set_enabled' else False
+                    desired_state = True if params['action'] == 'enabled' else False
                     current_state = target['states'].get(name)
                     if current_state != desired_state:
                         target['states'][name] = desired_state
                         result['changed'] = True
-            state_str = 'Enabled' if params['action'] == 'set_enabled' else 'Disabled'
+            state_str = 'Enabled' if params['action'] == 'enabled' else 'Disabled'
             result['message'] = f"{state_str} {b_type}: {', '.join(names)}"
 
         elif params['action'] == 'initialize_empty':
