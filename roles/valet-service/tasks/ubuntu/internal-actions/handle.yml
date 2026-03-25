@@ -23,7 +23,7 @@
 
 - name: "internal-actions » handle | set valet_all_services from newly installed services"
   ansible.builtin.set_fact:
-    valet_all_services: "{{ (valet_sh_newly_installed_services.packages | default([])) + (valet_sh_newly_installed_services.services | default([])) | unique(attribute='name') }}"
+    valet_all_services: "{{ valet_sh_newly_installed_services | unique(attribute='name') }}"
 
 - name: "internal-actions » handle | extract canonical names"
   ansible.builtin.set_fact:
