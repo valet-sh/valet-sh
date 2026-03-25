@@ -105,7 +105,7 @@
     - "current_elasticsearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
 
 - name: "Flush handlers"
-  flush_handlers:
+  ansible.builtin.meta: flush_handlers
 
 - name: "Get desired state of vsh-{{ current_elasticsearch_service.canonical }} from services file"
   vsh_bundle_service_state_info:
