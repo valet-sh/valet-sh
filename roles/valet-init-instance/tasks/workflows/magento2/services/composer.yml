@@ -25,7 +25,7 @@
 
 - block:
     - name: "workflows » magento2 » services » composer | check if composer is installed"
-      vsh_bundle_state_info:
+      vsh_bundle_install_state_info:
         state: "present"
         name: "composer{{ valet_sh_composer_version }}"
       register: composer_installed

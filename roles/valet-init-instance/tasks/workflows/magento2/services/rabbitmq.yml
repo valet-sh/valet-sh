@@ -21,7 +21,7 @@
         valet_sh_service_rabbitmq_current_name: "rabbitmq{{ valet_sh_project_vars.services.rabbitmq.version | default(valet_sh_bundle_definitions.services.rabbitmq.default_version) | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » rabbitmq | check if {{ valet_sh_service_rabbitmq_current_name }} is installed"
-      vsh_bundle_state_info:
+      vsh_bundle_install_state_info:
         state: "present"
         name: "{{ valet_sh_service_rabbitmq_current_name }}"
       register: rabbitmq_installed

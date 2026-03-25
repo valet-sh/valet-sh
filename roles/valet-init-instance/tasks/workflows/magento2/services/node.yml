@@ -29,7 +29,7 @@
 
 - block:
     - name: "workflows » magento2 » services » node | check if node is installed"
-      vsh_bundle_state_info:
+      vsh_bundle_install_state_info:
         state: "present"
         name: "nodejs"
       register: node_installed

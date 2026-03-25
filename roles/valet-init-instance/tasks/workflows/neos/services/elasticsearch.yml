@@ -16,7 +16,7 @@
 ---
 - block:
     - name: "workflows » neos » services » elasticsearch | check if elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version  }} is installed"
-      vsh_bundle_state_info:
+      vsh_bundle_install_state_info:
         state: "present"
         name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
       register: elasticsearch_installed

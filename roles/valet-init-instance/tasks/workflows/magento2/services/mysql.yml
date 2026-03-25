@@ -20,7 +20,7 @@
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mysql | check if mysql{{ valet_sh_project_vars.services.mysql.version }} is installed"
-      vsh_bundle_state_info:
+      vsh_bundle_install_state_info:
         state: "present"
         name: "{{ valet_sh_service_mysql_current_name }}"
       register: mysql_installed
@@ -81,7 +81,7 @@
         valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » mariadb | check if mariadb{{ valet_sh_project_vars.services.mariadb.version }} is installed"
-      vsh_bundle_state_info:
+      vsh_bundle_install_state_info:
         state: "present"
         name: "{{ valet_sh_service_mariadb_current_name }}"
       register: mariadb_installed

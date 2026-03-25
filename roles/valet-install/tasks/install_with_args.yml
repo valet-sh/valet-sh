@@ -16,7 +16,7 @@
 ---
 
 - name: Check if installed
-  vsh_bundle_state_info:
+  vsh_bundle_install_state_info:
     state: "absent"
     scope: "essential"
   register: bundle_install_check

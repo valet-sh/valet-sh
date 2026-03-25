@@ -16,7 +16,7 @@
 ---
 - block:
     - name: "workflows » neos » services » php | check if php{{ valet_sh_project_vars.services.php.version }} is installed"
-      vsh_bundle_state_info:
+      vsh_bundle_install_state_info:
         state: "present"
         name: "php{{ valet_sh_project_vars.services.php.version }}"
       register: php_installed
