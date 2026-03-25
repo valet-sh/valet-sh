@@ -31,7 +31,7 @@ def main():
     module_args = dict(
         action=dict(type='str', required=True, choices=[
             'add_installed', 'remove_installed', 'set_default',
-            'set_enabled', 'set_disabled'
+            'set_enabled', 'set_disabled', 'initialize_empty'
         ]),
         canonical_names=dict(type='list', required=False, default=[]),
         name=dict(type='str', required=False),
@@ -137,6 +137,11 @@ def main():
                         result['changed'] = True
             state_str = 'Enabled' if params['action'] == 'set_enabled' else 'Disabled'
             result['message'] = f"{state_str} {b_type}: {', '.join(names)}"
+
+        elif params['action'] == 'initialize_empty':
+            for name in names:
+                target['states'][name] = True
+                result['changed'] = True
 
         if result['changed']:
             save_bundle_file(params['bundle_file'], bundle_file_content)
