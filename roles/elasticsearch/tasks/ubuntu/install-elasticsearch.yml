@@ -107,10 +107,27 @@
 - name: "Flush handlers"
   flush_handlers:
 
-- name: "Stop vsh-{{ current_elasticsearch_service.canonical }} container after plugin installation"
+- name: "Get desired state of vsh-{{ current_elasticsearch_service.canonical }} from services file"
+  vsh_bundle_service_state_info:
+    name: "{{ current_elasticsearch_service.canonical }}"
+  register: current_elasticsearch_service_state
+
+- name: "If desired state is unknown, set it to enabled"
+  vsh_bundle_state:
+    action: "initialize_empty"
+    canonical_names: "{{ current_elasticsearch_service.canonical }}"
+  when: current_elasticsearch_service_state.state == "unknown"
+
+- name: "Update current_elasticsearch_service_state after initialization"
+  ansible.builtin.set_fact:
+    current_elasticsearch_service_state: "{{ current_elasticsearch_service_state | combine({'state': 'enabled'}) }}"
+  when: current_elasticsearch_service_state.state == "unknown"
+
+- name: "Set vsh-{{ current_elasticsearch_service.canonical }} container state"
   ansible.builtin.systemd:
     name: "{{ current_elasticsearch_service.service.name }}"
-    state: stopped
+    state: "{{ 'started' if current_elasticsearch_service_state.state == 'enabled' else 'stopped' }}"
+    enabled: "{{ 'true' if current_elasticsearch_service_state.state == 'enabled' else 'false' }}"
     scope: "{{ current_elasticsearch_service.service.scope }}"
 
 - name: "Mark vsh-{{ current_elasticsearch_service.canonical }} as installed in the services file"
