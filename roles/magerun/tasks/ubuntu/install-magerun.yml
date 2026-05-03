@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: ensure that magerun1 is installed
   ansible.builtin.get_url:
     url: "{{ magerun1_download_url }}"

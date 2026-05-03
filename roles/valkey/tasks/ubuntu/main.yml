@@ -18,7 +18,7 @@
 - name: "Install valkey {{ item.version }}"
   ansible.builtin.include_tasks: install-valkey.yml
   vars:
-    current_valkey_service: "{{ item }}"
+    current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when:
     - valet_install_services is defined
@@ -27,7 +27,7 @@
 - name: "Uninstall valkey {{ item.version }}"
   ansible.builtin.include_tasks: uninstall-valkey.yml
   vars:
-    current_valkey_service: "{{ item }}"
+    current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when:
     - valet_uninstall_services is defined

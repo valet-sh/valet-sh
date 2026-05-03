@@ -17,41 +17,41 @@
 
 - name: Ensure that rabbitmq container is stopped
   ansible.builtin.systemd:
-    name: "{{ current_rabbitmq_service.service.name }}"
+    name: "{{ current_service.service.name }}"
     state: stopped
     daemon_reload: true
-    scope: "{{ current_rabbitmq_service.service.scope }}"
+    scope: "{{ current_service.service.scope }}"
   ignore_errors: true
 
 - name: Remove rabbitmq container
   containers.podman.podman_container:
-    name: "vsh-{{ current_rabbitmq_service.canonical }}"
+    name: "vsh-{{ current_service.canonical }}"
     state: absent
 
 - name: Remove rabbitmq volume
   containers.podman.podman_volume:
-    name: "vsh-{{ current_rabbitmq_service.canonical }}"
+    name: "vsh-{{ current_service.canonical }}"
     state: absent
   when: "'--purge' in valet_cli_opts"
 
 - name: Remove rabbitmq systemd service
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/vsh-{{ current_rabbitmq_service.canonical }}.service"
+    path: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
     state: absent
 
-- name: "Remove vsh-{{ current_rabbitmq_service.canonical }} default.target.wants symlink"
+- name: "Remove vsh-{{ current_service.canonical }} default.target.wants symlink"
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/default.target.wants/vsh-{{ current_rabbitmq_service.canonical }}.service"
+    path: "{{ current_home }}/.config/systemd/user/default.target.wants/vsh-{{ current_service.canonical }}.service"
     state: absent
 
 - name: Remove rabbitmq image
   containers.podman.podman_image:
-    name: "{{ current_rabbitmq_service.configuration.docker_image }}"
+    name: "{{ current_service.configuration.docker_image }}"
     state: absent
     force: true
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_rabbitmq_service.canonical }} from installed services"
+- name: "Remove vsh-{{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"
-    canonical_names: "{{ current_rabbitmq_service.canonical }}"
+    canonical_names: "{{ current_service.canonical }}"

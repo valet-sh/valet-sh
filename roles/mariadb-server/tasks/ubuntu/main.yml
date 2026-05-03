@@ -19,13 +19,13 @@
 - name: "Install MariaDB-Server {{ item.version }}"
   ansible.builtin.include_tasks: install-mariadb-server.yml
   vars:
-    current_mariadb_service: "{{ item }}"
+    current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when: valet_install_services is defined
 
 - name: "Uninstall MariaDB-Server {{ item.version }}"
   ansible.builtin.include_tasks: uninstall-mariadb-server.yml
   vars:
-    current_mariadb_service: "{{ item }}"
+    current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when: valet_uninstall_services is defined

@@ -5,23 +5,23 @@ nice		= 0
 pid-file        = /var/run/mysqld/mysqld.pid
 socket          = /var/run/mysqld/mysqld.sock
 mysqlx-socket =
-port		= 3306
-mysqlx-port = 33060
+port		= 3308
+mysqlx-port = 33080
 basedir		= /usr
 datadir		= /var/lib/mysql
 tmpdir		= /tmp
 lc-messages-dir	=  /usr/share/mysql
 skip-external-locking
 
-mysqlx-bind-address = 0.0.0.0
-bind-address		= 0.0.0.0
+mysqlx-bind-address = 127.0.0.1
+bind-address		= 127.0.0.1
 key_buffer_size		= 16M
 max_allowed_packet	= 256M
 thread_stack		= 192K
 thread_cache_size       = 8
 myisam-recover-options  = BACKUP
 max_connections        = 200
-log_error = /var/lib/mysql/{{ current_mysql_service.canonical }}-error.log
+log_error = /var/lib/mysql/{{ current_service.canonical }}-error.log
 max_binlog_size   = 100M
 
 character-set-server='utf8mb4'

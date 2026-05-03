@@ -15,24 +15,24 @@
 ##
 ---
 
-- name: "Pull vsh-{{ current_opensearch_service.canonical }} image"
+- name: "Pull vsh-{{ current_service.canonical }} image"
   containers.podman.podman_image:
-    name: "{{ current_opensearch_service.configuration.docker_image }}"
+    name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
 
-- name: "Create vsh-{{ current_opensearch_service.canonical }} config directory"
+- name: "Create vsh-{{ current_service.canonical }} config directory"
   ansible.builtin.file:
-    path: "{{ current_opensearch_service.configuration.base_path }}/config"
+    path: "{{ current_service.configuration.base_path }}/config"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0755"
     state: directory
 
-- name: "provide vsh-{{ current_opensearch_service.canonical }} configuration"
+- name: "provide vsh-{{ current_service.canonical }} configuration"
   ansible.builtin.template:
-    src: "config/{{ current_opensearch_service.canonical }}.yml.j2"
-    dest: "{{ current_opensearch_service.configuration.base_path }}/config/opensearch.yml"
+    src: "config/{{ current_service.canonical }}.yml.j2"
+    dest: "{{ current_service.configuration.base_path }}/config/opensearch.yml"
     mode: "0644"
   notify: "systemd | vsh-opensearch | restarted"
 
@@ -42,25 +42,25 @@
     state: directory
     mode: "0755"
 
-- name: Provide systemd service for vsh-{{ current_opensearch_service.canonical }} container
+- name: Provide systemd service for vsh-{{ current_service.canonical }} container
   ansible.builtin.template:
     src: "systemd/opensearch.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/{{ current_opensearch_service.service.name }}.service"
+    dest: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
   notify: "systemd | vsh-opensearch | restarted"
 
-- name: "Ensure vsh-{{ current_opensearch_service.canonical }} is started"
+- name: "Ensure vsh-{{ current_service.canonical }} is started"
   ansible.builtin.systemd:
-    name: "{{ current_opensearch_service.service.name }}"
+    name: "{{ current_service.service.name }}"
     state: started
     daemon_reload: true
-    scope: "{{ current_opensearch_service.service.scope }}"
+    scope: "{{ current_service.service.scope }}"
 
-- name: "Wait for vsh-{{ current_opensearch_service.canonical }} to be ready"
+- name: "Wait for vsh-{{ current_service.canonical }} to be ready"
   ansible.builtin.uri:
-    url: "http://localhost:{{ current_opensearch_service.configuration.ports.http }}/_cluster/health"
+    url: "http://localhost:{{ current_service.configuration.ports.http }}/_cluster/health"
     method: GET
     status_code: 200
   register: result
@@ -70,31 +70,49 @@
 
 - name: "list installed plugins"
   containers.podman.podman_container_exec:
-    name: "vsh-{{ current_opensearch_service.canonical }}"
-    command: "{{ current_opensearch_service.configuration.plugins.list_command }}"
+    name: "vsh-{{ current_service.canonical }}"
+    command: "{{ current_service.configuration.plugins.list_command }}"
   register: installed_plugins
 
 - name: "install plugins"
   containers.podman.podman_container_exec:
-    name: "vsh-{{ current_opensearch_service.canonical }}"
-    command: "{{ current_opensearch_service.configuration.plugins.install_command }} {{ current_opensearch_plugin.name }}"
-  with_items: "{{ current_opensearch_service.configuration.plugins.default_plugins }}"
+    name: "vsh-{{ current_service.canonical }}"
+    command: "{{ current_service.configuration.plugins.install_command }} {{ current_opensearch_plugin.name }}"
+  with_items: "{{ current_service.configuration.plugins.default_plugins }}"
   loop_control:
     loop_var: current_opensearch_plugin
   when:
-    - current_opensearch_plugin not in installed_plugins.stdout
+    - current_opensearch_plugin.name not in installed_plugins.stdout_lines
+    - "current_opensearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
   notify: "systemd | vsh-opensearch | restarted"
 
 - name: "Flush handlers"
-  flush_handlers:
+  meta: flush_handlers
 
-- name: Stop vsh-{{ current_opensearch_service.canonical }} container after plugin installation
+- name: "Get desired state of vsh-{{ current_service.canonical }} from services file"
+  vsh_bundle_service_state_info:
+    name: "{{ current_service.canonical }}"
+  register: current_service_state
+
+- name: "If desired state is unknown, set it to enabled"
+  vsh_bundle_state:
+    action: "initialize_empty"
+    canonical_names: "{{ current_service.canonical }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Update current_service_state after initialization"
+  ansible.builtin.set_fact:
+    current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Set vsh-{{ current_service.canonical }} container state"
   ansible.builtin.systemd:
-    name: "{{ current_opensearch_service.service.name }}"
-    state: stopped
-    scope: "{{ current_opensearch_service.service.scope }}"
+    name: "{{ current_service.service.name }}"
+    state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
+    enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
+    scope: "{{ current_service.service.scope }}"
 
-- name: "Mark vsh-{{ current_opensearch_service.canonical }} as installed in the services file"
+- name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
   vsh_bundle_state:
     action: "installed"
-    canonical_names: "{{ current_opensearch_service.canonical }}"
+    canonical_names: "{{ current_service.canonical }}"

@@ -1,5 +1,5 @@
 [Unit]
-Description=Elasticsearch {{ current_elasticsearch_service.version }}
+Description=Elasticsearch {{ current_service.version }}
 After=network-online.target local-fs.target
 Wants=network-online.target
 
@@ -14,17 +14,17 @@ TimeoutStopSec=30
 ExecStart=/usr/bin/podman run \
     --replace \
     --rm \
-    --name vsh-{{ current_elasticsearch_service.canonical }} \
-    --volume vsh-{{ current_elasticsearch_service.canonical }}-data:/usr/share/elasticsearch/data \
-    --volume vsh-{{ current_elasticsearch_service.canonical }}-plugins:/usr/share/elasticsearch/plugins \
-    --volume {{ current_elasticsearch_service.configuration.base_path }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z \
+    --name vsh-{{ current_service.canonical }} \
+    --volume vsh-{{ current_service.canonical }}-data:/usr/share/elasticsearch/data \
+    --volume vsh-{{ current_service.canonical }}-plugins:/usr/share/elasticsearch/plugins \
+    --volume {{ current_service.configuration.base_path }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z \
     --network host \
     --env "discovery.type=single-node" \
     --env "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
     --env "xpack.security.enabled=false" \
-    {{ current_elasticsearch_service.configuration.docker_image }}
-ExecReload=/usr/bin/podman restart vsh-{{ current_elasticsearch_service.canonical }}
-ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_elasticsearch_service.canonical }}
+    {{ current_service.configuration.docker_image }}
+ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
+ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_service.canonical }}
 
 [Install]
 WantedBy=default.target

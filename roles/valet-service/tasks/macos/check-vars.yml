@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: "check-vars | fail when no action was defined"
   ansible.builtin.fail:
     msg: "no action was defined"
@@ -23,3 +24,75 @@
   ansible.builtin.fail:
     msg: "action '{{ valet_service_action }}' is not allowed"
   when: valet_service_action not in valet_sh_service_allowed_actions
+
+# FIXME: no user readable error message
+- name: "check-vars | resolve multiple service names and configurations"
+  vsh_bundle_resolver:
+    name: ["{{ item }}"]
+    current_os: "{{ current_os }}"
+  register: vsh_resolvers
+  loop: "{{ valet_service_names }}"
+  when:
+    - valet_service_names is defined
+    - valet_service_names | length > 0
+
+- name: Debug vsh_resolvers
+  ansible.builtin.debug:
+    var: vsh_resolvers
+
+- name: "check-vars | create combined resolved service variable"
+  ansible.builtin.set_fact:
+    valet_canonical_names: "{{ vsh_resolvers.results | map(attribute='services') | flatten | map(attribute='canonical') | list + vsh_resolvers.results | map(attribute='packages') | flatten | map(attribute='canonical') | list }}"
+    valet_all_services: "{{ vsh_resolvers.results | flatten | map(attribute='services') | flatten +  vsh_resolvers.results | flatten | map(attribute='packages') | flatten | list }}"
+  when: vsh_resolvers is defined
+
+- name: Debug valet_canonical_names
+  ansible.builtin.debug:
+    var: valet_canonical_names
+  when: vsh_resolvers is defined
+
+- name: Debug valet_all_services
+  ansible.builtin.debug:
+    var: valet_all_services
+  when: vsh_resolvers is defined
+
+
+- name: "block"
+  when: valet_service_action != "list"
+  block:
+    - name: "check-vars | fail when no service name was given"
+      ansible.builtin.fail:
+        msg: "supplied no service names"
+      when:
+        - valet_service_names is not defined or valet_service_names | length == 0
+        - "'--all' not in valet_cli_opts"
+
+    - name: "check-vars | check if service is installed"
+      vsh_bundle_install_state_info:
+        name: "{{ item }}"
+      register: service_installation_check
+      when: valet_service_action != "list" and (valet_service_names is defined and valet_service_names | length > 0)
+      loop: "{{ valet_canonical_names }}"
+
+    - name: Debug service installation check
+      ansible.builtin.debug:
+        var: service_installation_check
+      when: valet_service_names is defined and valet_service_names | length > 0
+
+    - name: "check-vars | fail if service is not installed"
+      ansible.builtin.fail:
+        msg: "Services '{{ item }}' is not installed. Please install them first."
+      when: item.kinds | length == 0
+      loop: "{{ service_installation_check.results }}"
+
+    - name: "check-vars | check if service state"
+      vsh_bundle_service_state_info:
+        name: "{{ item }}"
+      register: service_state_check
+      when: valet_service_names is defined and valet_service_names | length > 0
+      loop: "{{ valet_canonical_names }}"
+
+    - name: Debug service installation check
+      ansible.builtin.debug:
+        var: service_state_check
+      when: valet_service_names is defined and valet_service_names | length > 0

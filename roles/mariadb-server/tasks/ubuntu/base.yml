@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: install base packages
   ansible.builtin.apt:
     name: "{{ mariadb_server.base_packages }}"

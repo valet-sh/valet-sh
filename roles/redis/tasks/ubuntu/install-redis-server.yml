@@ -23,7 +23,7 @@
 
 - name: Pull redis-server image
   containers.podman.podman_image:
-    name: "{{ current_redis_service.configuration.docker_image }}"
+    name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
 
@@ -36,13 +36,39 @@
 - name: Provide systemd service for vsh-redis-server container
   ansible.builtin.template:
     src: "systemd/redis.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_redis_service.canonical }}.service"
+    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
   notify: "systemd | vsh-redis-server | restarted"
 
-- name: "Mark vsh-{{ current_redis_service.canonical }} as installed in the services file"
+- name: "Flush handlers"
+  meta: flush_handlers
+
+- name: "Get desired state of vsh-{{ current_service.canonical }} from services file"
+  vsh_bundle_service_state_info:
+    name: "{{ current_service.canonical }}"
+  register: current_service_state
+
+- name: "If desired state is unknown, set it to enabled"
+  vsh_bundle_state:
+    action: "initialize_empty"
+    canonical_names: "{{ current_service.canonical }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Update current_service_state after initialization"
+  ansible.builtin.set_fact:
+    current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Set vsh-{{ current_service.canonical }} container state"
+  ansible.builtin.systemd:
+    name: "{{ current_service.service.name }}"
+    state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
+    enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
+    scope: "{{ current_service.service.scope }}"
+
+- name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
   vsh_bundle_state:
     action: "installed"
-    canonical_names: "{{ current_redis_service.canonical }}"
+    canonical_names: "{{ current_service.canonical }}"

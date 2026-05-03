@@ -18,13 +18,13 @@
 - name: "Install RabbitMQ {{ item.version }}"
   ansible.builtin.include_tasks: install-rabbitmq.yml
   vars:
-    current_rabbitmq_service: "{{ item }}"
+    current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when: valet_install_services is defined
 
 - name: "Uninstall RabbitMQ {{ item.version }}"
   ansible.builtin.include_tasks: uninstall-rabbitmq.yml
   vars:
-    current_rabbitmq_service: "{{ item }}"
+    current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when: valet_uninstall_services is defined

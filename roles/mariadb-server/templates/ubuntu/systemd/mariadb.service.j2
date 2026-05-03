@@ -1,5 +1,5 @@
 [Unit]
-Description=MariaDB {{ current_mariadb_service.version }} Server
+Description=MariaDB {{ current_service.version }} Server
 After=network-online.target local-fs.target
 Wants=network-online.target
 
@@ -14,17 +14,17 @@ TimeoutStopSec=30
 ExecStart=/usr/bin/podman run \
     --replace \
     --rm \
-    --name vsh-{{ current_mariadb_service.canonical }} \
-    --volume vsh-{{ current_mariadb_service.canonical }}-data:/var/lib/mysql \
-    --volume {{ current_mariadb_service.configuration.base_path }}/etc/my.cnf:/etc/mysql/my.cnf:z \
-    --volume {{ current_mariadb_service.configuration.base_path }}/etc/conf.d:/etc/mysql/conf.d:z \
-    --volume {{ current_mariadb_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:z \
-    --publish 127.0.0.1:{{ current_mariadb_service.configuration.ports.mariadb }}:3306 \
-    --env MYSQL_ROOT_PASSWORD={{ current_mariadb_service.configuration.default_root_password }} \
-    {{ current_mariadb_service.configuration.docker_image }}
+    --name vsh-{{ current_service.canonical }} \
+    --volume vsh-{{ current_service.canonical }}-data:/var/lib/mysql \
+    --volume {{ current_service.configuration.base_path }}/etc/my.cnf:/etc/mysql/my.cnf:z \
+    --volume {{ current_service.configuration.base_path }}/etc/conf.d:/etc/mysql/conf.d:z \
+    --volume {{ current_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:z \
+    --network host \
+    --env MYSQL_ROOT_PASSWORD={{ current_service.configuration.default_root_password }} \
+    {{ current_service.configuration.docker_image }}
 
-ExecReload=/usr/bin/podman restart vsh-{{ current_mariadb_service.canonical }}
-ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_mariadb_service.canonical }}
+ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
+ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_service.canonical }}
 
 [Install]
 WantedBy=default.target

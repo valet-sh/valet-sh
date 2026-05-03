@@ -14,6 +14,10 @@
 #   limitations under the License.
 ##
 ---
+- name: "actions » disable | set default homebrew bin"
+  ansible.builtin.set_fact:
+    valet_sh_homebrew_bin: "{{ valet_sh_homebrew_bin }}"
+
 - name: "actions » disable | fail when no service name was given"
   ansible.builtin.fail:
     msg: "no service name was given"

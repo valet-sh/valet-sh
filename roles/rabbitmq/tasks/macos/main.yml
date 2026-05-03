@@ -14,25 +14,12 @@
 #   limitations under the License.
 ##
 ---
-#- name: "ensure rabbitmq is installed"
-#  homebrew:
-#    name: rabbitmq
-#    state: present
-#  notify: brew | rabbitmq | restarted
 
-- block:
-    - name: "ensure rabbitmq is installed"
-      ansible.builtin.shell: "/usr/local/bin/brew install rabbitmq"
-    - name: "ensure rabbitmq is restarted"
-      ansible.builtin.shell: "/usr/local/bin/brew services restart rabbitmq"
-  when: current_arch != "arm64"
+- name: "ensure rabbitmq is installed"
+  ansible.builtin.shell: "/opt/homebrew/bin/brew install rabbitmq"
 
-- block:
-    - name: "ensure rabbitmq is installed"
-      ansible.builtin.shell: "/opt/homebrew/bin/brew install rabbitmq"
-    - name: "ensure rabbitmq is restarted"
-      ansible.builtin.shell: "/opt/homebrew/bin/brew services restart rabbitmq"
-  when: current_arch == "arm64"
+- name: "ensure rabbitmq is restarted"
+  ansible.builtin.shell: "/opt/homebrew/bin/brew services restart rabbitmq"
 
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:

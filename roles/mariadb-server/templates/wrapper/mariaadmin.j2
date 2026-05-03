@@ -1,7 +1,7 @@
 #!/bin/bash
 
-{% if current_mariadb_service.version |float == 11.4 %}
-exec podman exec -it vsh-{{ current_mariadb_service.canonical }} mariadb-admin --defaults-file=/root/.my.cnf "$@"
+{% if current_service.version |float == 11.4 %}
+exec podman exec -it vsh-{{ current_service.canonical }} mariadb-admin --defaults-file=/root/.my.cnf "$@"
 {% else %}
-exec podman exec -it vsh-{{ current_mariadb_service.canonical }} mysqladmin --defaults-file=/root/.my.cnf "$@"
+exec podman exec -it vsh-{{ current_service.canonical }} mysqladmin --defaults-file=/root/.my.cnf "$@"
 {% endif %}

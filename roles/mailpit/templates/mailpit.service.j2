@@ -16,8 +16,7 @@ ExecStart=/usr/bin/podman run \
     --replace \
     --rm \
     --name vsh-mailpit \
-    --publish {{ current_mailpit_service.configuration.ports.http }}:8025 \
-    --publish {{ current_mailpit_service.configuration.ports.smtp }}:1025 \
+    --network host \
     --volume vsh-mailpit:/data \
     {{ current_mailpit_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_mailpit_service.canonical }}

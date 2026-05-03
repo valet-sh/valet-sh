@@ -18,7 +18,4 @@
   when: current_os == "ubuntu"
 
 - ansible.builtin.include_tasks: macos/main.yml
-  when: current_os == "mac" and current_arch != "arm64"
-
-- ansible.builtin.include_tasks: macos-arm64/main.yml
-  when: current_os == "mac" and current_arch == "arm64"
+  when: current_os == "mac"

@@ -15,9 +15,9 @@
 ##
 ---
 
-- name: debug current_mariadb_service
+- name: debug current_service
   ansible.builtin.debug:
-    var: current_mariadb_service
+    var: current_service
 
 - name: "create mariadb base directories"
   ansible.builtin.file:
@@ -28,29 +28,29 @@
     state: directory
   become: true
   with_items:
-    - "{{ current_mariadb_service.configuration.base_path }}"
-    - "{{ current_mariadb_service.configuration.base_path }}/user"
-    - "{{ current_mariadb_service.configuration.base_path }}/etc"
-    - "{{ current_mariadb_service.configuration.base_path }}/etc/conf.d"
+    - "{{ current_service.configuration.base_path }}"
+    - "{{ current_service.configuration.base_path }}/user"
+    - "{{ current_service.configuration.base_path }}/etc"
+    - "{{ current_service.configuration.base_path }}/etc/conf.d"
   loop_control:
     loop_var: current_mariadb_base_directory
 
-- name: "Pull vsh-{{ current_mariadb_service.canonical }} image"
+- name: "Pull vsh-{{ current_service.canonical }} image"
   containers.podman.podman_image:
-    name: "{{ current_mariadb_service.configuration.docker_image }}"
+    name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
 
 - name: "provide .my.cnf configuration file"
   ansible.builtin.template:
-    src: "ubuntu/{{ current_mariadb_service.canonical }}/.my.cnf.j2"
-    dest: "{{ current_mariadb_service.configuration.base_path }}/user/.my.cnf"
+    src: "ubuntu/{{ current_service.canonical }}/.my.cnf.j2"
+    dest: "{{ current_service.configuration.base_path }}/user/.my.cnf"
     mode: "0644"
 
 - name: "provide my.cnf configuration file"
   ansible.builtin.template:
-    src: "ubuntu/{{ current_mariadb_service.canonical }}/my.cnf.j2"
-    dest: "{{ current_mariadb_service.configuration.base_path }}/etc/my.cnf"
+    src: "ubuntu/{{ current_service.canonical }}/my.cnf.j2"
+    dest: "{{ current_service.configuration.base_path }}/etc/my.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
@@ -58,8 +58,8 @@
 
 - name: "provide mysqld.cnf configuration file"
   ansible.builtin.template:
-    src: "ubuntu/{{ current_mariadb_service.canonical }}/mysqld.cnf.j2"
-    dest: "{{ current_mariadb_service.configuration.base_path }}/etc/conf.d/mysqld.cnf"
+    src: "ubuntu/{{ current_service.canonical }}/mysqld.cnf.j2"
+    dest: "{{ current_service.configuration.base_path }}/etc/conf.d/mysqld.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
@@ -71,68 +71,87 @@
     state: directory
     mode: "0755"
 
-- name: "Provide systemd service for vsh-{{ current_mariadb_service.canonical }} container"
+- name: "Provide systemd service for vsh-{{ current_service.canonical }} container"
   ansible.builtin.template:
     src: "ubuntu/systemd/mariadb.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_mariadb_service.canonical }}.service"
+    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
   notify: "systemd | vsh-mariadb | restarted"
 
-- name: "provide mariadb{{ current_mariadb_service.version }} mysql client"
+- name: "provide mariadb{{ current_service.version }} mysql client"
   ansible.builtin.template:
     src: "wrapper/mariadb.j2"
-    dest: "/usr/local/bin/mariadb{{ current_mariadb_service.version }}"
+    dest: "/usr/local/bin/mariadb{{ current_service.version }}"
     owner: root
     group: root
     mode: "0755"
   become: true
 
-- name: "provide mariadump{{ current_mariadb_service.version }} client"
+- name: "provide mariadump{{ current_service.version }} client"
   ansible.builtin.template:
     src: "wrapper/mariadump.j2"
-    dest: "/usr/local/bin/mariadump{{ current_mariadb_service.version }}"
+    dest: "/usr/local/bin/mariadump{{ current_service.version }}"
     owner: root
     group: root
     mode: "0755"
   become: true
 
-- name: "provide mariaadmin{{ current_mariadb_service.version }} client"
+- name: "provide mariaadmin{{ current_service.version }} client"
   ansible.builtin.template:
     src: "wrapper/mariaadmin.j2"
-    dest: "/usr/local/bin/mariaadmin{{ current_mariadb_service.version }}"
+    dest: "/usr/local/bin/mariaadmin{{ current_service.version }}"
     owner: root
     group: root
     mode: "0755"
   become: true
 
-- name: "Ensure vsh-{{ current_mariadb_service.canonical }} is started"
+- name: "Ensure vsh-{{ current_service.canonical }} is started"
   ansible.builtin.systemd:
-    name: "{{ current_mariadb_service.service.name }}"
+    name: "{{ current_service.service.name }}"
     state: started
     daemon_reload: true
-    scope: "{{ current_mariadb_service.service.scope }}"
+    scope: "{{ current_service.service.scope }}"
 
 - name: Test MariaDB connection and get info
   community.mysql.mysql_info:
     login_host: "127.0.0.1"
-    login_port: "{{ current_mariadb_service.configuration.ports.mariadb }}"
+    login_port: "{{ current_service.configuration.ports.mariadb }}"
     login_user: root
-    login_password: "{{ current_mariadb_service.configuration.default_root_password }}"
+    login_password: "{{ current_service.configuration.default_root_password }}"
   register: mariadb_status
   until: mariadb_status is succeeded
   retries: 30
   delay: 3
 
-- name: Stop vsh-{{ current_mariadb_service.canonical }} service after installation
-  when: mariadb_status is succeeded
-  ansible.builtin.systemd:
-    name: "{{ current_mariadb_service.service.name }}"
-    state: stopped
-    scope: "{{ current_mariadb_service.service.scope }}"
+- name: "Flush handlers"
+  meta: flush_handlers
 
-- name: "Mark vsh-{{ current_mariadb_service.canonical }} as installed in the services file"
+- name: "Get desired state of vsh-{{ current_service.canonical }} from services file"
+  vsh_bundle_service_state_info:
+    name: "{{ current_service.canonical }}"
+  register: current_service_state
+
+- name: "If desired state is unknown, set it to enabled"
+  vsh_bundle_state:
+    action: "initialize_empty"
+    canonical_names: "{{ current_service.canonical }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Update current_service_state after initialization"
+  ansible.builtin.set_fact:
+    current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Set vsh-{{ current_service.canonical }} container state"
+  ansible.builtin.systemd:
+    name: "{{ current_service.service.name }}"
+    state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
+    enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
+    scope: "{{ current_service.service.scope }}"
+
+- name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
   vsh_bundle_state:
     action: "installed"
-    canonical_names: "{{ current_mariadb_service.canonical }}"
+    canonical_names: "{{ current_service.canonical }}"

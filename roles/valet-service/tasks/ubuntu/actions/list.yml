@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: "actions » list | get bundle content"
   vsh_bundle_table:
   register: valet_sh_bundle_obj

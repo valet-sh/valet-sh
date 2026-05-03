@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: Cloning  oh-my-zsh
   ansible.builtin.git:
     repo: "https://github.com/robbyrussell/oh-my-zsh"
@@ -37,20 +38,7 @@
       if [ -f ~/.aliases ]; then
           . ~/.aliases
       fi
-      export PATH=$PATH:/usr/local/sbin
-  when: current_arch != "arm64"
-
-- name: load aliases file in .zshrc
-  ansible.builtin.blockinfile:
-    path: "{{ current_home }}/.zshrc"
-    marker_begin: "ZSH BEGIN"
-    marker_end: "ZSH END"
-    block: |
-      if [ -f ~/.aliases ]; then
-          . ~/.aliases
-      fi
       export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:$PATH
-  when: current_arch == "arm64"
 
 - name: ensure .profile file exists
   ansible.builtin.file:

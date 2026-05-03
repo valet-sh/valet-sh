@@ -36,25 +36,24 @@ valet_etc_path: "{{ lookup('vars', 'valet_etc_path' + '_' + current_os, default=
 valet_packages_path_default: "{{ valet_base_path }}/packages"
 valet_packages_path: "{{ lookup('vars', 'valet_packages_path' + '_' + current_os, default=valet_packages_path_default) }}"
 
+# @fixme obsolet?
 valet_sh_arch_prefix_default: ""
 valet_sh_arch_prefix_arm64: "arch --x86_64 "
 valet_sh_arch_prefix: "{{ lookup('vars', 'valet_sh_arch_prefix' + '_' + current_arch, default=valet_sh_arch_prefix_default) }}"
 
-valet_sh_homebrew_bin: "{{ valet_sh_arch_prefix }}/usr/local/bin/brew"
-valet_sh_homebrew_bin_sudo: "{{ valet_sh_arch_prefix }}sudo /usr/local/bin/brew"
-valet_sh_homebrew_bin_x86: "/usr/local/bin/brew"
-valet_sh_homebrew_bin_arm64: "/opt/homebrew/bin/brew"
+valet_sh_homebrew_bin: "/opt/homebrew/bin/brew"
+valet_sh_homebrew_bin_sudo: "sudo /opt/homebrew/bin/brew"
 
 development_tld_default: test
 development_tld: "{{ lookup('vars', 'development_tld' + '_' + current_os, default=development_tld_default) }}"
 
 valet_sh_sudo_commands:
-  - /usr/local/bin/brew services start nginx
-  - /usr/local/bin/brew services stop nginx
-  - /usr/local/bin/brew services restart nginx
-  - /usr/local/bin/brew services start dnsmasq
-  - /usr/local/bin/brew services stop dnsmasq
-  - /usr/local/bin/brew services restart dnsmasq
+  - "{{ valet_sh_homebrew_bin }} services start nginx"
+  - "{{ valet_sh_homebrew_bin }} services stop nginx"
+  - "{{ valet_sh_homebrew_bin }} services restart nginx"
+  - "{{ valet_sh_homebrew_bin }} start dnsmasq"
+  - "{{ valet_sh_homebrew_bin }} stop dnsmasq"
+  - "{{ valet_sh_homebrew_bin }} restart dnsmasq"
 
 available_php_versions_alias_mapping:
   - aliases:

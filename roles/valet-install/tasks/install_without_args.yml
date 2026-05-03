@@ -15,26 +15,52 @@
 ##
 ---
 
-- name: Check if installed
-  vsh_bundle_install_state_info:
-    scope: "essential"
-  register: bundle_state_essential
+- name: "block without reason"
+  block:
+    - name: Check if installed
+      vsh_bundle_install_state_info:
+        state: "present"
+        scope: "essential"
+      register: bundle_state_essential
 
-- name: Debug services to install
-  ansible.builtin.debug:
-    var: bundle_state_essential
+    - name: Debug services to install
+      ansible.builtin.debug:
+        var: bundle_state_essential
 
-- name: "Resolve Services to Install"
-  vsh_bundle_resolver:
-    name: "{{ bundle_state_essential.kinds }}"
-    current_os: "{{ current_os }}"
-  register: vsh_resolver
+    - name: "Resolve Services to Install"
+      vsh_bundle_resolver:
+        name: "{{ bundle_state_essential.kinds }}"
+        current_os: "{{ current_os }}"
+      register: vsh_resolver
 
-- name: Debug vsh_resolver
-  ansible.builtin.debug:
-    var: vsh_resolver
+    - name: Debug vsh_resolver
+      ansible.builtin.debug:
+        var: vsh_resolver
 
-- name: "Install Service Roles"
+- name: "block without reason"
+  block:
+    - name: Check if installed
+      vsh_bundle_install_state_info:
+        state: "present"
+        scope: "optional"
+      register: bundle_state_optional
+
+    - name: Debug services to install
+      ansible.builtin.debug:
+        var: bundle_state_optional
+
+    - name: "Resolve Services to Install"
+      vsh_bundle_resolver:
+        name: "{{ bundle_state_optional.kinds }}"
+        current_os: "{{ current_os }}"
+      register: vsh_resolver_optional
+
+    - name: Debug vsh_resolver
+      ansible.builtin.debug:
+        var: vsh_resolver_optional
+
+
+- name: "Install essential Roles"
   ansible.builtin.include_role:
     name: "{{ role_item }}"
   vars:
@@ -44,6 +70,18 @@
   loop: "{{ (vsh_resolver.packages + vsh_resolver.services ) | map(attribute='role_name') | unique | list }}"
   loop_control:
     loop_var: role_item
+
+- name: "Install optional Roles"
+  ansible.builtin.include_role:
+    name: "{{ role_item }}"
+  vars:
+    valet_resolved_service:
+      services: "{{ vsh_resolver_optional.services | selectattr('role_name', 'equalto', role_item) | list }}"
+      packages: "{{ vsh_resolver_optional.packages | selectattr('role_name', 'equalto', role_item) | list }}"
+  loop: "{{ (vsh_resolver_optional.packages + vsh_resolver_optional.services ) | map(attribute='role_name') | unique | list }}"
+  loop_control:
+    loop_var: role_item
+
 
 - name: "include role"
   ansible.builtin.include_role:

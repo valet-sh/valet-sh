@@ -1,5 +1,5 @@
 [Unit]
-Description=Opensearch {{ current_opensearch_service.version }}
+Description=Opensearch {{ current_service.version }}
 After=network-online.target local-fs.target
 Wants=network-online.target
 
@@ -14,15 +14,15 @@ TimeoutStopSec=30
 ExecStart=/usr/bin/podman run \
     --replace \
     --rm \
-    --name vsh-{{ current_opensearch_service.canonical }} \
-    --volume vsh-{{ current_opensearch_service.canonical }}-data:/usr/share/opensearch/data \
-    --volume vsh-{{ current_opensearch_service.canonical }}-plugins:/usr/share/opensearch/plugins \
-    --volume {{ current_opensearch_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z \
+    --name vsh-{{ current_service.canonical }} \
+    --volume vsh-{{ current_service.canonical }}-data:/usr/share/opensearch/data \
+    --volume vsh-{{ current_service.canonical }}-plugins:/usr/share/opensearch/plugins \
+    --volume {{ current_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z \
     --network host \
     --env "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
-    {{ current_opensearch_service.configuration.docker_image }}
-ExecReload=/usr/bin/podman restart vsh-{{ current_opensearch_service.canonical }}
-ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_opensearch_service.canonical }}
+    {{ current_service.configuration.docker_image }}
+ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
+ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_service.canonical }}
 
 [Install]
 WantedBy=default.target

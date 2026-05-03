@@ -46,7 +46,13 @@ valet_sh_bundle_definitions:
       type: "service"
     mariadb:
       display_name: "MariaDB"
-      versions: ["10.4", "10.6", "10.11", "11.4"]
+      versions: ["10.4", "10.6", "10.11", "11.4","11.8"]
+      reverse_versions:
+        "114": "11.4"
+        "1011": "10.11"
+        "106":  "10.6"
+        "104": "10.4"
+        "118": "11.8"
       deprecated_versions: ["10.4"]
       disabled_versions: ["10.4"]
       role_name: "mariadb-server"
@@ -86,6 +92,7 @@ valet_sh_bundle_definitions:
       enable_allowed: false
       kind: "essential"
       type: "service"
+      scope: "private"
     mailpit:
       display_name: "Mailpit"
       versions: ["latest"]

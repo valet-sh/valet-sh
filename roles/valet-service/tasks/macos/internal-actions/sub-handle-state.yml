@@ -14,6 +14,11 @@
 #   limitations under the License.
 ##
 ---
+
+- name: "set default homebrew bin"
+  ansible.builtin.set_fact:
+    valet_sh_homebrew_bin: "{{ valet_sh_homebrew_bin }}"
+
 - name: "internal-actions » sub-handle-state | reset valet_service_name_alias variable"
   ansible.builtin.set_fact:
     valet_service_name_alias: ""
@@ -71,8 +76,7 @@
   failed_when: false
 
 - name: "internal-actions » sub-handle-state | stop {{ valet_current_service_item.key }} service"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop {{ valet_service_name_alias }}"
-  become: true
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services stop {{ valet_service_name_alias }}"
   when:
     - valet_service_name_alias|length > 0
     - valet_current_service_item.key in valet_sh_service_privileged_services

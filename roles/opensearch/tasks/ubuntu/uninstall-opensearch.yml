@@ -15,53 +15,53 @@
 ##
 ---
 
-- name: "Ensure that vsh-{{ current_opensearch_service.canonical }} container is stopped"
+- name: "Ensure that vsh-{{ current_service.canonical }} container is stopped"
   ansible.builtin.systemd:
-    name: "{{ current_opensearch_service.service.name }}"
+    name: "{{ current_service.service.name }}"
     state: stopped
     daemon_reload: true
-    scope: "{{ current_opensearch_service.service.scope }}"
+    scope: "{{ current_service.service.scope }}"
   ignore_errors: true
 
-- name: "Remove vsh-{{ current_opensearch_service.canonical }} container"
+- name: "Remove vsh-{{ current_service.canonical }} container"
   containers.podman.podman_container:
-    name: "{{ current_opensearch_service.canonical }}"
+    name: "{{ current_service.canonical }}"
     state: absent
 
-- name: "Remove vsh-{{ current_opensearch_service.canonical }}-data volumes"
+- name: "Remove vsh-{{ current_service.canonical }}-data volumes"
   containers.podman.podman_volume:
     name: "{{ current_volume_name }}"
     state: absent
   loop:
-    - "vsh-{{ current_opensearch_service.canonical }}-data"
-    - "vsh-{{ current_opensearch_service.canonical }}-plugins"
+    - "vsh-{{ current_service.canonical }}-data"
+    - "vsh-{{ current_service.canonical }}-plugins"
   loop_control:
     loop_var: current_volume_name
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_opensearch_service.canonical }} systemd service"
+- name: "Remove vsh-{{ current_service.canonical }} systemd service"
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/{{ current_opensearch_service.service.name }}.service"
+    path: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     state: absent
 
-- name: "Remove vsh-{{ current_opensearch_service.canonical }} default.target.wants symlink"
+- name: "Remove vsh-{{ current_service.canonical }} default.target.wants symlink"
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_opensearch_service.service.name }}.service"
+    path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_service.service.name }}.service"
     state: absent
 
-- name: "Remove vsh-{{ current_opensearch_service.canonical }} configurations"
+- name: "Remove vsh-{{ current_service.canonical }} configurations"
   ansible.builtin.file:
-    path: "{{ current_opensearch_service.configuration.base_path }}"
+    path: "{{ current_service.configuration.base_path }}"
     state: absent
 
-- name: "Remove vsh-{{ current_opensearch_service.canonical }} image"
+- name: "Remove vsh-{{ current_service.canonical }} image"
   containers.podman.podman_image:
-    name: "{{ current_opensearch_service.configuration.docker_image }}"
+    name: "{{ current_service.configuration.docker_image }}"
     state: absent
     force: true
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_opensearch_service.canonical }} from installed services"
+- name: "Remove vsh-{{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"
-    canonical_names: "{{ current_opensearch_service.canonical }}"
+    canonical_names: "{{ current_service.canonical }}"

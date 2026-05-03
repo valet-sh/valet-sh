@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec podman exec -it vsh-{{ current_mysql_service.canonical }} mysql --defaults-file=/root/.my.cnf "$@"
+exec podman exec -it vsh-{{ current_service.canonical }} mysql --defaults-file=/root/.my.cnf "$@"

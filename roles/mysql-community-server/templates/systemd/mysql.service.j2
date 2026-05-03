@@ -1,5 +1,5 @@
 [Unit]
-Description=MySQL {{ current_mysql_service.version}} Community Server
+Description=MySQL {{ current_service.version}} Community Server
 After=network-online.target local-fs.target
 Wants=network-online.target
 
@@ -14,16 +14,16 @@ TimeoutStopSec=30
 ExecStart=/usr/bin/podman run \
     --replace \
     --rm \
-    --name vsh-{{ current_mysql_service.canonical }} \
-    --volume vsh-{{ current_mysql_service.canonical }}-data:/var/lib/mysql \
-    --volume {{ current_mysql_service.configuration.base_path }}/etc/my.cnf:/etc/mysql/my.cnf:z \
-    --volume {{ current_mysql_service.configuration.base_path }}/etc/conf.d:/etc/mysql/conf.d:z \
-    --volume {{ current_mysql_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:z \
-    --publish 127.0.0.1:{{ current_mysql_service.configuration.ports.mysql }}:3306 \
-    --env MYSQL_ROOT_PASSWORD={{ current_mysql_service.configuration.default_root_password }} \
-    {{ current_mysql_service.configuration.docker_image }}
-ExecReload=/usr/bin/podman restart vsh-{{ current_mysql_service.canonical }}
-ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_mysql_service.canonical }}
+    --name vsh-{{ current_service.canonical }} \
+    --volume vsh-{{ current_service.canonical }}-data:/var/lib/mysql \
+    --volume {{ current_service.configuration.base_path }}/etc/my.cnf:/etc/mysql/my.cnf:z \
+    --volume {{ current_service.configuration.base_path }}/etc/conf.d:/etc/mysql/conf.d:z \
+    --volume {{ current_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:z \
+    --network host \
+    --env MYSQL_ROOT_PASSWORD={{ current_service.configuration.default_root_password }} \
+    {{ current_service.configuration.docker_image }}
+ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
+ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_service.canonical }}
 
 [Install]
 WantedBy=default.target

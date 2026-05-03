@@ -7,8 +7,7 @@ def load_bundle_file(bundle_file):
         raise Exception(f"Bundle file not found: {bundle_file}. Ensure valet-base role has been run first.")
     try:
         with open(bundle_file, 'r') as f:
-            content = yaml.safe_load(f) or {}
-        return content
+            return yaml.safe_load(f) or {}
     except Exception as e:
         raise Exception(f"Failed to load services file {bundle_file}: {str(e)}")
 
@@ -26,7 +25,6 @@ def main():
 
     result = dict(changed=False, kinds=[], message='')
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
-
     params = module.params
 
     names = params.get('name')
@@ -41,13 +39,23 @@ def main():
     try:
         candidate_kinds = []
 
+        # Step 1: build candidates from definitions if scope is given
         if scope:
             bundle_definitions_content = load_bundle_file(params['bundle_role_definitions_file'])
             for section in ['services', 'packages']:
-                for name, definition in bundle_definitions_content.get('valet_sh_bundle_definitions', {}).get(section, {}).items():
+                for def_name, definition in bundle_definitions_content.get('valet_sh_bundle_definitions', {}).get(section, {}).items():
                     if definition.get('kind') == scope:
-                        candidate_kinds.append(name)
+                        versions = definition.get('versions', [])
+                        if not versions:
+                            candidate_kinds.append(def_name)
+                        else:
+                            for version in versions:
+                                if version == 'latest':
+                                    candidate_kinds.append(def_name)
+                                else:
+                                    candidate_kinds.append(def_name + version.replace('.', ''))
 
+        # Step 2: filter by specific name(s) if given
         if names:
             if candidate_kinds:
                 candidate_kinds = [n for n in candidate_kinds if n in names]
@@ -56,21 +64,20 @@ def main():
 
         resolved_kinds = candidate_kinds
 
+        # Step 3: filter by install state if given
         if state:
             bundle_file_content = load_bundle_file(params['bundle_etc_file'])
-
-            etc_all = []
             etc_installed = []
+            etc_all = []
             for section in ['services', 'packages']:
                 section_data = bundle_file_content.get('bundles', {}).get(section, {})
-                installed = section_data.get('installed', {})
-                for name in installed.keys():
-                    etc_all.append(name)
-                    etc_installed.append(name)
-                states = section_data.get('states', {})
-                for name in states.keys():
-                    if name not in etc_all:
-                        etc_all.append(name)
+                for inst_name in section_data.get('installed', {}).keys():
+                    etc_installed.append(inst_name)
+                    if inst_name not in etc_all:
+                        etc_all.append(inst_name)
+                for st_name in section_data.get('states', {}).keys():
+                    if st_name not in etc_all:
+                        etc_all.append(st_name)
 
             if not resolved_kinds:
                 resolved_kinds = etc_all
@@ -80,12 +87,11 @@ def main():
             elif state == 'absent':
                 resolved_kinds = [n for n in resolved_kinds if n not in etc_installed]
 
-        print(f"Result kinds: {resolved_kinds}")
         result['kinds'] = resolved_kinds
         module.exit_json(**result)
 
     except Exception as e:
-        module.fail_json(msg=f"Error in vsh_bundle_state: {str(e)}")
+        module.fail_json(msg=f"Error in vsh_bundle_install_state_info: {str(e)}")
 
 if __name__ == '__main__':
     main()

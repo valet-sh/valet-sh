@@ -55,6 +55,9 @@
   notify: systemd | vsh-nginx | reloaded
   become: true
 
+- name: "Flush handlers"
+  meta: flush_handlers
+
 - name: unset 'cert_prefix' variable
   ansible.builtin.set_fact:
     cert_prefix: "{{ non_existent | default(None) }}"

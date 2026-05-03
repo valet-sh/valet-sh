@@ -77,12 +77,6 @@
   when: shellrc_file_obj.stat.exists
 
 - ansible.builtin.include_tasks: nvm.yml
-  when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"
-
-- ansible.builtin.include_tasks: volta.yml
-  when:
-    - valet_sh_config.default_nvm is defined
-    - valet_sh_config.default_nvm == "volta"
 
 - name: Mark nodejs as installed in the bundle file
   vsh_bundle_state:

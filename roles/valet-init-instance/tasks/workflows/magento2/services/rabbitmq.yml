@@ -122,13 +122,9 @@
     - valet_sh_project_vars.services.rabbitmq.vhost is defined
 
 - block:
-    - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_x86 }} services start rabbitmq"
-      when: current_arch != "arm64"
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_arm64 }} services start rabbitmq"
-      when: current_arch == "arm64"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start rabbitmq"
 
     - name: "workflows » magento2 » services » rabbitmq | include valet services file"
       ansible.builtin.include_vars:

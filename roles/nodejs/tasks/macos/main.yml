@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: check for .bashrc or .zshrc file
   ansible.builtin.set_fact:
     shellrc_file: ".zshrc"
@@ -42,9 +43,4 @@
   when: shellrc_file_obj.stat.exists
 
 - ansible.builtin.include_tasks: nvm.yml
-  when: valet_sh_config.default_nvm is not defined or valet_sh_config.default_nvm != "volta"
 
-- ansible.builtin.include_tasks: volta.yml
-  when:
-    - valet_sh_config.default_nvm is defined
-    - valet_sh_config.default_nvm == "volta"

@@ -37,6 +37,9 @@
   notify: Systemd | NetworkManager | reload
   become: true
 
+- name: "Flush handlers"
+  meta: flush_handlers
+
 - name: "Mark dnsmasq as installed in the services file"
   vsh_bundle_state:
     action: "installed"
