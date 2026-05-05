@@ -30,11 +30,13 @@
 
 - name: "Remove vsh-{{ current_service.canonical }} volumes"
   containers.podman.podman_volume:
-    name: "{{ item }}"
+    name: "{{ current_service_volume_item }}"
     state: absent
   loop:
     - "vsh-{{ current_service.canonical }}-data"
     - "vsh-{{ current_service.canonical }}-plugins"
+  loop_control:
+    loop_var: current_service_volume_item
   when: "'--purge' in valet_cli_opts"
 
 - name: "Remove vsh-{{ current_service.canonical }} systemd service"
@@ -70,4 +72,4 @@
     canonical_names: "{{ current_service.canonical }}"
 
 - name: "Flush handlers"
-  flush_handlers:
+  ansible.builtin.meta: flush_handlers

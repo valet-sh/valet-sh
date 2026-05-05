@@ -60,7 +60,7 @@
     cert_prefix: "{{ non_existent | default(None) }}"
 
 - name: "Flush handlers"
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: "Get desired state of vsh-{{ current_service.canonical }} from services file"
   vsh_bundle_service_state_info:

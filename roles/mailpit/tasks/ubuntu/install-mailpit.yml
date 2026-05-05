@@ -56,7 +56,7 @@
   become: true
 
 - name: "Flush handlers"
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: unset 'cert_prefix' variable
   ansible.builtin.set_fact:
