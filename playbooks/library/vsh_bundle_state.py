@@ -27,6 +27,14 @@ def find_definition(name, all_definitions):
             return definition
     return {}
 
+def find_definition_key(name, all_definitions):
+    if name in all_definitions:
+        return name
+    for key in all_definitions.keys():
+        if name and name.startswith(key):
+            return key
+    return None
+
 def main():
     module_args = dict(
         action=dict(type='str', required=True, choices=[
@@ -79,9 +87,9 @@ def main():
 
         if params['action'] == 'installed':
             for name in names:
-                    if name not in target['installed']:
-                        target['installed'][name] = {}
-                        result['changed'] = True
+                if name not in target['installed']:
+                    target['installed'][name] = {}
+                    result['changed'] = True
             result['message'] = f"Added {b_type}: {', '.join(names)}"
 
         elif params['action'] == 'uninstalled':
@@ -102,8 +110,8 @@ def main():
 
                     candidates = [
                         s for s in target['installed'].keys()
-                        if all_definitions.get(s, {}).get('family_name') == key
-                        or s == key
+                        if find_definition(s, all_definitions).get('family_name') == key
+                        or find_definition_key(s, all_definitions) == key
                     ]
                     if candidates:
                         target['defaults'][key] = sorted(candidates)[-1]
@@ -140,8 +148,12 @@ def main():
 
         elif params['action'] == 'initialize_empty':
             for name in names:
-                target['states'][name] = True
-                result['changed'] = True
+                name_type = find_definition(name, all_definitions).get('type', 'service')
+                name_section = 'packages' if name_type == 'package' else 'services'
+                name_target = bundle_file_content['bundles'].setdefault(name_section, {'installed': {}, 'states': {}, 'defaults': {}})
+                if name not in name_target.get('states', {}):
+                    name_target.setdefault('states', {})[name] = True
+                    result['changed'] = True
 
         if result['changed']:
             save_bundle_file(params['bundle_file'], bundle_file_content)

@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: systemd | reload
   ansible.builtin.systemd:
     daemon_reload: true
@@ -311,75 +312,143 @@
     state: reloaded
   become: true
 
+- name: "systemd | php8.5-fpm | started"
+  ansible.builtin.systemd:
+    name: "php8.5-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php8.5-fpm | stopped"
+  ansible.builtin.systemd:
+    name: "php8.5-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php8.5-fpm | restarted"
+  ansible.builtin.systemd:
+    name: "php8.5-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php8.5-fpm | reloaded"
+  ansible.builtin.systemd:
+    name: "php8.5-fpm"
+    state: reloaded
+  become: true
+
 - name: brew | vsh-php56 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
+
 - name: brew | vsh-php56 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php56"
+
 - name: brew | vsh-php56 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php56"
+
 - name: brew | vsh-php70 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php70"
+
 - name: brew | vsh-php70 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php70"
+
 - name: brew | vsh-php70 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php70"
+
 - name: brew | vsh-php71 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php71"
+
 - name: brew | vsh-php71 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php71"
+
 - name: brew | vsh-php71 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php71"
+
 - name: brew | vsh-php72 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php72"
+
 - name: brew | vsh-php72 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php72"
+
 - name: brew | vsh-php72 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php72"
+
 - name: brew | vsh-php73 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php73"
+
 - name: brew | vsh-php73 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php73"
+
 - name: brew | vsh-php73 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php73"
+
 - name: brew | vsh-php74 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php74"
+
 - name: brew | vsh-php74 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php74"
+
 - name: brew | vsh-php74 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php74"
+
 - name: brew | vsh-php80 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php80"
+
 - name: brew | vsh-php80 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php80"
+
 - name: brew | vsh-php80 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php80"
+
 - name: brew | vsh-php81 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php81"
+
 - name: brew | vsh-php81 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php81"
+
 - name: brew | vsh-php81 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php81"
+
 - name: brew | vsh-php82 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php82"
+
 - name: brew | vsh-php82 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php82"
+
 - name: brew | vsh-php82 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php82"
+
 - name: brew | vsh-php83 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php83"
+
 - name: brew | vsh-php83 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php83"
+
 - name: brew | vsh-php83 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php83"
+
 - name: brew | vsh-php84 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php84"
+
 - name: brew | vsh-php84 | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php84"
+
 - name: brew | vsh-php84 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php84"
+
+- name: brew | vsh-php85 | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php85"
+
+- name: brew | vsh-php85 | stopped
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php85"
+
+- name: brew | vsh-php85 | started
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php85"
+
 - name: "brew | nginx | restarted"
   ansible.builtin.command: "{{ valet_sh_homebrew_bin_sudo }} services restart nginx"
+
 - name: "brew | nginx | stopped"
   ansible.builtin.command: "{{ valet_sh_homebrew_bin_sudo }} services stop nginx"
+
 - name: "brew | nginx | started"
   ansible.builtin.command: "{{ valet_sh_homebrew_bin_sudo }} services start nginx"

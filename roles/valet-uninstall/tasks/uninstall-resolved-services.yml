@@ -40,3 +40,31 @@
   loop: "{{ vsh_resolver.packages | map(attribute='role_name') | unique | list }}"
   loop_control:
     loop_var: role_item
+
+- name: "Load updated bundles state after uninstall"
+  ansible.builtin.include_vars:
+    file: "{{ valet_etc_services_file }}"
+    name: valet_sh_services_after_uninstall
+
+- name: "Build list of current default canonical names"
+  ansible.builtin.set_fact:
+    valet_post_uninstall_default_canonicals: >-
+      {{ (valet_sh_services_after_uninstall.bundles.services.defaults | default({}) | dict2items | map(attribute='value') | list)
+       + (valet_sh_services_after_uninstall.bundles.packages.defaults | default({}) | dict2items | map(attribute='value') | list) }}
+
+- name: "Resolve current default services for handle"
+  vsh_bundle_resolver:
+    name: "{{ valet_post_uninstall_default_canonicals }}"
+    current_os: "{{ current_os }}"
+  register: vsh_defaults_resolver
+  when: valet_post_uninstall_default_canonicals | length > 0
+
+- name: "Run handle for current default services to update symlinks and config"
+  ansible.builtin.include_role:
+    name: "valet-service"
+    public: true
+  vars:
+    valet_sh_service_internal_action: true
+    valet_service_action: "handle"
+    valet_sh_newly_installed_services: "{{ (vsh_defaults_resolver.services | default([])) + (vsh_defaults_resolver.packages | default([])) }}"
+  when: valet_post_uninstall_default_canonicals | length > 0
