@@ -34,7 +34,6 @@ configuration:
     - "xmlrpc"
     - "xml"
     - "readline"
-    - "opcache"
     - "mysql"
     - "intl"
     - "gd"
