@@ -59,11 +59,39 @@
     loop_var: elasticsearch_item
   listen: "systemd | vsh-elasticsearch | reloaded"
 
-- name: brew | vsh-elasticsearch5 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch5"
-- name: brew | vsh-elasticsearch6 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch6"
-- name: brew | vsh-elasticsearch7 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch7"
-- name: brew | vsh-elasticsearch8 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-elasticsearch8"
+
+- name: "LaunchAgent | vsh-elasticsearch | daemon-reload"
+  vsh_launchagent:
+    label: "sh.valet.{{ elasticsearch_item.service.name }}"
+    daemon_reload: true
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop_control:
+    loop_var: elasticsearch_item
+  listen: "LaunchAgent | vsh-elasticsearch | daemon-reload"
+
+- name: "LaunchAgent | vsh-elasticsearch | started"
+  vsh_launchagent:
+    label: "sh.valet.{{ elasticsearch_item.service.name }}"
+    state: started
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop_control:
+    loop_var: elasticsearch_item
+  listen: "LaunchAgent | vsh-elasticsearch | started"
+
+- name: "LaunchAgent | vsh-elasticsearch | stopped"
+  vsh_launchagent:
+    label: "sh.valet.{{ elasticsearch_item.service.name }}"
+    state: stopped
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop_control:
+    loop_var: elasticsearch_item
+  listen: "LaunchAgent | vsh-elasticsearch | stopped"
+
+- name: "LaunchAgent | vsh-elasticsearch | restarted"
+  vsh_launchagent:
+    label: "sh.valet.{{ elasticsearch_item.service.name }}"
+    state: restarted
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
+  loop_control:
+    loop_var: elasticsearch_item
+  listen: "LaunchAgent | vsh-elasticsearch | restarted"

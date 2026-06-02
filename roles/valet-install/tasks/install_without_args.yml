@@ -19,7 +19,6 @@
   block:
     - name: Check if installed
       vsh_bundle_install_state_info:
-        state: "present"
         scope: "essential"
       register: bundle_state_essential
 

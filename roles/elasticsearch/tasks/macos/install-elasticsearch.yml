@@ -15,15 +15,51 @@
 ##
 ---
 
-- name: "Pull vsh-{{ current_service.canonical }} image"
-  containers.podman.podman_image:
+- name: "Pull image '{{ current_service.configuration.docker_image }}'"
+  apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
 
-- name: Debug vsh-{{ current_service.canonical }}
-  ansible.builtin.debug:
-    msg: "vsh-{{ current_service.canonical }}"
+- name: "ensure volume '{{ current_service.service.name }}-data' exists"
+  apple_volume:
+    name: "{{ current_service.service.name }}-data"
+    state: present
+  register: data_volume_obj
+
+- name: "ensure volume '{{ current_service.service.name }}-plugins' exists"
+  apple_volume:
+    name: "{{ current_service.service.name }}-plugins"
+    state: present
+  register: plugins_volume_obj
+
+- name: "fix volume permissions for '{{ current_service.service.name }}-data'"
+  apple_container:
+    name: vsh-volume-fix
+    image: alpine
+    state: started
+    remove: true
+    detach: false
+    volumes:
+      - "{{ current_service.service.name }}-data:/data"
+    command:
+      - chown
+      - -R
+      - "1000:"
+      - /data
+  when: data_volume_obj.changed
+
+- name: "fix volume permissions for '{{ current_service.service.name }}-plugins'"
+  apple_container:
+    name: vsh-volume-fix
+    image: alpine
+    state: started
+    remove: true
+    detach: false
+    volumes:
+      - "{{ current_service.service.name }}-plugins:/data"
+    command: "sh -c 'chown -R 1000: /data && rm -rf /data/lost+found'"
+  when: plugins_volume_obj.changed
 
 - name: "Create vsh-{{ current_service.canonical }} config directory"
   ansible.builtin.file:
@@ -38,33 +74,32 @@
     src: "config/{{ current_service.canonical }}.yml.j2"
     dest: "{{ current_service.configuration.base_path }}/config/elasticsearch.yml"
     mode: "0644"
-  notify: "systemd | vsh-elasticsearch | restarted"
+  notify: "LaunchAgent | vsh-elasticsearch | restarted"
 
-- name: "ensure user systemd directory exists"
+- name: "ensure '{{ current_home }}/Library/LaunchAgents/' exists"
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user"
+    path: "{{ current_home }}/Library/LaunchAgents/"
     state: directory
     mode: "0755"
 
-- name: "Provide systemd service for vsh-{{ current_service.canonical }} container"
+- name: "Provide LaunchAgent service for vsh-{{ current_service.canonical }} container"
   ansible.builtin.template:
-    src: "systemd/elasticsearch.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
+    src: "LaunchAgent/sh.valet.vsh-elasticsearch.plist.j2"
+    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.service.name }}.plist"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | vsh-elasticsearch | started"
+  notify: "LaunchAgent | vsh-elasticsearch | daemon-reload"
 
-- name: "Ensure vsh-{{ current_service.canonical }} is started"
-  ansible.builtin.systemd:
-    name: "{{ current_service.service.name }}"
+- name: reload and restart
+  vsh_launchagent:
+    label: "sh.valet.{{ current_service.service.name }}"
     state: restarted
     daemon_reload: true
-    scope: "{{ current_service.service.scope }}"
 
-- name: "Wait for vsh-{{ current_service.canonical }} to be ready"
+- name: "Wait for vsh-{{ current_service.canonical }} to be ready 'http://{{ current_service.service.name }}.vsh-services:{{ current_service.configuration.ports.http }}/_cluster/health'"
   ansible.builtin.uri:
-    url: "http://localhost:{{ current_service.configuration.ports.http }}/_cluster/health"
+    url: "http://{{ current_service.service.name }}.vsh-services:{{ current_service.configuration.ports.http }}/_cluster/health"
     method: GET
     status_code: 200
   register: result
@@ -73,32 +108,32 @@
   delay: 3
 
 - name: "list installed plugins"
-  containers.podman.podman_container_exec:
+  apple_container_exec:
     name: "vsh-{{ current_service.canonical }}"
     command: "{{ current_service.configuration.plugins.list_command }}"
   register: installed_plugins
 
 - name: "install plugins"
-  containers.podman.podman_container_exec:
+  apple_container_exec:
     name: "vsh-{{ current_service.canonical }}"
     command: "{{ current_service.configuration.plugins.install_command }} {{ current_elasticsearch_plugin.name }}"
   with_items: "{{ current_service.configuration.plugins.default_plugins }}"
   loop_control:
     loop_var: current_elasticsearch_plugin
-  notify: "systemd | vsh-elasticsearch | restarted"
+  notify: "LaunchAgent | vsh-elasticsearch | restarted"
   when:
     - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
     - current_elasticsearch_plugin.url is not defined
     - "current_elasticsearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
 
 - name: "install plugins from url"
-  containers.podman.podman_container_exec:
+  apple_container_exec:
     name: "vsh-{{ current_service.canonical }}"
     command: "{{ current_service.configuration.plugins.install_command }} {{ current_elasticsearch_plugin.name }} --url {{ current_elasticsearch_plugin.url }}"
   with_items: "{{ current_service.configuration.plugins.default_plugins }}"
   loop_control:
     loop_var: current_elasticsearch_plugin
-  notify: "systemd | vsh-elasticsearch | restarted"
+  notify: "LaunchAgent | vsh-elasticsearch | restarted"
   when:
     - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
     - current_elasticsearch_plugin.url is defined
@@ -123,12 +158,10 @@
     current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
   when: current_service_state.state == "unknown"
 
-- name: "Set vsh-{{ current_service.canonical }} container state"
-  ansible.builtin.systemd:
-    name: "{{ current_service.service.name }}"
+- name: "Ensure target state of vsh-{{ current_service.canonical }} is set"
+  vsh_launchagent:
+    label: "sh.valet.{{ current_service.service.name }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
-    enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
-    scope: "{{ current_service.service.scope }}"
 
 - name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
   vsh_bundle_state:

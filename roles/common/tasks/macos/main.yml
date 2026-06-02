@@ -32,9 +32,15 @@
   become: true
 
 - name: "ensure brew_x86 wrapper script is removed (on apple silicon)"
-- file:
+  file:
     path: /usr/local/bin/brew_x86
     state: absent
+
+- name: "ensure '{{ current_home }}/Library/LaunchAgents' exists"
+  file:
+    path: "{{ current_home }}/Library/LaunchAgents"
+    state: directory
+    mode: '0755'
 
 - name: ensure homebrew is installed
   ansible.builtin.shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'

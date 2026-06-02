@@ -36,7 +36,7 @@
         current_cert_has_invalid_key_usage: false
 
     - name: "check for invalid key usage in '{{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}'"
-      ansible.builtin.shell: "openssl x509 -noout -ext keyUsage < {{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}"
+      ansible.builtin.shell: "openssl x509 -noout -extensions keyUsage < {{ available_dev_certs_item.path }}/{{ certificate_server_cert_filename }}"
       register: current_cert_invalid_key_usage_check_obj
 
     - name: "set var 'current_cert_has_invalid_key_usage' to true if certificate contains invalid key usage"

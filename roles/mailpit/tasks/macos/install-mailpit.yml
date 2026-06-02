@@ -1,0 +1,59 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: Pull mailpit image
+  apple_image:
+    name: "{{ current_service.configuration.docker_image }}"
+    pull: true
+    state: present
+
+- name: provide LaunchAgent service for mailpit container
+  ansible.builtin.template:
+    src: "LaunchAgent/sh.valet.vsh-mailpit.plist.j2"
+    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.vsh-{{ current_service.service.name }}.plist"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+  notify: "systemd | vsh-mailpit | restarted"
+
+- name: set 'cert_prefix' variable
+  ansible.builtin.set_fact:
+    cert_prefix: "mailpit"
+
+- name: "generate ssl-certificate for {{ cert_prefix }}"
+  ansible.builtin.include_role:
+    name: certificate
+    public: true
+
+- name: provide nginx vhost for mailpit
+  ansible.builtin.template:
+    src: "mailpit.conf.j2"
+    dest: "/opt/homebrew/etc/nginx/conf.d/mailpit.conf"
+    mode: "0644"
+  notify: brew | nginx | restarted
+
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers
+
+- name: unset 'cert_prefix' variable
+  ansible.builtin.set_fact:
+    cert_prefix: "{{ non_existent | default(None) }}"
+
+- name: "Add mailpit to installed services"
+  vsh_bundle_state:
+    action: "installed"
+    canonical_names: "{{ current_service.canonical }}"
