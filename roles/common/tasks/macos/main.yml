@@ -55,6 +55,9 @@
 - name: Ensure valet-sh tap is tapped
   shell: '{{ valet_sh_homebrew_bin }} tap valet-sh/core'
 
+- name: Ensure valet-sh/core tap is trusted
+  shell: '{{ valet_sh_homebrew_bin }} trust valet-sh/core'
+
 - name: ensure LaunchDaemons script for maxfiles limit is deployed
   template:
     src: "limit.maxfiles.conf.j2"

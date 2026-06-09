@@ -15,26 +15,40 @@
 ##
 ---
 
-- include_tasks: composer1.yml
-
-- include_tasks: composer2.yml
-
-- name: ensure composer wrapper script is up2date
-  template:
-    src: "composer-wrapper.j2"
-    dest: "/usr/local/bin/composer"
-    mode: '0755'
+- name: "ensure '/usr/local/bin/composer1.phar' is absent"
+  file:
+    path: "/usr/local/bin/composer1.phar"
+    state: absent
   become: true
 
-- name: "get stat for '/usr/local/bin/composer-php'"
-  stat:
-    path: "/usr/local/bin/default-composer"
-  register: composer_default_symlink_obj
-
-- name: "create symlink for default php"
+- name: "ensure '/usr/local/bin/default-composer' is absent"
   file:
-    src: "/usr/local/bin/composer1"
-    dest: "/usr/local/bin/default-composer"
+    path: "/usr/local/bin/default-composer"
+    state: absent
+  become: true
+
+- name: "ensure composer-2 is installed and lastest version"
+  get_url:
+    url: https://getcomposer.org/composer-2.phar
+    dest: "{{ composer2_phar_bin }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+    force: true
+  become: true
+
+- name: "ensure symlink '{{ composer2_bin }}' to '{{ composer2_phar_bin }}' exists"
+  file:
+    src: "{{ composer2_phar_bin }}"
+    dest: "{{ composer2_bin }}"
     state: link
     force: true
-  when: composer_default_symlink_obj.stat.islnk is not defined
+  become: true
+
+- name: "ensure symlink '/usr/local/bin/composer' to '{{ composer2_phar_bin }}' exists"
+  file:
+    src: "{{ composer2_phar_bin }}"
+    dest: "/usr/local/bin/composer"
+    state: link
+    force: true
+  become: true
