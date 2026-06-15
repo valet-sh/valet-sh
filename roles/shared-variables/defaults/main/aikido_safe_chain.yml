@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2026 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,20 +14,8 @@
 #   limitations under the License.
 ##
 ---
-- name: "ensure composer-2 is installed"
-  ansible.builtin.get_url:
-    url: https://getcomposer.org/composer-2.phar
-    dest: "{{ composer2_phar_bin }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0755"
-    force: true
-  become: true
 
-- name: "ensure composer2 script is up2date"
-  ansible.builtin.template:
-    src: "composer2.j2"
-    dest: "{{ composer2_bin }}"
-    mode: "0755"
-    force: true
-  become: true
+aikdio_safe_chain_download_url_default: "https://github.com/AikidoSec/safe-chain/releases/latest/download/safe-chain-linux-x64"
+aikdio_safe_chain_download_url_mac: "https://github.com/AikidoSec/safe-chain/releases/latest/download/safe-chain-macos-arm64"
+
+aikdio_safe_chain_download_url: "{{ lookup('vars', 'aikdio_safe_chain_download_url'+'_'+current_os, default=aikdio_safe_chain_download_url_default) }}"

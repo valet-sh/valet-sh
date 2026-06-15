@@ -125,8 +125,12 @@ valet_sh_bundle_definitions:
       role_name: "magerun"
       kind: "optional"
       type: "package"
+    aikido_safe_chain:
+      role_name: "aikido_safe_chain"
+      kind: "essential"
+      type: "package"
     composer:
       role_name: "composer"
-      versions: ["1", "2"]
+      versions: ["2"]
       kind: "optional"
       type: "package"

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2025 TechDivision GmbH
+#   Copyright 2026 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,18 +15,10 @@
 ##
 ---
 
-- name: "Ensure composer2 is absent"
-  ansible.builtin.file:
-    path: "{{ composer2_bin }}"
-    state: absent
-  become: true
+- name: "install aikido safe chain"
+  ansible.builtin.include_tasks: install.yml
+  when: valet_install_services is defined
 
-- name: "Remove composer from installed services"
-  vsh_bundle_state:
-    action: "uninstalled"
-    name: "composer1"
-
-- name: "Remove composer from installed services"
-  vsh_bundle_state:
-    action: "uninstalled"
-    name: "composer2"
+- name: "uninstall aikido safe chain"
+  ansible.builtin.include_tasks: uninstall.yml
+  when: valet_uninstall_services is defined

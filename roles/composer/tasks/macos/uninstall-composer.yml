@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2025 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,22 +14,19 @@
 #   limitations under the License.
 ##
 ---
-- name: "ensure composer-1 is installed"
-  ansible.builtin.get_url:
-    url: https://getcomposer.org/composer-1.phar
-    dest: "{{ composer1_phar_bin }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0755"
-    force: true
+
+- name: "Ensure composer2 is absent"
+  ansible.builtin.file:
+    path: "{{ composer2_bin }}"
+    state: absent
   become: true
 
-- name: "ensure composer1 script is up2date"
-  ansible.builtin.template:
-    src: "composer1.j2"
-    dest: "{{ composer1_bin }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0755"
-    force: true
-  become: true
+- name: "Remove composer from installed services"
+  vsh_bundle_state:
+    action: "uninstalled"
+    name: "composer1"
+
+- name: "Remove composer from installed services"
+  vsh_bundle_state:
+    action: "uninstalled"
+    name: "composer2"

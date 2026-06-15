@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - ansible.builtin.include_tasks: ubuntu/main.yml
   when: current_os == "ubuntu"
 

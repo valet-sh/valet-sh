@@ -1,5 +1,5 @@
 ##
-#   Copyright 2021 TechDivision GmbH
+#   Copyright 2026 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,22 +14,18 @@
 #   limitations under the License.
 ##
 ---
-- name: "ensure composer-2 is installed"
-  ansible.builtin.get_url:
-    url: https://getcomposer.org/composer-2.phar
-    dest: "{{ composer2_phar_bin }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0755"
-    force: true
+
+- name: "run '/usr/local/bin/safe-chain teardown'"
+  ansible.builtin.command: "/usr/local/bin/safe-chain teardown"
+
+- name: "ensure /opt/safe-chain is absent"
+  ansible.builtin.file:
+    path: "/opt/safe-chain"
+    state: absent
   become: true
 
-- name: "ensure composer2 script is up2date"
-  ansible.builtin.template:
-    src: "composer2.j2"
-    dest: "{{ composer2_bin }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0755"
-    force: true
+- name: "ensure symlink '/usr/local/bin/safe-chain' is absent"
+  ansible.builtin.file:
+    path: "/usr/local/bin/safe-chain"
+    state: absent
   become: true
