@@ -1,5 +1,5 @@
 ##
-#   Copyright 2022 TechDivision GmbH
+#   Copyright 2020 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,5 +14,17 @@
 #   limitations under the License.
 ##
 ---
-- ansible.builtin.include_tasks: macos/install.yml
-- ansible.builtin.include_tasks: macos/config.yml
+
+- name: "Install opensearch {{ item.version }}"
+  ansible.builtin.include_tasks: install-opensearch.yml
+  vars:
+    current_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when: valet_install_services is defined
+
+- name: "Uninstall opensearch {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-opensearch.yml
+  vars:
+    current_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when: valet_uninstall_services is defined

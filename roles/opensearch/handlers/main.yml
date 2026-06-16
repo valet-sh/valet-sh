@@ -58,5 +58,39 @@
     loop_var: opensearch_item
   listen: "systemd | vsh-opensearch | reloaded"
 
-- name: brew | vsh-opensearch2 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-opensearch2"
+
+- name: "LaunchAgent | vsh-opensearch | daemon-reload"
+  vsh_launchagent:
+    label: "sh.valet.{{ opensearch_item.service.name }}"
+    daemon_reload: true
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
+  loop_control:
+    loop_var: opensearch_item
+  listen: "LaunchAgent | vsh-opensearch | daemon-reload"
+
+- name: "LaunchAgent | vsh-opensearch | started"
+  vsh_launchagent:
+    label: "sh.valet.{{ opensearch_item.service.name }}"
+    state: started
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
+  loop_control:
+    loop_var: opensearch_item
+  listen: "LaunchAgent | vsh-opensearch | started"
+
+- name: "LaunchAgent | vsh-opensearch | stopped"
+  vsh_launchagent:
+    label: "sh.valet.{{ opensearch_item.service.name }}"
+    state: stopped
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
+  loop_control:
+    loop_var: opensearch_item
+  listen: "LaunchAgent | vsh-opensearch | stopped"
+
+- name: "LaunchAgent | vsh-opensearch | restarted"
+  vsh_launchagent:
+    label: "sh.valet.{{ opensearch_item.service.name }}"
+    state: restarted
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
+  loop_control:
+    loop_var: opensearch_item
+  listen: "LaunchAgent | vsh-opensearch | restarted"

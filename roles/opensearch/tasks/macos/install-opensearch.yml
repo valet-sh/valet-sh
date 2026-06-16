@@ -1,0 +1,156 @@
+##
+#   Copyright 2020 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "Pull image '{{ current_service.configuration.docker_image }}'"
+  apple_image:
+    name: "{{ current_service.configuration.docker_image }}"
+    pull: true
+    state: present
+
+- name: "ensure volume '{{ current_service.service.name }}-data' exists"
+  apple_volume:
+    name: "{{ current_service.service.name }}-data"
+    state: present
+  register: data_volume_obj
+
+- name: "ensure volume '{{ current_service.service.name }}-plugins' exists"
+  apple_volume:
+    name: "{{ current_service.service.name }}-plugins"
+    state: present
+  register: plugins_volume_obj
+
+- name: "fix volume permissions for '{{ current_service.service.name }}-data'"
+  apple_container:
+    name: vsh-volume-fix
+    image: alpine
+    state: started
+    remove: true
+    detach: false
+    volumes:
+      - "{{ current_service.service.name }}-data:/data"
+    command:
+      - chown
+      - -R
+      - "1000:"
+      - /data
+  when: data_volume_obj.changed
+
+- name: "fix volume permissions for '{{ current_service.service.name }}-plugins'"
+  apple_container:
+    name: vsh-volume-fix
+    image: alpine
+    state: started
+    remove: true
+    detach: false
+    volumes:
+      - "{{ current_service.service.name }}-plugins:/data"
+    command: "sh -c 'chown -R 1000: /data && rm -rf /data/lost+found'"
+  when: plugins_volume_obj.changed
+
+- name: "Create vsh-{{ current_service.canonical }} config directory"
+  ansible.builtin.file:
+    path: "{{ current_service.configuration.base_path }}/config"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+    state: directory
+
+- name: "provide vsh-{{ current_service.canonical }} configuration"
+  ansible.builtin.template:
+    src: "config/{{ current_service.canonical }}.yml.j2"
+    dest: "{{ current_service.configuration.base_path }}/config/opensearch.yml"
+    mode: "0644"
+  notify: "LaunchAgent | vsh-opensearch | restarted"
+
+- name: "ensure '{{ current_home }}/Library/LaunchAgents/' exists"
+  ansible.builtin.file:
+    path: "{{ current_home }}/Library/LaunchAgents/"
+    state: directory
+    mode: "0755"
+
+- name: "Provide LaunchAgent service for vsh-{{ current_service.canonical }} container"
+  ansible.builtin.template:
+    src: "LaunchAgent/sh.valet.vsh-opensearch.plist.j2"
+    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.service.name }}.plist"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+  notify: "LaunchAgent | vsh-opensearch | daemon-reload"
+
+- name: reload and restart
+  vsh_launchagent:
+    label: "sh.valet.{{ current_service.service.name }}"
+    state: restarted
+    daemon_reload: true
+
+- name: "Wait for vsh-{{ current_service.canonical }} to be ready 'http://{{ current_service.service.name }}.vsh-services:{{ current_service.configuration.ports.http }}/_cluster/health'"
+  ansible.builtin.uri:
+    url: "http://{{ current_service.service.name }}.vsh-services:{{ current_service.configuration.ports.http }}/_cluster/health"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 15
+  delay: 3
+
+- name: "list installed plugins"
+  apple_container_exec:
+    name: "vsh-{{ current_service.canonical }}"
+    command: "{{ current_service.configuration.plugins.list_command }}"
+  register: installed_plugins
+
+- name: "install plugins"
+  apple_container_exec:
+    name: "vsh-{{ current_service.canonical }}"
+    command: "{{ current_service.configuration.plugins.install_command }} {{ current_opensearch_plugin.name }}"
+  with_items: "{{ current_service.configuration.plugins.default_plugins }}"
+  loop_control:
+    loop_var: current_opensearch_plugin
+  notify: "LaunchAgent | vsh-opensearch | restarted"
+  when:
+    - current_opensearch_plugin.name not in installed_plugins.stdout_lines
+    - current_opensearch_plugin.url is not defined
+    - "current_opensearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
+
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers
+
+- name: "Get desired state of vsh-{{ current_service.canonical }} from services file"
+  vsh_bundle_service_state_info:
+    name: "{{ current_service.canonical }}"
+  register: current_service_state
+
+- name: "If desired state is unknown, set it to enabled"
+  vsh_bundle_state:
+    action: "initialize_empty"
+    canonical_names: "{{ current_service.canonical }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Update current_service_state after initialization"
+  ansible.builtin.set_fact:
+    current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Ensure target state of vsh-{{ current_service.canonical }} is set"
+  vsh_launchagent:
+    label: "sh.valet.{{ current_service.service.name }}"
+    state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
+
+- name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
+  vsh_bundle_state:
+    action: "installed"
+    canonical_names: "{{ current_service.canonical }}"

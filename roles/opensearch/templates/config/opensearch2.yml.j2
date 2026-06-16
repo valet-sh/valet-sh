@@ -1,7 +1,9 @@
-network.host: 127.0.0.1
+network.host: {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
+transport.host: {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
+
 http.port: 9222
-transport.host: 127.0.0.1
 transport.port: 9322
+
 discovery.type: "single-node"
 cluster.name: opensearch2
 plugins.security.disabled: true
