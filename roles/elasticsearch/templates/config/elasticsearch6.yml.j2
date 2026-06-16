@@ -1,5 +1,7 @@
-network.host: 127.0.0.1
+network.host: {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
+transport.host: {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
+
 http.port: 9206
-transport.host: 127.0.0.1
 transport.port: 9306
+
 cluster.name: elasticsearch6

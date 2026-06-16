@@ -15,21 +15,13 @@
 ##
 ---
 
-- name: "Ensure that vsh-{{ current_service.canonical }} container is stopped"
-  ansible.builtin.systemd:
-    name: "{{ current_service.service.name }}"
+- name: "ensure 'vsh-{{ current_service.canonical }}' is stopped"
+  vsh_launchagent:
+    label: "sh.valet.{{ current_service.service.name }}"
     state: stopped
-    daemon_reload: true
-    scope: "{{ current_service.service.scope }}"
-  ignore_errors: true
-
-- name: "Remove vsh-{{ current_service.canonical }} container"
-  containers.podman.podman_container:
-    name: "vsh-{{ current_service.canonical }}"
-    state: absent
 
 - name: "Remove vsh-{{ current_service.canonical }} volumes"
-  containers.podman.podman_volume:
+  apple_volume:
     name: "{{ current_service_volume_item }}"
     state: absent
   loop:
@@ -39,20 +31,15 @@
     loop_var: current_service_volume_item
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_service.canonical }} systemd service"
+- name: "Remove vsh-{{ current_service.canonical }} LaunchAgent service"
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
+    path: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.service.name }}.plist"
     state: absent
 
-- name: "Remove vsh-{{ current_service.canonical }} default.target.wants symlink"
-  ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_service.service.name }}.service"
-    state: absent
-
-- name: "Reload Systemd"
-  ansible.builtin.systemd:
+- name: "ensure LaunchAgent is reloaded"
+  vsh_launchagent:
+    label: "sh.valet.{{ current_service.service.name }}"
     daemon_reload: true
-    scope: "{{ current_service.service.scope }}"
 
 - name: "Remove vsh-{{ current_service.canonical }} configurations"
   ansible.builtin.file:
@@ -60,7 +47,7 @@
     state: absent
 
 - name: "Remove vsh-{{ current_service.canonical }} image"
-  containers.podman.podman_image:
+  apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     state: absent
     force: true

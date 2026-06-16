@@ -1,6 +1,7 @@
 network.host: {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
-http.port: 9207
 transport.host: {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
+
+http.port: 9207
 transport.port: 9307
 discovery.type: "single-node"
 cluster.name: elasticsearch7

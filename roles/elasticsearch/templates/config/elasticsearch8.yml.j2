@@ -1,7 +1,9 @@
-network.host: 127.0.0.1
+network.host: {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
+transport.host: {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
+
 http.port: 9208
-transport.host: 127.0.0.1
 transport.port: 9308
+
 discovery.type: "single-node"
 cluster.name: elasticsearch8
 xpack.security.enabled: false

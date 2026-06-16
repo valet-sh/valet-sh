@@ -11,8 +11,10 @@
     <array>
         <string>/usr/local/bin/container</string>
         <string>run</string>
+        <string>--cpus</string>
+        <string>{{ current_service.configuration.limits.cpus | default (2) }}</string>
         <string>--memory</string>
-        <string>4g</string>
+        <string>{{ current_service.configuration.limits.memory | default ("2g") }}</string>
         <string>--rm</string>
         <string>--user</string>
         <string>1000:1000</string>
