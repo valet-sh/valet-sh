@@ -1,5 +1,5 @@
 ##
-#   Copyright 2023 TechDivision GmbH
+#   Copyright 2025 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,32 +15,10 @@
 ##
 ---
 
-- name: check for .bashrc or .zshrc file
-  ansible.builtin.set_fact:
-    shellrc_file: ".zshrc"
-  when: valet_sh_config.default_shell is not defined or valet_sh_config.default_shell != "bash"
+- name: "install nodejs"
+  ansible.builtin.include_tasks: install-nodejs.yml
+  when: valet_install_services is defined
 
-- name: check for .bashrc or .zshrc file
-  ansible.builtin.set_fact:
-    shellrc_file: ".bashrc"
-  when:
-    - valet_sh_config.default_shell is defined
-    - valet_sh_config.default_shell == "bash"
-
-- name: "check if '{{ shellrc_file }}' exists in home directory"
-  ansible.builtin.stat:
-    path: "{{ current_home }}/{{ shellrc_file }}"
-  register: shellrc_file_obj
-
-- name: "ensure nvm blockinfile is removed from '{{ current_home }}/{{ shellrc_file }}'"
-  ansible.builtin.blockinfile:
-    path: "{{ current_home }}/{{ shellrc_file }}"
-    state: absent
-    block: |
-      export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  when: shellrc_file_obj.stat.exists
-
-- ansible.builtin.include_tasks: nvm.yml
-
+- name: "uninstall nodejs"
+  ansible.builtin.include_tasks: uninstall-nodejs.yml
+  when: valet_uninstall_services is defined

@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,24 +15,13 @@
 ##
 ---
 
-- name: "ensure brew_x86 wrapper script is removed (on apple silicon)"
-  file:
-    path: /usr/local/bin/brew_x86
-    state: absent
-
-- name: Ensure valet-sh/php is untapped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} untap valet-sh/php"
-
-- name: "ensure Service '/Library/LaunchDaemons/limit.maxfiles.plist' is unloaded"
-  ansible.builtin.shell: "launchctl unload /Library/LaunchDaemons/limit.maxfiles.plist"
-
-- name: ensure '/Library/LaunchDaemons/limit.maxfiles.plist' is absent
+- name: Remove certificate base directory
   ansible.builtin.file:
-    path: "/Library/LaunchDaemons/limit.maxfiles.plist"
+    path: "{{ certificate_base_path }}"
     state: absent
   become: true
 
-- name: Mark common as uninstalled
+- name: Mark certificate as uninstalled
   vsh_bundle_state:
     action: "uninstalled"
-    name: "common"
+    name: "certificate"
