@@ -16,25 +16,41 @@
 ---
 
 - name: Pull rabbitmq-server {{ current_service.service.version }} image
-  containers.podman.podman_image:
+  apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
 
-- name: "ensure user systemd directory exists"
-  ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user"
-    state: directory
-    mode: "0755"
+- name: "ensure volume '{{ current_service.service.name }}-data' exists"
+  apple_volume:
+    name: "{{ current_service.service.name }}-data"
+    state: present
+  register: data_volume_obj
 
-- name: Provide systemd service for vsh-{{ current_service.canonical }} container
+- name: "fix volume permissions for '{{ current_service.service.name }}-data'"
+  apple_container:
+    name: vsh-volume-fix
+    image: alpine
+    state: started
+    remove: true
+    detach: false
+    volumes:
+      - "{{ current_service.service.name }}-data:/data"
+    command:
+      - chown
+      - -R
+      - "1000:"
+      - /data
+  when: data_volume_obj.changed
+
+- name: provide LaunchAgent service for mailpit container
   ansible.builtin.template:
-    src: "systemd/rabbitmq-server.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
+    src: "LaunchAgent/sh.valet.vsh-rabbitmq.plist.j2"
+    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.vsh-{{ current_service.service.name }}.plist"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | vsh-rabbitmq-server | restarted"
+  notify: "LaunchAgent | vsh-rabbitmq | daemon-reload"
 
 - name: "Create vsh-{{ current_service.canonical }} config directory"
   ansible.builtin.file:
@@ -53,9 +69,9 @@
 
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
-    cert_prefix: "rabbitmq"
+    cert_prefix: "{{ current_service.canonical }}"
 
-- name: "generate ssl-certificate for rabbitmq.{{ development_tld }}"
+- name: "generate ssl-certificate for {{ current_service.canonical }}.{{ development_tld }}"
   ansible.builtin.include_role:
     name: certificate
     public: true
@@ -63,11 +79,11 @@
 - name: provide nginx vhost configuration for rabbitmq management plugin
   ansible.builtin.template:
     src: "nginx/rabbitmq.conf.j2"
-    dest: "/etc/nginx/conf.d/rabbitmq.conf"
+    dest: "/etc/nginx/conf.d/{{ current_service.canonical }}.conf"
     owner: root
     group: root
     mode: "0644"
-  notify: systemd | vsh-nginx | reloaded
+  notify: brew | nginx | reloaded
   become: true
 
 - name: unset 'cert_prefix' variable
@@ -93,12 +109,10 @@
     current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
   when: current_service_state.state == "unknown"
 
-- name: "Set vsh-{{ current_service.canonical }} container state"
-  ansible.builtin.systemd:
-    name: "{{ current_service.service.name }}"
+- name: "Ensure target state of vsh-{{ current_service.canonical }} is set"
+  vsh_launchagent:
+    label: "sh.valet.{{ current_service.service.name }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
-    enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
-    scope: "{{ current_service.service.scope }}"
 
 - name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
   vsh_bundle_state:

@@ -64,3 +64,40 @@
   loop_control:
     loop_var: rabbitmq_item
   listen: "systemd | vsh-rabbitmq-server | full-restart"
+
+
+- name: "LaunchAgent | vsh-rabbitmq | daemon-reload"
+  vsh_launchagent:
+    label: "sh.valet.{{ rabbitmq_item.service.name }}"
+    daemon_reload: true
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
+  loop_control:
+    loop_var: rabbitmq_item
+  listen: "LaunchAgent | vsh-rabbitmq | daemon-reload"
+
+- name: "LaunchAgent | vsh-rabbitmq | started"
+  vsh_launchagent:
+    label: "sh.valet.{{ rabbitmq_item.service.name }}"
+    state: started
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
+  loop_control:
+    loop_var: rabbitmq_item
+  listen: "LaunchAgent | vsh-rabbitmq | started"
+
+- name: "LaunchAgent | vsh-rabbitmq | stopped"
+  vsh_launchagent:
+    label: "sh.valet.{{ rabbitmq_item.service.name }}"
+    state: stopped
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
+  loop_control:
+    loop_var: rabbitmq_item
+  listen: "LaunchAgent | vsh-rabbitmq | stopped"
+
+- name: "LaunchAgent | vsh-rabbitmq | restarted"
+  vsh_launchagent:
+    label: "sh.valet.{{ rabbitmq_item.service.name }}"
+    state: restarted
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
+  loop_control:
+    loop_var: rabbitmq_item
+  listen: "LaunchAgent | vsh-rabbitmq | restarted"

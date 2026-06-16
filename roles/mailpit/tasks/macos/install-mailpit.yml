@@ -28,7 +28,7 @@
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | vsh-mailpit | restarted"
+  notify: "LaunchAgent | vsh-mailpit | daemon-reload"
 
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
@@ -45,6 +45,12 @@
     dest: "/opt/homebrew/etc/nginx/conf.d/mailpit.conf"
     mode: "0644"
   notify: brew | nginx | restarted
+
+- name: reload and restart
+  vsh_launchagent:
+    label: "sh.valet.{{ current_service.service.name }}"
+    state: restarted
+    daemon_reload: true
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers

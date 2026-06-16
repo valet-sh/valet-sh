@@ -48,9 +48,38 @@
     loop_var: mailpit_item
   listen: "systemd | vsh-mailpit | restarted"
 
-- name: brew | mailpit | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop mailpit"
-- name: brew | mailpit | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start mailpit"
-- name: brew | mailpit | restart
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart mailpit"
+- name: "LaunchAgent | vsh-mailpit | daemon-reload"
+  vsh_launchagent:
+    label: "sh.valet.{{ mailpit_item.service.name }}"
+    daemon_reload: true
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailpit.*') }}"
+  loop_control:
+    loop_var: mailpit_item
+  listen: "LaunchAgent | vsh-mailpit | daemon-reload"
+
+- name: "LaunchAgent | vsh-mailpit | started"
+  vsh_launchagent:
+    label: "sh.valet.{{ mailpit_item.service.name }}"
+    state: started
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailpit.*') }}"
+  loop_control:
+    loop_var: mailpit_item
+  listen: "LaunchAgent | vsh-mailpit | started"
+
+- name: "LaunchAgent | vsh-mailpit | stopped"
+  vsh_launchagent:
+    label: "sh.valet.{{ mailpit_item.service.name }}"
+    state: stopped
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailpit.*') }}"
+  loop_control:
+    loop_var: mailpit_item
+  listen: "LaunchAgent | vsh-mailpit | stopped"
+
+- name: "LaunchAgent | vsh-mailpit | restarted"
+  vsh_launchagent:
+    label: "sh.valet.{{ mailpit_item.service.name }}"
+    state: restarted
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailpit.*') }}"
+  loop_control:
+    loop_var: mailpit_item
+  listen: "LaunchAgent | vsh-mailpit | restarted"

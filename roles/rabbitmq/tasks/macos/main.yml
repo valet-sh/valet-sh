@@ -15,28 +15,16 @@
 ##
 ---
 
-- name: "ensure rabbitmq is installed"
-  ansible.builtin.shell: "/opt/homebrew/bin/brew install rabbitmq"
+- name: "Install RabbitMQ {{ item.version }}"
+  ansible.builtin.include_tasks: install-rabbitmq.yml
+  vars:
+    current_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when: valet_install_services is defined
 
-- name: "ensure rabbitmq is restarted"
-  ansible.builtin.shell: "/opt/homebrew/bin/brew services restart rabbitmq"
-
-- name: set 'cert_prefix' variable
-  ansible.builtin.set_fact:
-    cert_prefix: "rabbitmq"
-
-- name: "generate ssl-certificate for rabbitmq.{{ development_tld }}"
-  ansible.builtin.include_role:
-    name: certificate
-    public: true
-
-- name: provide nginx vhost configuration for rabbitmq management plugin
-  ansible.builtin.template:
-    src: "rabbitmq.conf.j2"
-    dest: "{{ valet_sh_prefix }}/etc/nginx/conf.d/rabbitmq.conf"
-    mode: "0644"
-  notify: brew | nginx | restarted
-
-- name: unset 'cert_prefix' variable
-  ansible.builtin.set_fact:
-    cert_prefix: "{{ non_existent | default(None) }}"
+- name: "Uninstall RabbitMQ {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-rabbitmq.yml
+  vars:
+    current_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when: valet_uninstall_services is defined

@@ -16,6 +16,7 @@ ExecStart=/usr/bin/podman run \
     --rm \
     --name vsh-{{ current_service.canonical }} \
     --volume vsh-{{ current_service.canonical }}:/var/lib/rabbitmq \
+    --volume {{ current_service.configuration.base_path }}/config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:Z \
     --network host \
     {{ current_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
