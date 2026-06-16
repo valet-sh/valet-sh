@@ -9,7 +9,10 @@ service:
     mac: "user"
 
 configuration:
-  docker_image: "docker.io/opensearchproject/opensearch:3.2.0"
+  docker_image: "docker.io/opensearchproject/opensearch:3.6.0"
+  limits:
+    memory: "4g"
+    cpus: "2"
   ports:
     http: 9223
     transport: 9323

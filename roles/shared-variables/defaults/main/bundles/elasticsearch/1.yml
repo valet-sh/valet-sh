@@ -10,6 +10,9 @@ service:
 
 configuration:
   docker_image: "docker.io/elasticsearch:1.7.6"
+  limits:
+    memory: "2g"
+    cpus: "1"
   ports:
     http: 9201
   base_path: "/usr/local/valet-sh/packages/elasticsearch1"

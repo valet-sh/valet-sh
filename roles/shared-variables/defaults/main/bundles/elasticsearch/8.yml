@@ -10,6 +10,9 @@ service:
 
 configuration:
   docker_image: "docker.io/elasticsearch:8.5.3"
+  limits:
+    memory: "4g"
+    cpus: "2"
   ports:
     http: 9208
     transport: 9308

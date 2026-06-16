@@ -10,6 +10,9 @@ service:
 
 configuration:
   docker_image: "docker.io/opensearchproject/opensearch:2.5.0"
+  limits:
+    memory: "4g"
+    cpus: "2"
   ports:
     http: 9222
     transport: 9322

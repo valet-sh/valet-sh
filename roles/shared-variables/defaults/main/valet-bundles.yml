@@ -74,14 +74,15 @@ valet_sh_bundle_definitions:
       type: "service"
     valkey:
       display_name: "Valkey"
-      versions: ["8"]
+      versions: ["8", "9"]
+      default_version: "8"
       role_name: "valkey"
       family_name: "cache"
       kind: "optional"
       type: "service"
     rabbitmq:
       display_name: "RabbitMQ"
-      versions: ["3.12", "3.13", "4.1"]
+      versions: ["3.12", "3.13", "4.1", "4.1", "4.2", "4.3"]
       default_version: "3.12"
       role_name: "rabbitmq"
       kind: "optional"

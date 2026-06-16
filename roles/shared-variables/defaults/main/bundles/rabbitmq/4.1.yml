@@ -11,5 +11,5 @@ service:
 configuration:
   docker_image: "docker.io/rabbitmq:4.1-management"
   ports:
-    http: 15672
-    amqp: 5672
+    http: 15675
+    amqp: 5675
