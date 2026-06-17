@@ -21,13 +21,13 @@
     pull: true
     state: present
 
-- name: "ensure volume '{{ current_service.service.name }}-data' exists"
+- name: "ensure volume '{{ current_service.canonical }}-data' exists"
   apple_volume:
-    name: "{{ current_service.service.name }}-data"
+    name: "{{ current_service.canonical }}-data"
     state: present
   register: data_volume_obj
 
-- name: "fix volume permissions for '{{ current_service.service.name }}-data'"
+- name: "fix volume permissions for '{{ current_service.canonical }}-data'"
   apple_container:
     name: vsh-volume-fix
     image: alpine
@@ -35,7 +35,7 @@
     remove: true
     detach: false
     volumes:
-      - "{{ current_service.service.name }}-data:/data"
+      - "{{ current_service.canonical }}-data:/data"
     command:
       - chown
       - -R
@@ -43,10 +43,10 @@
       - /data
   when: data_volume_obj.changed
 
-- name: provide LaunchAgent service for mailpit container
+- name: provide LaunchAgent service for rabbitmq container
   ansible.builtin.template:
-    src: "LaunchAgent/sh.valet.vsh-rabbitmq.plist.j2"
-    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.vsh-{{ current_service.service.name }}.plist"
+    src: "LaunchAgent/sh.valet.vsh-{{ current_service.service.name }}.plist.j2"
+    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.vsh-{{ current_service.canonical }}.plist"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
@@ -62,10 +62,10 @@
 
 - name: "provide vsh-{{ current_service.canonical }} configuration"
   ansible.builtin.template:
-    src: "{{ current_service.canonical }}.conf.j2"
-    dest: "{{ current_service.configuration.base_path }}/config/rabbitmq.conf"
+    src: "{{ current_service.service.name }}.conf.j2"
+    dest: "{{ current_service.configuration.base_path }}/config/{{ current_service.service.name }}.conf"
     mode: "0644"
-  notify: "LaunchAgent | vsh-rabbitmq | restarted"
+  notify: "LaunchAgent | vsh-{{ current_service.service.name }} | restarted"
 
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
@@ -78,7 +78,7 @@
 
 - name: provide nginx vhost configuration for rabbitmq management plugin
   ansible.builtin.template:
-    src: "nginx/rabbitmq.conf.j2"
+    src: "nginx/{{ current_service.service.name }}.conf.j2"
     dest: "/etc/nginx/conf.d/{{ current_service.canonical }}.conf"
     owner: root
     group: root

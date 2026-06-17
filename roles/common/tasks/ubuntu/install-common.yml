@@ -43,3 +43,9 @@
   vsh_bundle_state:
     action: "installed"
     name: "common"
+
+- name: "ensure user systemd directory exists"
+  ansible.builtin.file:
+    path: "{{ current_home }}/.config/systemd/user"
+    state: directory
+    mode: "0755"

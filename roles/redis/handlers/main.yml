@@ -15,54 +15,60 @@
 ##
 ---
 
-- name: "systemd | vsh-redis-server | started"
+- name: "systemd | vsh-redis | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ redis_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-    scope: "{{ redis_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
-  loop_control:
-    loop_var: redis_item
-  listen: "systemd | vsh-redis-server | started"
+    scope: "{{ handler_current_service.service.scope }}"
 
-- name: "systemd | vsh-redis-server | stopped"
+- name: "systemd | vsh-redis | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ redis_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-    scope: "{{ redis_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
-  loop_control:
-    loop_var: redis_item
-  listen: "systemd | vsh-redis-server | started"
+    scope: "{{ handler_current_service.service.scope }}"
 
-- name: "systemd | vsh-redis-server | restarted"
+- name: "systemd | vsh-redis | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ redis_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-    scope: "{{ redis_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
-  loop_control:
-    loop_var: redis_item
-  listen: "systemd | vsh-redis-server | started"
+    scope: "{{ handler_current_service.service.scope }}"
 
-- name: "systemd | vsh-redis-server | reloaded"
-  ansible.builtin.systemd:
+
+- name: "LaunchAgent | vsh-redis | daemon-reload"
+  vsh_launchagent:
+    label: "sh.valet.{{ redis_item.service.name }}"
     daemon_reload: true
-    name: "{{ redis_item.service.name }}"
-    state: restarted
-    scope: "{{ redis_item.service.scope }}"
   loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
   loop_control:
     loop_var: redis_item
-  listen: "systemd | vsh-redis-server | restarted"
+  listen: "LaunchAgent | vsh-redis | daemon-reload"
 
+- name: "LaunchAgent | vsh-redis | started"
+  vsh_launchagent:
+    label: "sh.valet.{{ redis_item.service.name }}"
+    state: started
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop_control:
+    loop_var: redis_item
+  listen: "LaunchAgent | vsh-redis | started"
 
-- name: brew | redis | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start redis"
-- name: brew | redis | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop redis"
-- name: brew | redis | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart redis"
+- name: "LaunchAgent | vsh-redis | stopped"
+  vsh_launchagent:
+    label: "sh.valet.{{ redis_item.service.name }}"
+    state: stopped
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop_control:
+    loop_var: redis_item
+  listen: "LaunchAgent | vsh-redis | stopped"
+
+- name: "LaunchAgent | vsh-redis | restarted"
+  vsh_launchagent:
+    label: "sh.valet.{{ redis_item.service.name }}"
+    state: restarted
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
+  loop_control:
+    loop_var: redis_item
+  listen: "LaunchAgent | vsh-redis | restarted"

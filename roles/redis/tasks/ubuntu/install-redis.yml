@@ -15,24 +15,32 @@
 ##
 ---
 
-- name: Pull rabbitmq-server {{ current_service.service.version }} image
+- name: "set handler_current_service fact"
+  ansible.builtin.set_fact:
+    handler_current_service: "{{ current_service }}"
+
+- name: Ensure redis-tools are installed natively
+  ansible.builtin.apt:
+    name: "redis-tools"
+    state: present
+  become: true
+
+- name: "Pull {{ current_service.service.name }} image"
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
-    force: true
-  notify: "systemd | vsh-rabbitmq | restarted"
 
-- name: Provide systemd service for vsh-{{ current_service.canonical }} container
+- name: "Provide systemd service for {{ current_service.service.name }} container"
   ansible.builtin.template:
-    src: "systemd/rabbitmq-server.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
+    src: "systemd/{{ current_service.name }}.service.j2"
+    dest: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | vsh-rabbitmq | restarted"
+  notify: "systemd | vsh-redis | restarted"
 
-- name: "Create vsh-{{ current_service.canonical }} config directory"
+- name: "Create {{ current_service.canonical }} config directory"
   ansible.builtin.file:
     path: "{{ current_service.configuration.base_path }}/config"
     owner: "{{ current_user }}"
@@ -40,40 +48,17 @@
     mode: "0755"
     state: directory
 
-- name: "provide vsh-{{ current_service.canonical }} configuration"
+- name: "provide {{ current_service.canonical }} configuration"
   ansible.builtin.template:
-    src: "{{ current_service.canonical }}.conf.j2"
-    dest: "{{ current_service.configuration.base_path }}/config/rabbitmq.conf"
+    src: "{{ current_service.name }}.conf.j2"
+    dest: "{{ current_service.configuration.base_path }}/config/{{ current_service.name }}.conf"
     mode: "0644"
-  notify: "LaunchAgent | vsh-rabbitmq | restarted"
-
-- name: set 'cert_prefix' variable
-  ansible.builtin.set_fact:
-    cert_prefix: "rabbitmq"
-
-- name: "generate ssl-certificate for rabbitmq.{{ development_tld }}"
-  ansible.builtin.include_role:
-    name: certificate
-    public: true
-
-- name: provide nginx vhost configuration for rabbitmq management plugin
-  ansible.builtin.template:
-    src: "nginx/rabbitmq.conf.j2"
-    dest: "/etc/nginx/conf.d/rabbitmq.conf"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: systemd | vsh-nginx | reloaded
-  become: true
-
-- name: unset 'cert_prefix' variable
-  ansible.builtin.set_fact:
-    cert_prefix: "{{ non_existent | default(None) }}"
+  notify: "systemd | vsh-redis | restarted"
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
 
-- name: "Get desired state of vsh-{{ current_service.canonical }} from services file"
+- name: "Get desired state of {{ current_service.canonical }} from services file"
   vsh_bundle_service_state_info:
     name: "{{ current_service.canonical }}"
   register: current_service_state
@@ -89,14 +74,15 @@
     current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
   when: current_service_state.state == "unknown"
 
-- name: "Set vsh-{{ current_service.canonical }} container state"
+- name: "Set {{ current_service.service.name }} container state"
   ansible.builtin.systemd:
     name: "{{ current_service.service.name }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
     enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
     scope: "{{ current_service.service.scope }}"
+  become: "{{ 'true' if current_service.service.scope == 'system' else 'false' }}"
 
-- name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
+- name: "Mark {{ current_service.canonical }} as installed in the services file"
   vsh_bundle_state:
     action: "installed"
     canonical_names: "{{ current_service.canonical }}"

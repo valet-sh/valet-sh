@@ -2,8 +2,8 @@
 
 service:
   name:
-    ubuntu: "vsh-redis-server"
-    mac: "vsh-redis"
+    ubuntu: "vsh-redis7"
+    mac: "vsh-redis7"
   scope:
     ubuntu: "user"
     mac: "user"
@@ -11,4 +11,5 @@ service:
 configuration:
   docker_image: "docker.io/library/redis:7"
   ports:
-    redis: 6379
+    redis: 6380
+  base_path: "/usr/local/valet-sh/packages/redis7"

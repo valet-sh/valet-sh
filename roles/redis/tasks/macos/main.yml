@@ -14,11 +14,17 @@
 #   limitations under the License.
 ##
 ---
-#- name: "ensure redis is installed"
-#  homebrew:
-#    name: redis
-#    state: present
 
-- name: "ensure redis is installed"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install redis"
-  notify: brew | redis | restarted
+- name: "Install Redis-Server {{ item.version }}"
+  ansible.builtin.include_tasks: install-redis-server.yml
+  vars:
+    current_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when: valet_install_services is defined
+
+- name: "Uninstall Redis-Server {{ item.version }}"
+  ansible.builtin.include_tasks: uninstall-redis-server.yml
+  vars:
+    current_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when: valet_uninstall_services is defined

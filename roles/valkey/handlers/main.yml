@@ -60,9 +60,39 @@
   listen: "systemd | vsh-valkey | restarted"
 
 
-- name: brew | valkey | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start valkey"
-- name: brew | valkey | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop valkey"
-- name: brew | valkey | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart valkey"
+
+- name: "LaunchAgent | vsh-valkey | daemon-reload"
+  vsh_launchagent:
+    label: "sh.valet.{{ valkey_item.service.name }}"
+    daemon_reload: true
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^valkey.*') }}"
+  loop_control:
+    loop_var: valkey_item
+  listen: "LaunchAgent | vsh-valkey | daemon-reload"
+
+- name: "LaunchAgent | vsh-valkey | started"
+  vsh_launchagent:
+    label: "sh.valet.{{ valkey_item.service.name }}"
+    state: started
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^valkey.*') }}"
+  loop_control:
+    loop_var: valkey_item
+  listen: "LaunchAgent | vsh-valkey | started"
+
+- name: "LaunchAgent | vsh-valkey | stopped"
+  vsh_launchagent:
+    label: "sh.valet.{{ valkey_item.service.name }}"
+    state: stopped
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^valkey.*') }}"
+  loop_control:
+    loop_var: valkey_item
+  listen: "LaunchAgent | vsh-valkey | stopped"
+
+- name: "LaunchAgent | vsh-valkey | restarted"
+  vsh_launchagent:
+    label: "sh.valet.{{ valkey_item.service.name }}"
+    state: restarted
+  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^valkey.*') }}"
+  loop_control:
+    loop_var: valkey_item
+  listen: "LaunchAgent | vsh-valkey | restarted"

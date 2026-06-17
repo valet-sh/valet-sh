@@ -15,32 +15,41 @@
 ##
 ---
 
-- name: Ensure redis-tools are installed natively
-  ansible.builtin.apt:
-    name: "redis-tools"
-    state: present
-  become: true
+# @TODO: required redis-tools on mac?!
 
-- name: Pull redis-server image
-  containers.podman.podman_image:
+- name: "set handler_current_service fact"
+  ansible.builtin.set_fact:
+    handler_current_service: "{{ current_service }}"
+
+- name: Pull redis-server {{ current_service.service.version }} image
+  apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
 
-- name: "ensure user systemd directory exists"
-  ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user"
-    state: directory
-    mode: "0755"
-
-- name: Provide systemd service for vsh-redis-server container
+- name: provide LaunchAgent service for redis container
   ansible.builtin.template:
-    src: "systemd/redis.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
+    src: "LaunchAgent/sh.valet.vsh-{{ current_service.service.name }}.plist.j2"
+    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.vsh-{{ current_service.canonical }}.plist"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | vsh-redis-server | restarted"
+  notify: "LaunchAgent | vsh-{{ current_service.service.name }} | daemon-reload"
+
+- name: "Create vsh-{{ current_service.canonical }} config directory"
+  ansible.builtin.file:
+    path: "{{ current_service.configuration.base_path }}/config"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+    state: directory
+
+- name: "provide vsh-{{ current_service.canonical }} configuration"
+  ansible.builtin.template:
+    src: "{{ current_service.service.name }}.conf.j2"
+    dest: "{{ current_service.configuration.base_path }}/config/{{ current_service.service.name }}.conf"
+    mode: "0644"
+  notify: "LaunchAgent | vsh-{{ current_service.service.name }} | restarted"
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
@@ -61,12 +70,10 @@
     current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
   when: current_service_state.state == "unknown"
 
-- name: "Set vsh-{{ current_service.canonical }} container state"
-  ansible.builtin.systemd:
-    name: "{{ current_service.service.name }}"
+- name: "Ensure target state of vsh-{{ current_service.canonical }} is set"
+  vsh_launchagent:
+    label: "sh.valet.{{ current_service.canonical }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
-    enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
-    scope: "{{ current_service.service.scope }}"
 
 - name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
   vsh_bundle_state:

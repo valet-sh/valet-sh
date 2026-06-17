@@ -15,13 +15,7 @@
 ##
 ---
 
-- name: Uninstall redis-tools
-  ansible.builtin.apt:
-    name: "redis-tools"
-    state: absent
-  become: true
-
-- name: Ensure that redis-server container is stopped
+- name: "Ensure {{ current_service.service.name }} container is stopped"
   ansible.builtin.systemd:
     name: "{{ current_service.service.name }}"
     state: stopped
@@ -31,23 +25,23 @@
 
 - name: Remove redis-server container
   containers.podman.podman_container:
-    name: "vsh-{{ current_service.canonical }}"
+    name: "{{ current_service.service.name }}"
     state: absent
 
 - name: Remove redis-server volume
   containers.podman.podman_volume:
-    name: "vsh-{{ current_service.canonical }}"
+    name: "{{ current_service.service.name }}-data"
     state: absent
   when: "'--purge' in valet_cli_opts"
 
 - name: Remove redis-server systemd service
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
+    path: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     state: absent
 
-- name: "Remove vsh-{{ current_service.canonical }} default.target.wants symlink"
+- name: "Remove {{ current_service.service.name }} default.target.wants symlink"
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/default.target.wants/vsh-{{ current_service.canonical }}.service"
+    path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_service.service.name }}.service"
     state: absent
 
 - name: Remove redis-server image
@@ -57,7 +51,7 @@
     force: true
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_service.canonical }} from installed services"
+- name: "Remove {{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"
     canonical_names: "{{ current_service.canonical }}"

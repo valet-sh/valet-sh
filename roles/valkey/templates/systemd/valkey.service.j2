@@ -16,8 +16,9 @@ ExecStart=/usr/bin/podman run \
     --rm \
     --name vsh-{{ current_service.canonical }} \
     --volume vsh-{{ current_service.canonical }}:/data \
+    --volume {{ current_service.configuration.base_path }}/config/valkey.conf:/etc/valkey/valkey.conf:Z \
     --network host \
-    {{ current_service.configuration.docker_image }}
+    {{ current_service.configuration.docker_image }} valkey-server /etc/valkey/valkey.conf
 ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
 ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_service.canonical }}
 

@@ -2,8 +2,8 @@
 
 service:
   name:
-    ubuntu: "vsh-valkey"
-    mac: "vsh-valkey"
+    ubuntu: "vsh-valkey8"
+    mac: "vsh-valkey8"
   scope:
     ubuntu: "user"
     mac: "user"
@@ -12,3 +12,4 @@ configuration:
   docker_image: "docker.io/valkey/valkey:8"
   ports:
     valkey: 6389
+  base_path: "/usr/local/valet-sh/packages/valkey8"

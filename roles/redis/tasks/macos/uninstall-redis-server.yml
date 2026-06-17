@@ -15,29 +15,21 @@
 ##
 ---
 
+# @TODO: remove client/bash-wrapper scripts whatever
+
 - name: "ensure 'vsh-{{ current_service.canonical }}' is stopped"
   vsh_launchagent:
-    label: "sh.valet.{{ current_service.canonical }}"
+    label: "sh.valet.{{ current_service.service.name }}"
     state: stopped
-
-- name: "Remove vsh-{{ current_service.canonical }} volumes"
-  apple_volume:
-    name: "{{ current_service_volume_item }}"
-    state: absent
-  loop:
-    - "vsh-{{ current_service.canonical }}-data"
-  loop_control:
-    loop_var: current_service_volume_item
-  when: "'--purge' in valet_cli_opts"
 
 - name: "Remove vsh-{{ current_service.canonical }} LaunchAgent service"
   ansible.builtin.file:
-    path: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.canonical }}.plist"
+    path: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.service.name }}.plist"
     state: absent
 
 - name: "ensure LaunchAgent is reloaded"
   vsh_launchagent:
-    label: "sh.valet.{{ current_service.canonical }}"
+    label: "sh.valet.{{ current_service.service.name }}"
     daemon_reload: true
 
 - name: Remove rabbitmq image

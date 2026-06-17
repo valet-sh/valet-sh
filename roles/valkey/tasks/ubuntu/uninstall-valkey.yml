@@ -1,5 +1,5 @@
 ##
-#   Copyright 2025 TechDivision GmbH
+#   Copyright 2020 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,13 +15,7 @@
 ##
 ---
 
-- name: Uninstall valkey-tools
-  ansible.builtin.apt:
-    name: "valkey-tools"
-    state: absent
-  become: true
-
-- name: Ensure that valkey container is stopped
+- name: "Ensure {{ current_service.service.name }} container is stopped"
   ansible.builtin.systemd:
     name: "{{ current_service.service.name }}"
     state: stopped
@@ -29,35 +23,35 @@
     scope: "{{ current_service.service.scope }}"
   ignore_errors: true
 
-- name: Remove valkey container
+- name: Remove valkey-server container
   containers.podman.podman_container:
-    name: "vsh-{{ current_service.canonical }}"
+    name: "{{ current_service.service.name }}"
     state: absent
 
-- name: Remove valkey volume
+- name: Remove valkey-server volume
   containers.podman.podman_volume:
-    name: "vsh-{{ current_service.canonical }}"
+    name: "{{ current_service.service.name }}-data"
     state: absent
   when: "'--purge' in valet_cli_opts"
 
-- name: Remove valkey systemd service
+- name: Remove valkey-server systemd service
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
+    path: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     state: absent
 
-- name: "Remove vsh-{{ current_service.canonical }} default.target.wants symlink"
+- name: "Remove {{ current_service.service.name }} default.target.wants symlink"
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/default.target.wants/vsh-{{ current_service.canonical }}.service"
+    path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_service.service.name }}.service"
     state: absent
 
-- name: Remove valkey image
+- name: Remove valkey-server image
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"
     state: absent
     force: true
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_service.canonical }} from installed services"
+- name: "Remove {{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"
     canonical_names: "{{ current_service.canonical }}"
