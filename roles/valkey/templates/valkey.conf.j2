@@ -1,0 +1,2 @@
+port {{ current_service.configuration.ports.valkey }}
+bind {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
