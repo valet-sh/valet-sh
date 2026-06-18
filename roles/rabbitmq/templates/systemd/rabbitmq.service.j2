@@ -17,7 +17,11 @@ ExecStart=/usr/bin/podman run \
     --name vsh-{{ current_service.canonical }} \
     --volume vsh-{{ current_service.canonical }}:/var/lib/rabbitmq \
     --volume {{ current_service.configuration.base_path }}/config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:Z \
+    --volume {{ current_service.configuration.base_path }}/config/enabled_plugins:/etc/rabbitmq/enabled_plugins:Z \
     --network host \
+    --hostname {{ current_service.service.name }} \
+    --env "RABBITMQ_NODE_PORT={{ current_service.configuration.ports.amqp }}" \
+    --env "RABBITMQ_NODENAME={{ current_service.canonical }}@{{ current_service.service.name }}" \
     {{ current_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
 ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_service.canonical }}

@@ -36,12 +36,12 @@
 
 - name: Remove rabbitmq systemd service
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
+    path: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     state: absent
 
-- name: "Remove vsh-{{ current_service.canonical }} default.target.wants symlink"
+- name: "Remove {{ current_service.service.name }} default.target.wants symlink"
   ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user/default.target.wants/vsh-{{ current_service.canonical }}.service"
+    path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_service.service.name }}.service"
     state: absent
 
 - name: Remove rabbitmq image

@@ -17,6 +17,13 @@ server {
     ssl_certificate_key {{ certificate_server_domain_key_file }};
 
     location / {
+{% if current_os == 'ubuntu' %}
+        proxy_pass http://localhost:{{ current_service.configuration.ports.http }};
+{% else %}
+        set $upstream {{ current_service.service.name }}.vsh-services;
+        proxy_pass http://$upstream:{{ current_service.configuration.ports.http }};
+{% endif %}
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
@@ -26,9 +33,6 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
 
-        {{ current_service.service.name }}.vsh-services
-
-        proxy_pass http://localhost:15672;
         proxy_connect_timeout 900s;
         proxy_read_timeout 900s;
     }

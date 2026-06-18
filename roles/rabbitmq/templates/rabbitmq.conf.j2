@@ -1,2 +1,10 @@
+{% if current_os == 'ubuntu' %}
+listeners.tcp.default = 127.0.0.1:{{ current_service.configuration.ports.amqp }}
+management.tcp.port   = {{ current_service.configuration.ports.http }}
+management.tcp.ip     = 127.0.0.1
+distribution.listener.interface = 127.0.0.1
+{% else %}
 listeners.tcp.default = {{ current_service.configuration.ports.amqp }}
 management.tcp.port   = {{ current_service.configuration.ports.http }}
+distribution.listener.interface = 127.0.0.1
+{% endif %}

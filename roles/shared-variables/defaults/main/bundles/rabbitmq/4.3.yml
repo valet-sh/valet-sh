@@ -11,5 +11,6 @@ service:
 configuration:
   docker_image: "docker.io/rabbitmq:4.3-management"
   ports:
-    http: 15677
-    amqp: 5677
+    http: 15678
+    amqp: 5678
+  base_path: "/usr/local/valet-sh/packages/rabbitmq43"

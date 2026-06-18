@@ -76,7 +76,7 @@ valet_sh_bundle_definitions:
       type: "service"
     rabbitmq:
       display_name: "RabbitMQ"
-      versions: ["3.12", "3.13", "4.1", "4.1", "4.2", "4.3"]
+      versions: ["3.12", "3.13", "4.0", "4.1", "4.2", "4.3"]
       default_version: "3.12"
       role_name: "rabbitmq"
       kind: "optional"
