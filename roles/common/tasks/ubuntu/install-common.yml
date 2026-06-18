@@ -49,3 +49,9 @@
     path: "{{ current_home }}/.config/systemd/user"
     state: directory
     mode: "0755"
+
+- name: "Ensure podman is installed"
+  ansible.builtin.apt:
+    name: podman
+    state: present
+  become: true

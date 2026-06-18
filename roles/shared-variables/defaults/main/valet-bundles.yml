@@ -107,11 +107,6 @@ valet_sh_bundle_definitions:
       role_name: "shell"
       kind: "essential"
       type: "package"
-    podman:
-      role_name: "podman"
-      kind: "essential"
-      type: "package"
-      os: ["linux"]
     nodejs:
       role_name: "nodejs"
       kind: "optional"
