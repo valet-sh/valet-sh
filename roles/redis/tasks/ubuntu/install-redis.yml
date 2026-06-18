@@ -19,12 +19,6 @@
   ansible.builtin.set_fact:
     handler_current_service: "{{ current_service }}"
 
-- name: Ensure redis-tools are installed natively
-  ansible.builtin.apt:
-    name: "redis-tools"
-    state: present
-  become: true
-
 - name: "Pull {{ current_service.service.name }} image"
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"

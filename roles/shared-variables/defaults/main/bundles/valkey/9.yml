@@ -1,0 +1,15 @@
+---
+
+service:
+  name:
+    ubuntu: "vsh-valkey9"
+    mac: "vsh-valkey9"
+  scope:
+    ubuntu: "user"
+    mac: "user"
+
+configuration:
+  docker_image: "docker.io/valkey/valkey:9"
+  ports:
+    valkey: 6390
+  base_path: "/usr/local/valet-sh/packages/valkey9"
