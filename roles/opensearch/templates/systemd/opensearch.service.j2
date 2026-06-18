@@ -16,10 +16,11 @@ ExecStart=/usr/bin/podman run \
     --rm \
     --name vsh-{{ current_service.canonical }} \
     --volume vsh-{{ current_service.canonical }}-data:/usr/share/opensearch/data \
-    --volume vsh-{{ current_service.canonical }}-plugins:/usr/share/opensearch/plugins \
+    --volume vsh-{{ current_service.canonical }}-plugins-{{ current_service.configuration.docker_image.split(':')[1] | replace('.','_') }}:/usr/share/opensearch/plugins \
     --volume {{ current_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z \
     --network host \
     --env "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
+    --env "OPENSEARCH_INITIAL_ADMIN_PASSWORD=admin" \
     {{ current_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
 ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_service.canonical }}

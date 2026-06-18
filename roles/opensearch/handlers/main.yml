@@ -14,49 +14,27 @@
 #   limitations under the License.
 ##
 ---
+
 - name: "systemd | vsh-opensearch | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ opensearch_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-    scope: "{{ opensearch_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
-  loop_control:
-    loop_var: opensearch_item
-  listen: "systemd | vsh-opensearch | started"
+    scope: "{{ handler_current_service.service.scope }}"
 
 - name: "systemd | vsh-opensearch | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ opensearch_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-    scope: "{{ opensearch_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
-  loop_control:
-    loop_var: opensearch_item
-  listen: "systemd | vsh-opensearch | stopped"
+    scope: "{{ handler_current_service.service.scope }}"
 
 - name: "systemd | vsh-opensearch | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ opensearch_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-    scope: "{{ opensearch_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
-  loop_control:
-    loop_var: opensearch_item
-  listen: "systemd | vsh-opensearch | restarted"
-
-- name: "systemd | vsh-opensearch | reloaded"
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: "{{ opensearch_item.service.name }}"
-    state: restarted
-    scope: "{{ opensearch_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
-  loop_control:
-    loop_var: opensearch_item
-  listen: "systemd | vsh-opensearch | reloaded"
+    scope: "{{ handler_current_service.service.scope }}"
 
 
 - name: "LaunchAgent | vsh-opensearch | daemon-reload"

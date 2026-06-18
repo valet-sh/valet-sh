@@ -18,46 +18,23 @@
 - name: "systemd | vsh-elasticsearch | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ elasticsearch_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-    scope: "{{ elasticsearch_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
-  loop_control:
-    loop_var: elasticsearch_item
-  listen: "systemd | vsh-elasticsearch | started"
+    scope: "{{ handler_current_service.service.scope }}"
 
 - name: "systemd | vsh-elasticsearch | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ elasticsearch_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-    scope: "{{ elasticsearch_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
-  loop_control:
-    loop_var: elasticsearch_item
-  listen: "systemd | vsh-elasticsearch | stopped"
+    scope: "{{ handler_current_service.service.scope }}"
 
 - name: "systemd | vsh-elasticsearch | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ elasticsearch_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-    scope: "{{ elasticsearch_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
-  loop_control:
-    loop_var: elasticsearch_item
-  listen: "systemd | vsh-elasticsearch | restarted"
-
-- name: "systemd | vsh-elasticsearch | reloaded"
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: "{{ elasticsearch_item.service.name }}"
-    state: restarted
-    scope: "{{ elasticsearch_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
-  loop_control:
-    loop_var: elasticsearch_item
-  listen: "systemd | vsh-elasticsearch | reloaded"
+    scope: "{{ handler_current_service.service.scope }}"
 
 
 - name: "LaunchAgent | vsh-elasticsearch | daemon-reload"
