@@ -15,6 +15,10 @@
 ##
 ---
 
+- name: "set handler_current_service fact"
+  ansible.builtin.set_fact:
+    handler_current_service: "{{ current_service }}"
+
 - name: debug current_service
   ansible.builtin.debug:
     var: current_service
