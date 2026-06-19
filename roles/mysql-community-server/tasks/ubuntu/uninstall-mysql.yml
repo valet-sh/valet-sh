@@ -15,7 +15,7 @@
 ##
 ---
 
-- name: "Ensure that vsh-{{ current_service.canonical }} container is stopped"
+- name: "Ensure that {{ current_service.service.name }} container is stopped"
   ansible.builtin.systemd:
     name: "{{ current_service.service.name }}"
     state: stopped
@@ -23,40 +23,40 @@
     scope: "{{ current_service.service.scope }}"
   ignore_errors: true
 
-- name: "Remove vsh-{{ current_service.canonical }} container"
+- name: "Remove {{ current_service.service.name }} container"
   containers.podman.podman_container:
     name: "{{ current_service.canonical }}"
     state: absent
 
-- name: "Remove vsh-{{ current_service.canonical }} volume"
+- name: "Remove {{ current_service.service.name }} volume"
   containers.podman.podman_volume:
     name: "vsh-{{ current_service.canonical }}-data"
     state: absent
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_service.canonical }} systemd service"
+- name: "Remove {{ current_service.service.name }} systemd service"
   ansible.builtin.file:
     path: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     state: absent
 
-- name: "Remove vsh-{{ current_service.canonical }} default.target.wants symlink"
+- name: "Remove {{ current_service.service.name }} default.target.wants symlink"
   ansible.builtin.file:
     path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_service.service.name }}.service"
     state: absent
 
-- name: "Remove vsh-{{ current_service.canonical }} configurations"
+- name: "Remove {{ current_service.service.name }} configurations"
   ansible.builtin.file:
     path: "{{ current_service.configuration.base_path }}"
     state: absent
 
-- name: "Remove vsh-{{ current_service.canonical }} image"
+- name: "Remove {{ current_service.service.name }} image"
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"
     state: absent
     force: true
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_service.canonical }} from installed services"
+- name: "Remove {{ current_service.service.name }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"
     canonical_names: "{{ current_service.canonical }}"

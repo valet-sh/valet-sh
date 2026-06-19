@@ -9,7 +9,7 @@ service:
     mac: "user"
 
 configuration:
-  docker_image: "docker.io/library/mariadb:11.4"
+  docker_image: "docker.io/library/mariadb:11.8"
   ports:
     mariadb: 3333
   base_path: "/usr/local/valet-sh/packages/mariadb118"

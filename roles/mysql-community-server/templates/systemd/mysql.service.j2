@@ -1,5 +1,5 @@
 [Unit]
-Description=MySQL {{ current_service.version}} Community Server
+Description=MySQL {{ current_service.version }} Community Server
 After=network-online.target local-fs.target
 Wants=network-online.target
 
@@ -16,8 +16,7 @@ ExecStart=/usr/bin/podman run \
     --rm \
     --name vsh-{{ current_service.canonical }} \
     --volume vsh-{{ current_service.canonical }}-data:/var/lib/mysql \
-    --volume {{ current_service.configuration.base_path }}/etc/my.cnf:/etc/mysql/my.cnf:z \
-    --volume {{ current_service.configuration.base_path }}/etc/conf.d:/etc/mysql/conf.d:z \
+    --volume {{ current_service.configuration.base_path }}/etc/conf.d/valet-sh.cnf:/etc/mysql/conf.d/valet-sh.cnf:z \
     --volume {{ current_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:z \
     --network host \
     --env MYSQL_ROOT_PASSWORD={{ current_service.configuration.default_root_password }} \

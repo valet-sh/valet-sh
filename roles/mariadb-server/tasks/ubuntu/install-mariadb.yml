@@ -26,8 +26,8 @@
 - name: "create mariadb base directories"
   ansible.builtin.file:
     path: "{{ current_mariadb_base_directory }}"
-    owner: "valet"
-    group: "valet"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: "0755"
     state: directory
   become: true
@@ -35,11 +35,11 @@
     - "{{ current_service.configuration.base_path }}"
     - "{{ current_service.configuration.base_path }}/user"
     - "{{ current_service.configuration.base_path }}/etc"
-    - "{{ current_service.configuration.base_path }}/etc/conf.d"
+    - "{{ current_service.configuration.base_path }}/etc/mariadb.conf.d"
   loop_control:
     loop_var: current_mariadb_base_directory
 
-- name: "Pull vsh-{{ current_service.canonical }} image"
+- name: "Pull {{ current_service.service.name }} image"
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
@@ -51,34 +51,19 @@
     dest: "{{ current_service.configuration.base_path }}/user/.my.cnf"
     mode: "0644"
 
-- name: "provide my.cnf configuration file"
-  ansible.builtin.template:
-    src: "ubuntu/{{ current_service.canonical }}/my.cnf.j2"
-    dest: "{{ current_service.configuration.base_path }}/etc/my.cnf"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "systemd | vsh-mariadb | restarted"
-
 - name: "provide mysqld.cnf configuration file"
   ansible.builtin.template:
     src: "ubuntu/{{ current_service.canonical }}/mysqld.cnf.j2"
-    dest: "{{ current_service.configuration.base_path }}/etc/conf.d/mysqld.cnf"
+    dest: "{{ current_service.configuration.base_path }}/etc/mariadb.conf.d/valet-sh.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
   notify: "systemd | vsh-mariadb | restarted"
 
-- name: "ensure user systemd directory exists"
-  ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user"
-    state: directory
-    mode: "0755"
-
-- name: "Provide systemd service for vsh-{{ current_service.canonical }} container"
+- name: "Provide systemd service for {{ current_service.service.name }} container"
   ansible.builtin.template:
     src: "ubuntu/systemd/mariadb.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/vsh-{{ current_service.canonical }}.service"
+    dest: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
@@ -111,10 +96,10 @@
     mode: "0755"
   become: true
 
-- name: "Ensure vsh-{{ current_service.canonical }} is started"
+- name: "Ensure {{ current_service.service.name }} is started"
   ansible.builtin.systemd:
     name: "{{ current_service.service.name }}"
-    state: started
+    state: restarted
     daemon_reload: true
     scope: "{{ current_service.service.scope }}"
 
@@ -132,7 +117,7 @@
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
 
-- name: "Get desired state of vsh-{{ current_service.canonical }} from services file"
+- name: "Get desired state of {{ current_service.service.name }} from services file"
   vsh_bundle_service_state_info:
     name: "{{ current_service.canonical }}"
   register: current_service_state
@@ -148,14 +133,14 @@
     current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
   when: current_service_state.state == "unknown"
 
-- name: "Set vsh-{{ current_service.canonical }} container state"
+- name: "Set {{ current_service.service.name }} container state"
   ansible.builtin.systemd:
     name: "{{ current_service.service.name }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
     enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
     scope: "{{ current_service.service.scope }}"
 
-- name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
+- name: "Mark {{ current_service.service.name }} as installed in the services file"
   vsh_bundle_state:
     action: "installed"
     canonical_names: "{{ current_service.canonical }}"

@@ -15,20 +15,13 @@
 ##
 ---
 
+- name: "set handler_current_service fact"
+  ansible.builtin.set_fact:
+    handler_current_service: "{{ current_service }}"
+
 - name: debug current_service
   ansible.builtin.debug:
     var: current_service
-
-- name: install base packages
-  ansible.builtin.apt:
-    name: "{{ mysql_base_packages }}"
-    state: present
-  become: true
-  loop_control:
-    loop_var: mysql_base_packages
-  loop:
-    - "mysql-client"
-    - "python3-pymysql"
 
 - name: "create basic directories"
   ansible.builtin.file:
@@ -46,7 +39,7 @@
   loop_control:
     loop_var: current_mysql_base_directory
 
-- name: "Pull vsh-{{ current_service.canonical }} image"
+- name: "Pull {{ current_service.service.name }} image"
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
@@ -58,29 +51,16 @@
     dest: "{{ current_service.configuration.base_path }}/user/.my.cnf"
     mode: "0644"
 
-- name: "provide my.cnf configuration file"
-  ansible.builtin.template:
-    src: "{{ current_service.canonical }}/my.cnf.j2"
-    dest: "{{ current_service.configuration.base_path }}/etc/my.cnf"
-    mode: "0644"
-  notify: "systemd | vsh-mysql | restarted"
-
 - name: "provide mysqld.cnf configuration file"
   ansible.builtin.template:
     src: "{{ current_service.canonical }}/mysqld.cnf.j2"
-    dest: "{{ current_service.configuration.base_path }}/etc/conf.d/mysqld.cnf"
+    dest: "{{ current_service.configuration.base_path }}/etc/conf.d/valet-sh.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
   notify: "systemd | vsh-mysql | restarted"
 
-- name: "ensure user systemd directory exists"
-  ansible.builtin.file:
-    path: "{{ current_home }}/.config/systemd/user"
-    state: directory
-    mode: "0755"
-
-- name: "provide vsh-{{ current_service.canonical }} systemd unit file"
+- name: "provide {{ current_service.service.name }} systemd unit file"
   ansible.builtin.template:
     src: "systemd/mysql.service.j2"
     dest: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
@@ -89,7 +69,7 @@
     mode: "0644"
   notify: "systemd | vsh-mysql | restarted"
 
-- name: "provide vsh-{{ current_service.canonical }} mysql client"
+- name: "provide {{ current_service.service.name }} mysql client"
   ansible.builtin.template:
     src: "wrapper/mysql.j2"
     dest: "/usr/local/bin/mysql{{ current_service.version }}"
@@ -116,7 +96,7 @@
     mode: "0755"
   become: true
 
-- name: "Ensure vsh-{{ current_service.canonical }} is started"
+- name: "Ensure {{ current_service.service.name }} is started"
   ansible.builtin.systemd:
     name: "{{ current_service.service.name }}"
     state: started
@@ -153,14 +133,14 @@
     current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
   when: current_service_state.state == "unknown"
 
-- name: "Set vsh-{{ current_service.canonical }} container state"
+- name: "Set {{ current_service.service.name }} container state"
   ansible.builtin.systemd:
     name: "{{ current_service.service.name }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
     enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
     scope: "{{ current_service.service.scope }}"
 
-- name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
+- name: "Mark {{ current_service.service.name }} as installed in the services file"
   vsh_bundle_state:
     action: "installed"
     canonical_names: "{{ current_service.canonical }}"

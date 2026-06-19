@@ -15,18 +15,14 @@
 ##
 ---
 
-
-
-- ansible.builtin.include_tasks: migrations/main.yml
-
-- name: "Install MySQL {{ item.version }}"
+- name: "Install MySQL"
   ansible.builtin.include_tasks: install-mysql.yml
   vars:
     current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when: valet_install_services is defined
 
-- name: "Uninstall MySQL {{ item.version }}"
+- name: "Uninstall MySQL"
   ansible.builtin.include_tasks: uninstall-mysql.yml
   vars:
     current_service: "{{ item }}"

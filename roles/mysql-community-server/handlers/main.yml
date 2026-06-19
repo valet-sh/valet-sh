@@ -14,54 +14,28 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | daemon-reload
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
 
 - name: "systemd | vsh-mysql | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ mysql_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-    scope: "{{ mysql_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mysql.*') }}"
-  loop_control:
-    loop_var: mysql_item
-  listen: "systemd | vsh-mysql | started"
+    scope: "{{ handler_current_service.service.scope }}"
 
 - name: "systemd | vsh-mysql | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ mysql_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-    scope: "{{ mysql_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mysql.*') }}"
-  loop_control:
-    loop_var: mysql_item
-  listen: "systemd | vsh-mysql | stopped"
+    scope: "{{ handler_current_service.service.scope }}"
 
 - name: "systemd | vsh-mysql | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ mysql_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-    scope: "{{ mysql_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mysql.*') }}"
-  loop_control:
-    loop_var: mysql_item
-  listen: "systemd | vsh-mysql | restarted"
+    scope: "{{ handler_current_service.service.scope }}"
 
-- name: "systemd | vsh-mysql | reloaded"
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: "{{ mysql_item.service.name }}"
-    state: restarted
-    scope: "{{ mysql_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mysql.*') }}"
-  loop_control:
-    loop_var: mysql_item
-  listen: "systemd | vsh-mysql | reloaded"
 
 - name: brew | vsh-mysql57 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql57"
