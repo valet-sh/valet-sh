@@ -1,32 +1,14 @@
 {{ ansible_managed | comment }}
 
-upstream mariadb104 {
-    server 127.0.0.1:3317;
+{% for service_name in ['mariadb', 'mysql'] %}
+{% for version in valet_sh_bundle_definitions.services[service_name].versions %}
+{% set bundle_file = valet_dist_path_default + '/roles/shared-variables/defaults/main' +'/bundles/' + service_name + '/' + version + '.yml' %}
+{% set bundle = lookup('file', bundle_file) | from_yaml %}
+upstream {{ service_name }}{{ version | replace('.', '') }} {
+    server 127.0.0.1:{{ bundle.configuration.ports[service_name] }};
 }
-
-upstream mariadb106 {
-    server 127.0.0.1:3319;
-}
-
-upstream mariadb1011 {
-    server 127.0.0.1:3324;
-}
-
-upstream mariadb114 {
-    server 127.0.0.1:3329;
-}
-
-upstream mysql57 {
-    server 127.0.0.1:3307;
-}
-
-upstream mysql80 {
-    server 127.0.0.1:3308;
-}
-
-upstream mysql84 {
-    server 127.0.0.1:3309;
-}
+{% endfor %}
+{% endfor %}
 
 server {
     listen 127.0.0.1:3306;
