@@ -28,6 +28,7 @@ def main():
         all_definitions = definitions_data.get('valet_sh_bundle_definitions', {})
 
         canonical_names = []
+        claimed_families = set()
 
         # Enforce all currently configured defaults (ensures system state matches bundles.yml,
         # e.g. PHP CLI alternatives that Ubuntu resets on package install)
@@ -36,6 +37,7 @@ def main():
             for family_key, canonical in section_state.get('defaults', {}).items():
                 if canonical not in canonical_names:
                     canonical_names.append(canonical)
+                claimed_families.add((section, family_key))
 
         # For newly installed services: if their family has no default yet and no other
         # service of that family is installed, add them as candidates (first install case)
@@ -45,23 +47,23 @@ def main():
             svc_type = service.get('type', 'service')
             family_name = service.get('family_name')
             section = svc_type + 's'
-
             definition = all_definitions.get(section, {}).get(name, {})
             if len(definition.get('versions', [])) <= 1:
                 continue
-
             family_key = family_name if family_name else name
             section_state = state.get('bundles', {}).get(section, {})
             defaults = section_state.get('defaults', {})
-            installed = section_state.get('installed', {})
 
-            if family_key not in defaults:
-                same_family_installed = [
-                    k for k in installed.keys()
-                    if k != canonical and k.startswith(name)
-                ]
-                if not same_family_installed and canonical not in canonical_names:
-                    canonical_names.append(canonical)
+            if family_key in defaults:
+                continue
+
+            family_id = (section, family_key)
+            if family_id in claimed_families:
+                continue
+
+            if canonical not in canonical_names:
+                canonical_names.append(canonical)
+            claimed_families.add(family_id)
 
         result['canonical_names'] = canonical_names
         module.exit_json(**result)
