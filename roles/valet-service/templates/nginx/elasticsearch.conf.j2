@@ -1,32 +1,14 @@
 {{ ansible_managed | comment }}
 
-upstream elasticsearch1 {
-    server 127.0.0.1:9201;
+{% for service_name in ['elasticsearch', 'opensearch'] %}
+{% for version in valet_sh_bundle_definitions.services[service_name].versions %}
+{% set bundle_file = valet_dist_path_default + '/roles/shared-variables/defaults/main' +'/bundles/' + service_name + '/' + version + '.yml' %}
+{% set bundle = lookup('file', bundle_file) | from_yaml %}
+upstream {{ service_name }}{{ version }} {
+    server 127.0.0.1:{{ bundle.configuration.ports.http }};
 }
-upstream elasticsearch2 {
-    server 127.0.0.1:9202;
-}
-upstream elasticsearch5 {
-    server 127.0.0.1:9205;
-}
-upstream elasticsearch6 {
-    server 127.0.0.1:9206;
-}
-upstream elasticsearch7 {
-    server 127.0.0.1:9207;
-}
-upstream elasticsearch8 {
-    server 127.0.0.1:9208;
-}
-upstream opensearch1 {
-    server 127.0.0.1:9221;
-}
-upstream opensearch2 {
-    server 127.0.0.1:9222;
-}
-upstream opensearch3 {
-    server 127.0.0.1:9223;
-}
+{% endfor %}
+{% endfor %}
 
 server {
   listen    127.0.0.1:9200;
