@@ -36,38 +36,18 @@
     state: restarted
     scope: "{{ handler_current_service.service.scope }}"
 
-- name: "LaunchAgent | vsh-valkey | daemon-reload"
-  vsh_launchagent:
-    label: "sh.valet.{{ valkey_item.service.name }}"
-    daemon_reload: true
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^valkey.*') }}"
-  loop_control:
-    loop_var: valkey_item
-  listen: "LaunchAgent | vsh-valkey | daemon-reload"
 
-- name: "LaunchAgent | vsh-valkey | started"
-  vsh_launchagent:
-    label: "sh.valet.{{ valkey_item.service.name }}"
+- name: "container | vsh-valkey | started"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^valkey.*') }}"
-  loop_control:
-    loop_var: valkey_item
-  listen: "LaunchAgent | vsh-valkey | started"
 
-- name: "LaunchAgent | vsh-valkey | stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ valkey_item.service.name }}"
+- name: "container | vsh-valkey | stopped"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^valkey.*') }}"
-  loop_control:
-    loop_var: valkey_item
-  listen: "LaunchAgent | vsh-valkey | stopped"
 
-- name: "LaunchAgent | vsh-valkey | restarted"
-  vsh_launchagent:
-    label: "sh.valet.{{ valkey_item.service.name }}"
+- name: "container | vsh-valkey | restarted"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^valkey.*') }}"
-  loop_control:
-    loop_var: valkey_item
-  listen: "LaunchAgent | vsh-valkey | restarted"

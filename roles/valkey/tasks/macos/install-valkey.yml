@@ -17,20 +17,24 @@
 
 # @TODO: required valkey-tools on mac?!
 
+- name: "set handler_current_service fact"
+  ansible.builtin.set_fact:
+    handler_current_service: "{{ current_service }}"
+
 - name: "Pull valkey-server {{ current_service.service.version }} image"
   apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
 
-- name: provide LaunchAgent service for valkey container
-  ansible.builtin.template:
-    src: "LaunchAgent/sh.valet.vsh-rabbitmq.plist.j2"
-    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.vsh-{{ current_service.service.name }}.plist"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "LaunchAgent | vsh-valkey | daemon-reload"
+- name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    image: "{{ current_service.configuration.docker_image }}"
+    state: started
+    cpus: "{{ current_service.configuration.limits.cpus | default(1) }}"
+    memory: "{{ current_service.configuration.limits.memory | default('1g') }}"
+    user: "1000:1000"
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
@@ -52,8 +56,8 @@
   when: current_service_state.state == "unknown"
 
 - name: "Ensure target state of vsh-{{ current_service.canonical }} is set"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
 
 - name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"

@@ -37,38 +37,17 @@
     scope: "{{ handler_current_service.service.scope }}"
 
 
-- name: "LaunchAgent | vsh-redis | daemon-reload"
-  vsh_launchagent:
-    label: "sh.valet.{{ redis_item.service.name }}"
-    daemon_reload: true
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
-  loop_control:
-    loop_var: redis_item
-  listen: "LaunchAgent | vsh-redis | daemon-reload"
-
-- name: "LaunchAgent | vsh-redis | started"
-  vsh_launchagent:
-    label: "sh.valet.{{ redis_item.service.name }}"
+- name: "container | vsh-redis | started"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
-  loop_control:
-    loop_var: redis_item
-  listen: "LaunchAgent | vsh-redis | started"
 
-- name: "LaunchAgent | vsh-redis | stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ redis_item.service.name }}"
+- name: "container | vsh-redis | stopped"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
-  loop_control:
-    loop_var: redis_item
-  listen: "LaunchAgent | vsh-redis | stopped"
 
-- name: "LaunchAgent | vsh-redis | restarted"
-  vsh_launchagent:
-    label: "sh.valet.{{ redis_item.service.name }}"
+- name: "container | vsh-redis | restarted"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^redis.*') }}"
-  loop_control:
-    loop_var: redis_item
-  listen: "LaunchAgent | vsh-redis | restarted"

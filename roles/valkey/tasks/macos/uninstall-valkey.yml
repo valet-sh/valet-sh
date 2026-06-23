@@ -17,29 +17,21 @@
 
 # @TODO: remove client/bash-wrapper scripts whatever
 
-- name: "ensure 'vsh-{{ current_service.canonical }}' is stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
-    state: stopped
-
-- name: "Remove vsh-{{ current_service.canonical }} LaunchAgent service"
-  ansible.builtin.file:
-    path: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.service.name }}.plist"
+- name: "ensure 'vsh-{{ current_service.canonical }}' is absent"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
     state: absent
 
-- name: "ensure LaunchAgent is reloaded"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
-    daemon_reload: true
-
-- name: Remove rabbitmq image
-  containers.podman.podman_image:
+- name: "Remove vsh-{{ current_service.canonical }} image"
+  apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     state: absent
-    force: true
   when: "'--purge' in valet_cli_opts"
 
 - name: "Remove vsh-{{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"
     canonical_names: "{{ current_service.canonical }}"
+
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers

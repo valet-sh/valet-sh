@@ -27,15 +27,6 @@
     pull: true
     state: present
 
-- name: provide LaunchAgent service for redis container
-  ansible.builtin.template:
-    src: "LaunchAgent/sh.valet.vsh-{{ current_service.service.name }}.plist.j2"
-    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.vsh-{{ current_service.canonical }}.plist"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "LaunchAgent | vsh-{{ current_service.service.name }} | daemon-reload"
-
 - name: "Create vsh-{{ current_service.canonical }} config directory"
   ansible.builtin.file:
     path: "{{ current_service.configuration.base_path }}/config"
@@ -49,7 +40,16 @@
     src: "{{ current_service.service.name }}.conf.j2"
     dest: "{{ current_service.configuration.base_path }}/config/{{ current_service.service.name }}.conf"
     mode: "0644"
-  notify: "LaunchAgent | vsh-{{ current_service.service.name }} | restarted"
+  notify: "container | vsh-redis | restarted"
+
+- name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    image: "{{ current_service.configuration.docker_image }}"
+    state: started
+    cpus: "{{ current_service.configuration.limits.cpus | default(1) }}"
+    memory: "{{ current_service.configuration.limits.memory | default('1g') }}"
+    user: "1000:1000"
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
@@ -71,8 +71,8 @@
   when: current_service_state.state == "unknown"
 
 - name: "Ensure target state of vsh-{{ current_service.canonical }} is set"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.canonical }}"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
 
 - name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
