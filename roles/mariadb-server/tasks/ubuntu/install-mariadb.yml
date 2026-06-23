@@ -47,13 +47,13 @@
 
 - name: "provide .my.cnf configuration file"
   ansible.builtin.template:
-    src: "ubuntu/{{ current_service.canonical }}/.my.cnf.j2"
+    src: "config/.my.cnf.j2"
     dest: "{{ current_service.configuration.base_path }}/user/.my.cnf"
     mode: "0644"
 
 - name: "provide mysqld.cnf configuration file"
   ansible.builtin.template:
-    src: "ubuntu/{{ current_service.canonical }}/mysqld.cnf.j2"
+    src: "config/mysqld.cnf.j2"
     dest: "{{ current_service.configuration.base_path }}/etc/mariadb.conf.d/valet-sh.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
@@ -62,7 +62,7 @@
 
 - name: "Provide systemd service for {{ current_service.service.name }} container"
   ansible.builtin.template:
-    src: "ubuntu/systemd/mariadb.service.j2"
+    src: "systemd/mariadb.service.j2"
     dest: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"

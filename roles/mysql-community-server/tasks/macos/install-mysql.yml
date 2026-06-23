@@ -19,10 +19,6 @@
   ansible.builtin.set_fact:
     handler_current_service: "{{ current_service }}"
 
-- name: debug current_service
-  ansible.builtin.debug:
-    var: current_service
-
 - name: "create basic directories"
   ansible.builtin.file:
     path: "{{ current_mysql_base_directory }}"
@@ -30,7 +26,6 @@
     group: "{{ current_group }}"
     mode: "0755"
     state: directory
-  become: true
   with_items:
     - "{{ current_service.configuration.base_path }}"
     - "{{ current_service.configuration.base_path }}/user"
@@ -40,9 +35,14 @@
     loop_var: current_mysql_base_directory
 
 - name: "Pull {{ current_service.service.name }} image"
-  containers.podman.podman_image:
+  apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
+    state: present
+
+- name: "ensure volume 'vsh-{{ current_service.canonical }}-data' exists"
+  apple_volume:
+    name: "vsh-{{ current_service.canonical }}-data"
     state: present
 
 - name: "provide .my.cnf configuration file"
@@ -58,23 +58,14 @@
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | vsh-mysql | restarted"
-
-- name: "provide {{ current_service.service.name }} systemd unit file"
-  ansible.builtin.template:
-    src: "systemd/mysql.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "systemd | vsh-mysql | restarted"
+  notify: "container | vsh-mysql | restarted"
 
 - name: "provide {{ current_service.service.name }} mysql client"
   ansible.builtin.template:
     src: "wrapper/mysql.j2"
     dest: "/usr/local/bin/mysql{{ current_service.version }}"
-    owner: root
-    group: root
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: "0755"
   become: true
 
@@ -82,8 +73,8 @@
   ansible.builtin.template:
     src: "wrapper/mysqldump.j2"
     dest: "/usr/local/bin/mysqldump{{ current_service.version }}"
-    owner: root
-    group: root
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: "0755"
   become: true
 
@@ -91,23 +82,30 @@
   ansible.builtin.template:
     src: "wrapper/mysqladmin.j2"
     dest: "/usr/local/bin/mysqladmin{{ current_service.version }}"
-    owner: root
-    group: root
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: "0755"
   become: true
 
-- name: "Ensure {{ current_service.service.name }} is started"
-  ansible.builtin.systemd:
-    name: "{{ current_service.service.name }}"
+- name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    image: "{{ current_service.configuration.docker_image }}"
     state: started
-    daemon_reload: true
-    scope: user
+    cpus: "{{ current_service.configuration.limits.cpus | default(2) }}"
+    memory: "{{ current_service.configuration.limits.memory | default('1g') }}"
+    volumes:
+      - "vsh-{{ current_service.canonical }}-data:/var/lib/mysql"
+      - "{{ current_service.configuration.base_path }}/etc/conf.d/valet-sh.cnf:/etc/mysql/conf.d/valet-sh.cnf:Z"
+      - "{{ current_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:Z"
+    env:
+      - "MYSQL_ROOT_PASSWORD={{ current_service.configuration.default_root_password }}"
 
-- name: Test MySQL connection and get info
+- name: "Wait for {{ current_service.service.name }} to be ready"
   community.mysql.mysql_info:
-    login_host: "127.0.0.1"
+    login_host: "vsh-{{ current_service.canonical }}.vsh-services"
     login_port: "{{ current_service.configuration.ports.mysql }}"
-    login_user: "root"
+    login_user: root
     login_password: "{{ current_service.configuration.default_root_password }}"
   register: mysql_status
   until: mysql_status is succeeded
@@ -134,11 +132,9 @@
   when: current_service_state.state == "unknown"
 
 - name: "Set {{ current_service.service.name }} container state"
-  ansible.builtin.systemd:
-    name: "{{ current_service.service.name }}"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
-    enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
-    scope: "{{ current_service.service.scope }}"
 
 - name: "Mark {{ current_service.service.name }} as installed in the services file"
   vsh_bundle_state:

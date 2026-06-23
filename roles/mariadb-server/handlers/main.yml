@@ -14,70 +14,41 @@
 #   limitations under the License.
 ##
 ---
-- name: systemd | daemon-reload
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
 
 - name: "systemd | vsh-mariadb | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ mariadb_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-    scope: "{{ mariadb_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mariadb.*') }}"
-  loop_control:
-    loop_var: mariadb_item
-  listen: "systemd | vsh-mariadb | started"
+    scope: "{{ handler_current_service.service.scope }}"
 
 - name: "systemd | vsh-mariadb | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ mariadb_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-    scope: "{{ mariadb_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mariadb.*') }}"
-  loop_control:
-    loop_var: mariadb_item
-  listen: "systemd | vsh-mariadb | stopped"
+    scope: "{{ handler_current_service.service.scope }}"
 
 - name: "systemd | vsh-mariadb | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ mariadb_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-    scope: "{{ mariadb_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mariadb.*') }}"
-  loop_control:
-    loop_var: mariadb_item
-  listen: "systemd | vsh-mariadb | restarted"
+    scope: "{{ handler_current_service.service.scope }}"
 
-- name: "systemd | vsh-mariadb | reloaded"
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: "{{ mariadb_item.service.name }}"
+
+- name: "container | vsh-mariadb | started"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
+    state: started
+
+- name: "container | vsh-mariadb | stopped"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
+    state: stopped
+
+- name: "container | vsh-mariadb | restarted"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-    scope: "{{ mariadb_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mariadb.*') }}"
-  loop_control:
-    loop_var: mariadb_item
-  listen: "systemd | vsh-mariadb | reloaded"
 
-- name: brew | vsh-mariadb104 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb104"
-- name: brew | vsh-mariadb104 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb104"
-- name: brew | vsh-mariadb104 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb104"
-- name: brew | vsh-mariadb106 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb106"
-- name: brew | vsh-mariadb106 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb106"
-- name: brew | vsh-mariadb106 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb106"
-- name: brew | vsh-mariadb114 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mariadb114"
-- name: brew | vsh-mariadb114 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mariadb114"
-- name: brew | vsh-mariadb114 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mariadb114"

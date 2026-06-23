@@ -14,6 +14,17 @@
 #   limitations under the License.
 ##
 ---
-- ansible.builtin.include_tasks: mariadb104.yml
-- ansible.builtin.include_tasks: mariadb106.yml
-- ansible.builtin.include_tasks: mariadb114.yml
+
+- name: "Install MariaDB"
+  ansible.builtin.include_tasks: install-mariadb.yml
+  vars:
+    current_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when: valet_install_services is defined
+
+- name: "Uninstall MariaDB"
+  ansible.builtin.include_tasks: uninstall-mariadb.yml
+  vars:
+    current_service: "{{ item }}"
+  loop: "{{ valet_resolved_service.services }}"
+  when: valet_uninstall_services is defined

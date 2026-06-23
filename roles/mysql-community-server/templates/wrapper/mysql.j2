@@ -1,3 +1,17 @@
 #!/bin/bash
 
-exec podman exec -it vsh-{{ current_service.canonical }} mysql --defaults-file=/root/.my.cnf "$@"
+CONTAINER="vsh-{{ current_service.canonical }}"
+
+{% if current_os == 'ubuntu' %}
+if ! podman inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
+    echo "Error: $CONTAINER is not running" >&2
+    exit 1
+fi
+exec podman exec -it "$CONTAINER" mysql --defaults-file=/root/.my.cnf "$@"
+{% else %}
+if ! container inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
+    echo "Error: $CONTAINER is not running" >&2
+    exit 1
+fi
+exec container exec -it "$CONTAINER" mysql --defaults-file=/root/.my.cnf "$@"
+{% endif %}

@@ -1,7 +1,25 @@
 #!/bin/bash
 
-{% if current_service.version |float >= 11.4 %}
-exec podman exec -it vsh-{{ current_service.canonical }} mariadb-admin --defaults-file=/root/.my.cnf "$@"
+CONTAINER="vsh-{{ current_service.canonical }}"
+
+{% if current_os == 'ubuntu' %}
+if ! podman inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
+    echo "Error: $CONTAINER is not running" >&2
+    exit 1
+fi
+{% if current_service.version | float >= 11.4 %}
+exec podman exec -it "$CONTAINER" mariadb-admin --defaults-file=/root/.my.cnf "$@"
 {% else %}
-exec podman exec -it vsh-{{ current_service.canonical }} mysqladmin --defaults-file=/root/.my.cnf "$@"
+exec podman exec -it "$CONTAINER" mysqladmin --defaults-file=/root/.my.cnf "$@"
+{% endif %}
+{% else %}
+if ! container inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
+    echo "Error: $CONTAINER is not running" >&2
+    exit 1
+fi
+{% if current_service.version | float >= 11.4 %}
+exec container exec -it "$CONTAINER" mariadb-admin --defaults-file=/root/.my.cnf "$@"
+{% else %}
+exec container exec -it "$CONTAINER" mysqladmin --defaults-file=/root/.my.cnf "$@"
+{% endif %}
 {% endif %}

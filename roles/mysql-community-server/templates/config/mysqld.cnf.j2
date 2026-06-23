@@ -3,13 +3,18 @@ nice		= 0
 
 [mysqld]
 bind-address = {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
-mysqlx-bind-address = {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
-
-mysqlx-port = {{ current_service.configuration.ports.mysql }}0
 port = {{ current_service.configuration.ports.mysql }}
 
+{% if current_service.version | float >= 8.0 %}
+mysqlx-bind-address = {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
+mysqlx-port = {{ current_service.configuration.ports.mysql }}0
+{% endif %}
+
 skip-external-locking
+
+{% if current_service.version | float >= 8.4 %}
 mysql_native_password=ON
+{% endif %}
 
 key_buffer_size		= 16M
 max_allowed_packet	= 256M

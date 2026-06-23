@@ -37,21 +37,17 @@
     scope: "{{ handler_current_service.service.scope }}"
 
 
-- name: brew | vsh-mysql57 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql57"
-- name: brew | vsh-mysql57 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql57"
-- name: brew | vsh-mysql57 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql57"
-- name: brew | vsh-mysql80 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql80"
-- name: brew | vsh-mysql80 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql80"
-- name: brew | vsh-mysql80 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql80"
-- name: brew | vsh-mysql84 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-mysql84"
-- name: brew | vsh-mysql84 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-mysql84"
-- name: brew | vsh-mysql84 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-mysql84"
+- name: "container | vsh-mysql | started"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
+    state: started
+
+- name: "container | vsh-mysql | stopped"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
+    state: stopped
+
+- name: "container | vsh-mysql | restarted"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
+    state: restarted

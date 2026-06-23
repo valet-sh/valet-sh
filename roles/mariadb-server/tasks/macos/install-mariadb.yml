@@ -1,5 +1,5 @@
 ##
-#   Copyright 2020 TechDivision GmbH
+#   Copyright 2023 TechDivision GmbH
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,31 +19,48 @@
   ansible.builtin.set_fact:
     handler_current_service: "{{ current_service }}"
 
-- name: debug current_service
-  ansible.builtin.debug:
-    var: current_service
-
-- name: "create basic directories"
+- name: "create mariadb base directories"
   ansible.builtin.file:
-    path: "{{ current_mysql_base_directory }}"
+    path: "{{ current_mariadb_base_directory }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0755"
     state: directory
-  become: true
   with_items:
     - "{{ current_service.configuration.base_path }}"
     - "{{ current_service.configuration.base_path }}/user"
     - "{{ current_service.configuration.base_path }}/etc"
-    - "{{ current_service.configuration.base_path }}/etc/conf.d"
+    - "{{ current_service.configuration.base_path }}/etc/mariadb.conf.d"
   loop_control:
-    loop_var: current_mysql_base_directory
+    loop_var: current_mariadb_base_directory
 
 - name: "Pull {{ current_service.service.name }} image"
-  containers.podman.podman_image:
+  apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
+
+- name: "ensure volume '{{ current_service.service.name }}-data' exists"
+  apple_volume:
+    name: "{{ current_service.service.name }}-data"
+    state: present
+  register: data_volume_obj
+
+- name: "fix volume permissions for '{{ current_service.service.name }}-data'"
+  apple_container:
+    name: vsh-volume-fix
+    image: alpine
+    state: started
+    remove: true
+    detach: false
+    volumes:
+      - "{{ current_service.service.name }}-data:/data"
+    command:
+      - chown
+      - -R
+      - "1000:"
+      - /data
+  when: data_volume_obj.changed
 
 - name: "provide .my.cnf configuration file"
   ansible.builtin.template:
@@ -54,70 +71,69 @@
 - name: "provide mysqld.cnf configuration file"
   ansible.builtin.template:
     src: "config/mysqld.cnf.j2"
-    dest: "{{ current_service.configuration.base_path }}/etc/conf.d/valet-sh.cnf"
+    dest: "{{ current_service.configuration.base_path }}/etc/mariadb.conf.d/valet-sh.cnf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
-  notify: "systemd | vsh-mysql | restarted"
+  notify: "container | vsh-mariadb | restarted"
 
-- name: "provide {{ current_service.service.name }} systemd unit file"
+- name: "provide mariadb{{ current_service.version }} mysql client"
   ansible.builtin.template:
-    src: "systemd/mysql.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
+    src: "wrapper/mariadb.j2"
+    dest: "/usr/local/bin/mariadb{{ current_service.version }}"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
-    mode: "0644"
-  notify: "systemd | vsh-mysql | restarted"
-
-- name: "provide {{ current_service.service.name }} mysql client"
-  ansible.builtin.template:
-    src: "wrapper/mysql.j2"
-    dest: "/usr/local/bin/mysql{{ current_service.version }}"
-    owner: root
-    group: root
     mode: "0755"
   become: true
 
-- name: "provide mysqldump{{ current_service.version }} client"
+- name: "provide mariadump{{ current_service.version }} client"
   ansible.builtin.template:
-    src: "wrapper/mysqldump.j2"
-    dest: "/usr/local/bin/mysqldump{{ current_service.version }}"
-    owner: root
-    group: root
+    src: "wrapper/mariadump.j2"
+    dest: "/usr/local/bin/mariadump{{ current_service.version }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: "0755"
   become: true
 
-- name: "provide mysqladmin{{ current_service.version }} client"
+- name: "provide mariaadmin{{ current_service.version }} client"
   ansible.builtin.template:
-    src: "wrapper/mysqladmin.j2"
-    dest: "/usr/local/bin/mysqladmin{{ current_service.version }}"
-    owner: root
-    group: root
+    src: "wrapper/mariaadmin.j2"
+    dest: "/usr/local/bin/mariaadmin{{ current_service.version }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: "0755"
   become: true
 
-- name: "Ensure {{ current_service.service.name }} is started"
-  ansible.builtin.systemd:
-    name: "{{ current_service.service.name }}"
+- name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    image: "{{ current_service.configuration.docker_image }}"
     state: started
-    daemon_reload: true
-    scope: user
+    cpus: "{{ current_service.configuration.limits.cpus | default(2) }}"
+    memory: "{{ current_service.configuration.limits.memory | default('1g') }}"
+    user: "1000:1000"
+    volumes:
+      - "vsh-{{ current_service.canonical }}-data:/var/lib/mysql"
+      - "{{ current_service.configuration.base_path }}/etc/mariadb.conf.d/valet-sh.cnf:/etc/mysql/mariadb.conf.d/valet-sh.cnf:Z"
+      - "{{ current_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:Z"
+    env:
+      - "MYSQL_ROOT_PASSWORD={{ current_service.configuration.default_root_password }}"
 
-- name: Test MySQL connection and get info
+- name: "Wait for {{ current_service.service.name }} to be ready"
   community.mysql.mysql_info:
-    login_host: "127.0.0.1"
-    login_port: "{{ current_service.configuration.ports.mysql }}"
-    login_user: "root"
+    login_host: "vsh-{{ current_service.canonical }}.vsh-services"
+    login_port: "{{ current_service.configuration.ports.mariadb }}"
+    login_user: root
     login_password: "{{ current_service.configuration.default_root_password }}"
-  register: mysql_status
-  until: mysql_status is succeeded
+  register: mariadb_status
+  until: mariadb_status is succeeded
   retries: 30
   delay: 3
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
 
-- name: "Get desired state of vsh-{{ current_service.canonical }} from services file"
+- name: "Get desired state of {{ current_service.service.name }} from services file"
   vsh_bundle_service_state_info:
     name: "{{ current_service.canonical }}"
   register: current_service_state
@@ -134,11 +150,9 @@
   when: current_service_state.state == "unknown"
 
 - name: "Set {{ current_service.service.name }} container state"
-  ansible.builtin.systemd:
-    name: "{{ current_service.service.name }}"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
-    enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
-    scope: "{{ current_service.service.scope }}"
 
 - name: "Mark {{ current_service.service.name }} as installed in the services file"
   vsh_bundle_state:
