@@ -15,10 +15,10 @@
 ##
 ---
 
-- name: "ensure 'vsh-{{ current_service.canonical }}' is stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
-    state: stopped
+- name: "ensure 'vsh-{{ current_service.canonical }}' is absent"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    state: absent
 
 - name: "Remove vsh-{{ current_service.canonical }} volumes"
   apple_volume:
@@ -35,11 +35,6 @@
   ansible.builtin.file:
     path: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.service.name }}.plist"
     state: absent
-
-- name: "ensure LaunchAgent is reloaded"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
-    daemon_reload: true
 
 - name: "Remove vsh-{{ current_service.canonical }} configurations"
   ansible.builtin.file:

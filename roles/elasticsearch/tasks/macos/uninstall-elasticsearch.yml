@@ -15,10 +15,10 @@
 ##
 ---
 
-- name: "ensure 'vsh-{{ current_service.canonical }}' is stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
-    state: stopped
+- name: "ensure 'vsh-{{ current_service.canonical }}' is absent"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    state: absent
 
 - name: "Remove vsh-{{ current_service.canonical }} volumes"
   apple_volume:
@@ -26,20 +26,9 @@
     state: absent
   loop:
     - "vsh-{{ current_service.canonical }}-data"
-    - "vsh-{{ current_service.canonical }}-plugins"
   loop_control:
     loop_var: current_service_volume_item
   when: "'--purge' in valet_cli_opts"
-
-- name: "Remove vsh-{{ current_service.canonical }} LaunchAgent service"
-  ansible.builtin.file:
-    path: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.service.name }}.plist"
-    state: absent
-
-- name: "ensure LaunchAgent is reloaded"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
-    daemon_reload: true
 
 - name: "Remove vsh-{{ current_service.canonical }} configurations"
   ansible.builtin.file:
@@ -50,7 +39,6 @@
   apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     state: absent
-    force: true
   when: "'--purge' in valet_cli_opts"
 
 - name: "Remove vsh-{{ current_service.canonical }} from installed services"

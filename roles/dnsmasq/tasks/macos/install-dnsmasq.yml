@@ -42,3 +42,8 @@
 
 - name: brew | dnsmasq | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services  restart dnsmasq"
+
+- name: "Mark dnsmasq as installed in the services file"
+  vsh_bundle_state:
+    action: "installed"
+    canonical_names: "dnsmasq"

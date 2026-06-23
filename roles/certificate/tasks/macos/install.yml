@@ -14,5 +14,11 @@
 #   limitations under the License.
 ##
 ---
+
 - name: "install | ensure openssl is installed"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install openssl"
+
+- name: Mark certificate as installed
+  vsh_bundle_state:
+    action: "installed"
+    name: "certificate"

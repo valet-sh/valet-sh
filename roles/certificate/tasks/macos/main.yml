@@ -21,17 +21,17 @@
 - ansible.builtin.include_tasks: macos/ca.yml
   when:
     - cert_prefix is not defined
-    - valet_uninstall_services is defined
+    - not valet_uninstall_services is defined
 
 - ansible.builtin.include_tasks: macos/cert-renew.yml
   when:
     - cert_prefix is not defined
-    - valet_uninstall_services is defined
+    - not valet_uninstall_services is defined
 
 - ansible.builtin.include_tasks: macos/server.yml
   when:
     - cert_prefix is defined
-    - valet_uninstall_services is defined
+    - not valet_uninstall_services is defined
 
 - ansible.builtin.include_tasks: macos/uninstall.yml
   when: valet_uninstall_services is defined

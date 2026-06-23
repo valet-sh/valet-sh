@@ -9,7 +9,7 @@ service:
     mac: "user"
 
 configuration:
-  docker_image: "docker.io/opensearchproject/opensearch:2.5.0"
+  docker_image: "docker.io/opensearchproject/opensearch:2.19.5"
   limits:
     memory: "4g"
     cpus: "2"

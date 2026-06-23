@@ -15,9 +15,33 @@
 ##
 ---
 
+- name: "ensure 'vsh-{{ current_service.canonical }}' is absent"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    state: absent
 
+- name: "Remove 'vsh-{{ current_service.canonical }}' volume"
+  apple_volume:
+    name: "vsh-{{ current_service.canonical }}"
+    state: absent
+  when: "'--purge' in valet_cli_opts"
 
-- name: Remove mailpit from installed services
+- name: "Remove mailpit nginx vhost"
+  ansible.builtin.file:
+    path: "/opt/homebrew/etc/nginx/conf.d/mailpit.conf"
+    state: absent
+  notify: brew | nginx | restarted
+
+- name: "Remove vsh-{{ current_service.canonical }} image"
+  apple_image:
+    name: "{{ current_service.configuration.docker_image }}"
+    state: absent
+  when: "'--purge' in valet_cli_opts"
+
+- name: "Remove mailpit from installed services"
   vsh_bundle_state:
     action: "uninstalled"
-    canonical_names: "{{ current_mailpit_service.canonical }}"
+    canonical_names: "{{ current_service.canonical }}"
+
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers

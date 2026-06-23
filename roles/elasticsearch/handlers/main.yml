@@ -37,38 +37,17 @@
     scope: "{{ handler_current_service.service.scope }}"
 
 
-- name: "LaunchAgent | vsh-elasticsearch | daemon-reload"
-  vsh_launchagent:
-    label: "sh.valet.{{ elasticsearch_item.service.name }}"
-    daemon_reload: true
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
-  loop_control:
-    loop_var: elasticsearch_item
-  listen: "LaunchAgent | vsh-elasticsearch | daemon-reload"
-
-- name: "LaunchAgent | vsh-elasticsearch | started"
-  vsh_launchagent:
-    label: "sh.valet.{{ elasticsearch_item.service.name }}"
+- name: "container | vsh-elasticsearch | started"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
-  loop_control:
-    loop_var: elasticsearch_item
-  listen: "LaunchAgent | vsh-elasticsearch | started"
 
-- name: "LaunchAgent | vsh-elasticsearch | stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ elasticsearch_item.service.name }}"
+- name: "container | vsh-elasticsearch | stopped"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
-  loop_control:
-    loop_var: elasticsearch_item
-  listen: "LaunchAgent | vsh-elasticsearch | stopped"
 
-- name: "LaunchAgent | vsh-elasticsearch | restarted"
-  vsh_launchagent:
-    label: "sh.valet.{{ elasticsearch_item.service.name }}"
+- name: "container | vsh-elasticsearch | restarted"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^elasticsearch.*') }}"
-  loop_control:
-    loop_var: elasticsearch_item
-  listen: "LaunchAgent | vsh-elasticsearch | restarted"

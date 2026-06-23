@@ -37,38 +37,17 @@
     scope: "{{ handler_current_service.service.scope }}"
 
 
-- name: "LaunchAgent | vsh-opensearch | daemon-reload"
-  vsh_launchagent:
-    label: "sh.valet.{{ opensearch_item.service.name }}"
-    daemon_reload: true
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
-  loop_control:
-    loop_var: opensearch_item
-  listen: "LaunchAgent | vsh-opensearch | daemon-reload"
-
-- name: "LaunchAgent | vsh-opensearch | started"
-  vsh_launchagent:
-    label: "sh.valet.{{ opensearch_item.service.name }}"
+- name: "container | vsh-opensearch | started"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
-  loop_control:
-    loop_var: opensearch_item
-  listen: "LaunchAgent | vsh-opensearch | started"
 
-- name: "LaunchAgent | vsh-opensearch | stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ opensearch_item.service.name }}"
+- name: "container | vsh-opensearch | stopped"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
-  loop_control:
-    loop_var: opensearch_item
-  listen: "LaunchAgent | vsh-opensearch | stopped"
 
-- name: "LaunchAgent | vsh-opensearch | restarted"
-  vsh_launchagent:
-    label: "sh.valet.{{ opensearch_item.service.name }}"
+- name: "container | vsh-opensearch | restarted"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^opensearch.*') }}"
-  loop_control:
-    loop_var: opensearch_item
-  listen: "LaunchAgent | vsh-opensearch | restarted"

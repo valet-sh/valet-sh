@@ -15,6 +15,10 @@
 ##
 ---
 
+- name: "set handler_current_service fact"
+  ansible.builtin.set_fact:
+    handler_current_service: "{{ current_service }}"
+
 - name: "Pull image '{{ current_service.configuration.docker_image }}'"
   apple_image:
     name: "{{ current_service.configuration.docker_image }}"
@@ -26,12 +30,6 @@
     name: "{{ current_service.service.name }}-data"
     state: present
   register: data_volume_obj
-
-- name: "ensure volume '{{ current_service.service.name }}-plugins' exists"
-  apple_volume:
-    name: "{{ current_service.service.name }}-plugins"
-    state: present
-  register: plugins_volume_obj
 
 - name: "fix volume permissions for '{{ current_service.service.name }}-data'"
   apple_container:
@@ -49,18 +47,6 @@
       - /data
   when: data_volume_obj.changed
 
-- name: "fix volume permissions for '{{ current_service.service.name }}-plugins'"
-  apple_container:
-    name: vsh-volume-fix
-    image: alpine
-    state: started
-    remove: true
-    detach: false
-    volumes:
-      - "{{ current_service.service.name }}-plugins:/data"
-    command: "sh -c 'chown -R 1000: /data && rm -rf /data/lost+found'"
-  when: plugins_volume_obj.changed
-
 - name: "Create vsh-{{ current_service.canonical }} config directory"
   ansible.builtin.file:
     path: "{{ current_service.configuration.base_path }}/config"
@@ -74,28 +60,23 @@
     src: "config/{{ current_service.canonical }}.yml.j2"
     dest: "{{ current_service.configuration.base_path }}/config/elasticsearch.yml"
     mode: "0644"
-  notify: "LaunchAgent | vsh-elasticsearch | restarted"
+  notify: "container | vsh-elasticsearch | restarted"
 
-- name: "ensure '{{ current_home }}/Library/LaunchAgents/' exists"
-  ansible.builtin.file:
-    path: "{{ current_home }}/Library/LaunchAgents/"
-    state: directory
-    mode: "0755"
-
-- name: "Provide LaunchAgent service for vsh-{{ current_service.canonical }} container"
-  ansible.builtin.template:
-    src: "LaunchAgent/sh.valet.vsh-elasticsearch.plist.j2"
-    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.service.name }}.plist"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "LaunchAgent | vsh-elasticsearch | daemon-reload"
-
-- name: reload and restart
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
-    state: restarted
-    daemon_reload: true
+- name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    image: "{{ current_service.configuration.docker_image }}"
+    state: started
+    cpus: "{{ current_service.configuration.limits.cpus | default(2) }}"
+    memory: "{{ current_service.configuration.limits.memory | default('2g') }}"
+    user: "1000:1000"
+    volumes:
+      - "vsh-{{ current_service.canonical }}-data:/usr/share/elasticsearch/data"
+      - "{{ current_service.configuration.base_path }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z"
+    env:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "xpack.security.enabled=false"
 
 - name: "Wait for vsh-{{ current_service.canonical }} to be ready 'http://{{ current_service.service.name }}.vsh-services:{{ current_service.configuration.ports.http }}/_cluster/health'"
   ansible.builtin.uri:
@@ -120,7 +101,7 @@
   with_items: "{{ current_service.configuration.plugins.default_plugins }}"
   loop_control:
     loop_var: current_elasticsearch_plugin
-  notify: "LaunchAgent | vsh-elasticsearch | restarted"
+  notify: "container | vsh-elasticsearch | restarted"
   when:
     - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
     - current_elasticsearch_plugin.url is not defined
@@ -133,7 +114,7 @@
   with_items: "{{ current_service.configuration.plugins.default_plugins }}"
   loop_control:
     loop_var: current_elasticsearch_plugin
-  notify: "LaunchAgent | vsh-elasticsearch | restarted"
+  notify: "container | vsh-elasticsearch | restarted"
   when:
     - current_elasticsearch_plugin.name not in installed_plugins.stdout_lines
     - current_elasticsearch_plugin.url is defined
@@ -159,8 +140,8 @@
   when: current_service_state.state == "unknown"
 
 - name: "Ensure target state of vsh-{{ current_service.canonical }} is set"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
 
 - name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"

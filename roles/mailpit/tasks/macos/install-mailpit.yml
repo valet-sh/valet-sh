@@ -15,20 +15,15 @@
 ##
 ---
 
-- name: Pull mailpit image
+- name: "set handler_current_service fact"
+  ansible.builtin.set_fact:
+    handler_current_service: "{{ current_service }}"
+
+- name: Ensure mailpit image is up2date
   apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
-
-- name: provide LaunchAgent service for mailpit container
-  ansible.builtin.template:
-    src: "LaunchAgent/sh.valet.vsh-mailpit.plist.j2"
-    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.vsh-{{ current_service.service.name }}.plist"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "LaunchAgent | vsh-mailpit | daemon-reload"
 
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
@@ -46,18 +41,21 @@
     mode: "0644"
   notify: brew | nginx | restarted
 
-- name: reload and restart
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
-    state: restarted
-    daemon_reload: true
-
-- name: "Flush handlers"
-  ansible.builtin.meta: flush_handlers
-
 - name: unset 'cert_prefix' variable
   ansible.builtin.set_fact:
     cert_prefix: "{{ non_existent | default(None) }}"
+
+- name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    image: "{{ current_service.configuration.docker_image }}"
+    state: started
+    env:
+      - "MP_UI_BIND_ADDR=0.0.0.0:{{ current_service.configuration.ports.http }}"
+      - "MP_SMTP_BIND_ADDR=0.0.0.0:{{ current_service.configuration.ports.smtp }}"
+
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers
 
 - name: "Add mailpit to installed services"
   vsh_bundle_state:

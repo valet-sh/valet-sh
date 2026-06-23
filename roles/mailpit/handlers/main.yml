@@ -48,38 +48,17 @@
     loop_var: mailpit_item
   listen: "systemd | vsh-mailpit | restarted"
 
-- name: "LaunchAgent | vsh-mailpit | daemon-reload"
-  vsh_launchagent:
-    label: "sh.valet.{{ mailpit_item.service.name }}"
-    daemon_reload: true
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailpit.*') }}"
-  loop_control:
-    loop_var: mailpit_item
-  listen: "LaunchAgent | vsh-mailpit | daemon-reload"
-
-- name: "LaunchAgent | vsh-mailpit | started"
-  vsh_launchagent:
-    label: "sh.valet.{{ mailpit_item.service.name }}"
+- name: "container | vsh-mailpit | started"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailpit.*') }}"
-  loop_control:
-    loop_var: mailpit_item
-  listen: "LaunchAgent | vsh-mailpit | started"
 
-- name: "LaunchAgent | vsh-mailpit | stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ mailpit_item.service.name }}"
+- name: "container | vsh-mailpit | stopped"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailpit.*') }}"
-  loop_control:
-    loop_var: mailpit_item
-  listen: "LaunchAgent | vsh-mailpit | stopped"
 
-- name: "LaunchAgent | vsh-mailpit | restarted"
-  vsh_launchagent:
-    label: "sh.valet.{{ mailpit_item.service.name }}"
+- name: "container | vsh-mailpit | restarted"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^mailpit.*') }}"
-  loop_control:
-    loop_var: mailpit_item
-  listen: "LaunchAgent | vsh-mailpit | restarted"

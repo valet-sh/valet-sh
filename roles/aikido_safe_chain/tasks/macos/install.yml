@@ -44,3 +44,8 @@
 
 - name: "run '/usr/local/bin/safe-chain setup'"
   ansible.builtin.command: "/usr/local/bin/safe-chain setup"
+
+- name: "Mark nginx as installed in the services file"
+  vsh_bundle_state:
+    action: "installed"
+    canonical_names: "aikido_safe_chain"

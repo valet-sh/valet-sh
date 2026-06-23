@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - ansible.builtin.include_tasks: "ubuntu/internal-actions/migrations.yml"
   when: valet_sh_service_internal_action|bool
 
