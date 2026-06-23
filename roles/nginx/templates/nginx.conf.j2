@@ -41,6 +41,10 @@ http {
     access_log {{ valet_sh_prefix }}/var/log/nginx/access.log;
     error_log {{ valet_sh_prefix }}/var/log/nginx/error.log;
 
+{% if current_os == 'macos' %}
+    resolver 127.0.0.1:2053 valid=10s ipv6=off;
+{% endif %}
+
     gzip on;
     gzip_disable "msie6";
     gzip_vary on;

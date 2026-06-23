@@ -66,6 +66,16 @@
     force: false
   become: true
 
+- name: "Mark nginx as installed in the services file"
+  vsh_bundle_state:
+    action: "installed"
+    canonical_names: "nginx"
+
+- name: "Mark nginx as enabled in the services file"
+  vsh_bundle_state:
+    action: "enabled"
+    canonical_names: "nginx"
+
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
     cert_prefix: "{{ valet_sh_default_vhost_domain }}"
