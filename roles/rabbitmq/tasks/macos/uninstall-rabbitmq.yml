@@ -15,10 +15,10 @@
 ##
 ---
 
-- name: "ensure 'vsh-{{ current_service.canonical }}' is stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.canonical }}"
-    state: stopped
+- name: "ensure 'vsh-{{ current_service.canonical }}' is absent"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    state: absent
 
 - name: "Remove vsh-{{ current_service.canonical }} volumes"
   apple_volume:
@@ -30,24 +30,28 @@
     loop_var: current_service_volume_item
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_service.canonical }} LaunchAgent service"
+- name: "Remove vsh-{{ current_service.canonical }} configurations"
   ansible.builtin.file:
-    path: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.canonical }}.plist"
+    path: "{{ current_service.configuration.base_path }}"
     state: absent
 
-- name: "ensure LaunchAgent is reloaded"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.canonical }}"
-    daemon_reload: true
+- name: "Remove vsh-{{ current_service.canonical }} nginx vhost"
+  ansible.builtin.file:
+    path: "/etc/nginx/conf.d/{{ current_service.canonical }}.conf"
+    state: absent
+  notify: brew | nginx | reloaded
+  become: true
 
-- name: Remove rabbitmq image
-  containers.podman.podman_image:
+- name: "Remove vsh-{{ current_service.canonical }} image"
+  apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     state: absent
-    force: true
   when: "'--purge' in valet_cli_opts"
 
 - name: "Remove vsh-{{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"
     canonical_names: "{{ current_service.canonical }}"
+
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers

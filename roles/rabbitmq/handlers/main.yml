@@ -37,38 +37,17 @@
     scope: "{{ handler_current_service.service.scope }}"
 
 
-- name: "LaunchAgent | vsh-rabbitmq | daemon-reload"
-  vsh_launchagent:
-    label: "sh.valet.{{ rabbitmq_item.service.name }}"
-    daemon_reload: true
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
-  loop_control:
-    loop_var: rabbitmq_item
-  listen: "LaunchAgent | vsh-rabbitmq | daemon-reload"
-
-- name: "LaunchAgent | vsh-rabbitmq | started"
-  vsh_launchagent:
-    label: "sh.valet.{{ rabbitmq_item.service.name }}"
+- name: "container | vsh-rabbitmq | started"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
-  loop_control:
-    loop_var: rabbitmq_item
-  listen: "LaunchAgent | vsh-rabbitmq | started"
 
-- name: "LaunchAgent | vsh-rabbitmq | stopped"
-  vsh_launchagent:
-    label: "sh.valet.{{ rabbitmq_item.service.name }}"
+- name: "container | vsh-rabbitmq | stopped"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
-  loop_control:
-    loop_var: rabbitmq_item
-  listen: "LaunchAgent | vsh-rabbitmq | stopped"
 
-- name: "LaunchAgent | vsh-rabbitmq | restarted"
-  vsh_launchagent:
-    label: "sh.valet.{{ rabbitmq_item.service.name }}"
+- name: "container | vsh-rabbitmq | restarted"
+  apple_container:
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^rabbitmq.*') }}"
-  loop_control:
-    loop_var: rabbitmq_item
-  listen: "LaunchAgent | vsh-rabbitmq | restarted"

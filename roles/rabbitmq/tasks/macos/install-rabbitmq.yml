@@ -15,19 +15,23 @@
 ##
 ---
 
+- name: "set handler_current_service fact"
+  ansible.builtin.set_fact:
+    handler_current_service: "{{ current_service }}"
+
 - name: Pull rabbitmq-server {{ current_service.service.version }} image
   apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
 
-- name: "ensure volume '{{ current_service.canonical }}-data' exists"
+- name: "ensure volume 'vsh-{{ current_service.canonical }}-data' exists"
   apple_volume:
-    name: "{{ current_service.canonical }}-data"
+    name: "vsh-{{ current_service.canonical }}-data"
     state: present
   register: data_volume_obj
 
-- name: "fix volume permissions for '{{ current_service.canonical }}-data'"
+- name: "fix volume permissions for 'vsh-{{ current_service.canonical }}-data'"
   apple_container:
     name: vsh-volume-fix
     image: alpine
@@ -35,22 +39,13 @@
     remove: true
     detach: false
     volumes:
-      - "{{ current_service.canonical }}-data:/data"
+      - "vsh-{{ current_service.canonical }}-data:/data"
     command:
       - chown
       - -R
       - "1000:"
       - /data
   when: data_volume_obj.changed
-
-- name: provide LaunchAgent service for rabbitmq container
-  ansible.builtin.template:
-    src: "LaunchAgent/sh.valet.vsh-{{ current_service.service.name }}.plist.j2"
-    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.vsh-{{ current_service.canonical }}.plist"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    mode: "0644"
-  notify: "LaunchAgent | vsh-rabbitmq | daemon-reload"
 
 - name: "Create vsh-{{ current_service.canonical }} config directory"
   ansible.builtin.file:
@@ -65,7 +60,7 @@
     src: "{{ current_service.service.name }}.conf.j2"
     dest: "{{ current_service.configuration.base_path }}/config/{{ current_service.service.name }}.conf"
     mode: "0644"
-  notify: "LaunchAgent | vsh-{{ current_service.service.name }} | restarted"
+  notify: "container | vsh-rabbitmq | restarted"
 
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
@@ -90,6 +85,18 @@
   ansible.builtin.set_fact:
     cert_prefix: "{{ non_existent | default(None) }}"
 
+- name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
+    image: "{{ current_service.configuration.docker_image }}"
+    state: started
+    cpus: "{{ current_service.configuration.limits.cpus | default(2) }}"
+    memory: "{{ current_service.configuration.limits.memory | default('2g') }}"
+    user: "1000:1000"
+    volumes:
+      - "vsh-{{ current_service.canonical }}-data:/var/lib/rabbitmq"
+      - "{{ current_service.configuration.base_path }}/config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:Z"
+
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
 
@@ -110,8 +117,8 @@
   when: current_service_state.state == "unknown"
 
 - name: "Ensure target state of vsh-{{ current_service.canonical }} is set"
-  vsh_launchagent:
-    label: "sh.valet.{{ current_service.service.name }}"
+  apple_container:
+    name: "vsh-{{ current_service.canonical }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
 
 - name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
