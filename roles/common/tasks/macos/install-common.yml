@@ -67,6 +67,44 @@
 - name: ensure service tap is installed
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services list"
 
+- name: "ensure '{{ current_home }}/.config/container' exists"
+  ansible.builtin.file:
+    path: "{{ current_home }}/.config/container"
+    state: directory
+    mode: "0755"
+
+- name: "ensure '{{ current_home }}/.config/container/config.toml' is up2date"
+  ansible.builtin.copy:
+    content: |
+      [dns]
+      domain = "vsh-services"
+    dest: "{{ current_home }}/.config/container/config.toml"
+    mode: "0644"
+
+- name: check if '/usr/local/bin/container' exists
+  ansible.builtin.stat:
+    path: "/usr/local/bin/container"
+  register: container_install_state_obj
+
+- name: install apple container when absent
+  when: not container_install_state_obj.stat.exists|bool
+  block:
+    - name: ensure that aikido safe-chain is installed
+      ansible.builtin.get_url:
+        url: "https://github.com/apple/container/releases/download/1.0.0/container-1.0.0-installer-signed.pkg"
+        dest: "/tmp/apple-container.pkg"
+        mode: "0755"
+        force: true
+
+    - name: "install apple container"
+      community.general.macpackage:
+        name: /tmp/apple-container.pkg
+        state: present
+      become: true
+
+    - name: ensure apple container is started
+      shell: container system start
+
 - name: Mark common as installed
   vsh_bundle_state:
     action: "installed"
