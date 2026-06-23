@@ -22,9 +22,18 @@ def container_is_running(name):
             data = data[0] if data else {}
         status = ''
         if 'State' in data:
-            status = data['State'].get('Status', '').lower()
+            state_val = data['State']
+            if isinstance(state_val, dict):
+                status = state_val.get('Status', '').lower()
+            elif isinstance(state_val, str):
+                status = state_val.lower()
         elif 'status' in data:
-            status = data['status'].lower()
+            status_val = data['status']
+            if isinstance(status_val, str):
+                status = status_val.lower()
+            elif isinstance(status_val, dict):
+                inner = status_val.get('status', status_val.get('State', status_val.get('state', '')))
+                status = inner.lower() if isinstance(inner, str) else ''
         return status == 'running'
     except (ValueError, KeyError):
         return False

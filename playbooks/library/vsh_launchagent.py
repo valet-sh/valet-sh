@@ -37,6 +37,54 @@ def current_state(label):
     return 'stopped'
 
 
+def bootstrap_with_retry(scope, uid, path, retries=5, delay=1.0):
+    for attempt in range(retries):
+        rc, stdout, stderr = run_launchctl(['bootstrap', domain_target(scope, uid), path])
+        if rc == 0:
+            return rc, stdout, stderr
+        if attempt < retries - 1:
+            time.sleep(delay)
+    return rc, stdout, stderr
+
+
+def get_service_pid(label):
+    rc, stdout, _ = run_launchctl(['list', label])
+    if rc != 0:
+        return None
+    m = re.search(r'"PID"\s*=\s*(\d+)', stdout)
+    return int(m.group(1)) if m else None
+
+
+def wait_for_pid_to_die(pid, timeout=60.0, interval=1.0):
+    elapsed = 0.0
+    while elapsed < timeout:
+        try:
+            os.kill(pid, 0)
+        except (ProcessLookupError, OSError):
+            return
+        time.sleep(interval)
+        elapsed += interval
+
+
+def _bootout_and_bootstrap(module, label, scope, uid, path):
+    # capture PID before bootout so we can wait for the process to fully die
+    pid = get_service_pid(label)
+    # bootout failure is non-fatal — service may not be loaded yet
+    bootout_rc, _, bootout_stderr = run_launchctl(['bootout', service_target(scope, uid, label)])
+    if bootout_rc == 0 and pid:
+        # wait for the process to actually terminate before bootstrapping;
+        # otherwise launchctl bootstrap fails with EIO if the process still holds ports/resources
+        wait_for_pid_to_die(pid)
+    rc, _, stderr = bootstrap_with_retry(scope, uid, path)
+    if rc != 0:
+        module.fail_json(
+            msg='Failed to reload LaunchAgent',
+            stderr=stderr,
+            bootout_rc=bootout_rc,
+            bootout_stderr=bootout_stderr,
+        )
+
+
 def ensure_present(module, label, scope, uid, path, state):
     if state != 'absent':
         return False, 'LaunchAgent already registered'
@@ -105,36 +153,15 @@ def ensure_reloaded(module, label, scope, uid, path, state):
     if not os.path.exists(path):
         module.fail_json(msg=f'Plist not found: {path}')
     if not module.check_mode:
-        run_launchctl(['bootout', service_target(scope, uid, label)])
-        rc, _, stderr = bootstrap_with_retry(scope, uid, path)
-        if rc != 0:
-            module.fail_json(msg='Failed to reload LaunchAgent', stderr=stderr)
+        _bootout_and_bootstrap(module, label, scope, uid, path)
     return True, 'LaunchAgent reloaded'
 
 
-def bootstrap_with_retry(scope, uid, path, retries=5, delay=1.0):
-    for attempt in range(retries):
-        rc, stdout, stderr = run_launchctl(['bootstrap', domain_target(scope, uid), path])
-        if rc == 0:
-            return rc, stdout, stderr
-        if attempt < retries - 1:
-            time.sleep(delay)
-    return rc, stdout, stderr
-
-
-def do_daemon_reload(module, label, scope, uid, path, svc_state):
+def do_daemon_reload(module, label, scope, uid, path):
     if not os.path.exists(path):
         module.fail_json(msg=f'Plist not found: {path}')
     if not module.check_mode:
-        bootout_rc, _, bootout_stderr = run_launchctl(['bootout', service_target(scope, uid, label)])
-        rc, _, stderr = bootstrap_with_retry(scope, uid, path)
-        if rc != 0:
-            module.fail_json(
-                msg='Failed to reload LaunchAgent',
-                stderr=stderr,
-                bootout_rc=bootout_rc,
-                bootout_stderr=bootout_stderr,
-            )
+        _bootout_and_bootstrap(module, label, scope, uid, path)
 
 
 def main():
@@ -158,7 +185,7 @@ def main():
 
     reload_changed = False
     if params['daemon_reload'] and state != 'absent':
-        do_daemon_reload(module, label, scope, uid, path, svc_state)
+        do_daemon_reload(module, label, scope, uid, path)
         reload_changed = True
         svc_state = current_state(label)
 

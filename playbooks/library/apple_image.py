@@ -3,6 +3,7 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import subprocess
+import json
 
 
 def run_cli(args):
@@ -23,9 +24,22 @@ def parse_image_ref(name, tag):
     return '%s:%s' % (name, tag) if tag else name
 
 
+def image_id(ref):
+    rc, stdout, _ = run_cli(['image', 'inspect', ref])
+    if rc != 0:
+        return None
+    try:
+        data = json.loads(stdout)
+        if isinstance(data, list):
+            data = data[0] if data else {}
+        return data.get('Id') or data.get('id') or data.get('Digest') or data.get('digest')
+    except (ValueError, KeyError):
+        pass
+    return stdout
+
+
 def image_exists(ref):
-    rc, _stdout, _stderr = run_cli(['image', 'inspect', ref])
-    return rc == 0
+    return image_id(ref) is not None
 
 
 def main():
@@ -51,13 +65,26 @@ def main():
         if exists and not force_pull:
             module.exit_json(changed=False, msg='Image already present', image=ref)
 
-        if not module.check_mode:
-            rc, stdout, stderr = run_cli(['image', 'pull', ref])
-            if rc != 0:
-                module.fail_json(msg='Failed to pull image', image=ref, stderr=stderr, rc=rc)
+        id_before = image_id(ref)
 
-        changed = not exists or force_pull
-        msg = 'Image pulled' if not exists else 'Image refreshed (pull=true)'
+        if module.check_mode:
+            # cannot know without pulling whether the remote image changed
+            changed = not exists or force_pull
+            msg = 'Image pulled' if not exists else 'Image would be refreshed (pull=true)'
+            module.exit_json(changed=changed, msg=msg, image=ref)
+
+        rc, stdout, stderr = run_cli(['image', 'pull', ref])
+        if rc != 0:
+            module.fail_json(msg='Failed to pull image', image=ref, stderr=stderr, rc=rc)
+
+        id_after = image_id(ref)
+        changed = id_before != id_after
+        if not exists:
+            msg = 'Image pulled'
+        elif changed:
+            msg = 'Image updated'
+        else:
+            msg = 'Image already up to date'
         module.exit_json(changed=changed, msg=msg, image=ref)
 
     else:  # absent
