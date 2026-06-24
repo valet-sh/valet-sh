@@ -89,21 +89,20 @@
 - name: install apple container when absent
   when: not container_install_state_obj.stat.exists|bool
   block:
-    - name: ensure that aikido safe-chain is installed
+    - name: Download apple container installer
       ansible.builtin.get_url:
         url: "https://github.com/apple/container/releases/download/1.0.0/container-1.0.0-installer-signed.pkg"
         dest: "/tmp/apple-container.pkg"
         mode: "0755"
         force: true
 
-    - name: "install apple container"
-      community.general.macpackage:
-        name: /tmp/apple-container.pkg
-        state: present
+    - name: Install apple container
+      ansible.builtin.command:
+        cmd: "installer -pkg /tmp/apple-container.pkg -target /"
       become: true
 
     - name: ensure apple container is started
-      shell: container system start
+      shell: container system start --enable-kernel-install
 
 - name: Mark common as installed
   vsh_bundle_state:
