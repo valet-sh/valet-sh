@@ -60,6 +60,15 @@ def container_image_ref(info):
         return None
 
 
+def container_image_digest(info):
+    """Extract the image digest from container inspect data.
+    Apple container inspect stores it at configuration.image.descriptor.digest."""
+    try:
+        return info['configuration']['image']['descriptor']['digest']
+    except (KeyError, TypeError):
+        return None
+
+
 def normalize_image_ref(ref):
     """Add docker.io/ prefix when no registry is specified."""
     if not ref:
@@ -70,8 +79,32 @@ def normalize_image_ref(ref):
     return ref
 
 
+def get_local_image_digest(ref):
+    """Get the digest of the locally available image via container image inspect.
+    Apple container image inspect stores it at configuration.descriptor.digest."""
+    rc, stdout, _ = run_cli(['image', 'inspect', ref])
+    if rc != 0:
+        return None
+    try:
+        data = json.loads(stdout)
+        if isinstance(data, list):
+            data = data[0] if data else {}
+        return data.get('configuration', {}).get('descriptor', {}).get('digest')
+    except (ValueError, KeyError):
+        return None
+
+
 def image_matches(info, desired):
-    """Return True if the container already uses the desired image."""
+    """Return True if the container already uses the desired local image.
+    Compares digests so a re-pulled image with the same tag is detected correctly.
+    Falls back to reference comparison if digest is unavailable."""
+    container_digest = container_image_digest(info)
+    if container_digest is not None:
+        local_digest = get_local_image_digest(desired)
+        if local_digest is not None:
+            return container_digest == local_digest
+
+    # Fallback: reference comparison
     current = container_image_ref(info)
     if current is None:
         return False
@@ -83,7 +116,18 @@ def _stop_and_delete(module, name, current_state):
         rc, _, stderr = run_cli(['stop', name])
         if rc != 0:
             module.fail_json(msg='Failed to stop container', stderr=stderr, rc=rc)
-    rc, _, stderr = run_cli(['delete', name])
+    else:
+        # Always attempt stop before delete — the CLI may require it regardless of state.
+        # Ignore errors here since the container may already be stopped.
+        run_cli(['stop', name])
+    # container delete requires the internal ID, not the name.
+    # Re-inspect to get the actual ID; if the container is already gone
+    # (e.g. --rm auto-delete), skip the delete step.
+    info = container_inspect(name)
+    if info is None:
+        return
+    container_id = info.get('id', name)
+    rc, _, stderr = run_cli(['delete', container_id])
     if rc != 0:
         module.fail_json(msg='Failed to delete container', stderr=stderr, rc=rc)
 
