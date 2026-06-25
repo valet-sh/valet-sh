@@ -98,6 +98,51 @@
     - name: ensure apple container is started
       shell: container system start --enable-kernel-install
 
+- name: "ensure '{{ current_home }}/Library/LaunchAgents' exists"
+  ansible.builtin.file:
+    path: "{{ current_home }}/Library/LaunchAgents"
+    state: directory
+    mode: "0755"
+
+- name: "ensure '/usr/local/valet-sh/bin/' exists"
+  ansible.builtin.file:
+    path: "/usr/local/valet-sh/bin/"
+    state: directory
+    mode: "0755"
+
+- name: "ensure LaunchAgent '{{ current_home }}/Library/LaunchAgents/com.apple.container.autostart.plist' is up2date"
+  ansible.builtin.template:
+    src: "LaunchAgent/com.apple.container.autostart.plist.j2"
+    dest: "{{ current_home }}/Library/LaunchAgents/com.apple.container.autostart.plist"
+
+- name: "ensure LaunchAgent '{{ current_home }}/Library/LaunchAgents/sh.valet.container.autostart.plist' is up2date"
+  ansible.builtin.template:
+    src: "LaunchAgent/sh.valet.container.autostart.plist.j2"
+    dest: "{{ current_home }}/Library/LaunchAgents/sh.valet.container.autostart.plist"
+
+- name: "ensure '/usr/local/valet-sh/etc/bin/container-autostart.sh' is up2date"
+  ansible.builtin.template:
+    src: "container-autostart.sh.j2"
+    dest: "/usr/local/valet-sh/bin/container-autostart.sh"
+    mode: "0755"
+
+- name: "ensure '/usr/local/valet-sh/etc/container-autostart' exists"
+  ansible.builtin.file:
+    path: "/usr/local/valet-sh/etc/container-autostart"
+    state: touch
+
+- name: "ensure '{{ current_home }}/Library/LaunchAgents' exists"
+  ansible.builtin.file:
+    path: "{{ current_home }}/Library/LaunchAgents"
+    state: directory
+    mode: "0755"
+
+- name: ensure apple container is started
+  ansible.builtin.shell: "launchctl load -w {{ current_home }}/Library/LaunchAgents/com.apple.container.autostart.plist"
+
+- name: ensure apple container is started
+  ansible.builtin.shell: "launchctl load -w {{ current_home }}/Library/LaunchAgents/sh.valet.container.autostart.plist"
+
 - name: Mark common as installed
   vsh_bundle_state:
     action: "installed"

@@ -47,10 +47,10 @@
   become: true
 
 - name: brew | dnsmasq | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart dnsmasq"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart dnsmasq"
 
 - name: brew | dnsmasq | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services stop dnsmasq"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop dnsmasq"
 
 - name: brew | dnsmasq | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start dnsmasq"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start dnsmasq"

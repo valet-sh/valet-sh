@@ -41,7 +41,7 @@ http {
     access_log {{ valet_sh_prefix }}/var/log/nginx/access.log;
     error_log {{ valet_sh_prefix }}/var/log/nginx/error.log;
 
-{% if current_os == 'macos' %}
+{% if current_os == 'mac' %}
     resolver 127.0.0.1:2053 valid=10s ipv6=off;
 {% endif %}
 

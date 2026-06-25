@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# container-autostart.sh
+# Starts all containers listed in /usr/local/valet-sh/etc/container-autostart
+
+AUTOSTART_FILE="/usr/local/valet-sh/etc/container-autostart"
+CONTAINER_BIN="/usr/local/bin/container"
+LOG_PREFIX="[container-autostart]"
+
+# Check if the configuration file exists
+if [ ! -f "$AUTOSTART_FILE" ]; then
+    echo "$LOG_PREFIX Configuration file not found: $AUTOSTART_FILE"
+    exit 1
+fi
+
+# Check if the container binary is available
+if [ ! -x "$CONTAINER_BIN" ]; then
+    echo "$LOG_PREFIX Container binary not found: $CONTAINER_BIN"
+    exit 1
+fi
+
+# Wait 10 seconds before starting containers
+echo "$LOG_PREFIX Waiting 10 seconds..."
+sleep 10
+
+# Start all containers listed in the file (skip empty lines and comments)
+while IFS= read -r line || [ -n "$line" ]; do
+    # Trim leading and trailing whitespace
+    container_name="$(echo "$line" | xargs)"
+
+    # Skip empty lines and comments (# ...)
+    [ -z "$container_name" ] && continue
+    [[ "$container_name" == \#* ]] && continue
+
+    echo "$LOG_PREFIX Starting container: $container_name"
+
+    if "$CONTAINER_BIN" start "$container_name"; then
+        echo "$LOG_PREFIX ✓ $container_name started"
+    else
+        echo "$LOG_PREFIX ✗ Failed to start: $container_name" >&2
+    fi
+
+done < "$AUTOSTART_FILE"
+
+echo "$LOG_PREFIX Done."
