@@ -98,6 +98,13 @@
     - name: ensure apple container is started
       shell: container system start --enable-kernel-install
 
+    - name: Create apple container dns
+      command: container system dns create vsh-services
+      become: true
+
+    - name: Set apple container dns to vsh-services
+      command: container system dns default set vsh-services
+
 - name: Mark common as installed
   vsh_bundle_state:
     action: "installed"
