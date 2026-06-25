@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AVAILABLE_PHP_VERSION='{{ valet_sh_service_definitions.php.versions | join(" ") }}'
+AVAILABLE_PHP_VERSION='{{ valet_sh_bundle_definitions.services.php.versions | join(" ") }}'
 
 function get_target_version {
     VALET_SH_FILE=$1
