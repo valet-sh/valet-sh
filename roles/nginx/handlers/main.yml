@@ -65,7 +65,9 @@
 
 - name: brew | nginx | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart nginx"
+
 - name: brew | nginx | stopped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services stop nginx"
+
 - name: brew | nginx | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start nginx"
