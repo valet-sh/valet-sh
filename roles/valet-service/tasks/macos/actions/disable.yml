@@ -48,9 +48,18 @@
 - name: "actions » disable | disable {{ service_item.service.name }} service (using container)"
   apple_container:
     name: "{{ service_item.service.name }}"
-    # TODO: Missing state disabled
     state: stopped
   loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item
   when: service_item.service.provider == 'container' and service_item.service.scope == 'user'
+
+- name: "actions » disable | remove {{ service_item.service.name }} from container autostart"
+  ansible.builtin.lineinfile:
+    path: /usr/local/valet-sh/etc/container-autostart
+    line: "vsh-{{ service_item.canonical }}"
+    state: "absent"
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: service_item
+  when: service_item.service.provider == 'container'
