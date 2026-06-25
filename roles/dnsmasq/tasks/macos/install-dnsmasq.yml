@@ -29,7 +29,6 @@
     content: |
       nameserver 127.0.0.1
       port 5354
-    create: true
   become: true
 
 - name: "ensure dnsmasq listens to port 5354"
