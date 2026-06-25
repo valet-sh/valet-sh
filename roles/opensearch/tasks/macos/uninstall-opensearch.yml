@@ -20,6 +20,12 @@
     name: "vsh-{{ current_service.canonical }}"
     state: absent
 
+- name: Set container autostart
+  ansible.builtin.lineinfile:
+    path: /usr/local/valet-sh/etc/container-autostart
+    line: "vsh-{{ current_service.canonical }}"
+    state: "absent"
+
 - name: "Remove vsh-{{ current_service.canonical }} volumes"
   apple_volume:
     name: "{{ current_service_volume_item }}"

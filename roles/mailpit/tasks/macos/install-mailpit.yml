@@ -54,6 +54,12 @@
       - "MP_UI_BIND_ADDR=0.0.0.0:{{ current_service.configuration.ports.http }}"
       - "MP_SMTP_BIND_ADDR=0.0.0.0:{{ current_service.configuration.ports.smtp }}"
 
+- name: Set container autostart
+  ansible.builtin.lineinfile:
+    path: /usr/local/valet-sh/etc/container-autostart
+    line: "vsh-{{ current_service.canonical }}"
+    state: "present"
+
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
 

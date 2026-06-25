@@ -131,6 +131,12 @@
     name: "vsh-{{ current_service.canonical }}"
     state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
 
+- name: Set container autostart
+  ansible.builtin.lineinfile:
+    path: /usr/local/valet-sh/etc/container-autostart
+    line: "vsh-{{ current_service.canonical }}"
+    state: "{{ 'present' if current_service_state.state == 'enabled' else 'absent' }}"
+
 - name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
   vsh_bundle_state:
     action: "installed"
