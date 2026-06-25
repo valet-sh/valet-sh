@@ -7,6 +7,9 @@ service:
   scope:
     ubuntu: "user"
     mac: "user"
+  provider:
+    ubuntu: "systemd"
+    mac: "container"
 
 configuration:
   docker_image: "docker.io/rabbitmq:3.12-management"

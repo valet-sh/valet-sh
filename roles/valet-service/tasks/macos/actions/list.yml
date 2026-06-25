@@ -15,51 +15,13 @@
 ##
 ---
 
-- name: "actions » list | include valet services file"
-  ansible.builtin.include_vars:
-    file: "{{ valet_etc_services_file }}"
-    name: valet_sh_services_obj
+- name: "actions » list | get bundle content"
+  vsh_bundle_table:
+  register: valet_sh_bundle_obj
 
-- name: "actions » list | include valet services file"
-  ansible.builtin.set_fact:
-    valet_sh_services_current_states: "{{ valet_sh_service_state_preset | combine(valet_sh_services_obj.states) }}"
-
-- name: "actions » list | set empty array 'valet_sh_service_state_list'"
-  ansible.builtin.set_fact:
-    valet_sh_service_state_list: []
-
-- name: "actions » list | add services to array"
-  ansible.builtin.set_fact:
-    valet_sh_service_state_list: "{{ valet_sh_service_state_list + [[valet_sh_services_current_states_item.key, valet_sh_services_current_states_item.value]] }}"
-  with_dict: "{{ valet_sh_services_current_states }}"
-  loop_control:
-    loop_var: valet_sh_services_current_states_item
-
-- name: "actions » list | print table based on 'valet_sh_service_state_list' array"
+- name: "actions » list | Output to vsh_table"
   vsh-table:
-    headers: ["Service", "State"]
-    rows: "{{ valet_sh_service_state_list }}"
-  tags:
-    - skip_ansible_lint
-
-- name: "actions » list | get service defaults"
-  ansible.builtin.set_fact:
-    valet_sh_services_current_defaults: "{{ valet_sh_services_obj.defaults }}"
-
-- name: "actions » list | set empty array 'valet_sh_service_defaults_list'"
-  ansible.builtin.set_fact:
-    valet_sh_service_defaults_list: []
-
-- name: "actions » list | add services to array"
-  ansible.builtin.set_fact:
-    valet_sh_service_defaults_list: "{{ valet_sh_service_defaults_list + [[valet_sh_services_current_defaults_item.value]] }}"
-  with_dict: "{{ valet_sh_services_current_defaults }}"
-  loop_control:
-    loop_var: valet_sh_services_current_defaults_item
-
-- name: "actions » list | print table based on 'valet_sh_service_defaults_list' array"
-  vsh-table:
-    headers: ["Default-Service"]
-    rows: "{{ valet_sh_service_defaults_list }}"
+    headers: ["Type", "Name", "Default", "Autostart"]
+    rows: "{{ valet_sh_bundle_obj.table_rows }}"
   tags:
     - skip_ansible_lint

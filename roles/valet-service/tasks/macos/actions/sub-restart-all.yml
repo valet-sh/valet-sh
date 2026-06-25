@@ -15,42 +15,40 @@
 ##
 ---
 
-- name: "set 'valet_current_service_name' var"
-  ansible.builtin.set_fact:
-    valet_current_service_name: "{{ valet_current_service_item.key }}"
+- name: "actions » restart | include valet bundle file"
+  ansible.builtin.include_vars:
+    file: "{{ valet_etc_services_file }}"
+    name: valet_restart_all_services
 
-- name: "actions » restart | check fuzzy service names"
+- name: "actions » restart | set all enabled services to restart"
   ansible.builtin.set_fact:
-    valet_current_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
-  when: valet_current_service_name in valet_sh_available_php_versions_alias_mapping_item.1
-  with_subelements:
-    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
-    - aliases
+    valet_restart_all_enabled: "{{ valet_restart_all_services.bundles.services.states.keys() | list }}"
+
+- name: "actions » restart | resolve all enabled services to restart"
+  vsh_bundle_resolver:
+    name: "{{ valet_restart_all_enabled }}"
+    current_os: "{{ current_os }}"
+  register: vsh_resolver
+
+- name: "actions » restart | restart {{ service_item.service.name }} service (running as root) (using homebrew)"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ service_item.service.name }}"
+  loop: "{{ vsh_resolver.services }}"
   loop_control:
-    loop_var: valet_sh_available_php_versions_alias_mapping_item
+    loop_var: service_item
+  when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
 
-- name: "actions » restart | reset valet_service_name_alias variable"
-  ansible.builtin.set_fact:
-    valet_current_service_name_alias: ""
+- name: "actions » restart | restart {{ service_item.service.name }} service (using homebrew)"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ service_item.service.name }}"
+  loop: "{{ vsh_resolver.services }}"
+  loop_control:
+    loop_var: service_item
+  when: service_item.service.scope == 'user' and service_item.service.provider == 'homebrew'
 
-- name: "actions » restart | check for alias service name"
-  ansible.builtin.set_fact:
-    valet_current_service_name_alias: "{{ item.value }}"
-  when: item.key == valet_current_service_name
-  with_dict: "{{ valet_sh_service_alias_mapping }}"
-
-- name: "actions » restart | restart {{ valet_current_service_name }} service (running as root)"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ valet_current_service_name }}"
-  when: valet_current_service_name_alias|length == 0 and (valet_current_service_name in valet_sh_service_privileged_services)
-
-- name: "actions » restart | restart {{ valet_current_service_name }} service"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_current_service_name }}"
-  when: valet_current_service_name_alias|length == 0 and (valet_current_service_name not in valet_sh_service_privileged_services)
-
-- name: "actions » restart | restart {{ valet_current_service_name }} service with alias '{{ valet_current_service_name_alias }}' (running as root)"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ valet_current_service_name_alias }}"
-  when: valet_current_service_name_alias|length > 0 and (valet_current_service_name in valet_sh_service_privileged_services)
-
-- name: "actions » restart | restart {{ valet_current_service_name }} service"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ valet_current_service_name_alias }}"
-  when: valet_current_service_name_alias|length > 0 and (valet_current_service_name not in valet_sh_service_privileged_services)
+- name: "actions »  restart | restart {{ service_item.service.name }} service (using container)"
+  apple_container:
+    name: "{{ service_item.service.name }}"
+    state: restarted
+  loop: "{{ vsh_resolver.services }}"
+  loop_control:
+    loop_var: service_item
+  when:  service_item.service.scope == 'user' and service_item.service.provider == 'container'

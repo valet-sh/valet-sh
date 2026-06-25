@@ -7,6 +7,9 @@ service:
   scope:
     ubuntu: "system"
     mac: "user"
+  provider:
+    ubuntu: "systemd"
+    mac: "homebrew"
 
 configuration:
   package_names:

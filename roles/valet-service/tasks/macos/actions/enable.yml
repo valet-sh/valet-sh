@@ -18,67 +18,39 @@
   ansible.builtin.set_fact:
     valet_sh_homebrew_bin: "{{ valet_sh_homebrew_bin }}"
 
-- name: "actions » enable | fail when no service name was given"
+- name: "actions » enable | fail when service defintion is not defined"
   ansible.builtin.fail:
-    msg: "no service name was given"
-  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
+    msg: "service definition is not defined cannot enable service"
+  when: valet_all_services.0.service is not defined
 
-- name: "actions » enable | check fuzzy service names"
-  ansible.builtin.set_fact:
-    valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
-  when: valet_service_name in valet_sh_available_php_versions_alias_mapping_item.1
-  with_subelements:
-    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
-    - aliases
+- name: "actions » enable | set services as enabled using vsh_bundle_state module"
+  vsh_bundle_state:
+    action: "enabled"
+    canonical_names: "{{ valet_canonical_names }}"
+  register: vsh_bundle_state_result
+
+- name: "actions » enable | enable {{ service_item.service.name }} service (running as root) (using homebrew)"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ service_item.service.name }}"
+  failed_when: false
+  when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
+  loop: "{{ valet_all_services }}"
   loop_control:
-    loop_var: valet_sh_available_php_versions_alias_mapping_item
+    loop_var: service_item
 
-- name: "actions » enable | check for alias service name"
-  ansible.builtin.set_fact:
-    valet_service_name_alias: "{{ item.value }}"
-  when: item.key == valet_service_name
-  with_dict: "{{ valet_sh_service_alias_mapping }}"
+- name: "actions » enable | enable {{ service_item.service.name }} service (using homewbrew)"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ service_item.service.name }}"
+  failed_when: false
+  when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: service_item
 
-- name: "actions » enable | enable {{ valet_service_name }} service (running as root)"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ valet_service_name }}"
-  when: valet_service_name_alias|length == 0 and (valet_service_name in valet_sh_service_privileged_services)
-
-- name: "actions » enable | enable {{ valet_service_name }} service"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name }}"
-  when: valet_service_name_alias|length == 0 and (valet_service_name not in valet_sh_service_privileged_services)
-
-- name: "actions » enable | enable {{ valet_service_name }} service (running as root)"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ valet_service_name_alias }}"
-  when: valet_service_name_alias|length > 0 and (valet_service_name in valet_sh_service_privileged_services)
-
-- name: "actions » enable | enable {{ valet_service_name }} service"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name_alias }}"
-  when: valet_service_name_alias|length > 0 and (valet_service_name not in valet_sh_service_privileged_services)
-
-- name: "actions » enable | include valet services file"
-  ansible.builtin.include_vars:
-    file: "{{ valet_etc_services_file }}"
-    name: valet_sh_services_obj
-
-- name: "actions » enable | prepare new config element"
-  ansible.builtin.set_fact:
-    new_service_state_element: "{ '{{ valet_service_name }}': true }"
-
-- name: "actions » enable | update service object"
-  ansible.builtin.set_fact:
-    valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
-
-- name: "actions » enable | merge objects"
-  ansible.builtin.set_fact:
-    valet_sh_services_obj:
-      states: "{{ valet_sh_services_updated_states }}"
-      defaults: "{{ valet_sh_services_obj.defaults }}"
-
-- name: "actions » enable | transform object into nice yaml output"
-  ansible.builtin.set_fact:
-    valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
-
-- name: "actions » enable | write new services.yml file"
-  ansible.builtin.copy:
-    content: "{{ valet_etc_services_list }}"
-    dest: "{{ valet_etc_services_file }}"
+- name: "actions » enable | enable {{ service_item.service.name }} service (using container)"
+  apple_container:
+    name: "{{ service_item.service.name }}"
+    # TODO: Missing state enabled
+    state: started
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: service_item
+  when: service_item.service.provider == 'container' and service_item.service.scope == 'user'

@@ -14,39 +14,36 @@
 #   limitations under the License.
 ##
 ---
-- name: "actions » start | fail when no service name was given"
+- name: "actions » start | set default homebrew bin"
+  ansible.builtin.set_fact:
+    valet_sh_homebrew_bin: "{{ valet_sh_homebrew_bin }}"
+
+- name: "actions » start | fail when service defintion is not defined"
   ansible.builtin.fail:
-    msg: "no service name was given"
-  when: (valet_service_name is not defined) or (valet_service_name | length == 0)
+    msg: "service definition is not defined cannot start service"
+  when: valet_all_services.0.service is not defined
 
-- name: "actions » start | check fuzzy service names"
-  ansible.builtin.set_fact:
-    valet_service_name: "{{ valet_sh_available_php_versions_alias_mapping_item.0.target }}"
-  when: valet_service_name in valet_sh_available_php_versions_alias_mapping_item.1
-  with_subelements:
-    - "{{ valet_sh_service_fuzzy_alias_mapping }}"
-    - aliases
+- name: "actions » start | start {{ service_item.service.name }} service (running as root) (using homebrew)"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ service_item.service.name }}"
+  failed_when: false
+  when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
+  loop: "{{ valet_all_services }}"
   loop_control:
-    loop_var: valet_sh_available_php_versions_alias_mapping_item
+    loop_var: service_item
 
-- name: "actions » start | check for alias service name"
-  ansible.builtin.set_fact:
-    valet_service_name_alias: "{{ item.value }}"
-  when: item.key == valet_service_name
-  with_dict: "{{ valet_sh_service_alias_mapping }}"
+- name: "actions » start | start {{ service_item.service.name }} service (using homewbrew)"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ service_item.service.name }}"
+  failed_when: false
+  when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: service_item
 
-- name: "actions » start | start {{ valet_service_name }} service (running as root)"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ valet_service_name }}"
-  when: valet_service_name_alias|length == 0 and (valet_service_name in valet_sh_service_privileged_services)
-
-- name: "actions » start | start {{ valet_service_name }} service"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name }}"
-  when: valet_service_name_alias|length == 0 and (valet_service_name not in valet_sh_service_privileged_services)
-
-- name: "actions » start | start {{ valet_service_name }} service with alias '{{ valet_service_name_alias }}' (running as root)"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ valet_service_name_alias }}"
-  when: valet_service_name_alias|length > 0 and (valet_service_name in valet_sh_service_privileged_services)
-
-- name: "actions » start | start {{ valet_service_name }} service"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start {{ valet_service_name_alias }}"
-  when: valet_service_name_alias|length > 0 and (valet_service_name not in valet_sh_service_privileged_services)
+- name: "actions » start | start {{ service_item.service.name }} service (using container)"
+  apple_container:
+    name: "{{ service_item.service.name }}"
+    state: started
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: service_item
+  when: service_item.service.provider == 'container' and service_item.service.scope == 'user'

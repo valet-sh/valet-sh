@@ -3,7 +3,10 @@
 service:
   name:
     ubuntu: "NetworkManager"
-    mac: "vsh-dnsmasq"
+    mac: "dnsmasq"
   scope:
     ubuntu: "system"
     mac: "user"
+  provider:
+    ubuntu: "systemd"
+    mac: "homebrew"
