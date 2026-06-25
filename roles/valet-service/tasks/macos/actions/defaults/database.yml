@@ -26,25 +26,35 @@
     loop_var: current_mariadb_default_linkname
   become: true
 
-- name: set valet_service_name version if service is mysql
-  set_fact:
-    valet_service_name_version: "{{ valet_service_name[-2:-1] }}.{{ valet_service_name[-1] }}"
-    valet_service_base_name: "mysql"
-  when: valet_service_name is search("mysql")
-
-- name: set valet_service_name version if service is mariadb
-  set_fact:
-    valet_service_name_version: "{{ valet_service_name[-3:-1] }}.{{ valet_service_name[-1] }}"
-    valet_service_base_name: "mariadb"
-  when: valet_service_name is search("mariadb")
-
 - block:
+    - name: ensure mysql wrapper script is up2date
+      ansible.builtin.template:
+        src: "wrappers/mysql/mysql-wrapper.j2"
+        dest: "/usr/local/bin/mysql"
+        mode: "0755"
+      become: true
+
+    - name: ensure mysqladmin wrapper script is up2date
+      ansible.builtin.template:
+        src: "wrappers/mysql/mysqladmin-wrapper.j2"
+        dest: "/usr/local/bin/mysqladmin"
+        mode: "0755"
+      become: true
+
+    - name: ensure mysqldump wrapper script is up2date
+      ansible.builtin.template:
+        src: "wrappers/mysql/mysqldump-wrapper.j2"
+        dest: "/usr/local/bin/mysqldump"
+        mode: "0755"
+      become: true
+
     - name: "create symlinks for default mysql"
       file:
-        src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ valet_service_name_version }}"
+        src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ item.version }}"
         dest: "/usr/local/bin/default-{{ current_mysql_default_linkname }}"
         state: link
         force: true
+      become: true
       with_items:
         - mysql
         - mysqldump
@@ -52,43 +62,41 @@
       loop_control:
         loop_var: current_mysql_default_linkname
 
-    - name: "create .my.cnf symlink for mysql service"
-      file:
-        src: "{{ current_home }}/.my{{ valet_service_name_version }}.cnf"
-        dest: "{{ current_home }}/.my.cnf"
-        state: link
-        force: true
-  when: valet_service_base_name == "mysql"
+  when: item.name == "mysql"
 
 - block:
+    - name: ensure mysql wrapper script is up2date
+      ansible.builtin.template:
+        src: "wrappers/mysql/mysql-wrapper.j2"
+        dest: "/usr/local/bin/mysql"
+        mode: "0755"
+      become: true
+
     - name: "create symlinks for default mysql"
       file:
-        src: "/usr/local/bin/mariadb{{ valet_service_name_version }}"
+        src: "/usr/local/bin/mariadb{{ item.version }}"
         dest: "/usr/local/bin/default-mysql"
         state: link
         force: true
+      become: true
 
     - name: "create symlinks for default mysqladmin"
       file:
-        src: "/usr/local/bin/mariaadmin{{ valet_service_name_version }}"
+        src: "/usr/local/bin/mariaadmin{{ item.version }}"
         dest: "/usr/local/bin/default-mysqladmin"
         state: link
         force: true
+      become: true
 
     - name: "create symlinks for default mysqldump"
       file:
-        src: "/usr/local/bin/mariadump{{ valet_service_name_version }}"
+        src: "/usr/local/bin/mariadump{{ item.version }}"
         dest: "/usr/local/bin/default-mysqldump"
         state: link
         force: true
+      become: true
 
-    - name: "create .my.cnf symlink for mariadb service"
-      file:
-        src: "{{ current_home }}/.my{{ valet_service_name_version }}.cnf"
-        dest: "{{ current_home }}/.my.cnf"
-        state: link
-        force: true
-  when: valet_service_base_name == "mariadb"
+  when: item.name == "mariadb"
 
 - name: "provide nginx stream configuration"
   template:

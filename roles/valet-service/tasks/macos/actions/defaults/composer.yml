@@ -14,13 +14,10 @@
 #   limitations under the License.
 ##
 ---
-- name: set valet_service_name version
-  set_fact:
-    valet_service_name_version: "{{ valet_service_name[-1] }}"
 
 - name: "create symlink for default composer"
   file:
-    src: "/usr/local/bin/composer{{ valet_service_name_version }}"
+    src: "/usr/local/bin/composer{{ item.version }}"
     dest: "/usr/local/bin/default-composer"
     state: link
     force: true
