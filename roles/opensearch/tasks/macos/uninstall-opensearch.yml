@@ -31,11 +31,6 @@
     loop_var: current_service_volume_item
   when: "'--purge' in valet_cli_opts"
 
-- name: "Remove vsh-{{ current_service.canonical }} LaunchAgent service"
-  ansible.builtin.file:
-    path: "{{ current_home }}/Library/LaunchAgents/sh.valet.{{ current_service.service.name }}.plist"
-    state: absent
-
 - name: "Remove vsh-{{ current_service.canonical }} configurations"
   ansible.builtin.file:
     path: "{{ current_service.configuration.base_path }}"
