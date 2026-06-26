@@ -111,6 +111,48 @@ def image_matches(info, desired):
     return normalize_image_ref(current) == normalize_image_ref(desired)
 
 
+def container_volume_specs(info):
+    """Extract (source, destination) pairs from container inspect mounts."""
+    try:
+        specs = set()
+        for m in info['configuration'].get('mounts', []):
+            dest = m.get('destination', '')
+            mount_type = m.get('type', {})
+            if 'volume' in mount_type:
+                source = mount_type['volume'].get('name', '')
+            else:
+                source = m.get('source', '')
+            if dest:
+                specs.add((source, dest))
+        return specs
+    except (KeyError, TypeError):
+        return set()
+
+
+def parse_volume_specs(volumes):
+    """Parse -v style volume specs into (source, destination) pairs."""
+    specs = set()
+    for vol in (volumes or []):
+        parts = vol.split(':')
+        if len(parts) >= 2:
+            specs.add((parts[0], parts[1]))
+    return specs
+
+
+def volumes_match(info, desired_volumes):
+    """Return True if container mounts match the desired volumes."""
+    return container_volume_specs(info) == parse_volume_specs(desired_volumes)
+
+
+def container_config_changed(info, params):
+    """Return True if image or volumes differ from the running container."""
+    if params['image'] and not image_matches(info, params['image']):
+        return True
+    if not volumes_match(info, params['volumes']):
+        return True
+    return False
+
+
 def _stop_and_delete(module, name, current_state):
     if current_state == 'running':
         rc, _, stderr = run_cli(['stop', name])
@@ -161,14 +203,14 @@ def build_run_args(params):
 
 
 def ensure_started(module, params, info, current_state):
-    # Container exists but uses a different image → recreate
-    if current_state != 'absent' and params['image'] and not image_matches(info, params['image']):
+    # Container exists but image or volumes changed → recreate (only when image is known)
+    if current_state != 'absent' and params['image'] and container_config_changed(info, params):
         if not module.check_mode:
             _stop_and_delete(module, params['name'], current_state)
             rc, _, stderr = run_cli(build_run_args(params))
             if rc != 0:
                 module.fail_json(msg='Failed to run container', stderr=stderr, rc=rc)
-        return True, 'Container recreated with updated image'
+        return True, 'Container recreated with updated configuration'
 
     # --rm containers auto-delete on stop so they can only be absent or running
     if current_state == 'absent' or (current_state == 'stopped' and params['remove']):
@@ -214,14 +256,14 @@ def ensure_restarted(module, params, info, current_state):
                 module.fail_json(msg='Failed to run container', stderr=stderr, rc=rc)
         return True, 'Container created and started'
 
-    # Image changed → recreate instead of plain restart
-    if params['image'] and not image_matches(info, params['image']):
+    # Image or volumes changed → recreate instead of plain restart (only when image is known)
+    if params['image'] and container_config_changed(info, params):
         if not module.check_mode:
             _stop_and_delete(module, params['name'], current_state)
             rc, _, stderr = run_cli(build_run_args(params))
             if rc != 0:
                 module.fail_json(msg='Failed to run container', stderr=stderr, rc=rc)
-        return True, 'Container recreated with updated image'
+        return True, 'Container recreated with updated configuration'
 
     if not module.check_mode:
         if current_state == 'running':
