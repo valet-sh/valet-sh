@@ -97,7 +97,7 @@
     volumes:
       - "vsh-{{ current_service.canonical }}-data:/var/lib/mysql"
       - "{{ current_service.configuration.base_path }}/etc/conf.d/valet-sh.cnf:/etc/mysql/conf.d/valet-sh.cnf:Z"
-      - "{{ current_service.configuration.base_path }}/user/.my.cnf:/root/.my.cnf:Z"
+      - "{{ current_service.configuration.base_path }}/user/.my.cnf:/home/.my.cnf:Z"
     env:
       - "MYSQL_ROOT_PASSWORD={{ current_service.configuration.default_root_password }}"
 

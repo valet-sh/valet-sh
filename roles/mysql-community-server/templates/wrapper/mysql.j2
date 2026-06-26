@@ -13,5 +13,5 @@ if ! container inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
     echo "Error: $CONTAINER is not running" >&2
     exit 1
 fi
-exec container exec -it "$CONTAINER" mysql --defaults-file=/root/.my.cnf "$@"
+exec container exec -it "$CONTAINER" mysql --defaults-file=/home/.my.cnf "$@"
 {% endif %}
