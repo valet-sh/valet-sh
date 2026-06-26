@@ -18,8 +18,8 @@ if ! container inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
     exit 1
 fi
 {% if current_service.version | float >= 11.4 %}
-exec container exec -it "$CONTAINER" mariadb-dump --defaults-file=/root/.my.cnf "$@"
+exec container exec -it "$CONTAINER" mariadb-dump --defaults-file=/home/.my.cnf "$@"
 {% else %}
-exec container exec -it "$CONTAINER" mysqldump --defaults-file=/root/.my.cnf "$@"
+exec container exec -it "$CONTAINER" mysqldump --defaults-file=/home/.my.cnf "$@"
 {% endif %}
 {% endif %}
