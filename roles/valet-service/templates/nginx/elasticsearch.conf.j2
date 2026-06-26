@@ -1,18 +1,24 @@
 {{ ansible_managed | comment }}
 
+{% set bundles_data = lookup('file', '/usr/local/valet-sh/etc/bundles.yml') | from_yaml %}
 {% for service_name in ['elasticsearch', 'opensearch'] %}
 {% for version in valet_sh_bundle_definitions.services[service_name].versions %}
-{% set bundle_file = valet_dist_path_default + '/roles/shared-variables/defaults/main' +'/bundles/' + service_name + '/' + version + '.yml' %}
+{% set service_key = service_name + version %}
+{% if service_key in bundles_data.bundles.services.installed %}
+{% set bundle_file = valet_dist_path_default + '/roles/shared-variables/defaults/main' + '/bundles/' + service_name + '/' + version + '.yml' %}
 {% set bundle = lookup('file', bundle_file) | from_yaml %}
-upstream {{ service_name }}{{ version }} {
-    server 127.0.0.1:{{ bundle.configuration.ports.http }};
+upstream {{ service_key }} {
+{% if current_os == 'ubuntu' %}
+        server 127.0.0.1:{{ bundle.configuration.ports.http }};
+{% else %}
+        server vsh-{{ service_key }}.vsh-services:{{ bundle.configuration.ports.http }};
+{% endif %}
 }
+{% endif %}
 {% endfor %}
 {% endfor %}
-
 server {
   listen    127.0.0.1:9200;
-
   location / {
     proxy_pass            http://{{ item.canonical }};
     proxy_read_timeout    90;
