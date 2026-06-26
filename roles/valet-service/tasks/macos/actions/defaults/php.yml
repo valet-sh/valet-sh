@@ -17,6 +17,6 @@
 - name: "create symlink for default php"
   file:
     src: "/opt/homebrew/bin/php{{ item.version }}"
-    dest: "/usr/local/bin/default-php"
+    dest: "/opt/homebrew/bin/default-php"
     state: link
     force: true

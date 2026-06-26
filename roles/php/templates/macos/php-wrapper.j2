@@ -40,10 +40,10 @@ then
   # shellcheck disable=SC2181
   if [ $? -eq 0 ]
   then
-    exec /usr/local/bin/php"${TARGET_PHP_VERSION}" "$@"
+    exec {{ valet_sh_homebrew_prefix }}/bin/php"${TARGET_PHP_VERSION}" "$@"
   else
-    exec /usr/local/bin/default-php "$@"
+    exec {{ valet_sh_homebrew_prefix }}/bin/default-php "$@"
   fi
 else
-  exec /usr/local/bin/default-php "$@"
+  exec {{ valet_sh_homebrew_prefix }}/bin/default-php "$@"
 fi
