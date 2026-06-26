@@ -102,9 +102,6 @@
       command: container system dns create vsh-services
       become: true
 
-    - name: Set apple container dns to vsh-services
-      command: container system dns default set vsh-services
-
 - name: "ensure '{{ current_home }}/Library/LaunchAgents' exists"
   ansible.builtin.file:
     path: "{{ current_home }}/Library/LaunchAgents"
