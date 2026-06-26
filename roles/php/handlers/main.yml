@@ -18,114 +18,41 @@
 - name: "systemd | vsh-php | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ php_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: started
-    scope: "{{ php_item.service.scope }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^php.*') }}"
+    scope: "{{ handler_current_service.service.scope }}"
   become: "{{ php_item.service.scope == 'system' }}"
-  loop_control:
-    loop_var: php_item
-  listen: "systemd | vsh-php | started"
 
 - name: "systemd | vsh-php | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ php_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
-    scope: "{{ php_item.service.scope }}"
+    scope: "{{ handler_current_service.service.scope }}"
   become: "{{ php_item.service.scope == 'system' }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^php.*') }}"
-  loop_control:
-    loop_var: php_item
-  listen: "systemd | vsh-php | stopped"
 
 - name: "systemd | vsh-php | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ php_item.service.name }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
-    scope: "{{ php_item.service.scope }}"
+    scope: "{{ handler_current_service.service.scope }}"
   become: "{{ php_item.service.scope == 'system' }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^php.*') }}"
-  loop_control:
-    loop_var: php_item
-  listen: "systemd | vsh-php | restarted"
 
 - name: "systemd | vsh-php | reloaded"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ php_item.service.name }}"
-    state: restarted
-    scope: "{{ php_item.service.scope }}"
+    name: "vsh-{{ handler_current_service.canonical }}"
+    state: reloaded
+    scope: "{{ handler_current_service.service.scope }}"
   become: "{{ php_item.service.scope == 'system' }}"
-  loop: "{{ vsh_resolver.services | selectattr('canonical', 'match', '^php.*') }}"
-  loop_control:
-    loop_var: php_item
-  listen: "systemd | vsh-php | reloaded"
 
-- name: brew | vsh-php56 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
-- name: brew | vsh-php56 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php56"
-- name: brew | vsh-php56 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php56"
-- name: brew | vsh-php70 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php70"
-- name: brew | vsh-php70 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php70"
-- name: brew | vsh-php70 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php70"
-- name: brew | vsh-php71 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php71"
-- name: brew | vsh-php71 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php71"
-- name: brew | vsh-php71 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php71"
-- name: brew | vsh-php72 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php72"
-- name: brew | vsh-php72 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php72"
-- name: brew | vsh-php72 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php72"
-- name: brew | vsh-php73 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php73"
-- name: brew | vsh-php73 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php73"
-- name: brew | vsh-php73 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php73"
-- name: brew | vsh-php74 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php74"
-- name: brew | vsh-php74 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php74"
-- name: brew | vsh-php74 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php74"
-- name: brew | vsh-php80 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php80"
-- name: brew | vsh-php80 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php80"
-- name: brew | vsh-php80 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php80"
-- name: brew | vsh-php81 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php81"
-- name: brew | vsh-php81 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php81"
-- name: brew | vsh-php81 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php81"
-- name: brew | vsh-php82 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php82"
-- name: brew | vsh-php82 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php82"
-- name: brew | vsh-php82 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php82"
-- name: brew | vsh-php83 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php83"
-- name: brew | vsh-php83 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php83"
-- name: brew | vsh-php83 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php83"
-- name: brew | vsh-php84 | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php84"
-- name: brew | vsh-php84 | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php84"
-- name: brew | vsh-php84 | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php84"
+
+- name: brew | vsh-php | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-{{ handler_current_service.canonical }}"
+
+- name: brew | vsh-php | stopped
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-{{ handler_current_service.canonical }}"
+
+- name: brew | vsh-php | started
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ handler_current_service.canonical }}"

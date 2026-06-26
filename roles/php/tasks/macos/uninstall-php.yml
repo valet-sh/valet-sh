@@ -17,36 +17,27 @@
 
 - name: set php_version variable
   ansible.builtin.set_fact:
-    php_version: "{{ current_php.version }}"
+    php_version: "{{ current_service.version }}"
 
-- name: "override default configuration for current php"
-  ansible.builtin.include_tasks: override-config.yml
+- name: ensure service is stopped
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-{{ current_service.canonical }}"
 
-- name: "ensure 'php{{ php_version }}-fpm' is stopped"
-  ansible.builtin.systemd:
-    name: "php{{ php_version }}-fpm"
-    state: stopped
-  become: true
-
-- name: "ensure 'php{{ php_version }}-common' is absent"
-  ansible.builtin.apt:
-    name: "php{{ php_version }}-common"
-    purge: true
+- name: "ensure '{{ current_service.service.name }}' is absent"
+  homebrew:
+    name: "{{ current_service.service.name }}"
     state: absent
-  become: true
 
 - name: ensure php configuration is absent
   ansible.builtin.file:
     path: "{{ php_version_path_item }}"
     state: absent
   with_items:
-    - "/etc/php/{{ php_version }}"
-    - "/etc/apt/preferences.d/valet-sh-php{{ php_version | replace('.', '-') }}-xdebug"
+    - "{{ valet_sh_prefix }}/etc/{{ current_service.service.name }}"
   loop_control:
     loop_var: php_version_path_item
   become: true
 
-- name: "Remove vsh-{{ current_php.canonical }} from installed services"
+- name: "Remove vsh-{{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"
-    canonical_names: "{{ current_php.canonical }}"
+    canonical_names: "{{ current_service.canonical }}"

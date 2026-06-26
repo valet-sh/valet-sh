@@ -15,8 +15,6 @@
 ##
 ---
 
-- ansible.builtin.include_tasks: "migrations/main.yml"
-
 - name: debug php versions
   ansible.builtin.debug:
     var: valet_resolved_service.services
@@ -38,7 +36,7 @@
 
 - name: ensure php wrapper script is up2date
   ansible.builtin.template:
-    src: "ubuntu/php-wrapper.j2"
+    src: "macos/php-wrapper.j2"
     dest: "/usr/local/bin/php"
     mode: "0755"
     force: true
