@@ -32,7 +32,7 @@
     path: "{{ php_version_path_item }}"
     state: absent
   with_items:
-    - "{{ valet_sh_prefix }}/etc/{{ current_service.service.name }}"
+    - "{{ valet_sh_homebrew_prefix }}/etc/{{ current_service.service.name }}"
   loop_control:
     loop_var: php_version_path_item
   become: true
