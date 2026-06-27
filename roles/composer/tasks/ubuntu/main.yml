@@ -15,14 +15,14 @@
 ##
 ---
 
-- name: "install composer {{ item.version }}"
+- name: "install composer"
   ansible.builtin.include_tasks: install-composer.yml
   vars:
     current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.packages }}"
   when: valet_install_services is defined
 
-- name: "uninstall composer {{ item.version }}"
+- name: "uninstall composer"
   ansible.builtin.include_tasks: uninstall-composer.yml
   vars:
     current_service: "{{ item }}"

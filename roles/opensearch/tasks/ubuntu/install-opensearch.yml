@@ -52,7 +52,7 @@
 - name: "Ensure {{ current_service.service.name }} is started"
   ansible.builtin.systemd:
     name: "{{ current_service.service.name }}"
-    state: started
+    state: restarted
     daemon_reload: true
     scope: "{{ current_service.service.scope }}"
 

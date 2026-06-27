@@ -17,7 +17,7 @@
 
 - name: Pull mailpit image
   containers.podman.podman_image:
-    name: "{{ current_mailpit_service.configuration.docker_image }}"
+    name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
 
@@ -30,7 +30,7 @@
 - name: provide systemd service for mailpit container
   ansible.builtin.template:
     src: "mailpit.service.j2"
-    dest: "{{ current_home }}/.config/systemd/user/{{ current_mailpit_service.service.name }}.service"
+    dest: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"
@@ -65,12 +65,12 @@
 - name: ensure mailpit is enabled and started
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "{{ current_mailpit_service.service.name }}"
+    name: "{{ current_service.service.name }}"
     enabled: true
     state: started
-    scope: "{{ current_mailpit_service.service.scope }}"
+    scope: "{{ current_service.service.scope }}"
 
 - name: "Add mailpit to installed services"
   vsh_bundle_state:
     action: "installed"
-    canonical_names: "{{ current_mailpit_service.canonical }}"
+    canonical_names: "{{ current_service.canonical }}"

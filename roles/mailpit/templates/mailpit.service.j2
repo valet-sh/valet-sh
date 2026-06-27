@@ -20,9 +20,9 @@ ExecStart=/usr/bin/podman run \
     --volume vsh-mailpit:/data \
     -e MP_UI_BIND_ADDR=127.0.0.1:8025 \
     -e MP_SMTP_BIND_ADDR=127.0.0.1:1025 \
-    {{ current_mailpit_service.configuration.docker_image }}
-ExecReload=/usr/bin/podman restart vsh-{{ current_mailpit_service.canonical }}
-ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_mailpit_service.canonical }}
+    {{ current_service.configuration.docker_image }}
+ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
+ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_service.canonical }}
 
 [Install]
 WantedBy=default.target

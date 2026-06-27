@@ -22,46 +22,30 @@
 - name: "set 'current_group' var for ubuntu"
   ansible.builtin.set_fact:
     current_group: "{{ lookup('env', 'USER') }}"
-  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Linux Mint'
+  when:  ansible_facts['distribution'] == 'Ubuntu' or  ansible_facts['distribution'] == 'Linux Mint'
 
 - name: "set 'current_group' var for macos"
   ansible.builtin.set_fact:
     current_group: "staff"
-  when: ansible_distribution == 'MacOSX'
+  when:  ansible_facts['distribution'] == 'MacOSX'
 
 - name: "set 'current_os' var"
   ansible.builtin.set_fact:
     current_os: "ubuntu"
-  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Linux Mint'
+  when:  ansible_facts['distribution'] == 'Ubuntu' or  ansible_facts['distribution'] == 'Linux Mint'
 
 - name: "set 'current_os' var"
   ansible.builtin.set_fact:
     current_os: "mac"
-  when: ansible_distribution == 'MacOSX'
+  when:  ansible_facts['distribution'] == 'MacOSX'
 
 - name: "set 'current_arch' var"
   ansible.builtin.set_fact:
-    current_arch: "{{ ansible_architecture }}"
+    current_arch: "{{ ansible_facts['architecture'] }}"
 
 - name: "set 'os_codename' var"
   ansible.builtin.set_fact:
-    os_codename: "{{ ansible_distribution_release }}"
-
-- name: "override 'os_codename' for Linux Mint"
-  ansible.builtin.set_fact:
-    os_codename: "{{ mint_codename_map[ansible_distribution_release] }}"
-  vars:
-    mint_codename_map:
-      ulyana: focal
-      ulyssa: focal
-      uma: focal
-      una: focal
-      vanessa: jammy
-      vera: jammy
-      victoria: jammy
-      virginia: jammy
-      wilma: noble
-  when: ansible_distribution_release in mint_codename_map
+    os_codename: "{{  ansible_facts['distribution_release'] }}"
 
 - name: fail when no supported operating system was found
   ansible.builtin.fail:

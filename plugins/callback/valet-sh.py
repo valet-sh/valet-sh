@@ -1,8 +1,5 @@
 # coding=utf-8
-# Make coding more python3-ish
 from __future__ import (absolute_import, division, print_function, unicode_literals)
-
-__metaclass__ = type
 
 DOCUMENTATION = '''
     callback: valet-sh
@@ -31,7 +28,6 @@ from ansible import constants as C
 
 from ansible.plugins.callback.default import CallbackModule as CallbackModule_default
 from ansible.utils.display import Display
-from ansible.module_utils._text import to_bytes, to_text
 from logging.handlers import RotatingFileHandler
 
 # init logger
@@ -60,7 +56,38 @@ FLUSH   = "\x1b[2K"
 CURSOR_HIDE = "\033[?25l"
 CURSOR_SHOW = "\033[?25h"
 
-print(CURSOR_SHOW, end="")
+
+# Save terminal settings at import time so we can restore them on exit.
+# Ansible may temporarily disable echo (e.g. for vault/become prompts) and
+# not restore it if interrupted mid-operation.
+_saved_terminal_settings = None
+try:
+    import termios
+    if sys.stdin.isatty():
+        _saved_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
+except Exception:
+    pass
+
+
+def _restore_terminal():
+    """Restore cursor visibility and terminal settings (echo, cooked mode).
+    Called from both atexit and the signal handler.
+    Uses os.write/termios directly to bypass any Python buffering."""
+    try:
+        os.write(sys.stdout.fileno(), CURSOR_SHOW.encode())
+    except Exception:
+        pass
+    if _saved_terminal_settings is not None:
+        try:
+            import termios
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, _saved_terminal_settings)
+        except Exception:
+            pass
+
+
+# Register at module level (LIFO: runs last, after all other atexit handlers).
+atexit.register(_restore_terminal)
+
 
 class Cursor:
     def __init__(self):
@@ -80,12 +107,9 @@ class Cursor:
         self.show()
 
 class LogDisplay(Display):
-    def display(self, msg, color=None, stderr=False, screen_only=False, log_only=False, newline=True):
-        msg2 = to_bytes(msg.lstrip(u'\n'))
-        if sys.version_info >= (3,):
-            msg2 = to_text(msg2)
-        lvl = logging.DEBUG
-        logger.log(lvl, msg2)
+    def display(self, msg, color=None, stderr=False, screen_only=False, log_only=False, newline=True, **kwargs):
+        msg2 = msg.lstrip('\n')
+        logger.log(logging.DEBUG, msg2)
 
 class CallbackModule(CallbackModule_default):
     CALLBACK_VERSION = 2.0
@@ -103,15 +127,18 @@ class CallbackModule(CallbackModule_default):
         if not self._debug_enabled():
             self._display = LogDisplay()
 
-        atexit.register(self.cursor.show)
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
 
     def _signal_handler(self, signum, frame):
-        print(FLUSH, end="\n")
-        self.cursor.show()
-        signal.signal(signum, signal.SIG_DFL)
-        os.kill(os.getpid(), signum)
+        # Restore terminal immediately so the user can see/type while
+        # Ansible finishes its cleanup.
+        _restore_terminal()
+        sys.stdout.write(FLUSH + "\n")
+        sys.stdout.flush()
+        # Use sys.exit so atexit handlers run (including _restore_terminal
+        # as a safety net) instead of os.kill which bypasses all cleanup.
+        sys.exit(1)
 
     def v2_playbook_on_task_start(self, task, is_conditional):
         if not self._debug_enabled():
@@ -119,7 +146,7 @@ class CallbackModule(CallbackModule_default):
                 taskname_orig = task.get_name()
                 taskname = (taskname_orig[:75] + '...') if len(taskname_orig) > 75 else taskname_orig
                 print(FLUSH, end="\r")
-                print(GREEN + next(self._spinner) + RESET + " " + taskname, end="\r")
+                print(GREEN + next(self._spinner) + RESET + " " + taskname, end="\r", flush=True)
         super(CallbackModule, self)._task_start(task)
 
     def v2_playbook_on_play_start(self, play):
@@ -150,14 +177,14 @@ class CallbackModule(CallbackModule_default):
             if 'msg' in result._result:
                 vsh_msg = '%s' % (result._result['msg'])
 
-            if 'results' in result._result:
-                if result._result['results'][0]:
-                    if 'msg' in result._result['results'][0]:
-                        vsh_msg = '%s' % (result._result['results'][0]['msg'])
-                    if 'stderr' in result._result['results'][0]:
-                        vsh_msg += '\n%s' % (result._result['results'][0]['stderr'])
-                    if 'module_stderr' in result._result['results'][0]:
-                        vsh_msg += '\n%s' % (result._result['results'][0]['module_stderr'])
+            if result._result.get('results'):
+                first = result._result['results'][0]
+                if 'msg' in first:
+                    vsh_msg = '%s' % first['msg']
+                if 'stderr' in first:
+                    vsh_msg += '\n%s' % first['stderr']
+                if 'module_stderr' in first:
+                    vsh_msg += '\n%s' % first['module_stderr']
 
             if not ignore_errors:
                 print(FLUSH)
@@ -171,14 +198,14 @@ class CallbackModule(CallbackModule_default):
             vsh_msg = ''
             if 'msg' in result._result:
                 vsh_msg = '%s' % (result._result['msg'])
-            if 'results' in result._result:
-                if result._result['results'][0]:
-                    if 'msg' in result._result['results'][0]:
-                        vsh_msg = '%s' % (result._result['results'][0]['msg'])
-                    if 'stderr' in result._result['results'][0]:
-                        vsh_msg += '\n%s' % (result._result['results'][0]['stderr'])
-                    if 'module_stderr' in result._result['results'][0]:
-                        vsh_msg += '\n%s' % (result._result['results'][0]['module_stderr'])
+            if result._result.get('results'):
+                first = result._result['results'][0]
+                if 'msg' in first:
+                    vsh_msg = '%s' % first['msg']
+                if 'stderr' in first:
+                    vsh_msg += '\n%s' % first['stderr']
+                if 'module_stderr' in first:
+                    vsh_msg += '\n%s' % first['module_stderr']
 
             print(FLUSH)
             print(RED + "✘ " + vsh_msg + RESET, end="\n")

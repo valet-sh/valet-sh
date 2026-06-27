@@ -15,14 +15,14 @@
 ##
 ---
 
-- name: "Install Opensearch {{ item.version }}"
+- name: "Install Opensearch"
   ansible.builtin.include_tasks: install-opensearch.yml
   vars:
     current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when: valet_install_services is defined
 
-- name: "Uninstall Opensearch {{ item.version }}"
+- name: "Uninstall Opensearch"
   ansible.builtin.include_tasks: uninstall-opensearch.yml
   vars:
     current_service: "{{ item }}"

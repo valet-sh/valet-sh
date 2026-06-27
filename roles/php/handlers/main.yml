@@ -21,7 +21,7 @@
     name: "vsh-{{ handler_current_service.canonical }}"
     state: started
     scope: "{{ handler_current_service.service.scope }}"
-  become: "{{ php_item.service.scope == 'system' }}"
+  become: "{{ handler_current_service.service.scope == 'system' }}"
 
 - name: "systemd | vsh-php | stopped"
   ansible.builtin.systemd:
@@ -29,7 +29,7 @@
     name: "vsh-{{ handler_current_service.canonical }}"
     state: stopped
     scope: "{{ handler_current_service.service.scope }}"
-  become: "{{ php_item.service.scope == 'system' }}"
+  become: "{{ handler_current_service.service.scope == 'system' }}"
 
 - name: "systemd | vsh-php | restarted"
   ansible.builtin.systemd:
@@ -37,7 +37,7 @@
     name: "vsh-{{ handler_current_service.canonical }}"
     state: restarted
     scope: "{{ handler_current_service.service.scope }}"
-  become: "{{ php_item.service.scope == 'system' }}"
+  become: "{{ handler_current_service.service.scope == 'system' }}"
 
 - name: "systemd | vsh-php | reloaded"
   ansible.builtin.systemd:

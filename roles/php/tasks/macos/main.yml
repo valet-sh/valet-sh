@@ -20,14 +20,14 @@
     var: valet_resolved_service.services
   when: valet_install_services is defined
 
-- name: "install php {{ item.version }}"
+- name: "install php"
   ansible.builtin.include_tasks: install-php.yml
   vars:
     current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when: valet_install_services is defined
 
-- name: "uninstall php {{ item.version }}"
+- name: "uninstall php"
   ansible.builtin.include_tasks: uninstall-php.yml
   vars:
     current_service: "{{ item }}"

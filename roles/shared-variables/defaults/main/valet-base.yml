@@ -15,6 +15,7 @@
 ##
 ---
 
+ansible_managed: This file is managed by valet.sh , all changes will be lost.
 
 valet_sh_homebrew_prefix_default: ""
 valet_sh_homebrew_prefix_mac: "/opt/homebrew"

@@ -15,14 +15,14 @@
 ##
 ---
 
-- name: "Install mailpit {{ item.version }}"
+- name: "Install mailpit"
   ansible.builtin.include_tasks: install-mailpit.yml
   vars:
     current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when: valet_install_services is defined
 
-- name: "Uninstall mailpit {{ item.version }}"
+- name: "Uninstall mailpit"
   ansible.builtin.include_tasks: uninstall-mailpit.yml
   vars:
     current_service: "{{ item }}"

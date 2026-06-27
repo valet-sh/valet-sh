@@ -15,14 +15,14 @@
 ##
 ---
 
-- name: "Install Redis-Server {{ item.version }}"
+- name: "Install Redis-Server"
   ansible.builtin.include_tasks: install-redis-server.yml
   vars:
     current_service: "{{ item }}"
   loop: "{{ valet_resolved_service.services }}"
   when: valet_install_services is defined
 
-- name: "Uninstall Redis-Server {{ item.version }}"
+- name: "Uninstall Redis-Server"
   ansible.builtin.include_tasks: uninstall-redis-server.yml
   vars:
     current_service: "{{ item }}"
