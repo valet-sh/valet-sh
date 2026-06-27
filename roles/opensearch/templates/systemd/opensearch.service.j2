@@ -21,7 +21,6 @@ ExecStart=/usr/bin/podman run \
     --network host \
     --env "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
     --env "OPENSEARCH_INITIAL_ADMIN_PASSWORD=admin" \
-    --env "DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI=true" \
     {{ current_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
 ExecStop=/usr/bin/podman stop --time 10 vsh-{{ current_service.canonical }}
