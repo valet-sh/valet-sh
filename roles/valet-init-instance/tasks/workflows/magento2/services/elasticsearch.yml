@@ -14,8 +14,9 @@
 #   limitations under the License.
 ##
 ---
+
 - block:
-    - name: "workflows » magento2 » services » elasticsearch | check if elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version  }} is installed"
+    - name: "workflows » magento2 » services » elasticsearch | check if elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version | default('') }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
         name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
@@ -27,11 +28,9 @@
         current_os: "{{ current_os }}"
       register: elasticsearch_install
 
-# TODO if empty/not defined plugin list dont run the plugin installation
-
     - name: "workflows » magento2 » check-vars | read elasticsearch plugins from .valet-sh.yml"
       ansible.builtin.set_fact:
-        elasticsearch_plugins: "{{ valet_sh_project_vars.services.elasticsearch.plugins }}"
+        elasticsearch_plugins: "{{ valet_sh_project_vars.services.elasticsearch.plugins | default([]) }}"
 
     - name: "workflows » magento2 » services » elasticsearch | include service-specific roles"
       ansible.builtin.include_role:
@@ -47,7 +46,7 @@
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ elasticsearch_install }}"
+        valet_sh_newly_installed_services: "{{ elasticsearch_install.services }}"
 
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started and enabled"
       ansible.builtin.systemd:
@@ -113,7 +112,7 @@
 
     - name: "workflows » magento2 » check-vars | read opensearch plugins from .valet-sh.yml"
       ansible.builtin.set_fact:
-        opensearch_plugins: "{{ valet_sh_project_vars.services.opensearch.plugins }}"
+        opensearch_plugins: "{{ valet_sh_project_vars.services.opensearch.plugins | default([]) }}"
 
     - name: "include service-specific roles"
       ansible.builtin.include_role:
@@ -129,7 +128,7 @@
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ opensearch_install }}"
+        valet_sh_newly_installed_services: "{{ opensearch_install.services }}"
 
     - name: "workflows » magento2 » services » opensearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started and enabled"
       ansible.builtin.systemd:

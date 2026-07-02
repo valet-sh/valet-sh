@@ -50,4 +50,4 @@
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ composer_install }}"
+        valet_sh_newly_installed_services: "{{ composer_install.services }}"

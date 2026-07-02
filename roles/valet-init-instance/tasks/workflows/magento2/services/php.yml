@@ -41,7 +41,7 @@
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ php_install }}"
+        valet_sh_newly_installed_services: "{{ php_install.services }}"
 
     - name: "workflows » magento2 » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
       ansible.builtin.systemd:

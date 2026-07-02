@@ -46,7 +46,7 @@
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ rabbitmq_install }}"
+        valet_sh_newly_installed_services: "{{ rabbitmq_install.services }}"
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
       ansible.builtin.systemd:
@@ -62,7 +62,7 @@
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
       ansible.builtin.wait_for:
-        port: 5672
+        port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
         delay: 5
 
     - block:
@@ -95,7 +95,7 @@
         login_host: localhost
         login_user: guest
         login_password: guest
-        login_port: 15672
+        login_port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
       retries: 5
       delay: 3
 
@@ -112,7 +112,7 @@
         login_host: localhost
         login_user: guest
         login_password: guest
-        login_port: 15672
+        login_port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
       retries: 5
       delay: 3
   when:
@@ -157,7 +157,7 @@
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
       ansible.builtin.wait_for:
-        port: 5672
+        port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
         delay: 5
 
     - block:
@@ -188,6 +188,7 @@
         user: "{{ valet_sh_service_rabbitmq_user }}"
         password: "{{ valet_sh_service_rabbitmq_password }}"
         vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
+        login_port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
         node: "rabbit@localhost"
         tags: "administrator"
         configure_priv: .*

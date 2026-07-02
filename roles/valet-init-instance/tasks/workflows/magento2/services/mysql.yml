@@ -45,7 +45,7 @@
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ mysql_install }}"
+        valet_sh_newly_installed_services: "{{ mysql_install.services }}"
 
     - name: "workflows » magento2 » services » mysql | ensure {{ valet_sh_service_mysql_current_name }} is started"
       ansible.builtin.systemd:
@@ -106,7 +106,7 @@
       vars:
         valet_sh_service_internal_action: true
         valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ mariadb_install }}"
+        valet_sh_newly_installed_services: "{{ mariadb_install.services }}"
 
     - name: "workflows » magento2 » services » mariadb | ensure {{ valet_sh_service_mariadb_current_name }} is started"
       ansible.builtin.systemd:
