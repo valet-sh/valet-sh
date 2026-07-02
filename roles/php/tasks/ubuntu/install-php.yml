@@ -181,19 +181,45 @@
   become: true
   when: "php_version in compiled_xdebug2_versions"
 
-- name: "set default php cli version"
-  community.general.alternatives:
-    name: php
-    path: "/usr/bin/php{{ current_service_item.version }}"
-  with_items: "{{ current_service }}"
-  become: true
-  loop_control:
-    loop_var: current_service_item
-  when:
-    - current_service_item.defaultable is defined
-    - current_service_item.defaultable|bool
+#- name: "set default php cli version"
+#  community.general.alternatives:
+#    name: php
+#    path: "/usr/bin/php{{ current_service_item.version }}"
+#  with_items: "{{ current_service }}"
+#  become: true
+#  loop_control:
+#    loop_var: current_service_item
+#  when:
+#    - current_service_item.defaultable is defined
+#    - current_service_item.defaultable|bool
 
-- name: "Mark vsh-{{ current_service.canonical }} as installed in the services file"
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers
+
+- name: "Get desired state of {{ current_service.service.name }} from services file"
+  vsh_bundle_service_state_info:
+    name: "{{ current_service.canonical }}"
+  register: current_service_state
+
+- name: "If desired state is unknown, set it to enabled"
+  vsh_bundle_state:
+    action: "initialize_empty"
+    canonical_names: "{{ current_service.canonical }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Update current_service_state after initialization"
+  ansible.builtin.set_fact:
+    current_service_state: "{{ current_service_state | combine({'state': 'enabled'}) }}"
+  when: current_service_state.state == "unknown"
+
+- name: "Set {{ current_service.service.name }} container state"
+  ansible.builtin.systemd:
+    name: "{{ current_service.service.name }}"
+    state: "{{ 'started' if current_service_state.state == 'enabled' else 'stopped' }}"
+    enabled: "{{ 'true' if current_service_state.state == 'enabled' else 'false' }}"
+    scope: "{{ current_service.service.scope }}"
+
+- name: "Mark {{ current_service.service.name }} as installed in the services file"
   vsh_bundle_state:
     action: "installed"
     canonical_names: "{{ current_service.canonical }}"

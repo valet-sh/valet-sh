@@ -40,13 +40,13 @@
         valet_install_services: ["{{ valet_sh_service_rabbitmq_current_name }}"]
       when: rabbitmq_installed.kinds | length == 0
 
-    - name: "workflows » magento2 » services » rabbitmq | include valet-service role to set defaults"
-      ansible.builtin.include_role:
-        name: "valet-service"
-      vars:
-        valet_sh_service_internal_action: true
-        valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ rabbitmq_install.services }}"
+#    - name: "workflows » magento2 » services » rabbitmq | include valet-service role to set defaults"
+#      ansible.builtin.include_role:
+#        name: "valet-service"
+#      vars:
+#        valet_sh_service_internal_action: true
+#        valet_service_action: "handle"
+#        valet_sh_newly_installed_services: "{{ rabbitmq_install.services }}"
 
     - name: "workflows » magento2 » services » rabbitmq | ensure rabbitmq is started"
       ansible.builtin.systemd:

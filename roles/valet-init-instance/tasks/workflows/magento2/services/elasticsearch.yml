@@ -40,13 +40,13 @@
         valet_install_services: ["elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"]
       when: elasticsearch_installed.kinds | length == 0
 
-    - name: "workflows » magento2 » services » elasticsearch | include valet-service role to set defaults"
-      ansible.builtin.include_role:
-        name: "valet-service"
-      vars:
-        valet_sh_service_internal_action: true
-        valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ elasticsearch_install.services }}"
+#    - name: "workflows » magento2 » services » elasticsearch | include valet-service role to set defaults"
+#      ansible.builtin.include_role:
+#        name: "valet-service"
+#      vars:
+#        valet_sh_service_internal_action: true
+#        valet_service_action: "handle"
+#        valet_sh_newly_installed_services: "{{ elasticsearch_install.services }}"
 
     - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started and enabled"
       ansible.builtin.systemd:
@@ -122,13 +122,13 @@
         valet_install_services: ["opensearch{{ valet_sh_project_vars.services.opensearch.version }}"]
       when: opensearch_installed.kinds | length == 0
 
-    - name: "workflows » magento2 » services » opensearch | include valet-service role to set defaults"
-      ansible.builtin.include_role:
-        name: "valet-service"
-      vars:
-        valet_sh_service_internal_action: true
-        valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ opensearch_install.services }}"
+#    - name: "workflows » magento2 » services » opensearch | include valet-service role to set defaults"
+#      ansible.builtin.include_role:
+#        name: "valet-service"
+#      vars:
+#        valet_sh_service_internal_action: true
+#        valet_service_action: "handle"
+#        valet_sh_newly_installed_services: "{{ opensearch_install.services }}"
 
     - name: "workflows » magento2 » services » opensearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started and enabled"
       ansible.builtin.systemd:

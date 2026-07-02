@@ -35,13 +35,13 @@
         valet_install_services: ["php{{ valet_sh_project_vars.services.php.version }}"]
       when: php_installed.kinds | length == 0
 
-    - name: "workflows » magento2 » services » php | include valet-service role to set defaults"
-      ansible.builtin.include_role:
-        name: "valet-service"
-      vars:
-        valet_sh_service_internal_action: true
-        valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ php_install.services }}"
+#    - name: "workflows » magento2 » services » php | include valet-service role to set defaults"
+#      ansible.builtin.include_role:
+#        name: "valet-service"
+#      vars:
+#        valet_sh_service_internal_action: true
+#        valet_service_action: "handle"
+#        valet_sh_newly_installed_services: "{{ php_install.services }}"
 
     - name: "workflows » magento2 » services » php | ensure php{{ valet_sh_project_vars.services.php.version }} is started"
       ansible.builtin.systemd:
@@ -55,11 +55,11 @@
         file: "{{ valet_etc_services_file }}"
         name: valet_sh_services_obj
 
-    - name: "workflows » magento2 » services » php | set php{{ valet_sh_project_vars.services.php.version }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "php"
-        canonical_names: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
+#    - name: "workflows » magento2 » services » php | set php{{ valet_sh_project_vars.services.php.version }} as default"
+#      vsh_bundle_state:
+#        action: "default"
+#        name: "php"
+#        canonical_names: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
 
     - name: "workflows » magento2 » services » php | set php{{ valet_sh_project_vars.services.php.version }} as enabled"
       vsh_bundle_state:

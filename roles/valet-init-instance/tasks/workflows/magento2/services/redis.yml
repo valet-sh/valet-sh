@@ -40,13 +40,13 @@
         valet_install_services: ["{{ valet_sh_service_redis_current_name }}"]
       when: redis_installed.kinds | length == 0
 
-    - name: "workflows » magento2 » services » redis | include valet-service role to set defaults"
-      ansible.builtin.include_role:
-        name: "valet-service"
-      vars:
-        valet_sh_service_internal_action: true
-        valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ redis_install.services }}"
+#    - name: "workflows » magento2 » services » redis | include valet-service role to set defaults"
+#      ansible.builtin.include_role:
+#        name: "valet-service"
+#      vars:
+#        valet_sh_service_internal_action: true
+#        valet_service_action: "handle"
+#        valet_sh_newly_installed_services: "{{ redis_install.services }}"
 
     - name: "workflows » magento2 » services » redis | ensure redis is started"
       ansible.builtin.systemd:
