@@ -18,7 +18,7 @@
 - name: "systemd | vsh-php | started"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "vsh-{{ handler_current_service.canonical }}"
+    name: "{{ handler_current_service.service.name }}"
     state: started
     scope: "{{ handler_current_service.service.scope }}"
   become: "{{ handler_current_service.service.scope == 'system' }}"
@@ -26,7 +26,7 @@
 - name: "systemd | vsh-php | stopped"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "vsh-{{ handler_current_service.canonical }}"
+    name: "{{ handler_current_service.service.name }}"
     state: stopped
     scope: "{{ handler_current_service.service.scope }}"
   become: "{{ handler_current_service.service.scope == 'system' }}"
@@ -34,7 +34,7 @@
 - name: "systemd | vsh-php | restarted"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "vsh-{{ handler_current_service.canonical }}"
+    name: "{{ handler_current_service.service.name }}"
     state: restarted
     scope: "{{ handler_current_service.service.scope }}"
   become: "{{ handler_current_service.service.scope == 'system' }}"
@@ -42,17 +42,17 @@
 - name: "systemd | vsh-php | reloaded"
   ansible.builtin.systemd:
     daemon_reload: true
-    name: "vsh-{{ handler_current_service.canonical }}"
+    name: "{{ handler_current_service.service.name }}"
     state: reloaded
     scope: "{{ handler_current_service.service.scope }}"
   become: "{{ php_item.service.scope == 'system' }}"
 
 
 - name: brew | vsh-php | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-{{ handler_current_service.canonical }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ handler_current_service.service.name }}"
 
 - name: brew | vsh-php | stopped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-{{ handler_current_service.canonical }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop {{ handler_current_service.service.name}}"
 
 - name: brew | vsh-php | started
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ handler_current_service.canonical }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start {{ handler_current_service.service.name }}"
