@@ -10,7 +10,6 @@ def load_yaml_file(path):
 
 def main():
     module_args = dict(
-        services=dict(type='list', required=True),
         bundle_etc_file=dict(type='str', default='/usr/local/valet-sh/etc/bundles.yml'),
         bundle_role_definitions_file=dict(
             type='str',
@@ -39,31 +38,31 @@ def main():
                     canonical_names.append(canonical)
                 claimed_families.add((section, family_key))
 
-        # For newly installed services: if their family has no default yet and no other
-        # service of that family is installed, add them as candidates (first install case)
-        for service in params['services']:
-            name = service.get('name')
-            canonical = service.get('canonical')
-            svc_type = service.get('type', 'service')
-            family_name = service.get('family_name')
-            section = svc_type + 's'
-            definition = all_definitions.get(section, {}).get(name, {})
-            if len(definition.get('versions', [])) <= 1:
-                continue
-            family_key = family_name if family_name else name
-            section_state = state.get('bundles', {}).get(section, {})
+        bundles_state = state.get('bundles', {})
+        for section in ['services']:
+            section_state = bundles_state.get(section, {})
+            installed_entries = section_state.get('installed', {})
             defaults = section_state.get('defaults', {})
+            section_definitions = all_definitions.get(section, {})
 
-            if family_key in defaults:
-                continue
+            for name, install_info in installed_entries.items():
+                definition = section_definitions.get(name, {})
 
-            family_id = (section, family_key)
-            if family_id in claimed_families:
-                continue
+                if len(definition.get('versions', [])) <= 1:
+                    continue
 
-            if canonical not in canonical_names:
-                canonical_names.append(canonical)
-            claimed_families.add(family_id)
+                family_key = definition.get('family_name') or name
+                canonical = install_info.get('canonical') if isinstance(install_info, dict) else name
+
+                family_id = (section, family_key)
+
+                if family_key in defaults:
+                    continue
+                if family_id in claimed_families:
+                    continue
+                if canonical not in canonical_names:
+                    canonical_names.append(canonical)
+                claimed_families.add(family_id)
 
         result['canonical_names'] = canonical_names
         module.exit_json(**result)
