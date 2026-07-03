@@ -22,7 +22,7 @@
         name: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
       register: elasticsearch_installed
 
-    - name: "workflows » magento2 » services » elasticsearch | resolve elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} service"
+    - name: "workflows » magento2 » services » elasticsearch | resolve elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version | default('') }} service"
       vsh_bundle_resolver:
         service: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
         current_os: "{{ current_os }}"
@@ -48,20 +48,20 @@
 #        valet_service_action: "handle"
 #        valet_sh_newly_installed_services: "{{ elasticsearch_install.services }}"
 
-    - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started and enabled"
+    - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version | default('') }} is started and enabled"
       ansible.builtin.systemd:
         name: "vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
         state: started
         enabled: true
         scope: user
 
-    - name: "workflows » magento2 » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as default"
+    - name: "workflows » magento2 » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version | default('') }} as default"
       vsh_bundle_state:
         action: "default"
         name: "elasticsearch"
         canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
-    - name: "workflows » magento2 » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} as enabled"
+    - name: "workflows » magento2 » services » elasticsearch | set elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version | default('') }} as enabled"
       vsh_bundle_state:
         action: "enabled"
         canonical_names: "elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
@@ -86,7 +86,7 @@
         loop_var: current_elasticsearch_plugin
       when: current_elasticsearch_plugin not in installed_plugins.stdout
 
-    - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is restarted after plugin installation"
+    - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version | default('') }} is restarted after plugin installation"
       ansible.builtin.systemd:
         name: "vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
         state: restarted
@@ -98,13 +98,13 @@
     - valet_sh_project_vars.services.elasticsearch.version is defined
 
 - block:
-    - name: "workflows » magento2 » services » opensearch | check if opensearch{{ valet_sh_project_vars.services.opensearch.version }} is installed"
+    - name: "workflows » magento2 » services » opensearch | check if opensearch{{ valet_sh_project_vars.services.opensearch.version | default('') }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
         name: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
       register: opensearch_installed
 
-    - name: "workflows » magento2 » services » opensearch | resolve opensearch{{ valet_sh_project_vars.services.opensearch.version }} service"
+    - name: "workflows » magento2 » services » opensearch | resolve opensearch{{ valet_sh_project_vars.services.opensearch.version | default('') }} service"
       vsh_bundle_resolver:
         name: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
         current_os: "{{ current_os }}"
@@ -130,20 +130,20 @@
 #        valet_service_action: "handle"
 #        valet_sh_newly_installed_services: "{{ opensearch_install.services }}"
 
-    - name: "workflows » magento2 » services » opensearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started and enabled"
+    - name: "workflows » magento2 » services » opensearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version | default('') }} is started and enabled"
       ansible.builtin.systemd:
         name: "vsh-opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
         state: started
         enabled: true
         scope: user
 
-    - name: "workflows » magento2 » services » opensearch | set opensearch{{ valet_sh_project_vars.services.opensearch.version }} as default"
+    - name: "workflows » magento2 » services » opensearch | set opensearch{{ valet_sh_project_vars.services.opensearch.version | default('') }} as default"
       vsh_bundle_state:
         action: "default"
         name: "opensearch"
         canonical_names: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
 
-    - name: "workflows » magento2 » services » opensearch | set opensearch{{ valet_sh_project_vars.services.opensearch.version }} as enabled"
+    - name: "workflows » magento2 » services » opensearch | set opensearch{{ valet_sh_project_vars.services.opensearch.version | default('') }} as enabled"
       vsh_bundle_state:
         action: "enabled"
         canonical_names: "opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
@@ -168,7 +168,7 @@
         loop_var: current_opensearch_plugin
       when: current_opensearch_plugin not in installed_plugins.stdout
 
-    - name: "workflows » magento2 » services » opensearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is restarted after plugin installation"
+    - name: "workflows » magento2 » services » opensearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version | default('') }} is restarted after plugin installation"
       ansible.builtin.systemd:
         name: "vsh-opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
         state: restarted
@@ -180,7 +180,7 @@
     - valet_sh_project_vars.services.opensearch.version is defined
 
 - block:
-    - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }} is started"
+    - name: "workflows » magento2 » services » elasticsearch | ensure elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version | default('') }} is started"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-elasticsearch{{ valet_sh_project_vars.services.elasticsearch.version }}"
     - name: "workflows » magento2 » services » elasticsearch | include valet services file"
       ansible.builtin.include_vars:
@@ -221,7 +221,7 @@
     - valet_sh_project_vars.services.elasticsearch.version is defined
 
 - block:
-    - name: "workflows » magento2 » services » opensearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version }} is started"
+    - name: "workflows » magento2 » services » opensearch | ensure opensearch{{ valet_sh_project_vars.services.opensearch.version | default('') }} is started"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-opensearch{{ valet_sh_project_vars.services.opensearch.version }}"
 
     - name: "workflows » magento2 » services » opensearch | include valet services file"

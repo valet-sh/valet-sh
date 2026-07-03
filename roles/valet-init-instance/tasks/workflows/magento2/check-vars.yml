@@ -58,7 +58,7 @@
     php_bin_name: "php{{ php_version_number }}"
   when:
     - php_version_number is defined
-    - php_version_number|length > 0
+    - php_version_number|string|length > 0
 
 - name: "workflows » magento2 » check-vars | get path of php binary"
   ansible.builtin.shell: "which {{ php_bin_name }}"

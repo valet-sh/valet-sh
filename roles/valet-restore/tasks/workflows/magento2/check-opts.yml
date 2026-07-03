@@ -40,4 +40,7 @@
 - name: "workflows » magento2 » check-opts | normalize variable 'valet_opt_instance_identifier'"
   ansible.builtin.set_fact:
     valet_opt_instance_identifier: "{{ valet_opt_instance_identifier | first }}"
-  when: valet_opt_instance_identifier is defined and valet_opt_instance_identifier|length>0
+  when:
+    - valet_opt_instance_identifier is defined
+    - valet_opt_instance_identifier is not none
+    - valet_opt_instance_identifier | length > 0
