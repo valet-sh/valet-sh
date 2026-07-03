@@ -29,8 +29,6 @@ def main():
         canonical_names = []
         claimed_families = set()
 
-        # Enforce all currently configured defaults (ensures system state matches bundles.yml,
-        # e.g. PHP CLI alternatives that Ubuntu resets on package install)
         for section in ['services', 'packages']:
             section_state = state.get('bundles', {}).get(section, {})
             for family_key, canonical in section_state.get('defaults', {}).items():
@@ -45,14 +43,14 @@ def main():
             defaults = section_state.get('defaults', {})
             section_definitions = all_definitions.get(section, {})
 
-            for name, install_info in installed_entries.items():
+            for name in installed_entries:
                 definition = section_definitions.get(name, {})
 
                 if len(definition.get('versions', [])) <= 1:
                     continue
 
+                canonical = definition.get('canonical', name)
                 family_key = definition.get('family_name') or name
-                canonical = install_info.get('canonical') if isinstance(install_info, dict) else name
 
                 family_id = (section, family_key)
 
