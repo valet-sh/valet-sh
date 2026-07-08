@@ -23,10 +23,29 @@
     state: present
   become: true
 
-- name: use php ppa (Ubuntu)
-  apt_repository:
-    repo: 'ppa:ondrej/php'
-    codename: "{{ os_codename }}"
+- name: "download and install https://packages.sury.org/debsuryorg-archive-keyring.deb"
+  ansible.builtin.apt:
+    deb: https://packages.sury.org/debsuryorg-archive-keyring.deb
+  become: true
+
+- name: "Ensure php repository is present in sources.list.d'"
+  ansible.builtin.copy:
+    content: |
+      deb [signed-by=/usr/share/keyrings/debsuryorg-archive-keyring.gpg] https://packages.sury.org/php/ {{ ansible_distribution_release }} main
+    dest: /etc/apt/sources.list.d/php.list
+    mode: '0644'
+  become: true
+
+- name: Ensure '/etc/apt/sources.list.d/ppa_ondrej_php_noble.list' is absent
+  file:
+    path: "/etc/apt/sources.list.d/ppa_ondrej_php_noble.list"
+    state: absent
+  become: true
+
+- name: update apt caches
+  apt:
+    update_cache: yes
+  ignore_errors: True
   become: true
 
 - name: "install defined php versions"
