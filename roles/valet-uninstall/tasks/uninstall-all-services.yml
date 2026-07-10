@@ -20,18 +20,14 @@
     file: "{{ valet_etc_services_file}}"
     name: valet_all_services
 
-- name: Debug valet_all_services
-  ansible.builtin.debug:
-    var: valet_all_services
-
 - name: "uninstall » if no services found fail"
   ansible.builtin.fail:
     msg: "No installed services/packages found to uninstall!"
   when: >-
-    valet_all_services.services.installed is none  or
-    valet_all_services.packages.installed is none
+    valet_all_services.bundles.services.installed is none or
+    valet_all_services.bundles.packages.installed is none
 
-- name: "set all services and packages to uninstall"
+- name: "uninstall » set all services and packages to uninstall"
   ansible.builtin.set_fact:
     valet_uninstall_all: "{{ valet_all_services.bundles.services.installed.keys() | list + valet_all_services.bundles.packages.installed.keys() | list }}"
 
