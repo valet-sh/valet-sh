@@ -105,7 +105,7 @@
         current_os: "{{ current_os }}"
       register: db_service
 
-- name: "workflows » neos » check-vars | override magento2 'valet_sh_neos_db_port' var"
+- name: "workflows » neos » check-vars | override neos 'valet_sh_neos_db_port' var"
   ansible.builtin.set_fact:
     valet_sh_neos_db_port: "{{ db_service.services[0].configuration.ports.tcp }}"
   when:
