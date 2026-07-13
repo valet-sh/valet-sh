@@ -13,6 +13,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: "workflows » magento2 » check-vars | set value for valet_project_src_dir"
   ansible.builtin.set_fact:
     valet_project_src_dir: "{{ valet_sh_project_vars.instance.path }}"
@@ -68,45 +69,9 @@
     - valet_sh_project_vars.services.mariadb is defined
     - valet_sh_project_vars.services.mariadb.version is defined
 
-- name: "workflows » magento2 » check-vars | set default mysql server port configuration"
+- name: "workflows » magento2 » check-vars | set default database server port configuration"
   ansible.builtin.set_fact:
-    valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mysql57 }}"
-
-- name: "workflows » magento2 » check-vars | override mysql server port configuration"
-  ansible.builtin.set_fact:
-    valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mysql80 }}"
-  when:
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mysql is defined
-    - valet_sh_project_vars.services.mysql.version is defined
-    - valet_sh_project_vars.services.mysql.version == 8.0
-
-- name: "workflows » magento2 » check-vars | override mysql server port configuration"
-  ansible.builtin.set_fact:
-    valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mariadb104 }}"
-  when:
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mariadb is defined
-    - valet_sh_project_vars.services.mariadb.version is defined
-    - valet_sh_project_vars.services.mariadb.version == 10.4
-
-- name: "workflows » magento2 » check-vars | override mysql server port configuration"
-  ansible.builtin.set_fact:
-    valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mariadb106 }}"
-  when:
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mariadb is defined
-    - valet_sh_project_vars.services.mariadb.version is defined
-    - valet_sh_project_vars.services.mariadb.version == 10.6
-
-- name: "workflows » magento2 » check-vars | override mysql server port configuration"
-  ansible.builtin.set_fact:
-    valet_sh_project_mysql_server_port: "{{ valet_sh_service_mysql_port_presets.mariadb114 }}"
-  when:
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mariadb is defined
-    - valet_sh_project_vars.services.mariadb.version is defined
-    - valet_sh_project_vars.services.mariadb.version == 11.4
+    valet_sh_project_mysql_server_port: "{{ db_service.services[0].configuration.ports.tcp }}"
 
 - name: "workflows » magento2 » check-vars | default database name based on current working dir"
   ansible.builtin.set_fact:

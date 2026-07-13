@@ -43,8 +43,7 @@
         valet_sh_magento2_db_charset: "{{ valet_sh_service_mysql_charset }}"
         valet_sh_magento2_db_collation_string: ""
         valet_sh_project_env_template: "templates/env.php.j2"
-        valet_sh_magento2_env_mage_indexer_threads_count: "{{ valet_sh_project_vars.instance.config.MAGE_INDEXER_THREADS_COUNT | default(valet_sh_magento2_env_mage_indexer_threads_count_default)
-          }}"
+        valet_sh_magento2_env_mage_indexer_threads_count: "{{ valet_sh_project_vars.instance.config.MAGE_INDEXER_THREADS_COUNT | default(valet_sh_magento2_env_mage_indexer_threads_count_default) }}"
 
     - name: "crypt_key block"
       when:
@@ -106,45 +105,9 @@
         - valet_sh_project_vars.services.mysql.version is defined
         - valet_sh_project_vars.services.mysql.version == 8.0
 
-    - name: "workflows » magento2 » project-env | set magento2 'valet_sh_magento2_db_host' var"
-      ansible.builtin.set_fact:
-        valet_sh_magento2_db_host: "{{ valet_sh_service_mysql_host_presets.mysql57 }}"
-
     - name: "workflows » magento2 » project-env | override magento2 'valet_sh_magento2_db_host' var"
       ansible.builtin.set_fact:
-        valet_sh_magento2_db_host: "{{ valet_sh_service_mysql_host_presets.mysql80 }}"
-      when:
-        - valet_sh_project_vars.services is defined
-        - valet_sh_project_vars.services.mysql is defined
-        - valet_sh_project_vars.services.mysql.version is defined
-        - valet_sh_project_vars.services.mysql.version == 8.0
-
-    - name: "workflows » magento2 » project-env | override magento2 'valet_sh_magento2_db_host' var"
-      ansible.builtin.set_fact:
-        valet_sh_magento2_db_host: "{{ valet_sh_service_mysql_host_presets.mariadb104 }}"
-      when:
-        - valet_sh_project_vars.services is defined
-        - valet_sh_project_vars.services.mariadb is defined
-        - valet_sh_project_vars.services.mariadb.version is defined
-        - valet_sh_project_vars.services.mariadb.version == 10.4
-
-    - name: "workflows » magento2 » project-env | override magento2 'valet_sh_magento2_db_host' var"
-      ansible.builtin.set_fact:
-        valet_sh_magento2_db_host: "{{ valet_sh_service_mysql_host_presets.mariadb106 }}"
-      when:
-        - valet_sh_project_vars.services is defined
-        - valet_sh_project_vars.services.mariadb is defined
-        - valet_sh_project_vars.services.mariadb.version is defined
-        - valet_sh_project_vars.services.mariadb.version == 10.6
-
-    - name: "workflows » magento2 » project-env | override magento2 'valet_sh_magento2_db_host' var"
-      ansible.builtin.set_fact:
-        valet_sh_magento2_db_host: "{{ valet_sh_service_mysql_host_presets.mariadb114 }}"
-      when:
-        - valet_sh_project_vars.services is defined
-        - valet_sh_project_vars.services.mariadb is defined
-        - valet_sh_project_vars.services.mariadb.version is defined
-        - valet_sh_project_vars.services.mariadb.version == 11.4
+        valet_sh_magento2_db_host: "{{ db_service.services[0].configuration.ports.tcp }}"
 
     - name: "workflows » magento2 » project-env | set 'valet_sh_magento2_rabbitmq_virtualhost' var"
       ansible.builtin.set_fact:

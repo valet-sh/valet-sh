@@ -14,8 +14,11 @@
 ##
 ---
 - ansible.builtin.include_vars: "vars.yml"
+
 - ansible.builtin.include_tasks: "check-opts.yml"
+
 - ansible.builtin.include_tasks: "check-vars.yml"
+
 - name: "block"
   when: not valet_opt_flag_skip_db|bool or not valet_opt_flag_skip_fs|bool
   block:

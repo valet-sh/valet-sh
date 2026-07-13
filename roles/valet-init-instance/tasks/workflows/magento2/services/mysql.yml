@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - block:
     - name: "workflows » magento2 » services » mysql | set var 'valet_sh_service_mysql_current_name'"
       ansible.builtin.set_fact:
@@ -29,23 +30,15 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mysql_current_name }}"
         current_os: "{{ current_os }}"
-      register: mysql_install
+      register: db_service
 
     - name: "include service-specific roles"
       ansible.builtin.include_role:
         name: "mysql-community-server"
       vars:
-        valet_resolved_service: "{{ mysql_install }}"
+        valet_resolved_service: "{{ db_service }}"
         valet_install_services: ["{{ valet_sh_service_mysql_current_name }}"]
       when: mysql_installed.kinds | length == 0
-
-#    - name: "workflows » magento2 » services » mysql | include valet-service role to set defaults"
-#      ansible.builtin.include_role:
-#        name: "valet-service"
-#      vars:
-#        valet_sh_service_internal_action: true
-#        valet_service_action: "handle"
-#        valet_sh_newly_installed_services: "{{ mysql_install.services }}"
 
     - name: "workflows » magento2 » services » mysql | ensure {{ valet_sh_service_mysql_current_name | default() }} is started"
       ansible.builtin.systemd:
@@ -67,7 +60,7 @@
 
     - name: "workflows » magento2 » services » mysql | wait for mysql to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mysql_current_name] }}"
+        port: "{{ db_service.services[0].configuration.ports.tcp }}"
         delay: 5
   when:
     - current_os == "ubuntu"
@@ -93,23 +86,19 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mariadb_current_name }}"
         current_os: "{{ current_os }}"
-      register: mariadb_install
+      register: db_service
+
+
+    - debug:
+        msg: "{{ db_service }}"
 
     - name: "include service-specific roles"
       ansible.builtin.include_role:
         name: "mariadb-server"
       vars:
-        valet_resolved_service: "{{ mariadb_install }}"
+        valet_resolved_service: "{{ db_service }}"
         valet_install_services: ["{{ valet_sh_service_mariadb_current_name }}"]
       when: mariadb_installed.kinds | length == 0
-
-#    - name: "workflows » magento2 » services » mariadb | include valet-service role to set defaults"
-#      ansible.builtin.include_role:
-#        name: "valet-service"
-#      vars:
-#        valet_sh_service_internal_action: true
-#        valet_service_action: "handle"
-#        valet_sh_newly_installed_services: "{{ mariadb_install.services }}"
 
     - name: "workflows » magento2 » services » mariadb | ensure {{ valet_sh_service_mariadb_current_name | default() }} is started"
       ansible.builtin.systemd:
@@ -131,7 +120,7 @@
 
     - name: "workflows » magento2 » services » mariadb | wait for mariadb to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
+        port: "{{ db_service.services[0].configuration.ports.tcp }}"
         delay: 5
   when:
     - current_os == "ubuntu"
@@ -146,6 +135,7 @@
 
     - name: "workflows » magento2 » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
+
     - name: "workflows » magento2 » services » mysql | include valet services file"
       ansible.builtin.include_vars:
         file: "{{ valet_etc_services_file }}"
@@ -176,7 +166,7 @@
 
     - name: "workflows » magento2 » services » mysql | wait for mysql to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mysql_current_name] }}"
+        port: "{{ db_service.services[0].configuration.ports.tcp }}"
         delay: 5
   when:
     - current_os == "mac"
@@ -221,7 +211,7 @@
 
     - name: "workflows » magento2 » services » mariadb | wait for mariadb to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
+        port: "{{ db_service.services[0].configuration.ports.tcp }}"
         delay: 5
   when:
     - current_os == "mac"
