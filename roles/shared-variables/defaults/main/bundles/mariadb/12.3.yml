@@ -14,7 +14,7 @@ service:
 configuration:
   docker_image: "docker.io/library/mariadb:12.3"
   ports:
-    mariadb: 3337
+    tcp: 3337
   base_path: "/usr/local/valet-sh/packages/mariadb123"
   default_root_password: "root"
   default_user: "mysql"

@@ -106,7 +106,7 @@
 - name: Test MySQL connection and get info
   community.mysql.mysql_info:
     login_host: "127.0.0.1"
-    login_port: "{{ current_service.configuration.ports.mysql }}"
+    login_port: "{{ current_service.configuration.ports.tcp }}"
     login_user: "root"
     login_password: "{{ current_service.configuration.default_root_password }}"
   register: mysql_status

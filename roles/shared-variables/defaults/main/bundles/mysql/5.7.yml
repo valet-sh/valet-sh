@@ -14,7 +14,7 @@ service:
 configuration:
   docker_image: "docker.io/library/mysql:5.7"
   ports:
-    mysql: 3307
+    tcp: 3307
   base_path: "/usr/local/valet-sh/packages/mysql57"
   default_root_password: "root"
   default_user: "mysql"

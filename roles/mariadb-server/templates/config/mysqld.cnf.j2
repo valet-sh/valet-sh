@@ -2,7 +2,7 @@
 nice		= 0
 
 [mysqld]
-port            = {{ current_service.configuration.ports.mariadb }}
+port            = {{ current_service.configuration.ports.tcp }}
 bind-address    = {{ '127.0.0.1' if current_os == 'ubuntu' else '0.0.0.0' }}
 key_buffer_size		= 16M
 max_allowed_packet	= 256M
