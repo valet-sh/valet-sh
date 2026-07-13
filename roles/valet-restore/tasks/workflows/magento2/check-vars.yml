@@ -69,9 +69,56 @@
     - valet_sh_project_vars.services.mariadb is defined
     - valet_sh_project_vars.services.mariadb.version is defined
 
-- name: "workflows » magento2 » check-vars | set default database server port configuration"
+- name: "block"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mysql is defined
+    - valet_sh_project_vars.services.mysql.version is defined
+  block:
+
+    - name: "workflows » magento2 » check-vars | set var 'valet_sh_service_mysql_current_name'"
+      ansible.builtin.set_fact:
+        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
+
+    - name: "workflows » magento2 » check-vars | check if mysql{{ valet_sh_project_vars.services.mysql.version | default() }} is installed"
+      vsh_bundle_install_state_info:
+        state: "present"
+        name: "{{ valet_sh_service_mysql_current_name }}"
+      register: mysql_installed
+
+    - name: "workflows » magento2 » check-vars | resolve mysql{{ valet_sh_project_vars.services.mysql.version | default() }} service"
+      vsh_bundle_resolver:
+        name: "{{ valet_sh_service_mysql_current_name }}"
+        current_os: "{{ current_os }}"
+      register: db_service
+
+- name: "block"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.mariadb is defined
+    - valet_sh_project_vars.services.mariadb.version is defined
+  block:
+    - name: "workflows » magento2 » check-vars | set var 'valet_sh_service_mariadb_current_name'"
+      ansible.builtin.set_fact:
+        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
+
+    - name: "workflows » magento2 » check-vars | check if mariadb{{ valet_sh_project_vars.services.mariadb.version | default() }} is installed"
+      vsh_bundle_install_state_info:
+        state: "present"
+        name: "{{ valet_sh_service_mariadb_current_name }}"
+      register: mariadb_installed
+
+    - name: "workflows » magento2 » check-vars | resolve mariadb{{ valet_sh_project_vars.services.mariadb.version | default() }} service"
+      vsh_bundle_resolver:
+        name: "{{ valet_sh_service_mariadb_current_name }}"
+        current_os: "{{ current_os }}"
+      register: db_service
+
+- name: "workflows » magento2 » check-vars | override magento2 'valet_sh_magento2_db_port' var"
   ansible.builtin.set_fact:
-    valet_sh_project_mysql_server_port: "{{ db_service.services[0].configuration.ports.tcp }}"
+    valet_sh_magento2_db_port: "{{ db_service.services[0].configuration.ports.tcp }}"
+  when:
+    - valet_sh_magento2_db_port is not defined or valet_sh_magento2_db_port | string | length == 0
 
 - name: "workflows » magento2 » check-vars | default database name based on current working dir"
   ansible.builtin.set_fact:
