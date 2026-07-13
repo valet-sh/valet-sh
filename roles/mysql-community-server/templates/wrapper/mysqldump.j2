@@ -7,11 +7,13 @@ if ! podman inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
     echo "Error: $CONTAINER is not running" >&2
     exit 1
 fi
-exec podman exec -it "$CONTAINER" mysqldump --defaults-file=/root/.my.cnf "$@"
+TTY_FLAG=""; [ -t 0 ] && TTY_FLAG="-t"
+exec podman exec -i $TTY_FLAG "$CONTAINER" mysqldump --defaults-file=/root/.my.cnf "$@"
 {% else %}
 if ! container inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
     echo "Error: $CONTAINER is not running" >&2
     exit 1
 fi
-exec container exec -it "$CONTAINER" mysqldump --defaults-file=/home/.my.cnf "$@"
+TTY_FLAG=""; [ -t 0 ] && TTY_FLAG="-t"
+exec container exec -i $TTY_FLAG "$CONTAINER" mysqldump --defaults-file=/home/.my.cnf "$@"
 {% endif %}

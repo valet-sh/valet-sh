@@ -15,11 +15,18 @@
 ##
 ---
 - block:
+    - name: "workflows » magento2 » services » php | set var 'valet_sh_service_php_current_name'"
+      ansible.builtin.set_fact:
+        valet_sh_service_php_current_name: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
+
     - name: "workflows » magento2 » services » php | check if php{{ valet_sh_project_vars.services.php.version }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
-        name: "php{{ valet_sh_project_vars.services.php.version }}"
+        name: "{{ valet_sh_service_php_current_name }}"
       register: php_installed
+
+    - debug:
+        msg: "{{ php_installed }}"
 
     - name: "workflows » magento2 » services » php | resolve php{{ valet_sh_project_vars.services.php.version }} service"
       vsh_bundle_resolver:

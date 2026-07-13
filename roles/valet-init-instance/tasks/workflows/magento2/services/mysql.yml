@@ -19,13 +19,13 @@
       ansible.builtin.set_fact:
         valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
-    - name: "workflows » magento2 » services » mysql | check if mysql{{ valet_sh_project_vars.services.mysql.version }} is installed"
+    - name: "workflows » magento2 » services » mysql | check if mysql{{ valet_sh_project_vars.services.mysql.version | default() }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
         name: "{{ valet_sh_service_mysql_current_name }}"
       register: mysql_installed
 
-    - name: "workflows » magento2 » services » mysql | resolve mysql{{ valet_sh_project_vars.services.mysql.version }} service"
+    - name: "workflows » magento2 » services » mysql | resolve mysql{{ valet_sh_project_vars.services.mysql.version | default() }} service"
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mysql_current_name }}"
         current_os: "{{ current_os }}"
@@ -47,20 +47,20 @@
 #        valet_service_action: "handle"
 #        valet_sh_newly_installed_services: "{{ mysql_install.services }}"
 
-    - name: "workflows » magento2 » services » mysql | ensure {{ valet_sh_service_mysql_current_name }} is started"
+    - name: "workflows » magento2 » services » mysql | ensure {{ valet_sh_service_mysql_current_name | default() }} is started"
       ansible.builtin.systemd:
         name: "vsh-{{ valet_sh_service_mysql_current_name }}"
         state: started
         enabled: true
         scope: user
 
-    - name: "workflows » magento2 » services » mysql | set {{ valet_sh_service_mysql_current_name }} as default"
+    - name: "workflows » magento2 » services » mysql | set {{ valet_sh_service_mysql_current_name | default() }} as default"
       vsh_bundle_state:
         action: "default"
         name: "mysql"
         canonical_names: "{{ valet_sh_service_mysql_current_name }}"
 
-    - name: "workflows » magento2 » services » mysql | set {{ valet_sh_service_mysql_current_name }} as enabled"
+    - name: "workflows » magento2 » services » mysql | set {{ valet_sh_service_mysql_current_name | default()}} as enabled"
       vsh_bundle_state:
         action: "enabled"
         canonical_names: "{{ valet_sh_service_mysql_current_name }}"
@@ -80,13 +80,16 @@
       ansible.builtin.set_fact:
         valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
 
-    - name: "workflows » magento2 » services » mariadb | check if mariadb{{ valet_sh_project_vars.services.mariadb.version }} is installed"
+    - name: "workflows » magento2 » services » mariadb | check if mariadb{{ valet_sh_project_vars.services.mariadb.version | default() }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
         name: "{{ valet_sh_service_mariadb_current_name }}"
       register: mariadb_installed
 
-    - name: "workflows » magento2 » services » mariadb | resolve mariadb{{ valet_sh_project_vars.services.mariadb.version }} service"
+    - debug:
+        msg: "{{ mariadb_installed }}"
+
+    - name: "workflows » magento2 » services » mariadb | resolve mariadb{{ valet_sh_project_vars.services.mariadb.version | default() }} service"
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mariadb_current_name }}"
         current_os: "{{ current_os }}"
@@ -108,20 +111,20 @@
 #        valet_service_action: "handle"
 #        valet_sh_newly_installed_services: "{{ mariadb_install.services }}"
 
-    - name: "workflows » magento2 » services » mariadb | ensure {{ valet_sh_service_mariadb_current_name }} is started"
+    - name: "workflows » magento2 » services » mariadb | ensure {{ valet_sh_service_mariadb_current_name | default() }} is started"
       ansible.builtin.systemd:
         name: "vsh-{{ valet_sh_service_mariadb_current_name }}"
         state: started
         enabled: true
         scope: user
 
-    - name: "workflows » magento2 » services » mariadb | set {{ valet_sh_service_mariadb_current_name }} as default"
+    - name: "workflows » magento2 » services » mariadb | set {{ valet_sh_service_mariadb_current_name | default() }} as default"
       vsh_bundle_state:
         action: "default"
         name: "mariadb"
         canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
 
-    - name: "workflows » magento2 » services » mariadb | set {{ valet_sh_service_mariadb_current_name }} as enabled"
+    - name: "workflows » magento2 » services » mariadb | set {{ valet_sh_service_mariadb_current_name | default() }} as enabled"
       vsh_bundle_state:
         action: "enabled"
         canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
