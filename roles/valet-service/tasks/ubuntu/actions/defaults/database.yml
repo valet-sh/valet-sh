@@ -15,73 +15,52 @@
 ##
 ---
 
-#- name: "delete mariadb default symlinks"
-#  file:
-#    path: "/usr/local/bin/{{ current_mariadb_default_linkname }}"
-#    state: absent
-#  with_items:
-#    - mariadb
-#    - mariadump
-#    - mariaadmin
-#  loop_control:
-#    loop_var: current_mariadb_default_linkname
-#  become: true
+- name: ensure mysql wrapper script is up2date
+  ansible.builtin.template:
+    src: "wrappers/mysql/mysql-wrapper.j2"
+    dest: "/usr/local/bin/mysql"
+    mode: "0755"
+  become: true
 
-- block:
-    - name: ensure mysql wrapper script is up2date
-      ansible.builtin.template:
-        src: "wrappers/mysql/mysql-wrapper.j2"
-        dest: "/usr/local/bin/mysql"
-        mode: "0755"
-      become: true
+- name: ensure mysqladmin wrapper script is up2date
+  ansible.builtin.template:
+    src: "wrappers/mysql/mysqladmin-wrapper.j2"
+    dest: "/usr/local/bin/mysqladmin"
+    mode: "0755"
+  become: true
 
-    - name: ensure mysqladmin wrapper script is up2date
-      ansible.builtin.template:
-        src: "wrappers/mysql/mysqladmin-wrapper.j2"
-        dest: "/usr/local/bin/mysqladmin"
-        mode: "0755"
-      become: true
+- name: ensure mysqldump wrapper script is up2date
+  ansible.builtin.template:
+    src: "wrappers/mysql/mysqldump-wrapper.j2"
+    dest: "/usr/local/bin/mysqldump"
+    mode: "0755"
+  become: true
 
-    - name: ensure mysqldump wrapper script is up2date
-      ansible.builtin.template:
-        src: "wrappers/mysql/mysqldump-wrapper.j2"
-        dest: "/usr/local/bin/mysqldump"
-        mode: "0755"
-      become: true
+- name: ensure mariadb wrapper script is up2date
+  ansible.builtin.template:
+    src: "wrappers/mysql/mysql-wrapper.j2"
+    dest: "/usr/local/bin/mariadb"
+    mode: "0755"
+  become: true
 
-    - name: "create symlinks for default mysql and mariadb"
-      file:
-        src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ item.version }}"
-        dest: "/usr/local/bin/default-{{ current_mysql_default_linkname }}"
-        state: link
-        force: true
-      become: true
-      with_items:
-        - mysql
-        - mysqldump
-        - mysqladmin
-        - mariadb
-        - mariadump
-        - mariaadmin
-      loop_control:
-        loop_var: current_mysql_default_linkname
-
-    # - name: "create .my.cnf symlink for mysql service"
-    #   file:
-    #     src: "{{ current_home }}/.my{{ item.version }}.cnf"
-    #     dest: "{{ current_home }}/.my.cnf"
-    #     state: link
-    #     force: true
+- name: "create symlinks for default mysql"
+  file:
+    src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ item.version }}"
+    dest: "/usr/local/bin/default-{{ current_mysql_default_linkname }}"
+    state: link
+    force: true
+  become: true
+  with_items:
+    - mysql
+    - mysqldump
+    - mysqladmin
+  loop_control:
+    loop_var: current_mysql_default_linkname
   when: item.name == "mysql"
 
-- block:
-    - name: ensure mysql wrapper script is up2date
-      ansible.builtin.template:
-        src: "wrappers/mysql/mysql-wrapper.j2"
-        dest: "/usr/local/bin/mysql"
-        mode: "0755"
-      become: true
-
+- name: "block for mariadb"
+  when: item.name == "mariadb"
+  block:
     - name: "create symlinks for default mysql"
       file:
         src: "/usr/local/bin/mariadb{{ item.version }}"
@@ -105,8 +84,6 @@
         state: link
         force: true
       become: true
-
-  when: item.name == "mariadb"
 
 - name: "provide nginx stream configuration"
   template:
