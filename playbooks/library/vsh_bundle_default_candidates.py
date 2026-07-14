@@ -8,6 +8,14 @@ def load_yaml_file(path):
     with open(path, 'r') as f:
         return yaml.safe_load(f) or {}
 
+def find_family_key_and_definition(canonical_name, section_definitions):
+    if canonical_name in section_definitions:
+        return canonical_name, section_definitions[canonical_name]
+    for key, definition in section_definitions.items():
+        if canonical_name.startswith(key):
+            return key, definition
+    return None, {}
+
 def main():
     module_args = dict(
         bundle_etc_file=dict(type='str', default='/usr/local/valet-sh/etc/bundles.yml'),
@@ -44,13 +52,16 @@ def main():
             section_definitions = all_definitions.get(section, {})
 
             for name in installed_entries:
-                definition = section_definitions.get(name, {})
+                family_key, definition = find_family_key_and_definition(name, section_definitions)
 
                 if len(definition.get('versions', [])) <= 1:
                     continue
 
-                canonical = definition.get('canonical', name)
-                family_key = definition.get('family_name') or name
+                if not family_key:
+                    family_key = name
+
+                if name == family_key:
+                    continue
 
                 family_id = (section, family_key)
 
@@ -58,8 +69,8 @@ def main():
                     continue
                 if family_id in claimed_families:
                     continue
-                if canonical not in canonical_names:
-                    canonical_names.append(canonical)
+                if name not in canonical_names:
+                    canonical_names.append(name)
                 claimed_families.add(family_id)
 
         result['canonical_names'] = canonical_names

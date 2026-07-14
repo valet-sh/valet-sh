@@ -61,10 +61,16 @@
 #######################
 ## start handle defaults
 
+- debug:
+    msg: "{{ valet_etc_services_file }}"
+
 - name: "internal-actions » handle | determine which services should have their default enforced"
   vsh_bundle_default_candidates:
     bundle_etc_file: "{{ valet_etc_services_file }}"
   register: vsh_default_candidates
+
+- debug:
+    msg: "{{ vsh_default_candidates }}"
 
 - name: "internal-actions » handle | resolve default candidate services"
   vsh_bundle_resolver:
@@ -73,9 +79,17 @@
   register: vsh_default_resolver
   when: vsh_default_candidates.canonical_names | length > 0
 
+
+- debug:
+    msg: "{{ vsh_default_resolver }}"
+
 - name: "internal-actions » handle | set valet_all_services to resolved default candidates"
   ansible.builtin.set_fact:
     valet_all_services: "{{ (vsh_default_resolver.services | default([])) + (vsh_default_resolver.packages | default([])) }}"
+
+- debug:
+    msg: "{{ valet_all_services }}"
+
 
 - name: "internal-actions » handle | run default action for resolved default candidates"
   ansible.builtin.include_tasks: "ubuntu/actions/default.yml"
