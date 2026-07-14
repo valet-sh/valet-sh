@@ -154,6 +154,11 @@ def main():
                 if name not in name_target.get('states', {}):
                     name_target.setdefault('states', {})[name] = True
                     result['changed'] = True
+                family_key = find_definition(name, all_definitions).get('family_name')
+                canonical_name = find_definition_key(name, all_definitions)
+                if family_key not in name_target.get('defaults', {}) and canonical_name:
+                    name_target.setdefault('defaults', {})[family_key] = canonical_name
+                    result['changed'] = True
 
                 family_key = find_definition(name, all_definitions).get('family_name')
                 if family_key and family_key not in name_target.get('defaults', {}):

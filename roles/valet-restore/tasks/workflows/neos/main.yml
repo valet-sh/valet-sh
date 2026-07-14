@@ -13,9 +13,13 @@
 #   limitations under the License.
 ##
 ---
+
 - ansible.builtin.include_vars: "vars.yml"
+
 - ansible.builtin.include_tasks: "check-opts.yml"
+
 - ansible.builtin.include_tasks: "check-vars.yml"
+
 - name: "block sync"
   when: (valet_opt_flag_skip_db is not defined or not valet_opt_flag_skip_db|bool) or (valet_opt_flag_skip_fs is not defined or not valet_opt_flag_skip_fs|bool)
   block:
@@ -83,7 +87,7 @@
             name: "{{ valet_sh_project_database_name }}"
             config_file: "{{ valet_sh_project_mysql_client_configuration }}"
             login_host: "127.0.0.1"
-            login_port: "{{ valet_sh_project_mysql_server_port }}"
+            login_port: "{{ valet_sh_neos_db_port }}"
             state: absent
 
         - name: "workflows » neos | import db dump '{{ valet_sh_instance_db_filename }}' into database '{{ valet_sh_project_database_name }}'"
@@ -92,7 +96,7 @@
             target: "{{ current_tmp_dir }}/{{ valet_sh_instance_db_filename }}"
             config_file: "{{ valet_sh_project_mysql_client_configuration }}"
             login_host: "127.0.0.1"
-            login_port: "{{ valet_sh_project_mysql_server_port }}"
+            login_port: "{{ valet_sh_neos_db_port }}"
             encoding: "utf8mb4"
             collation: "utf8mb4_unicode_ci"
             state: import

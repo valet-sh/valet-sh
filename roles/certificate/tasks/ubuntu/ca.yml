@@ -85,7 +85,7 @@
   when: copy_ca_to_trusted_root_ca_path_obj is changed
 
 - name: "ca | search for cert9.db files in users's home directory"
-  ansible.builtin.shell: "find {{ current_home }}/ -maxdepth 4 -name 'cert9.db' 2>/dev/null"
+  ansible.builtin.shell: "find {{ current_home }}/ -maxdepth 6 -name 'cert9.db' 2>/dev/null"
   register: available_cert9_files_obj
   become: true
 
