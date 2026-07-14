@@ -14,17 +14,6 @@
 #   limitations under the License.
 ##
 ---
-- name: "delete mariadb default symlinks"
-  file:
-    path: "/usr/local/bin/{{ current_mariadb_default_linkname }}"
-    state: absent
-  with_items:
-    - mariadb
-    - mariadump
-    - mariaadmin
-  loop_control:
-    loop_var: current_mariadb_default_linkname
-  become: true
 
 - block:
     - name: ensure mysql wrapper script is up2date
@@ -59,6 +48,9 @@
         - mysql
         - mysqldump
         - mysqladmin
+        - mariadb
+        - mariadump
+        - mariaadmin
       loop_control:
         loop_var: current_mysql_default_linkname
 
