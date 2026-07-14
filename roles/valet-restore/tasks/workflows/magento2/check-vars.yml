@@ -90,7 +90,7 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mysql_current_name }}"
         current_os: "{{ current_os }}"
-      register: db_service
+      register: database_service
 
 - name: "block"
   when:
@@ -112,11 +112,11 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mariadb_current_name }}"
         current_os: "{{ current_os }}"
-      register: db_service
+      register: database_service
 
 - name: "workflows » magento2 » check-vars | override magento2 'valet_sh_magento2_db_port' var"
   ansible.builtin.set_fact:
-    valet_sh_magento2_db_port: "{{ db_service.services[0].configuration.ports.tcp }}"
+    valet_sh_magento2_db_port: "{{ database_service.services[0].configuration.ports.tcp }}"
   when:
     - valet_sh_magento2_db_port is not defined or valet_sh_magento2_db_port | string | length == 0
 

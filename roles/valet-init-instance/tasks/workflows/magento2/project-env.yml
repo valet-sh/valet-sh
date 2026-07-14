@@ -107,7 +107,7 @@
 
     - name: "workflows » magento2 » project-env | override magento2 'valet_sh_magento2_db_port' var"
       ansible.builtin.set_fact:
-        valet_sh_magento2_db_port: "{{ db_service.services[0].configuration.ports.tcp }}"
+        valet_sh_magento2_db_port: "{{ database_service.services[0].configuration.ports.tcp }}"
 
     - name: "workflows » magento2 » project-env | set 'valet_sh_magento2_rabbitmq_virtualhost' var"
       ansible.builtin.set_fact:

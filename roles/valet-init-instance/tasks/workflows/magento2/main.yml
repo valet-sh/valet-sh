@@ -14,7 +14,7 @@
 #   limitations under the License.
 ##
 ---
-- ansible.builtin.include_tasks: service-install.yml
+# - ansible.builtin.include_tasks: service-install.yml
 - ansible.builtin.include_tasks: check-vars.yml
 - ansible.builtin.include_tasks: project-install.yml
 - ansible.builtin.include_tasks: project-env.yml

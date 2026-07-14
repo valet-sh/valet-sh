@@ -46,12 +46,6 @@
         enabled: true
       become: true
 
-    - name: "workflows » magento2 » services » php | set {{ valet_sh_service_php_current_name }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "php"
-        canonical_names: "{{ valet_sh_service_php_current_name }}"
-
     - name: "workflows » magento2 » services » php | set {{ valet_sh_service_php_current_name }} as enabled"
       vsh_bundle_state:
         action: "enabled"
@@ -90,12 +84,6 @@
 
     - name: "workflows » magento2 » services » php | ensure {{ valet_sh_service_php_current_name }} is started"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_php_current_name }}"
-
-    - name: "workflows » magento2 » services » php | set {{ valet_sh_service_php_current_name }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "php"
-        canonical_names: "{{ valet_sh_service_php_current_name }}"
 
     - name: "workflows » magento2 » services » php | set {{ valet_sh_service_php_current_name }} as enabled"
       vsh_bundle_state:

@@ -55,12 +55,6 @@
         enabled: true
         scope: user
 
-    - name: "workflows » magento2 » services » search_engine | set {{ search_engine }}{{ search_engine_version }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "{{ search_engine }}"
-        canonical_names: "{{ search_engine }}{{ search_engine_version }}"
-
     - name: "workflows » magento2 » services » search_engine | set {{ search_engine }}{{ search_engine_version }} as enabled"
       vsh_bundle_state:
         action: "enabled"
@@ -124,12 +118,6 @@
       apple_container:
         name: "vsh-{{ search_engine }}{{ search_engine_version }}"
         state: started
-
-    - name: "workflows » magento2 » services » search_engine | set {{ search_engine }}{{ search_engine_version }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "{{ search_engine }}"
-        canonical_names: "{{ search_engine }}{{ search_engine_version }}"
 
     - name: "workflows » magento2 » services » search_engine | set {{ search_engine }}{{ search_engine_version }} as enabled"
       vsh_bundle_state:

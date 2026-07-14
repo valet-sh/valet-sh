@@ -64,12 +64,6 @@
         action: "enabled"
         canonical_names: "{{ cache_canonical_name }}"
 
-    - name: "workflows » magento2 » services » cache | set {{ cache_canonical_name }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "{{ cache }}"
-        canonical_names: "{{ cache_canonical_name }}"
-
     - name: "workflows » magento2 » services » cache | wait for {{ cache_canonical_name }} to be reachable"
       ansible.builtin.wait_for:
         port: "{{ cache_install.services[0].configuration.ports.tcp }}"
@@ -106,12 +100,6 @@
     - name: "workflows » magento2 » services » cache | set {{ cache_canonical_name }} as enabled"
       vsh_bundle_state:
         action: "enabled"
-        canonical_names: "{{ cache_canonical_name }}"
-
-    - name: "workflows » magento2 » services » cache | set {{ cache_canonical_name }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "{{ cache }}"
         canonical_names: "{{ cache_canonical_name }}"
 
     - name: "workflows » magento2 » services » cache | wait for {{ cache_canonical_name }} to be reachable"

@@ -35,13 +35,13 @@
       vsh_bundle_resolver:
         name: "{{ database_canonical_name }}"
         current_os: "{{ current_os }}"
-      register: database_install
+      register: database_service
 
     - name: "workflows » magento2 » services » database | include service-specific roles"
       ansible.builtin.include_role:
-        name: "{{ if database == 'mysql' }}mysql-community-server{{ else }}mariadb-server{{ endif }}"
+        name: "{{ 'mysql-community-server' if database == 'mysql' else 'mariadb-server' }}"
       vars:
-        valet_resolved_service: "{{ database_install }}"
+        valet_resolved_service: "{{ database_service }}"
         valet_install_services: ["{{ database_canonical_name }}"]
       when: database_installed.kinds | length == 0
 
@@ -52,12 +52,6 @@
         enabled: true
         scope: user
 
-    - name: "workflows » magento2 » services » database | set {{ database_canonical_name }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "{{ database }}"
-        canonical_names: "{{ database_canonical_name }}"
-
     - name: "workflows » magento2 » services » database | set {{ database_canonical_name }} as enabled"
       vsh_bundle_state:
         action: "enabled"
@@ -65,7 +59,7 @@
 
     - name: "workflows » magento2 » services » database | wait for {{ database_canonical_name }} to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ database_install.services[0].configuration.ports.tcp }}"
+        port: "{{ database_service.services[0].configuration.ports.tcp }}"
         delay: 5
   when:
     - current_os == "ubuntu"
@@ -83,13 +77,13 @@
       vsh_bundle_resolver:
         name: "{{ database_canonical_name }}"
         current_os: "{{ current_os }}"
-      register: database_install
+      register: database_service
 
     - name: "workflows » magento2 » services » database | include service-specific roles"
       ansible.builtin.include_role:
-        name: "{{ if database == 'mysql' }}mysql-community-server{{ else }}mariadb-server{{ endif }}"
+        name: "{{ 'mysql-community-server' if database == 'mysql' else 'mariadb-server' }}"
       vars:
-        valet_resolved_service: "{{ database_install }}"
+        valet_resolved_service: "{{ database_service }}"
         valet_install_services: ["{{ database_canonical_name }}"]
       when: database_installed.kinds | length == 0
 
@@ -97,12 +91,6 @@
       apple_container:
         name: "vsh-{{ database_canonical_name }}"
         state: started
-
-    - name: "workflows » magento2 » services » database | set {{ database_canonical_name }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "{{ database }}"
-        canonical_names: "{{ database_canonical_name }}"
 
     - name: "workflows » magento2 » services » database | set {{ database_canonical_name }} as enabled"
       vsh_bundle_state:
@@ -112,7 +100,7 @@
     - name: "workflows » magento2 » services » database | wait for {{ database_canonical_name }} to be reachable"
       ansible.builtin.wait_for:
         host: "vsh-{{ database_canonical_name }}"
-        port: "{{ database_install.services[0].configuration.ports.tcp }}"
+        port: "{{ database_service.services[0].configuration.ports.tcp }}"
         delay: 5
   when:
     - current_os == "mac"
