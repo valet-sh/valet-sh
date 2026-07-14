@@ -36,7 +36,7 @@
         current_os: "{{ current_os }}"
       register: composer_install
 
-    - name: "include service-specific roles"
+    - name: "workflows » magento2 » services » composer | include service-specific roles"
       ansible.builtin.include_role:
         name: "composer"
       vars:

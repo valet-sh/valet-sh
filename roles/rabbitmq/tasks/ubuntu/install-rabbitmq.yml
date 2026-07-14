@@ -19,7 +19,7 @@
   ansible.builtin.set_fact:
     handler_current_service: "{{ current_service }}"
 
-- name: "Pull rabbitmq-server {{ current_service.service.version }} image"
+- name: "Pull rabbitmq-server {{ current_service.version }} image"
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true

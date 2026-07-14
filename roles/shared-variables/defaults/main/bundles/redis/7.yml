@@ -14,5 +14,5 @@ service:
 configuration:
   docker_image: "docker.io/library/redis:7"
   ports:
-    redis: 6380
+    tcp: 6380
   base_path: "/usr/local/valet-sh/packages/redis7"

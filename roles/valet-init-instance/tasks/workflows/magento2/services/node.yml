@@ -40,7 +40,7 @@
         current_os: "{{ current_os }}"
       register: node_install
 
-    - name: "include service-specific roles"
+    - name: "workflows » magento2 » services » node | include service-specific roles"
       ansible.builtin.include_role:
         name: "nodejs"
       vars:

@@ -15,55 +15,109 @@
 ##
 ---
 
-- block:
-    - name: "workflows » magento2 » services » redis | set var 'valet_sh_service_redis_current_name'"
-      ansible.builtin.set_fact:
-        valet_sh_service_redis_current_name: "redis{{ valet_sh_project_vars.services.redis.version | default(valet_sh_bundle_definitions.services.redis.default_version) | replace('.', '') }}"
+- name: "workflows » magento2 » services | detect cache"
+  ansible.builtin.set_fact:
+    cache: "{{ item.key }}"
+    cache_version: "{{ item.value.version | replace('.', '') }}"
+    cache_config: "{{ item.value }}"
+    cache_canonical_name: "{{ item.key }}{{ item.value.version | replace('.', '') }}"
+  with_dict: "{{ valet_sh_project_vars.services | default({}) }}"
+  when: item.key in ['redis', 'valkey']
 
-    - name: "workflows » magento2 » services » redis | check if {{ valet_sh_service_redis_current_name }} is installed"
+- name: "workflows » magento2 » services | set default cache to redis if no cache is defined"
+  ansible.builtin.set_fact:
+    cache: "redis"
+    cache_version: "{{ valet_sh_bundle_definitions.services.redis.default_version | replace('.', '') }}"
+    cache_canonical_name: "redis{{ valet_sh_bundle_definitions.services.redis.default_version | replace('.', '') }}"
+  when: cache is not defined
+
+- block:
+    - name: "workflows » magento2 » services » cache | check if {{ cache_canonical_name }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
-        name: "{{ valet_sh_service_redis_current_name }}"
-      register: redis_installed
+        name: "{{ cache_canonical_name }}"
+      register: cache_installed
 
-    - name: "workflows » magento2 » services » redis | resolve {{ valet_sh_service_redis_current_name }} service"
+    - name: "workflows » magento2 » services » cache | resolve {{ cache_canonical_name }} service"
       vsh_bundle_resolver:
-        name: "{{ valet_sh_service_redis_current_name }}"
+        name: "{{ cache_canonical_name }}"
         current_os: "{{ current_os }}"
-      register: redis_install
+      register: cache_install
 
     - name: "include service-specific roles"
       ansible.builtin.include_role:
-        name: "redis"
+        name: "{{ cache }}"
       vars:
-        valet_resolved_service: "{{ redis_install }}"
-        valet_install_services: ["{{ valet_sh_service_redis_current_name }}"]
-      when: redis_installed.kinds | length == 0
+        valet_resolved_service: "{{ cache_install }}"
+        valet_install_services: ["{{ cache_canonical_name }}"]
+      when: cache_installed.kinds | length == 0
 
-#    - name: "workflows » magento2 » services » redis | include valet-service role to set defaults"
-#      ansible.builtin.include_role:
-#        name: "valet-service"
-#      vars:
-#        valet_sh_service_internal_action: true
-#        valet_service_action: "handle"
-#        valet_sh_newly_installed_services: "{{ redis_install.services }}"
-
-    - name: "workflows » magento2 » services » redis | ensure redis is started"
+    - name: "workflows » magento2 » services » cache | ensure {{ cache_canonical_name }} is started"
       ansible.builtin.systemd:
-        name: vsh-{{ valet_sh_service_redis_current_name }}
+        name: vsh-{{ cache_canonical_name }}
         state: restarted
         enabled: true
         scope: user
 
-    - name: "workflows » magento2 » services » redis | set redis as enabled"
+    - name: "workflows » magento2 » services » cache | set {{ cache_canonical_name }} as enabled"
       vsh_bundle_state:
         action: "enabled"
-        canonical_names: "redis"
+        canonical_names: "{{ cache_canonical_name }}"
 
-    - name: "workflows » magento2 » services » redis | wait for redis to be reachable"
+    - name: "workflows » magento2 » services » cache | set {{ cache_canonical_name }} as default"
+      vsh_bundle_state:
+        action: "default"
+        name: "{{ cache }}"
+        canonical_names: "{{ cache_canonical_name }}"
+
+    - name: "workflows » magento2 » services » cache | wait for {{ cache_canonical_name }} to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ valet_sh_redis_ports[valet_sh_project_vars.services.redis.version] | default(6379) }}"
+        port: "{{ cache_install.services[0].configuration.ports.tcp }}"
         delay: 5
-
   when:
     - current_os == "ubuntu"
+
+- block:
+    - name: "workflows » magento2 » services » cache | check if {{ cache_canonical_name }} is installed"
+      vsh_bundle_install_state_info:
+        state: "present"
+        name: "{{ cache_canonical_name }}"
+      register: cache_installed
+
+    - name: "workflows » magento2 » services » cache | resolve {{ cache_canonical_name }} service"
+      vsh_bundle_resolver:
+        name: "{{ cache_canonical_name }}"
+        current_os: "{{ current_os }}"
+      register: cache_install
+
+    - name: "include service-specific roles"
+      ansible.builtin.include_role:
+        name: "{{ cache }}"
+      vars:
+        valet_resolved_service: "{{ cache_install }}"
+        valet_install_services: ["{{ cache_canonical_name }}"]
+      when: cache_installed.kinds | length == 0
+
+    - name: "workflows » magento2 » services » cache | ensure {{ cache_canonical_name }} is started"
+      apple_container:
+        name: "vsh-{{ cache_canonical_name }}"
+        state: started
+
+    - name: "workflows » magento2 » services » cache | set {{ cache_canonical_name }} as enabled"
+      vsh_bundle_state:
+        action: "enabled"
+        canonical_names: "{{ cache_canonical_name }}"
+
+    - name: "workflows » magento2 » services » cache | set {{ cache_canonical_name }} as default"
+      vsh_bundle_state:
+        action: "default"
+        name: "{{ cache }}"
+        canonical_names: "{{ cache_canonical_name }}"
+
+    - name: "workflows » magento2 » services » cache | wait for {{ cache_canonical_name }} to be reachable"
+      ansible.builtin.wait_for:
+        host: "vsh-{{ cache_canonical_name }}"
+        port: "{{ cache_install.services[0].configuration.ports.tcp }}"
+        delay: 5
+  when:
+    - current_os == "mac"

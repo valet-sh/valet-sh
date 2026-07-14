@@ -21,7 +21,7 @@
   ansible.builtin.set_fact:
     handler_current_service: "{{ current_service }}"
 
-- name: "Pull valkey-server {{ current_service.service.version }} image"
+- name: "Pull valkey-server {{ current_service.version }} image"
   apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
