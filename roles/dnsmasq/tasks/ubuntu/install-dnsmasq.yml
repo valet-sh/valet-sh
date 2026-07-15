@@ -14,28 +14,112 @@
 #   limitations under the License.
 ##
 ---
-- name: "enable dns resolving for .{{ dnsmasq_domain }} domain"
-  ansible.builtin.template:
-    src: development-domain.conf.j2
-    dest: "{{ dnsmasq_conf_file }}"
-  notify: Systemd | NetworkManager | reload
-  become: true
 
-- name: enable dnsmasq in NetworkManager
-  ansible.builtin.lineinfile:
-    path: "/etc/NetworkManager/NetworkManager.conf"
-    insertafter: "^\\[main\\]"
-    line: "dns=dnsmasq"
-  notify: Systemd | NetworkManager | reload
-  become: true
+# @TODO: migrate from ubuntu 24.04 to 26.04 - revert NetworkManger changes
 
-- name: remove /run/systemd/resolve/stub-resolv.conf symlink
-  ansible.builtin.file:
-    src: "/var/run/NetworkManager/resolv.conf"
-    dest: "/etc/resolv.conf"
-    state: link
-  notify: Systemd | NetworkManager | reload
-  become: true
+- name: Run NetworkManager config for Ubuntu jammy and noble
+  when:
+    - os_codename != "resolute"
+  block:
+    - name: "enable dns resolving for .{{ dnsmasq_domain }} domain"
+      ansible.builtin.template:
+        src: development-domain.conf.j2
+        dest: "{{ dnsmasq_conf_file }}"
+      notify: Systemd | NetworkManager | reload
+      become: true
+
+    - name: "enable dns resolving for .vsh domain"
+      ansible.builtin.copy:
+        content: |
+          address=/.vsh/127.0.0.1
+        dest: "/etc/NetworkManager/dnsmasq.d/vsh.conf"
+      notify: Systemd | NetworkManager | reload
+      become: true
+
+    - name: enable dnsmasq in NetworkManager
+      ansible.builtin.lineinfile:
+        path: "/etc/NetworkManager/NetworkManager.conf"
+        insertafter: "^\\[main\\]"
+        line: "dns=dnsmasq"
+      notify: Systemd | NetworkManager | reload
+      become: true
+
+    - name: "set symlink /etc/resolv.conf to /var/run/NetworkManager/resolv.conf on Ubuntu non-resolute"
+      ansible.builtin.file:
+        src: "/var/run/NetworkManager/resolv.conf"
+        dest: "/etc/resolv.conf"
+        state: link
+      notify: Systemd | NetworkManager | reload
+      become: true
+
+- name: Run systemd-resolved config for Ubuntu resolute
+  when:
+    - os_codename == "resolute"
+  block:
+    - name: ensure dnsmasq is installed
+      apt:
+        name: dnsmasq
+        state: present
+      become: true
+
+    - name: "ensure dnsmasq listens to port 5353"
+      ansible.builtin.lineinfile:
+        path: "/etc/dnsmasq.conf"
+        line: "port=5353"
+        state: present
+      become: true
+      notify: Systemd | dnsmasq | restarted
+
+    - name: "ensure domain '*.test' is handled by local dns"
+      ansible.builtin.copy:
+        dest: "/etc/dnsmasq.d/test.conf"
+        content: |
+          address=/.test/127.0.0.1
+      become: true
+      notify: Systemd | dnsmasq | restarted
+
+    - name: "ensure domain '*.vsh' is handled by local dns"
+      ansible.builtin.copy:
+        dest: "/etc/dnsmasq.d/vsh.conf"
+        content: |
+          address=/.vsh/127.0.0.1
+      become: true
+      notify: Systemd | dnsmasq | restarted
+
+    - name: "ensure '/etc/systemd/resolved.conf.d' exists"
+      ansible.builtin.file:
+        path: "/etc/systemd/resolved.conf.d"
+        state: directory
+        mode: "0755"
+      become: true
+
+    - name: "ensure domain '*.test' is handled by local dns"
+      ansible.builtin.copy:
+        dest: "/etc/systemd/resolved.conf.d/test.conf"
+        content: |
+          [Resolve]
+          DNS=127.0.0.1:5353
+          Domains=~test
+      become: true
+      notify: Systemd | SystemdResolved | restarted
+
+    - name: "ensure domain '*.vsh' is handled by local dns"
+      ansible.builtin.copy:
+        dest: "/etc/systemd/resolved.conf.d/vsh.conf"
+        content: |
+          [Resolve]
+          DNS=127.0.0.1:5353
+          Domains=~vsh
+      become: true
+      notify: Systemd | SystemdResolved | restarted
+
+    - name: "set symlink /etc/resolv.conf to '../run/systemd/resolve/stub-resolv.conf on Ubuntu resolute'"
+      ansible.builtin.file:
+        src: "../run/systemd/resolve/stub-resolv.conf"
+        dest: "/etc/resolv.conf"
+        state: link
+      notify: Systemd | SystemdResolved | restarted
+      become: true
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers

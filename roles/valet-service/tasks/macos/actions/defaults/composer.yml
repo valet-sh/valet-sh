@@ -21,3 +21,6 @@
     dest: "/usr/local/bin/default-composer"
     state: link
     force: true
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+  become: true

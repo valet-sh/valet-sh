@@ -20,3 +20,6 @@
     dest: "/opt/homebrew/bin/default-php"
     state: link
     force: true
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+  become: true

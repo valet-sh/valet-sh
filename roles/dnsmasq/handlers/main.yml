@@ -46,6 +46,22 @@
     scope: system
   become: true
 
+- name: Systemd | SystemdResolved | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: systemd-resolved
+    state: restarted
+    scope: system
+  become: true
+
+- name: Systemd | dnsmasq | restarted
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: dnsmasq
+    state: restarted
+    scope: system
+  become: true
+
 - name: brew | dnsmasq | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart dnsmasq"
 

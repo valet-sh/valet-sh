@@ -20,6 +20,8 @@
     src: "wrappers/mysql/mysql-wrapper.j2"
     dest: "/usr/local/bin/mysql"
     mode: "0755"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
   become: true
 
 - name: ensure mysqladmin wrapper script is up2date
@@ -27,6 +29,8 @@
     src: "wrappers/mysql/mysqladmin-wrapper.j2"
     dest: "/usr/local/bin/mysqladmin"
     mode: "0755"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
   become: true
 
 - name: ensure mysqldump wrapper script is up2date
@@ -34,6 +38,8 @@
     src: "wrappers/mysql/mysqldump-wrapper.j2"
     dest: "/usr/local/bin/mysqldump"
     mode: "0755"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
   become: true
 
 - name: ensure mariadb wrapper script is up2date
@@ -41,12 +47,16 @@
     src: "wrappers/mysql/mysql-wrapper.j2"
     dest: "/usr/local/bin/mariadb"
     mode: "0755"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
   become: true
 
 - name: "create symlinks for default mysql"
   file:
     src: "/usr/local/bin/{{ current_mysql_default_linkname }}{{ item.version }}"
     dest: "/usr/local/bin/default-{{ current_mysql_default_linkname }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     state: link
     force: true
   become: true
@@ -65,6 +75,8 @@
       file:
         src: "/usr/local/bin/mariadb{{ item.version }}"
         dest: "/usr/local/bin/default-mysql"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
         state: link
         force: true
       become: true
@@ -73,6 +85,8 @@
       file:
         src: "/usr/local/bin/mariaadmin{{ item.version }}"
         dest: "/usr/local/bin/default-mysqladmin"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
         state: link
         force: true
       become: true
@@ -81,6 +95,8 @@
       file:
         src: "/usr/local/bin/mariadump{{ item.version }}"
         dest: "/usr/local/bin/default-mysqldump"
+        owner: "{{ current_user }}"
+        group: "{{ current_group }}"
         state: link
         force: true
       become: true
@@ -89,5 +105,7 @@
   template:
     src: "nginx/mysql.conf.j2"
     dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/mysql.conf"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
     mode: "0644"
   notify: brew | nginx | restarted
