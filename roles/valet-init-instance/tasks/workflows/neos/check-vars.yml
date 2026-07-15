@@ -36,18 +36,18 @@
     - valet_sh_project_vars.services.composer.version is defined
     - valet_sh_project_vars.services.composer.version == 2
 
-- name: "workflows » neos » check-vars | read elasticsearch/opensearch plugins from .valet-sh.yml"
-  ansible.builtin.set_fact:
-    searchengine_plugins: >-
-      {{
-        valet_sh_project_vars.services.elasticsearch.plugins
-        if (valet_sh_project_vars.services.elasticsearch is defined and valet_sh_project_vars.services.elasticsearch.plugins is defined)
-        else (valet_sh_project_vars.services.opensearch.plugins | default([]))
-      }}
-    (valet_sh_project_vars.services.opensearch is defined and valet_sh_project_vars.services.opensearch.plugins is defined)
-  when:
-    - (valet_sh_project_vars.services.elasticsearch is defined and valet_sh_project_vars.services.elasticsearch.plugins is defined) or
-      (valet_sh_project_vars.services.opensearch is defined and valet_sh_project_vars.services.opensearch.plugins is defined)
+# - name: "workflows » neos » check-vars | read elasticsearch/opensearch plugins from .valet-sh.yml"
+#   ansible.builtin.set_fact:
+#     searchengine_plugins: >-
+#       {{
+#         valet_sh_project_vars.services.elasticsearch.plugins
+#         if (valet_sh_project_vars.services.elasticsearch is defined and valet_sh_project_vars.services.elasticsearch.plugins is defined)
+#         else (valet_sh_project_vars.services.opensearch.plugins | default([]))
+#       }}
+#     (valet_sh_project_vars.services.opensearch is defined and valet_sh_project_vars.services.opensearch.plugins is defined)
+#   when:
+#     - (valet_sh_project_vars.services.elasticsearch is defined and valet_sh_project_vars.services.elasticsearch.plugins is defined) or
+#       (valet_sh_project_vars.services.opensearch is defined and valet_sh_project_vars.services.opensearch.plugins is defined)
 
 - name: "workflows » neos » check-vars | set default php binary name"
   ansible.builtin.set_fact:

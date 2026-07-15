@@ -44,6 +44,8 @@
         - valet_sh_project_vars.services.mariadb is defined
         - valet_sh_project_vars.services.mariadb.database is defined
 
+      # TODO Obsolete host_presets replace with configuration from bundle files
+
     - name: "workflows » neos » project-env | set neos 'valet_sh_neos_db_host' var"
       ansible.builtin.set_fact:
         valet_sh_neos_db_host: "{{ valet_sh_service_mysql_host_presets.mysql57 }}"

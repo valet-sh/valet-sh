@@ -14,218 +14,103 @@
 #   limitations under the License.
 ##
 ---
-- block:
-    - name: "workflows » neos » services » mysql | set var 'valet_sh_service_mysql_current_name'"
-      ansible.builtin.set_fact:
-        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
 
-    - name: "workflows » neos » services » mysql | check if mysql{{ valet_sh_project_vars.services.mysql.version }} is installed"
+- name: "workflows » neos » services | detect database"
+  ansible.builtin.set_fact:
+    database: "{{ item.key }}"
+    database_version: "{{ item.value.version | replace('.', '') }}"
+    database_config: "{{ item.value }}"
+    database_canonical_name: "{{ item.key }}{{ item.value.version | replace('.', '') }}"
+  with_dict: "{{ valet_sh_project_vars.services | default({}) }}"
+  when: item.key in ['mysql', 'mariadb']
+
+- block:
+    - name: "workflows » neos » services » database | check if {{ database_canonical_name }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
-        name: "{{ valet_sh_service_mysql_current_name }}"
-      register: mysql_installed
+        name: "{{ database_canonical_name }}"
+      register: database_installed
 
-    - name: "workflows » neos » services » mysql | resolve mysql{{ valet_sh_project_vars.services.mysql.version }} service"
+    - name: "workflows » neos » services » database | resolve {{ database_canonical_name }} service"
       vsh_bundle_resolver:
-        name: "{{ valet_sh_service_mysql_current_name }}"
+        name: "{{ database_canonical_name }}"
         current_os: "{{ current_os }}"
-      register: mysql_install
+        custom_fact: "database_service"
 
-    - name: "include service-specific roles"
+    - name: "workflows » neos » services » database | include service-specific roles"
       ansible.builtin.include_role:
-        name: "mysql-community-server"
-        public: true
+        name: "{{ 'mysql-community-server' if database == 'mysql' else 'mariadb-server' }}"
       vars:
-        valet_resolved_service: "{{ mysql_install }}"
-        valet_install_services: ["{{ valet_sh_service_mysql_current_name }}"]
-      when: not mysql_installed.kinds | length == 0
+        valet_resolved_service: "{{ database_service }}"
+        valet_install_services: ["{{ database_canonical_name }}"]
+      when: database_installed.kinds | length == 0
 
-    - name: "workflows » neos » services » mysql | include valet-service role to set defaults"
-      ansible.builtin.include_role:
-        name: "valet-service"
-        public: true
-      vars:
-        valet_sh_service_internal_action: true
-        valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ mysql_install }}"
-
-    - name: "workflows » neos » services » mysql | ensure {{ valet_sh_service_mysql_current_name }} is started"
+    - name: "workflows » neos » services » database | ensure {{ database_canonical_name }} is started"
       ansible.builtin.systemd:
-        name: "vsh-{{ valet_sh_service_mysql_current_name }}"
+        name: "vsh-{{ database_canonical_name }}"
         state: started
         enabled: true
         scope: user
 
-    - name: "workflows » neos » services » mysql | set {{ valet_sh_service_mysql_current_name }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "mysql"
-        canonical_names: "{{ valet_sh_service_mysql_current_name }}"
-
-    - name: "workflows » neos » services » mysql | set {{ valet_sh_service_mysql_current_name }} as enabled"
+    - name: "workflows » neos » services » database | set {{ database_canonical_name }} as enabled"
       vsh_bundle_state:
         action: "enabled"
-        canonical_names: "{{ valet_sh_service_mysql_current_name }}"
+        canonical_names: "{{ database_canonical_name }}"
 
-    - name: "workflows » neos » services » mysql | wait for mysql to be reachable"
+    - name: set_fact
+      ansible.builtin.set_fact:
+        database_service: "{{ ansible_facts['database_service']}}"
+
+    - name: "workflows » neos » services » database | wait for {{ database_canonical_name }} to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mysql_current_name] }}"
+        port: "{{ database_service.services[0].configuration.ports.tcp }}"
         delay: 5
   when:
     - current_os == "ubuntu"
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mysql is defined
-    - valet_sh_project_vars.services.mysql.version is defined
+    - database is defined
+    - database_version is defined
 
 - block:
-    - name: "workflows » neos » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
-      ansible.builtin.set_fact:
-        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
-
-    - name: "workflows » neos » services » mariadb | check if mariadb{{ valet_sh_project_vars.services.mariadb.version }} is installed"
+    - name: "workflows » neos » services » database | check if {{ database_canonical_name }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
-        name: "{{ valet_sh_service_mariadb_current_name }}"
-      register: mariadb_installed
+        name: "{{ database_canonical_name }}"
+      register: database_installed
 
-    - name: "workflows » neos » services » mariadb | resolve mariadb{{ valet_sh_project_vars.services.mariadb.version }} service"
+    - name: "workflows » neos » services » database | resolve {{ database_canonical_name }} service"
       vsh_bundle_resolver:
-        name: "{{ valet_sh_service_mariadb_current_name }}"
+        name: "{{ database_canonical_name }}"
         current_os: "{{ current_os }}"
-      register: mariadb_install
+        custom_fact: "database_service"
 
-    - name: "include service-specific roles"
+    - name: set_fact
+      ansible.builtin.set_fact:
+        database_service: "{{ ansible_facts['database_service']}}"
+
+    - name: "workflows » neos » services » database | include service-specific roles"
       ansible.builtin.include_role:
-        name: "mariadb-server"
-        public: true
+        name: "{{ 'mysql-community-server' if database == 'mysql' else 'mariadb-server' }}"
       vars:
-        valet_resolved_service: "{{ mariadb_install }}"
-        valet_install_services: ["{{ valet_sh_service_mariadb_current_name }}"]
-      when: not mariadb_installed.kinds | length == 0
+        valet_resolved_service: "{{ database_service }}"
+        valet_install_services: ["{{ database_canonical_name }}"]
+      when: database_installed.kinds | length == 0
 
-    - name: "workflows » neos » services » mariadb | include valet-service role to set defaults"
-      ansible.builtin.include_role:
-        name: "valet-service"
-        public: true
-      vars:
-        valet_sh_service_internal_action: true
-        valet_service_action: "handle"
-        valet_sh_newly_installed_services: "{{ mariadb_install }}"
-
-    - name: "workflows » neos » services » mariadb | ensure {{ valet_sh_service_mariadb_current_name }} is started"
-      ansible.builtin.systemd:
-        name: "vsh-{{ valet_sh_service_mariadb_current_name }}"
+    - name: "workflows » neos » services » database | ensure {{ database_canonical_name }} is started"
+      apple_container:
+        name: "vsh-{{ database_canonical_name }}"
         state: started
-        enabled: true
-        scope: user
 
-    - name: "workflows » neos » services » mariadb | set {{ valet_sh_service_mariadb_current_name }} as default"
-      vsh_bundle_state:
-        action: "default"
-        name: "mariadb"
-        canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
-
-    - name: "workflows » neos » services » mariadb | set {{ valet_sh_service_mariadb_current_name }} as enabled"
+    - name: "workflows » neos » services » database | set {{ database_canonical_name }} as enabled"
       vsh_bundle_state:
         action: "enabled"
-        canonical_names: "{{ valet_sh_service_mariadb_current_name }}"
+        canonical_names: "{{ database_canonical_name }}"
 
-    - name: "workflows » neos » services » mariadb | wait for mariadb to be reachable"
+    - name: "workflows » neos » services » database | wait for {{ database_canonical_name }} to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
-        delay: 5
-  when:
-    - current_os == "ubuntu"
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mariadb is defined
-    - valet_sh_project_vars.services.mariadb.version is defined
-
-- block:
-    - name: "workflows » neos » services » mysql | set var 'valet_sh_service_mysql_current_name'"
-      ansible.builtin.set_fact:
-        valet_sh_service_mysql_current_name: "mysql{{ valet_sh_project_vars.services.mysql.version | replace('.', '') }}"
-
-    - name: "workflows » neos » services » mysql | ensure mysql{{ valet_sh_project_vars.services.mysql.version }} is started"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mysql_current_name }}"
-    - name: "workflows » neos » services » mysql | include valet services file"
-      ansible.builtin.include_vars:
-        file: "{{ valet_etc_services_file }}"
-        name: valet_sh_services_obj
-
-    - name: "workflows » neos » services » mysql | prepare new config element"
-      ansible.builtin.set_fact:
-        new_service_state_element: "{ '{{ valet_sh_service_mysql_current_name }}': true }"
-
-    - name: "workflows » neos » services » mysql | update service object"
-      ansible.builtin.set_fact:
-        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
-
-    - name: "workflows » neos » services » mysql | merge objects"
-      ansible.builtin.set_fact:
-        valet_sh_services_obj:
-          states: "{{ valet_sh_services_updated_states }}"
-          defaults: "{{ valet_sh_services_obj.defaults }}"
-
-    - name: "workflows » neos » services » mysql | transform object into nice yaml output"
-      ansible.builtin.set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
-
-    - name: "workflows » neos » services » mysql | write new services.yml file"
-      ansible.builtin.copy:
-        content: "{{ valet_etc_services_list }}"
-        dest: "{{ valet_etc_services_file }}"
-
-    - name: "workflows » neos » services » mysql | wait for mysql to be reachable"
-      ansible.builtin.wait_for:
-        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mysql_current_name] }}"
+        host: "vsh-{{ database_canonical_name }}"
+        port: "{{ database_service.services[0].configuration.ports.tcp }}"
         delay: 5
   when:
     - current_os == "mac"
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mysql is defined
-    - valet_sh_project_vars.services.mysql.version is defined
-
-- block:
-    - name: "workflows » neos » services » mariadb | set var 'valet_sh_service_mariadb_current_name'"
-      ansible.builtin.set_fact:
-        valet_sh_service_mariadb_current_name: "mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.', '') }}"
-
-    - name: "workflows » neos » services » mariadb | ensure mariadb{{ valet_sh_project_vars.services.mariadb.version }} is started"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_mariadb_current_name }}"
-    - name: "workflows » neos » services » mysql | include valet services file"
-      ansible.builtin.include_vars:
-        file: "{{ valet_etc_services_file }}"
-        name: valet_sh_services_obj
-
-    - name: "workflows » neos » services » mysql | prepare new config element"
-      ansible.builtin.set_fact:
-        new_service_state_element: "{ '{{ valet_sh_service_mariadb_current_name }}': true }"
-
-    - name: "workflows » neos » services » mysql | update service object"
-      ansible.builtin.set_fact:
-        valet_sh_services_updated_states: "{{ valet_sh_services_obj.states | combine(new_service_state_element) }}"
-
-    - name: "workflows » neos » services » mysql | merge objects"
-      ansible.builtin.set_fact:
-        valet_sh_services_obj:
-          states: "{{ valet_sh_services_updated_states }}"
-          defaults: "{{ valet_sh_services_obj.defaults }}"
-
-    - name: "workflows » neos » services » mysql | transform object into nice yaml output"
-      ansible.builtin.set_fact:
-        valet_etc_services_list: "{{ valet_sh_services_obj | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
-
-    - name: "workflows » neos » services » mysql | write new services.yml file"
-      ansible.builtin.copy:
-        content: "{{ valet_etc_services_list }}"
-        dest: "{{ valet_etc_services_file }}"
-
-    - name: "workflows » neos » services » mariadb | wait for mariadb to be reachable"
-      ansible.builtin.wait_for:
-        port: "{{ valet_sh_service_mysql_port_presets[valet_sh_service_mariadb_current_name] }}"
-        delay: 5
-  when:
-    - current_os == "mac"
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mariadb is defined
-    - valet_sh_project_vars.services.mariadb.version is defined
+    - database is defined
+    - database_version is defined
