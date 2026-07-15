@@ -35,7 +35,7 @@
       vsh_bundle_resolver:
         name: "{{ database_canonical_name }}"
         current_os: "{{ current_os }}"
-      register: database_service
+        custom_fact: "database_service"
 
     - name: "workflows » magento2 » services » database | include service-specific roles"
       ansible.builtin.include_role:
@@ -57,6 +57,10 @@
         action: "enabled"
         canonical_names: "{{ database_canonical_name }}"
 
+    - name: set_fact
+      ansible.builtin.set_fact:
+        database_service: "{{ ansible_facts['database_service']}}"
+
     - name: "workflows » magento2 » services » database | wait for {{ database_canonical_name }} to be reachable"
       ansible.builtin.wait_for:
         port: "{{ database_service.services[0].configuration.ports.tcp }}"
@@ -77,7 +81,11 @@
       vsh_bundle_resolver:
         name: "{{ database_canonical_name }}"
         current_os: "{{ current_os }}"
-      register: database_service
+        custom_fact: "database_service"
+
+    - name: set_fact
+      ansible.builtin.set_fact:
+        database_service: "{{ ansible_facts['database_service']}}"
 
     - name: "workflows » magento2 » services » database | include service-specific roles"
       ansible.builtin.include_role:

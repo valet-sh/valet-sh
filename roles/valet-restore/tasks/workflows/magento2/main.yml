@@ -66,7 +66,7 @@
       community.mysql.mysql_db:
         name: "{{ valet_sh_project_database_name }}"
         config_file: "{{ valet_sh_project_mysql_client_configuration }}"
-        login_host: "{{ '127.0.0.1' if current_os == 'ubuntu' else database_service.services[0].service.name + '.vsh-services' }}"
+        login_host: "{{ '127.0.0.1' if current_os == 'ubuntu' or database_service.services is not defined else database_service.services[0].service.name + '.vsh-services' }}"
         login_port: "{{ valet_sh_magento2_db_port }}"
         state: absent
 
@@ -75,7 +75,7 @@
         name: "{{ valet_sh_project_database_name }}"
         target: "{{ current_tmp_dir }}/{{ valet_sh_instance_db_filename }}"
         config_file: "{{ valet_sh_project_mysql_client_configuration }}"
-        login_host: "{{ '127.0.0.1' if current_os == 'ubuntu' else database_service.services[0].service.name + '.vsh-services' }}"
+        login_host: "{{ '127.0.0.1' if current_os == 'ubuntu' or database_service.services is not defined else database_service.services[0].service.name + '.vsh-services' }}"
         login_port: "{{ valet_sh_magento2_db_port }}"
         encoding: "utf8"
         state: import
@@ -125,7 +125,7 @@
   mysql_query:
     login_db: "{{ valet_sh_project_database_name }}"
     config_file: "{{ valet_sh_project_mysql_client_configuration }}"
-    login_host: "{{ '127.0.0.1' if current_os == 'ubuntu' else database_service.services[0].service.name + '.vsh-services' }}"
+    login_host: "{{ '127.0.0.1' if current_os == 'ubuntu' or database_service.services is not defined else database_service.services[0].service.name + '.vsh-services' }}"
     login_port: "{{ valet_sh_magento2_db_port }}"
     query: "{{ valet_restore_current_custom_post_restore_sql_queries }}"
   with_items: "{{ valet_restore_custom_post_restore_sql_queries }}"

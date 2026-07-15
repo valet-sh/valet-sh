@@ -74,6 +74,7 @@
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mysql is defined
     - valet_sh_project_vars.services.mysql.version is defined
+    - not database_service is defined
   block:
 
     - name: "workflows » magento2 » check-vars | set var 'valet_sh_service_mysql_current_name'"
@@ -90,13 +91,18 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mysql_current_name }}"
         current_os: "{{ current_os }}"
-      register: database_service
+        custom_fact: "database_service"
+
+    - name: set_fact
+      ansible.builtin.set_fact:
+        database_service: "{{ ansible_facts['database_service']}}"
 
 - name: "block"
   when:
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mariadb is defined
     - valet_sh_project_vars.services.mariadb.version is defined
+    - not database_service is defined
   block:
     - name: "workflows » magento2 » check-vars | set var 'valet_sh_service_mariadb_current_name'"
       ansible.builtin.set_fact:
@@ -112,12 +118,19 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mariadb_current_name }}"
         current_os: "{{ current_os }}"
-      register: database_service
+        custom_fact: "database_service"
+
+    - name: set_fact
+      ansible.builtin.set_fact:
+        database_service: "{{ ansible_facts['database_service']}}"
 
 - name: "workflows » magento2 » check-vars | override magento2 'valet_sh_magento2_db_port' var"
   ansible.builtin.set_fact:
     valet_sh_magento2_db_port: "{{ database_service.services[0].configuration.ports.tcp }}"
   when:
+    - database_service is defined
+    - database_service.services is defined
+    - database_service.services | length > 0
     - valet_sh_magento2_db_port is not defined or valet_sh_magento2_db_port | string | length == 0
 
 - name: "workflows » magento2 » check-vars | default database name based on current working dir"
