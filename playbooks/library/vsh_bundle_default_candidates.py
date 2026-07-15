@@ -52,10 +52,12 @@ def main():
             section_definitions = all_definitions.get(section, {})
 
             for name in installed_entries:
-                family_key, definition = find_family_key_and_definition(name, section_definitions)
+                raw_key, definition = find_family_key_and_definition(name, section_definitions)
 
                 if len(definition.get('versions', [])) <= 1:
                     continue
+
+                family_key = definition.get('family_name') or raw_key
 
                 if not family_key:
                     family_key = name
