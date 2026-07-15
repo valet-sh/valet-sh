@@ -78,9 +78,9 @@
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 80 * 1024 }}m -Xmx{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 80 * 1024 }}m"
 
-- name: "Wait for {{ current_service.service.name }} to be ready 'http://{{ current_service.service.name }}.vsh-services:{{ current_service.configuration.ports.http }}/_cluster/health'"
+- name: "Wait for {{ current_service.service.name }} to be ready 'http://{{ current_service.service.name }}.vsh:{{ current_service.configuration.ports.http }}/_cluster/health'"
   ansible.builtin.uri:
-    url: "http://{{ current_service.service.name }}.vsh-services:{{ current_service.configuration.ports.http }}/_cluster/health"
+    url: "http://{{ current_service.service.name }}.vsh:{{ current_service.configuration.ports.http }}/_cluster/health"
     method: GET
     status_code: 200
   register: result

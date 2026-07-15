@@ -103,7 +103,7 @@
 
 - name: "Wait for {{ current_service.service.name }} to be ready"
   community.mysql.mysql_info:
-    login_host: "vsh-{{ current_service.canonical }}.vsh-services"
+    login_host: "vsh-{{ current_service.canonical }}.vsh"
     login_port: "{{ current_service.configuration.ports.tcp }}"
     login_user: root
     login_password: "{{ current_service.configuration.default_root_password }}"

@@ -11,7 +11,7 @@ upstream {{ service_key }} {
 {% if current_os == 'ubuntu' %}
         server 127.0.0.1:{{ bundle.configuration.ports.http }};
 {% else %}
-        server vsh-{{ service_key }}.vsh-services:{{ bundle.configuration.ports.http }};
+        server vsh-{{ service_key }}.vsh:{{ bundle.configuration.ports.http }};
 {% endif %}
 }
 {% endif %}

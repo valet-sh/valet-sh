@@ -29,7 +29,7 @@ server {
 {% if current_os == 'ubuntu' %}
         proxy_pass http://localhost:{{ current_service.configuration.ports.http }};
 {% else %}
-        set $upstream {{ current_service.service.name }}.vsh-services;
+        set $upstream {{ current_service.service.name }}.vsh;
         proxy_pass http://$upstream:{{ current_service.configuration.ports.http }};
 {% endif %}
 

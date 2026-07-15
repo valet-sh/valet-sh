@@ -71,7 +71,7 @@
   ansible.builtin.copy:
     content: |
       [dns]
-      domain = "vsh-services"
+      domain = "vsh"
     dest: "{{ current_home }}/.config/container/config.toml"
     mode: "0644"
 
@@ -99,7 +99,7 @@
       shell: container system start --enable-kernel-install
 
     - name: Create apple container dns
-      command: container system dns create vsh-services
+      command: container system dns create vsh
       become: true
 
 - name: "ensure '{{ current_home }}/Library/LaunchAgents' exists"

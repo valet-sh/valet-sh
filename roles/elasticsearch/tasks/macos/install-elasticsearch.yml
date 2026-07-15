@@ -78,9 +78,9 @@
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
       - "xpack.security.enabled=false"
 
-- name: "Wait for vsh-{{ current_service.canonical }} to be ready 'http://{{ current_service.service.name }}.vsh-services:{{ current_service.configuration.ports.http }}/_cluster/health'"
+- name: "Wait for vsh-{{ current_service.canonical }} to be ready 'http://{{ current_service.service.name }}.vsh:{{ current_service.configuration.ports.http }}/_cluster/health'"
   ansible.builtin.uri:
-    url: "http://{{ current_service.service.name }}.vsh-services:{{ current_service.configuration.ports.http }}/_cluster/health"
+    url: "http://{{ current_service.service.name }}.vsh:{{ current_service.configuration.ports.http }}/_cluster/health"
     method: GET
     status_code: 200
   register: result
