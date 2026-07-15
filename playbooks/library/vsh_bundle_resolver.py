@@ -124,7 +124,8 @@ def main():
             required=False,
             default='/usr/local/valet-sh/valet-sh/roles/shared-variables/defaults/main/bundles'
         ),
-        current_os=dict(type='str', required=False, default='ubuntu')
+        current_os=dict(type='str', required=False, default='ubuntu'),
+        custom_fact=dict(type='str', required=False, default=None)
     )
 
     result = {
@@ -136,6 +137,7 @@ def main():
 
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
     params = module.params
+    custom_fact = params['custom_fact']
 
     item_input = params['name']
 
@@ -167,6 +169,9 @@ def main():
                     result['packages'].append(config)
             else:
                 result['errors'].append(error)
+
+        if custom_fact:
+            result['ansible_facts'] = {custom_fact: {k: v for k, v in result.items() if k != 'ansible_facts'}}
 
         if result['errors']:
             module.fail_json(msg="Validation failed: " + ", ".join(result['errors']), **result)
