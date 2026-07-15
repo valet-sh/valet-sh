@@ -90,6 +90,11 @@ def main():
                 if name not in target['installed']:
                     target['installed'][name] = {}
                     result['changed'] = True
+
+                default_key = find_definition(name, all_definitions).get('family_name')
+                if default_key and default_key not in target['defaults']:
+                    target['defaults'][default_key] = name
+                    result['changed'] = True
             result['message'] = f"Added {b_type}: {', '.join(names)}"
 
         elif params['action'] == 'uninstalled':
