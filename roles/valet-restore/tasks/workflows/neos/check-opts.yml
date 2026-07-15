@@ -33,11 +33,14 @@
   ansible.builtin.set_fact:
     valet_opt_instance_identifier: "{{ valet_cli_opts_item | regex_search('identifier=(.+)', '\\1') }}"
   with_items: "{{ valet_cli_opts }}"
-  when: valet_opt_instance_identifier is not defined or valet_opt_instance_identifier|length==0
+  when: valet_opt_instance_identifier is not defined or valet_opt_instance_identifier is not none or valet_opt_instance_identifier | string | length==0
   loop_control:
     loop_var: valet_cli_opts_item
 
 - name: "workflows » neos » check-opts | normalize variable 'valet_opt_instance_identifier'"
   ansible.builtin.set_fact:
     valet_opt_instance_identifier: "{{ valet_opt_instance_identifier | first }}"
-  when: valet_opt_instance_identifier is defined and valet_opt_instance_identifier|length>0
+  when:
+  - valet_opt_instance_identifier is defined
+  - valet_opt_instance_identifier is not none
+  - valet_opt_instance_identifier | length > 0

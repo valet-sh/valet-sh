@@ -72,6 +72,7 @@
     valet_instancebackup_identifier: "{{ valet_opt_instance_identifier | trim }}"
   when:
     - valet_opt_instance_identifier is defined
+    - valet_opt_instance_identifier is not none
     - valet_opt_instance_identifier|length>0
 
 - name: "workflows » aem » check-vars | ensure valet_instancebackup_identifier has a value"

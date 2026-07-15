@@ -54,7 +54,7 @@
 
 - name: "workflows » neos » check-vars | override mysql client configuration"
   ansible.builtin.set_fact:
-    valet_sh_project_mysql_client_configuration: "{{ current_home }}/.my{{ valet_sh_project_vars.services.mysql.version }}.cnf"
+    valet_sh_project_mysql_client_configuration: "{{ valet_packages_path_default }}/mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}/user/.my.cnf"
   when:
     - valet_sh_project_vars.services is defined
     - valet_sh_project_vars.services.mysql is defined
@@ -81,7 +81,11 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mysql_current_name }}"
         current_os: "{{ current_os }}"
-      register: db_service
+        custom_fact: "database_service"
+
+    - name: "workflows » magento2 » check-vars | set database_service fact"
+      ansible.builtin.set_fact:
+        database_service: "{{ ansible_facts['database_service']}}"
 
 - name: "block"
   when:
@@ -103,11 +107,15 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_mariadb_current_name }}"
         current_os: "{{ current_os }}"
-      register: db_service
+        custom_fact: "database_service"
+
+    - name: "workflows » magento2 » check-vars | set database_service fact"
+      ansible.builtin.set_fact:
+        database_service: "{{ ansible_facts['database_service']}}"
 
 - name: "workflows » neos » check-vars | override neos 'valet_sh_neos_db_port' var"
   ansible.builtin.set_fact:
-    valet_sh_neos_db_port: "{{ db_service.services[0].configuration.ports.tcp }}"
+    valet_sh_neos_db_port: "{{ database_service.services[0].configuration.ports.tcp }}"
   when:
     - valet_sh_neos_db_port is not defined or valet_sh_neos_db_port | string | length == 0
 
@@ -188,6 +196,7 @@
     valet_instancebackup_identifier: "{{ valet_opt_instance_identifier | trim }}"
   when:
     - valet_opt_instance_identifier is defined
+    - valet_opt_instance_identifier is not none
     - valet_opt_instance_identifier|length>0
 
 - name: "workflows » neos » check-vars | ensure valet_instancebackup_identifier has a value"

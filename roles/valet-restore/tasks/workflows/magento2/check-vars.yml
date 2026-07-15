@@ -120,7 +120,7 @@
         current_os: "{{ current_os }}"
         custom_fact: "database_service"
 
-    - name: set_fact
+    - name: "workflows » magento2 » check-vars | set database_service fact"
       ansible.builtin.set_fact:
         database_service: "{{ ansible_facts['database_service']}}"
 
