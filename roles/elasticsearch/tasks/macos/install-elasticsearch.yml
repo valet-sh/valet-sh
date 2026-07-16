@@ -120,6 +120,13 @@
     - current_elasticsearch_plugin.url is defined
     - "current_elasticsearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
 
+- name: "provide {{ current_service.canonical }} configuration"
+  template:
+    src: "nginx/elasticsearch.conf.j2"
+    dest: "{{ valet_sh_homebrew_prefix }}/etc/nginx/conf.d/{{ current_service.canonical }}.conf"
+    mode: "0644"
+  notify: brew | nginx | restarted
+
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
 
