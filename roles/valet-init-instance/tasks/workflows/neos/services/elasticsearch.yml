@@ -20,21 +20,26 @@
     search_engine: "{{ item.key }}"
     search_engine_version: "{{ item.value.version }}"
     search_engine_config: "{{ item.value }}"
+    search_engine_canonical_name: "{{ item.key }}{{ item.value.version | replace('.', '') }}"
   with_dict: "{{ valet_sh_project_vars.services | default({}) }}"
   when: item.key in ['elasticsearch', 'opensearch']
 
 - block:
-    - name: "workflows » neos » services » search_engine | check if {{ search_engine }}{{ search_engine_version }} is installed"
+    - name: "workflows » neos » services » search_engine | check if {{ search_engine_canonical_name | default('') }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
-        name: "{{ search_engine }}{{ search_engine_version }}"
+        name: "{{ search_engine_canonical_name | default('') }}"
       register: search_engine_installed
 
-    - name: "workflows » neos » services » search_engine | resolve {{ search_engine }}{{ search_engine_version }} service"
+    - name: "workflows » neos » services » search_engine | resolve {{ search_engine_canonical_name | default('') }} service"
       vsh_bundle_resolver:
-        name: "{{ search_engine }}{{ search_engine_version }}"
+        name: "{{ search_engine_canonical_name | default('') }}"
         current_os: "{{ current_os }}"
-      register: search_engine_install
+        custom_fact: "search_engine_service"
+
+    - name: "workflows » neos » services » search_engine | set_fact"
+      ansible.builtin.set_fact:
+        search_engine_service: "{{ ansible_facts['search_engine_service'] }}"
 
     - name: "workflows » neos » services » search_engine | read plugins from .valet-sh.yml"
       ansible.builtin.set_fact:
@@ -44,68 +49,68 @@
       ansible.builtin.include_role:
         name: "{{ search_engine }}"
       vars:
-        valet_resolved_service: "{{ search_engine_install }}"
-        valet_install_services: ["{{ search_engine }}{{ search_engine_version }}"]
+        valet_resolved_service: "{{ search_engine_service }}"
+        valet_install_services: ["{{ search_engine_canonical_name | default('') }}"]
       when: search_engine_installed.kinds | length == 0
 
-    - name: "workflows » neos » services » search_engine | ensure {{ search_engine }}{{ search_engine_version }} is started and enabled"
+    - name: "workflows » neos » services » search_engine | ensure {{ search_engine_canonical_name | default('') }} is started and enabled"
       ansible.builtin.systemd:
-        name: "vsh-{{ search_engine }}{{ search_engine_version }}"
+        name: "vsh-{{ search_engine_canonical_name | default('') }}"
         state: started
         enabled: true
         scope: user
 
-    - name: "workflows » neos » services » search_engine | set {{ search_engine }}{{ search_engine_version }} as enabled"
+    - name: "workflows » neos » services » search_engine | set {{ search_engine_canonical_name | default('') }} as enabled"
       vsh_bundle_state:
         action: "enabled"
-        canonical_names: "{{ search_engine }}{{ search_engine_version }}"
+        canonical_names: "{{ search_engine_canonical_name | default('') }}"
 
-    - name: "workflows » neos » services » search_engine | wait for {{ search_engine }} to be reachable"
+    - name: "workflows » neos » services » search_engine | wait for {{ search_engine | default('') }} to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ search_engine_install.services[0].configuration.ports.http }}"
+        port: "{{ search_engine_service.services[0].configuration.ports.http }}"
         delay: 5
 
     - name: "workflows » neos » services » search_engine | check if plugins are already installed"
       containers.podman.podman_container_exec:
-        name: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        command: "{{ search_engine_install.services[0].configuration.plugins.list_command }}"
+        name: "vsh-{{ search_engine_canonical_name | default('') }}"
+        command: "{{ search_engine_service.services[0].configuration.plugins.list_command }}"
       register: installed_plugins
 
     - name: "workflows » neos » services » search_engine | install plugins defined in .valet-sh.yml"
       containers.podman.podman_container_exec:
-        name: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        command: "{{ search_engine_install.services[0].configuration.plugins.install_command }} {{ current_plugin }}"
+        name: "vsh-{{ search_engine_canonical_name | default('') }}"
+        command: "{{ search_engine_service.services[0].configuration.plugins.install_command }} {{ current_plugin }}"
       with_items: "{{ search_engine_plugins }}"
       loop_control:
         loop_var: current_plugin
       when: current_plugin not in installed_plugins.stdout
 
-    - name: "workflows » neos » services » search_engine | restart {{ search_engine }}{{ search_engine_version }} after plugin installation"
+    - name: "workflows » neos » services » search_engine | restart {{ search_engine_canonical_name | default('') }} after plugin installation"
       ansible.builtin.systemd:
-        name: "vsh-{{ search_engine }}{{ search_engine_version }}"
+        name: "vsh-{{ search_engine_canonical_name | default('') }}"
         state: restarted
         scope: user
-
-    - name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_elasticsearch_version' var"
-      ansible.builtin.set_fact:
-        valet_sh_neos_elasticsearch_version: "{{ valet_sh_project_vars.services.elasticsearch.version }}"
 
   when:
     - current_os == "ubuntu"
     - search_engine is defined
 
 - block:
-    - name: "workflows » neos » services » search_engine | check if {{ search_engine }}{{ search_engine_version }} is installed"
+    - name: "workflows » neos » services » search_engine | check if {{ search_engine_canonical_name | default('') }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
-        name: "{{ search_engine }}{{ search_engine_version }}"
+        name: "{{ search_engine_canonical_name | default('') }}"
       register: search_engine_installed
 
-    - name: "workflows » neos » services » search_engine | resolve {{ search_engine }}{{ search_engine_version }} service"
+    - name: "workflows » neos » services » search_engine | resolve {{ search_engine_canonical_name | default('') }} service"
       vsh_bundle_resolver:
-        name: "{{ search_engine }}{{ search_engine_version }}"
+        name: "{{ search_engine_canonical_name | default('') }}"
         current_os: "{{ current_os }}"
-      register: search_engine_install
+        custom_fact: "search_engine_service"
+
+    - name: "workflows » neos » services » search_engine | set_fact"
+      ansible.builtin.set_fact:
+        search_engine_service: "{{ ansible_facts['search_engine_service']}}"
 
     - name: "workflows » neos » services » search_engine | read plugins from .valet-sh.yml"
       ansible.builtin.set_fact:
@@ -115,49 +120,45 @@
       ansible.builtin.include_role:
         name: "{{ search_engine }}"
       vars:
-        valet_resolved_service: "{{ search_engine_install }}"
-        valet_install_services: ["{{ search_engine }}{{ search_engine_version }}"]
+        valet_resolved_service: "{{ search_engine_service }}"
+        valet_install_services: ["{{ search_engine_canonical_name | default('') }}"]
       when: search_engine_installed.kinds | length == 0
 
-    - name: "workflows » neos » services » search_engine | ensure {{ search_engine }}{{ search_engine_version }} is started"
+    - name: "workflows » neos » services » search_engine | ensure {{ search_engine_canonical_name | default('') }} is started"
       apple_container:
-        name: "vsh-{{ search_engine }}{{ search_engine_version }}"
+        name: "vsh-{{ search_engine_canonical_name | default('') }}"
         state: started
 
-    - name: "workflows » neos » services » search_engine | set {{ search_engine }}{{ search_engine_version }} as enabled"
+    - name: "workflows » neos » services » search_engine | set {{ search_engine_canonical_name | default('') }} as enabled"
       vsh_bundle_state:
         action: "enabled"
-        canonical_names: "{{ search_engine }}{{ search_engine_version }}"
+        canonical_names: "{{ search_engine_canonical_name | default('') }}"
 
-    - name: "workflows » neos » services » search_engine | wait for {{ search_engine }}{{ search_engine_version }} to be reachable"
+    - name: "workflows » neos » services » search_engine | wait for {{ search_engine_canonical_name | default('') }} to be reachable"
       ansible.builtin.wait_for:
-        host: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        port: "{{ search_engine_install.services[0].configuration.ports.http }}"
+        host: "vsh-{{ search_engine_canonical_name | default('') }}"
+        port: "{{ search_engine_service.services[0].configuration.ports.http }}"
         delay: 5
 
     - name: "workflows » neos » services » search_engine | check if plugins are already installed"
       apple_container_exec:
-        name: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        command: "{{ search_engine_install.services[0].configuration.plugins.list_command }}"
+        name: "vsh-{{ search_engine_canonical_name | default('') }}"
+        command: "{{ search_engine_service.services[0].configuration.plugins.list_command }}"
       register: installed_plugins
 
     - name: "workflows » neos » services » search_engine | install plugins defined in .valet-sh.yml"
       apple_container_exec:
-        name: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        command: "{{ search_engine_install.services[0].configuration.plugins.install_command }} {{ current_plugin }}"
+        name: "vsh-{{ search_engine_canonical_name | default('') }}"
+        command: "{{ search_engine_service.services[0].configuration.plugins.install_command }} {{ current_plugin }}"
       with_items: "{{ search_engine_plugins }}"
       loop_control:
         loop_var: current_plugin
       when: current_plugin not in installed_plugins.stdout_lines
 
-    - name: "workflows » neos » services » search_engine | restart {{ search_engine }}{{ search_engine_version }} after plugin installation"
+    - name: "workflows » neos » services » search_engine | restart {{ search_engine_canonical_name | default('') }} after plugin installation"
       apple_container:
-        name: "vsh-{{ search_engine }}{{ search_engine_version }}"
+        name: "vsh-{{ search_engine_canonical_name | default('') }}"
         state: restarted
-
-    - name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_elasticsearch_version' var"
-      ansible.builtin.set_fact:
-        valet_sh_neos_elasticsearch_version: "{{ valet_sh_project_vars.services.elasticsearch.version | int }}"
 
   when:
     - current_os == "mac"
