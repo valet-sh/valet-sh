@@ -20,3 +20,5 @@ dnsmasq_conf_file: "{{ lookup('vars', 'dnsmasq_conf_file' + '_' + current_os, de
 
 dnsmasq_domain_default: "{{ development_tld }}"
 dnsmasq_domain: "{{ lookup('vars', 'dnsmasq_domain' + '_' + current_os, default=dnsmasq_domain_default) }}"
+
+dnsmasq_vsh_service_domain: "{{ vsh_service_tld }}"

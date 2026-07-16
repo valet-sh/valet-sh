@@ -20,9 +20,6 @@
     name: dnsmasq
     state: present
 
-#- name: "ensure dnsmasq is installed"
-#  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install dnsmasq"
-
 - name: "ensure domain '{{ dnsmasq_domain }}' is handled by local dns"
   ansible.builtin.copy:
     dest: "/etc/resolver/{{ dnsmasq_domain }}"
@@ -46,7 +43,7 @@
   notify: brew | dnsmasq | restarted
 
 - name: brew | dnsmasq | restarted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services  restart dnsmasq"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services  restart dnsmasq"
 
 - name: "Mark dnsmasq as installed in the services file"
   vsh_bundle_state:
