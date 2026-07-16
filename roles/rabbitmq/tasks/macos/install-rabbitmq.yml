@@ -76,7 +76,7 @@
     src: "nginx/{{ current_service.name }}.conf.j2"
     dest: "/opt/homebrew/etc/nginx/conf.d/{{ current_service.canonical }}.conf"
     mode: "0644"
-  notify: brew | nginx | reloaded
+  notify: brew | nginx | restarted
   become: true
 
 - name: unset 'cert_prefix' variable

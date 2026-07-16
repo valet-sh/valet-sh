@@ -45,7 +45,7 @@
   ansible.builtin.file:
     path: "/etc/nginx/conf.d/{{ current_service.canonical }}.conf"
     state: absent
-  notify: brew | nginx | reloaded
+  notify: brew | nginx | restarted
   become: true
 
 - name: "Remove vsh-{{ current_service.canonical }} image"

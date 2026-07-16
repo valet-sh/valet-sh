@@ -16,7 +16,7 @@
 ---
 - name: "workflows » neos » check-vars | set path to composer1 (default)"
   ansible.builtin.set_fact:
-    composer_bin: "{{ composer1_bin }}"
+    composer_bin: "{{ composer2_bin }}"
 
 - name: "workflows » neos » check-vars | read composer1 version from .valet-sh.yml"
   ansible.builtin.set_fact:
@@ -35,19 +35,6 @@
     - valet_sh_project_vars.services.composer is defined
     - valet_sh_project_vars.services.composer.version is defined
     - valet_sh_project_vars.services.composer.version == 2
-
-# - name: "workflows » neos » check-vars | read elasticsearch/opensearch plugins from .valet-sh.yml"
-#   ansible.builtin.set_fact:
-#     searchengine_plugins: >-
-#       {{
-#         valet_sh_project_vars.services.elasticsearch.plugins
-#         if (valet_sh_project_vars.services.elasticsearch is defined and valet_sh_project_vars.services.elasticsearch.plugins is defined)
-#         else (valet_sh_project_vars.services.opensearch.plugins | default([]))
-#       }}
-#     (valet_sh_project_vars.services.opensearch is defined and valet_sh_project_vars.services.opensearch.plugins is defined)
-#   when:
-#     - (valet_sh_project_vars.services.elasticsearch is defined and valet_sh_project_vars.services.elasticsearch.plugins is defined) or
-#       (valet_sh_project_vars.services.opensearch is defined and valet_sh_project_vars.services.opensearch.plugins is defined)
 
 - name: "workflows » neos » check-vars | set default php binary name"
   ansible.builtin.set_fact:
@@ -80,6 +67,20 @@
 - name: "workflows » neos » check-vars | set php_bin variable"
   ansible.builtin.set_fact:
     php_bin: "{{ php_bin_obj.stdout }}"
+
+- name: "workflows » magento2 » check-vars | override magento2 'valet_sh_neos_db_port' var"
+  ansible.builtin.set_fact:
+    valet_sh_neos_db_port: "{{ database_service.services[0].configuration.ports.tcp }}"
+  when:
+    - database_service is defined
+    - database_service.services is defined
+    - database_service.services | length > 0
+    - valet_sh_neos_db_port is not defined or valet_sh_neos_db_port | string | length == 0
+
+- name: "workflows » neos » services » elasticsearch | set 'valet_sh_neos_search_engine_version' var"
+  ansible.builtin.set_fact:
+    valet_sh_neos_search_engine_version: "{{ search_engine_version }}"
+  when: search_engine_version is defined
 
 - name: "workflows » neos » check-vars | set default path to project source"
   ansible.builtin.set_fact:
