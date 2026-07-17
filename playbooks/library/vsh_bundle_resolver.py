@@ -2,6 +2,8 @@ from ansible.module_utils.basic import AnsibleModule
 import yaml
 import re
 import os
+import copy
+from pathlib import Path
 
 def load_yaml_file(file_path):
     try:
@@ -50,6 +52,29 @@ def resolve_version(requested_version, bundle_meta):
 
     return None
 
+def apply_overwrite(base, overwrite_dir, name, version):
+    if not base or not overwrite_dir:
+        return base
+
+    overwrite_file = Path(overwrite_dir) / name / f"{version}.yml"
+    if not overwrite_file.exists():
+        return base
+
+    overwrite_data = load_yaml_file(overwrite_file)
+    if not overwrite_data:
+        return base
+
+    def deep_merge(b, o):
+        result = dict(b)
+        for key, value in o.items():
+            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = deep_merge(result[key], value)
+            else:
+                result[key] = value
+        return result
+
+    return deep_merge(base, overwrite_data)
+
 def build_config(name, version, bundle_meta, detailed_config, current_os):
     version_compact = version.replace('.', '') if version else ''
 
@@ -92,7 +117,7 @@ def build_config(name, version, bundle_meta, detailed_config, current_os):
 
     return config
 
-def resolve_bundle_item(input, definitions, config_dir, current_os):
+def resolve_bundle_item(input, definitions, config_dir, overwrite_dir, current_os):
     name, requested_version = parse_input(input)
 
     if name not in definitions:
@@ -107,6 +132,7 @@ def resolve_bundle_item(input, definitions, config_dir, current_os):
 
     config_file = f"{config_dir}/{name}/{version}.yml"
     detailed_config = load_yaml_file(config_file) if os.path.exists(config_file) else None
+    detailed_config = apply_overwrite(detailed_config, overwrite_dir, name, version)
     config = build_config(name, version, bundle_meta, detailed_config, current_os)
 
     return config, None
@@ -124,6 +150,10 @@ def main():
             required=False,
             default='/usr/local/valet-sh/valet-sh/roles/shared-variables/defaults/main/bundles'
         ),
+        overwrite_dir=dict(
+            type='str',
+            required=False,
+            default='/usr/local/valet-sh/etc/overwrites/'),
         current_os=dict(type='str', required=False, default='ubuntu'),
         custom_fact=dict(type='str', required=False, default=None)
     )
@@ -158,9 +188,16 @@ def main():
 
         for input in item_input:
             input = input.strip()
-            if not input: continue
+            if not input:
+                continue
 
-            config, error = resolve_bundle_item(input, definitions, params['config_dir'], params['current_os'])
+            config, error = resolve_bundle_item(
+                input,
+                definitions,
+                params['config_dir'],
+                params['overwrite_dir'],
+                params['current_os']
+            )
 
             if config:
                 if config.get('type') == 'service':

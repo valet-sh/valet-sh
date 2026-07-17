@@ -14,8 +14,14 @@
 #   limitations under the License.
 ##
 ---
+
+- name: "set 'ansible_become_exe' based on current os"
+  set_fact:
+    ansible_become_exe: "{{ '/usr/bin/sudo.ws' if (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version'] == '26.04') else '/usr/bin/sudo' }}"
+
 - name: Reset sudo session
   ansible.builtin.command: sudo -k
+
 - name: Check sudo permissions
   ansible.builtin.command: echo "check sudo permissions"
   become: true

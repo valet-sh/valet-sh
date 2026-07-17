@@ -28,10 +28,10 @@
       notify: Systemd | NetworkManager | reload
       become: true
 
-    - name: "enable dns resolving for .vsh domain"
+    - name: "enable dns resolving for .{{ dnsmasq_vsh_service_domain }} domain"
       ansible.builtin.copy:
         content: |
-          address=/.vsh/127.0.0.1
+          address=/.{{ dnsmasq_vsh_service_domain }}/127.0.0.1
         dest: "/etc/NetworkManager/dnsmasq.d/vsh.conf"
       notify: Systemd | NetworkManager | reload
       become: true
@@ -70,19 +70,19 @@
       become: true
       notify: Systemd | dnsmasq | restarted
 
-    - name: "ensure domain '*.test' is handled by local dns"
+    - name: "ensure domain '*.{{ dnsmasq_domain }}' is handled by local dns"
       ansible.builtin.copy:
-        dest: "/etc/dnsmasq.d/test.conf"
+        dest: "/etc/dnsmasq.d/{{ dnsmasq_domain }}.conf"
         content: |
-          address=/.test/127.0.0.1
+          address=/.{{ dnsmasq_domain }}/127.0.0.1
       become: true
       notify: Systemd | dnsmasq | restarted
 
-    - name: "ensure domain '*.vsh' is handled by local dns"
+    - name: "ensure domain '*.{{ dnsmasq_vsh_service_domain }}' is handled by local dns"
       ansible.builtin.copy:
-        dest: "/etc/dnsmasq.d/vsh.conf"
+        dest: "/etc/dnsmasq.d/{{ dnsmasq_vsh_service_domain }}.conf"
         content: |
-          address=/.vsh/127.0.0.1
+          address=/.{{ dnsmasq_vsh_service_domain }}/127.0.0.1
       become: true
       notify: Systemd | dnsmasq | restarted
 
@@ -93,23 +93,23 @@
         mode: "0755"
       become: true
 
-    - name: "ensure domain '*.test' is handled by local dns"
+    - name: "ensure domain '*.{{ dnsmasq_domain }}' is handled by local dns"
       ansible.builtin.copy:
-        dest: "/etc/systemd/resolved.conf.d/test.conf"
+        dest: "/etc/systemd/resolved.conf.d/{{ dnsmasq_domain }}.conf"
         content: |
           [Resolve]
           DNS=127.0.0.1:5353
-          Domains=~test
+          Domains=~{{ dnsmasq_domain }}
       become: true
       notify: Systemd | SystemdResolved | restarted
 
-    - name: "ensure domain '*.vsh' is handled by local dns"
+    - name: "ensure domain '*.{{ dnsmasq_vsh_service_domain }}' is handled by local dns"
       ansible.builtin.copy:
-        dest: "/etc/systemd/resolved.conf.d/vsh.conf"
+        dest: "/etc/systemd/resolved.conf.d/{{ dnsmasq_vsh_service_domain }}.conf"
         content: |
           [Resolve]
           DNS=127.0.0.1:5353
-          Domains=~vsh
+          Domains=~{{ dnsmasq_vsh_service_domain }}
       become: true
       notify: Systemd | SystemdResolved | restarted
 

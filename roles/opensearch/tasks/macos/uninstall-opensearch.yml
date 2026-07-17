@@ -54,5 +54,11 @@
     action: "uninstalled"
     canonical_names: "{{ current_service.canonical }}"
 
+- name: "ensure {{ current_service.canonical }} nginx vhost configuration is absent"
+  file:
+    path: "{{ valet_sh_homebrew_prefix }}/etc/nginx/conf.d/{{ current_service.canonical }}.conf"
+    state: absent
+  notify: brew | nginx | restarted
+
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers

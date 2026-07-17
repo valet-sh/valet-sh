@@ -13,6 +13,9 @@ service:
 
 configuration:
   docker_image: "docker.io/axllent/mailpit:latest"
+  limits:
+    memory: "1g"
+    cpus: "1"
   ports:
     http: 8025
     smtp: 1025

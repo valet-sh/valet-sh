@@ -12,7 +12,7 @@ service:
     mac: "container"
 
 configuration:
-  docker_image: "docker.io/elasticsearch:8.5.3"
+  docker_image: "docker.io/elasticsearch:8.19.18"
   limits:
     memory: "4g"
     cpus: "2"

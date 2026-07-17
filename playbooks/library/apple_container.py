@@ -144,11 +144,46 @@ def volumes_match(info, desired_volumes):
     return container_volume_specs(info) == parse_volume_specs(desired_volumes)
 
 
+def container_resources(info):
+    """Extract (cpus, memory_bytes) from container inspect data.
+    Apple container inspect stores these at configuration.resources.cpus / .memoryInBytes."""
+    try:
+        res = info['configuration']['resources']
+        return res.get('cpus'), res.get('memoryInBytes')
+    except (KeyError, TypeError):
+        return None, None
+
+
+def normalize_memory(value):
+    """Convert memory strings like '2g', '512m', '1024' (bytes) to bytes (int)."""
+    if value is None:
+        return None
+    s = str(value).strip().lower()
+    units = {'g': 1024 ** 3, 'm': 1024 ** 2, 'k': 1024}
+    if s and s[-1] in units:
+        return int(float(s[:-1]) * units[s[-1]])
+    return int(s)
+
+
+def resources_match(info, params):
+    """Return True if desired cpus/memory match the running container's resources."""
+    current_cpus, current_memory = container_resources(info)
+    if params['cpus']:
+        if current_cpus is None or float(params['cpus']) != float(current_cpus):
+            return False
+    if params['memory']:
+        if current_memory is None or normalize_memory(params['memory']) != current_memory:
+            return False
+    return True
+
+
 def container_config_changed(info, params):
-    """Return True if image or volumes differ from the running container."""
+    """Return True if image, volumes, or resources differ from the running container."""
     if params['image'] and not image_matches(info, params['image']):
         return True
     if not volumes_match(info, params['volumes']):
+        return True
+    if not resources_match(info, params):
         return True
     return False
 

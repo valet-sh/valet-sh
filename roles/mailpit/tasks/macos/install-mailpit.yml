@@ -49,6 +49,8 @@
   apple_container:
     name: "vsh-{{ current_service.canonical }}"
     image: "{{ current_service.configuration.docker_image }}"
+    cpus: "{{ current_service.configuration.limits.cpus | default(2) }}"
+    memory: "{{ current_service.configuration.limits.memory | default('2g') }}"
     state: started
     env:
       - "MP_UI_BIND_ADDR=0.0.0.0:{{ current_service.configuration.ports.http }}"

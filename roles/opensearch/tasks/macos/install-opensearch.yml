@@ -76,7 +76,7 @@
       - "{{ current_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z"
     env:
       - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 80 * 1024 }}m -Xmx{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 80 * 1024 }}m"
+      - "ES_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 90 * 1024 }}m -Xmx{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 90 * 1024 }}m"
 
 - name: "Wait for {{ current_service.service.name }} to be ready 'http://{{ current_service.service.name }}.vsh:{{ current_service.configuration.ports.http }}/_cluster/health'"
   ansible.builtin.uri:
@@ -106,6 +106,13 @@
     - current_opensearch_plugin.name not in installed_plugins.stdout_lines
     - current_opensearch_plugin.url is not defined
     - "current_opensearch_plugin.name not in ' '.join(installed_plugins.stdout_lines | map('regex_replace', '^\\s*-\\s*', ''))"
+
+- name: "provide {{ current_service.canonical }} configuration"
+  template:
+    src: "nginx/opensearch.conf.j2"
+    dest: "{{ valet_sh_homebrew_prefix }}/etc/nginx/conf.d/{{ current_service.canonical }}.conf"
+    mode: "0644"
+  notify: brew | nginx | restarted
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers

@@ -48,6 +48,10 @@ valet_sh_homebrew_bin_sudo: "sudo /opt/homebrew/bin/brew"
 development_tld_default: test
 development_tld: "{{ lookup('vars', 'development_tld' + '_' + current_os, default=development_tld_default) }}"
 
+vsh_service_tld_default: vsh
+vsh_service_tld: "{{ lookup('vars', 'vsh_service_tld' + '_' + current_os, default=vsh_service_tld_default) }}"
+
+
 valet_sh_sudo_commands:
   - "{{ valet_sh_homebrew_bin }} services start nginx"
   - "{{ valet_sh_homebrew_bin }} services stop nginx"
