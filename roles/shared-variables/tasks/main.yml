@@ -14,6 +14,7 @@
 #   limitations under the License.
 ##
 ---
+
 - name: "set vars 'current_user', 'current_group' and 'current_home'"
   ansible.builtin.set_fact:
     current_user: "{{ lookup('env', 'USER') }}"
