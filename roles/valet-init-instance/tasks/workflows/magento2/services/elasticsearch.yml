@@ -34,7 +34,11 @@
       vsh_bundle_resolver:
         name: "{{ search_engine }}{{ search_engine_version }}"
         current_os: "{{ current_os }}"
-      register: search_engine_install
+        custom_fact: "search_engine_service"
+
+    - name: "workflows » neos » services » search_engine | set_fact"
+      ansible.builtin.set_fact:
+        search_engine_service: "{{ ansible_facts['search_engine_service'] }}"
 
     - name: "workflows » magento2 » services » search_engine | read plugins from .valet-sh.yml"
       ansible.builtin.set_fact:
@@ -44,7 +48,7 @@
       ansible.builtin.include_role:
         name: "{{ search_engine }}"
       vars:
-        valet_resolved_service: "{{ search_engine_install }}"
+        valet_resolved_service: "{{ search_engine_service }}"
         valet_install_services: ["{{ search_engine }}{{ search_engine_version }}"]
       when: search_engine_installed.kinds | length == 0
 
@@ -62,19 +66,19 @@
 
     - name: "workflows » magento2 » services » search_engine | wait for {{ search_engine }} to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ search_engine_install.services[0].configuration.ports.http }}"
+        port: "{{ search_engine_service.services[0].configuration.ports.http }}"
         delay: 5
 
     - name: "workflows » magento2 » services » search_engine | check if plugins are already installed"
       containers.podman.podman_container_exec:
         name: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        command: "{{ search_engine_install.services[0].configuration.plugins.list_command }}"
+        command: "{{ search_engine_service.services[0].configuration.plugins.list_command }}"
       register: installed_plugins
 
     - name: "workflows » magento2 » services » search_engine | install plugins defined in .valet-sh.yml"
       containers.podman.podman_container_exec:
         name: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        command: "{{ search_engine_install.services[0].configuration.plugins.install_command }} {{ current_plugin }}"
+        command: "{{ search_engine_service.services[0].configuration.plugins.install_command }} {{ current_plugin }}"
       with_items: "{{ search_engine_plugins }}"
       loop_control:
         loop_var: current_plugin
@@ -100,7 +104,11 @@
       vsh_bundle_resolver:
         name: "{{ search_engine }}{{ search_engine_version }}"
         current_os: "{{ current_os }}"
-      register: search_engine_install
+        custom_fact: "search_engine_service"
+
+    - name: "workflows » neos » services » search_engine | set_fact"
+      ansible.builtin.set_fact:
+        search_engine_service: "{{ ansible_facts['search_engine_service'] }}"
 
     - name: "workflows » magento2 » services » search_engine | read plugins from .valet-sh.yml"
       ansible.builtin.set_fact:
@@ -110,7 +118,7 @@
       ansible.builtin.include_role:
         name: "{{ search_engine }}"
       vars:
-        valet_resolved_service: "{{ search_engine_install }}"
+        valet_resolved_service: "{{ search_engine_service }}"
         valet_install_services: ["{{ search_engine }}{{ search_engine_version }}"]
       when: search_engine_installed.kinds | length == 0
 
@@ -127,19 +135,19 @@
     - name: "workflows » magento2 » services » search_engine | wait for {{ search_engine }}{{ search_engine_version }} to be reachable"
       ansible.builtin.wait_for:
         host: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        port: "{{ search_engine_install.services[0].configuration.ports.http }}"
+        port: "{{ search_engine_service.services[0].configuration.ports.http }}"
         delay: 5
 
     - name: "workflows » magento2 » services » search_engine | check if plugins are already installed"
       apple_container_exec:
         name: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        command: "{{ search_engine_install.services[0].configuration.plugins.list_command }}"
+        command: "{{ search_engine_service.services[0].configuration.plugins.list_command }}"
       register: installed_plugins
 
     - name: "workflows » magento2 » services » search_engine | install plugins defined in .valet-sh.yml"
       apple_container_exec:
         name: "vsh-{{ search_engine }}{{ search_engine_version }}"
-        command: "{{ search_engine_install.services[0].configuration.plugins.install_command }} {{ current_plugin }}"
+        command: "{{ search_engine_service.services[0].configuration.plugins.install_command }} {{ current_plugin }}"
       with_items: "{{ search_engine_plugins }}"
       loop_control:
         loop_var: current_plugin

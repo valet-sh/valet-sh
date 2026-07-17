@@ -48,14 +48,6 @@
         valet_install_services: ["node"]
       when: node_installed.kinds | length == 0
 
-#    - name: "workflows » magento2 » services » node | include valet-service role to set defaults"
-#      ansible.builtin.include_role:
-#        name: "valet-service"
-#      vars:
-#        valet_sh_service_internal_action: true
-#        valet_service_action: "handle"
-#        valet_sh_newly_installed_services: "{{ node_install.services }}"
-
 - name: "workflows » magento2 » services » node | install node version '{{ valet_sh_node_version }}'"
   shell: source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }}
   args:
