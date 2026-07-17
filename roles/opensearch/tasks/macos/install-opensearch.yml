@@ -76,7 +76,7 @@
       - "{{ current_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z"
     env:
       - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 80 * 1024 }}m -Xmx{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 80 * 1024 }}m"
+      - "ES_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 90 * 1024 }}m -Xmx{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 90 * 1024 }}m"
 
 - name: "Wait for {{ current_service.service.name }} to be ready 'http://{{ current_service.service.name }}.vsh:{{ current_service.configuration.ports.http }}/_cluster/health'"
   ansible.builtin.uri:

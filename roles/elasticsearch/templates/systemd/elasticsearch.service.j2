@@ -20,7 +20,7 @@ ExecStart=/usr/bin/podman run \
     --volume {{ current_service.configuration.base_path }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z \
     --network host \
     --env "discovery.type=single-node" \
-    --env "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
+    --env "ES_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory }} -Xmx{{ current_service.configuration.limits.memory }}" \
     --env "xpack.security.enabled=false" \
     {{ current_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
