@@ -36,7 +36,7 @@
         current_os: "{{ current_os }}"
         custom_fact: "search_engine_service"
 
-    - name: "workflows » neos » services » search_engine | set_fact"
+    - name: "workflows » magento2 » services » search_engine | set_fact"
       ansible.builtin.set_fact:
         search_engine_service: "{{ ansible_facts['search_engine_service'] }}"
 
@@ -106,7 +106,7 @@
         current_os: "{{ current_os }}"
         custom_fact: "search_engine_service"
 
-    - name: "workflows » neos » services » search_engine | set_fact"
+    - name: "workflows » magento2 » services » search_engine | set_fact"
       ansible.builtin.set_fact:
         search_engine_service: "{{ ansible_facts['search_engine_service'] }}"
 
