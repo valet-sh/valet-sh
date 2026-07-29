@@ -75,7 +75,7 @@
       - "{{ current_service.configuration.base_path }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z"
     env:
       - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 90 * 1024 | round | int }}m -Xmx{{ current_service.configuration.limits.memory | default('2g') | replace('g', '') | int / 100 * 90 * 1024 | round | int }}m"
+      - "ES_JAVA_OPTS=-Xms{{ ((current_service.configuration.limits.memory | default('2g') | replace('g', '') | int) / 100 * 90 * 1024) | round | int }}m -Xmx{{ ((current_service.configuration.limits.memory | default('2g') | replace('g', '') | int) / 100 * 90 * 1024) | round | int }}m"
       - "xpack.security.enabled=false"
 
 - name: "Wait for vsh-{{ current_service.canonical }} to be ready 'http://{{ current_service.service.name }}.vsh:{{ current_service.configuration.ports.http }}/_cluster/health'"
