@@ -37,6 +37,9 @@ valet_etc_path: "{{ lookup('vars', 'valet_etc_path' + '_' + current_os, default=
 valet_packages_path_default: "{{ valet_base_path }}/packages"
 valet_packages_path: "{{ lookup('vars', 'valet_packages_path' + '_' + current_os, default=valet_packages_path_default) }}"
 
+valet_overwrites_path_default: "{{ valet_etc_path }}/overwrites"
+valet_overwrites_path: "{{ lookup('vars', 'valet_overwrites_path' + '_' + current_os, default=valet_overwrites_path_default) }}"
+
 # @fixme obsolet?
 valet_sh_arch_prefix_default: ""
 valet_sh_arch_prefix_arm64: "arch --x86_64 "
@@ -179,6 +182,7 @@ valet_base_dirs:
   - "{{ valet_base_path }}"
   - "{{ valet_etc_path }}"
   - "{{ valet_packages_path }}"
+  - "{{ valet_overwrites_path }}"
 
 valet_links_stub:
   valet_links:
