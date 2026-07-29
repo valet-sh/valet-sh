@@ -46,7 +46,6 @@
   apple_image:
     name: "{{ current_service.configuration.docker_image }}"
     state: absent
-    force: true
   when: "'--purge' in valet_cli_opts"
 
 - name: "Remove vsh-{{ current_service.canonical }} from installed services"
