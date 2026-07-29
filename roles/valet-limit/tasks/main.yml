@@ -1,0 +1,30 @@
+##
+#   Copyright 2026 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "Fail when current_os is not supported"
+  ansible.builtin.fail:
+    msg: "Current OS '{{ current_os }}' is not supported for valet.sh limit command"
+  when: current_os == "ubuntu"
+
+- ansible.builtin.include_tasks: "commands/set.yml"
+  when: valet_limit_action == "set"
+
+- ansible.builtin.include_tasks: "commands/get.yml"
+  when: valet_limit_action == "get"
+
+- ansible.builtin.include_tasks: "commands/remove.yml"
+  when: valet_limit_action == "remove"

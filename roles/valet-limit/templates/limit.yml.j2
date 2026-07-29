@@ -1,0 +1,5 @@
+configuration:
+  limits:
+{% for key, value in merged_limits.items() %}
+    {{ key }}: "{{ value }}"
+{% endfor %}

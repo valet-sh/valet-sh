@@ -1,0 +1,86 @@
+##
+#   Copyright 2026 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "limit » {{ valet_limit_key }} | Fail when key is not supported"
+  ansible.builtin.fail:
+    msg: "Key '{{ valet_limit_key }}' does not exist. Supported keys are: cpus, memory"
+  when: valet_limit_key not in ["cpus", "memory"]
+
+- name: "limit » {{ valet_limit_key }} | Fail when memory value has invalid format"
+  ansible.builtin.fail:
+    msg: "Invalid memory value '{{ valet_limit_value }}'. Expected a number optionally followed by a unit (b, k, m, g), e.g. '512m' or '4g'."
+  when:
+    - valet_limit_key == "memory"
+    - not (valet_limit_value is match('^[0-9]+([bkmgBKMG])?$'))
+
+- name: "limit » {{ valet_limit_key }} | Default bare memory values to gigabytes"
+  ansible.builtin.set_fact:
+    valet_limit_value: "{{ valet_limit_value }}g"
+  when:
+    - valet_limit_key == "memory"
+    - valet_limit_value is match('^[0-9]+$')
+
+- name: "limit » {{ valet_limit_key }} | Normalize memory unit to lowercase"
+  ansible.builtin.set_fact:
+    valet_limit_value: "{{ valet_limit_value | lower }}"
+  when:
+    - valet_limit_key == "memory"
+
+- name: "limit » {{ valet_limit_key }} | Check if supplied service exists"
+  vsh_bundle_resolver:
+    name: "{{ valet_limit_service }}"
+    current_os: "{{ current_os }}"
+  register: vsh_resolver
+
+- name: "limit » {{ valet_limit_key }} | Define target file path"
+  ansible.builtin.set_fact:
+    target_overwrite_file: "{{ valet_overwrites_path }}/{{ vsh_resolver.services[0].name }}/{{ vsh_resolver.services[0].version }}.yml"
+
+- name: "limit » {{ valet_limit_key }} | Check if overwrite file exists"
+  ansible.builtin.stat:
+    path: "{{ target_overwrite_file }}"
+  register: overwrite_file_stat
+
+- name: "limit » {{ valet_limit_key }} | Read existing configuration if present"
+  ansible.builtin.slurp:
+    src: "{{ target_overwrite_file }}"
+  register: existing_overwrite_file
+  when: overwrite_file_stat.stat.exists
+
+- name: "limit » {{ valet_limit_key }} | Parse existing configuration"
+  ansible.builtin.set_fact:
+    existing_config: "{{ (existing_overwrite_file.content | b64decode | from_yaml) if (overwrite_file_stat.stat.exists and existing_overwrite_file.content is defined) else {} }}"
+
+- name: "limit » {{ valet_limit_key }} | Merge new limits into config"
+  ansible.builtin.set_fact:
+    merged_limits: "{{ (existing_config.configuration.limits | default({})) | combine({valet_limit_key: valet_limit_value}) }}"
+
+- name: "limit » {{ valet_limit_key }} | Create overwrite directory"
+  ansible.builtin.file:
+    path: "{{ target_overwrite_file | dirname }}"
+    state: directory
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+
+- name: "limit » {{ valet_limit_key }} | Write updated configuration"
+  ansible.builtin.template:
+    src: "templates/limit.yml.j2"
+    dest: "{{ target_overwrite_file }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
