@@ -132,3 +132,6 @@
   vsh_bundle_state:
     action: "installed"
     canonical_names: "{{ current_service.canonical }}"
+
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers
