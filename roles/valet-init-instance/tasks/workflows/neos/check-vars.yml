@@ -68,7 +68,7 @@
   ansible.builtin.set_fact:
     php_bin: "{{ php_bin_obj.stdout }}"
 
-- name: "workflows » magento2 » check-vars | override magento2 'valet_sh_neos_db_port' var"
+- name: "workflows » neos » check-vars | override neos 'valet_sh_neos_db_port' var"
   ansible.builtin.set_fact:
     valet_sh_neos_db_port: "{{ database_service.services[0].configuration.ports.tcp }}"
   when:
