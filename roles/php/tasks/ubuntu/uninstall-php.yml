@@ -17,7 +17,7 @@
 
 - name: set php_version variable
   ansible.builtin.set_fact:
-    php_version: "{{ current_php.version }}"
+    php_version: "{{ current_service.version }}"
 
 - name: "override default configuration for current php"
   ansible.builtin.include_tasks: override-config.yml
@@ -46,7 +46,7 @@
     loop_var: php_version_path_item
   become: true
 
-- name: "Remove vsh-{{ current_php.canonical }} from installed services"
+- name: "Remove vsh-{{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"
-    canonical_names: "{{ current_php.canonical }}"
+    canonical_names: "{{ current_service.canonical }}"
