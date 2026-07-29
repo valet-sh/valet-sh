@@ -177,13 +177,34 @@ def resources_match(info, params):
     return True
 
 
+def container_env(info):
+    """Extract the 'KEY=VALUE' environment list from container inspect data.
+    Apple container inspect stores this at configuration.initProcess.environment."""
+    try:
+        return info['configuration']['initProcess']['environment']
+    except (KeyError, TypeError):
+        return None
+
+
+def env_matches(info, desired_env):
+    """Return True if every desired 'KEY=VALUE' env entry is present on the running container."""
+    if not desired_env:
+        return True
+    current_env = container_env(info)
+    if current_env is None:
+        return False
+    return set(desired_env).issubset(set(current_env))
+
+
 def container_config_changed(info, params):
-    """Return True if image, volumes, or resources differ from the running container."""
+    """Return True if image, volumes, resources, or env differ from the running container."""
     if params['image'] and not image_matches(info, params['image']):
         return True
     if not volumes_match(info, params['volumes']):
         return True
     if not resources_match(info, params):
+        return True
+    if not env_matches(info, params['env']):
         return True
     return False
 
