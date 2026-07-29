@@ -16,7 +16,7 @@
 ---
 
 - name: "ensue dnsmasq is stopped"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services  stop dnsmasq"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop dnsmasq"
 
 - name: "ensure dnsmasq is absent"
   homebrew:
