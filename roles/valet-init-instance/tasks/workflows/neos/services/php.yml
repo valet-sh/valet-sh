@@ -15,18 +15,18 @@
 ##
 ---
 
-- name: "workflows » magento2 » services » php | set var 'valet_sh_service_php_current_name'"
+- name: "workflows » neos » services » php | set var 'valet_sh_service_php_current_name'"
   ansible.builtin.set_fact:
     valet_sh_service_php_current_name: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
 
 - block:
-    - name: "workflows » magento2 » services » php | check if {{ valet_sh_service_php_current_name }} is installed"
+    - name: "workflows » neos » services » php | check if {{ valet_sh_service_php_current_name }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
         name: "{{ valet_sh_service_php_current_name }}"
       register: php_installed
 
-    - name: "workflows » magento2 » services » php | resolve {{ valet_sh_service_php_current_name }} service"
+    - name: "workflows » neos » services » php | resolve {{ valet_sh_service_php_current_name }} service"
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_php_current_name }}"
         current_os: "{{ current_os }}"
@@ -40,19 +40,19 @@
         valet_install_services: ["{{ valet_sh_service_php_current_name }}"]
       when: php_installed.kinds | length == 0
 
-    - name: "workflows » magento2 » services » php | ensure {{ valet_sh_service_php_current_name }} is started"
+    - name: "workflows » neos » services » php | ensure {{ valet_sh_service_php_current_name }} is started"
       ansible.builtin.systemd:
         name: "php{{ valet_sh_project_vars.services.php.version }}-fpm"
         state: restarted
         enabled: true
       become: true
 
-    - name: "workflows » magento2 » services » php | set {{ valet_sh_service_php_current_name }} as enabled"
+    - name: "workflows » neos » services » php | set {{ valet_sh_service_php_current_name }} as enabled"
       vsh_bundle_state:
         action: "enabled"
         canonical_names: "{{ valet_sh_service_php_current_name }}"
 
-    - name: "workflows » magento2 » services » php | wait for php-fpm to be reachable"
+    - name: "workflows » neos » services » php | wait for php-fpm to be reachable"
       ansible.builtin.wait_for:
         path: "/var/run/php/php{{ valet_sh_project_vars.services.php.version }}-fpm.sock"
         delay: 5
@@ -63,13 +63,13 @@
     - valet_sh_project_vars.services.php.version is defined
 
 - block:
-    - name: "workflows » magento2 » services » php | check if php{{ valet_sh_project_vars.services.php.version }} is installed"
+    - name: "workflows » neos » services » php | check if php{{ valet_sh_project_vars.services.php.version }} is installed"
       vsh_bundle_install_state_info:
         state: "present"
         name: "{{ valet_sh_service_php_current_name }}"
       register: php_installed
 
-    - name: "workflows » magento2 » services » php | resolve php{{ valet_sh_project_vars.services.php.version }} service"
+    - name: "workflows » neos » services » php | resolve php{{ valet_sh_project_vars.services.php.version }} service"
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_php_current_name }}"
         current_os: "{{ current_os }}"
@@ -83,15 +83,15 @@
         valet_install_services: ["{{ valet_sh_service_php_current_name }}"]
       when: php_installed.kinds | length == 0
 
-    - name: "workflows » magento2 » services » php | ensure {{ valet_sh_service_php_current_name }} is started"
+    - name: "workflows » neos » services » php | ensure {{ valet_sh_service_php_current_name }} is started"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-{{ valet_sh_service_php_current_name }}"
 
-    - name: "workflows » magento2 » services » php | set {{ valet_sh_service_php_current_name }} as enabled"
+    - name: "workflows » neos » services » php | set {{ valet_sh_service_php_current_name }} as enabled"
       vsh_bundle_state:
         action: "enabled"
         canonical_names: "{{ valet_sh_service_php_current_name }}"
 
-    - name: "workflows » magento2 » services » php | wait for php-fpm to be reachable"
+    - name: "workflows » neos » services » php | wait for php-fpm to be reachable"
       ansible.builtin.wait_for:
         path: "/tmp/vsh-{{ valet_sh_service_php_current_name }}.sock"
         delay: 5
