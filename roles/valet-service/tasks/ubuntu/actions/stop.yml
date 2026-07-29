@@ -28,5 +28,5 @@
   become: "{{ service_item.service.scope == 'system' }}"
   loop: "{{ valet_all_services }}"
   loop_control:
-    loop_var: service_iter
+    loop_var: service_item
   when: "'--all' not in valet_cli_opts"
