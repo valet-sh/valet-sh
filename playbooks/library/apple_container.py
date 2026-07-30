@@ -208,7 +208,6 @@ def container_config_changed(info, params):
         return True
     return False
 
-
 def _stop_and_delete(module, name, current_state):
     if current_state == 'running':
         rc, _, stderr = run_cli(['stop', name])
@@ -250,6 +249,8 @@ def build_run_args(params):
         args += ['--memory', params['memory']]
     if params['user']:
         args += ['--user', params['user']]
+    if params['arch']:
+        args += ['--arch', params['arch']]
     args.append(params['image'])
     cmd = params['command'] or []
     if isinstance(cmd, str):
@@ -390,6 +391,7 @@ def main():
         cpus=dict(type='str', required=False),
         memory=dict(type='str', required=False),
         user=dict(type='str', required=False),
+        arch=dict(type='str', required=False, default=None),
         command=dict(type='raw', required=False, default=[]),
     )
 
