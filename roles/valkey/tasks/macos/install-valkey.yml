@@ -35,6 +35,7 @@
     cpus: "{{ current_service.configuration.limits.cpus | default(1) }}"
     memory: "{{ current_service.configuration.limits.memory | default('1g') }}"
     user: "1000:1000"
+    arch: "{{ current_service.configuration.arch | default(omit) }}"
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers

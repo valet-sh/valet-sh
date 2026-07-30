@@ -112,6 +112,7 @@
     cpus: "{{ current_service.configuration.limits.cpus | default(2) }}"
     memory: "{{ current_service.configuration.limits.memory | default('1g') }}"
     user: "1000:1000"
+    arch: "{{ current_service.configuration.arch | default(omit) }}"
     volumes:
       - "vsh-{{ current_service.canonical }}-data:/var/lib/mysql"
       - "{{ current_service.configuration.base_path }}/etc/mariadb.conf.d/valet-sh.cnf:/etc/mysql/mariadb.conf.d/valet-sh.cnf:Z"

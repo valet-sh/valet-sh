@@ -72,6 +72,7 @@
     memory: "{{ current_service.configuration.limits.memory | default('2g') }}"
     user: "1000:1000"
     volumes: "{{ opensearch_base_volumes + (opensearch_extra_volumes | default([])) }}"
+    arch: "{{ current_service.configuration.arch | default(omit) }}"
     env:
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 90 * 1024) | int }}m -Xmx{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 90 * 1024) | int }}m"
@@ -100,6 +101,7 @@
   apple_container_exec:
     name: "vsh-{{ current_service.canonical }}"
     command: "{{ current_service.configuration.plugins.install_command }} {{ current_opensearch_plugin.name }}"
+    user: root
   with_items: "{{ current_service.configuration.plugins.default_plugins }}"
   loop_control:
     loop_var: current_opensearch_plugin
