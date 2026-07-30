@@ -1,5 +1,8 @@
 {{ ansible_managed | comment }}
 
+server {
+    listen     127.0.0.1:3306;
+
 {% set bundles_data = lookup('file', '/usr/local/valet-sh/etc/bundles.yml') | from_yaml %}
 {% for service_name in ['mariadb', 'mysql'] %}
 {% for version in valet_sh_bundle_definitions.services[service_name].versions %}
@@ -7,17 +10,12 @@
 {% if service_key in bundles_data.bundles.services.installed %}
 {% set bundle_file = valet_dist_path_default + '/roles/shared-variables/defaults/main' + '/bundles/' + service_name + '/' + version + '.yml' %}
 {% set bundle = lookup('file', bundle_file) | from_yaml %}
-upstream {{ service_key }} {
-{% if current_os == 'ubuntu' %}
-        server 127.0.0.1:{{ bundle.configuration.ports.tcp}};
-{% else %}
-    server vsh-{{ service_key }}.vsh:{{ bundle.configuration.ports.tcp }};
-{% endif %}
-}
+
+    set ${{ service_key }} "vsh-{{ service_key }}.vsh:{{ bundle.configuration.ports.tcp }}";
+
 {% endif %}
 {% endfor %}
 {% endfor %}
-server {
-    listen     127.0.0.1:3306;
-    proxy_pass {{ item.canonical }};
+
+    proxy_pass ${{ item.canonical }};
 }
