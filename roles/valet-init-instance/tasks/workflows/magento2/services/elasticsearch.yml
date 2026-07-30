@@ -44,6 +44,30 @@
       ansible.builtin.set_fact:
         search_engine_plugins: "{{ search_engine_config.plugins | default([]) }}"
 
+    - name: "workflows » magento2 » services » search_engine | read files from .valet-sh.yml"
+      ansible.builtin.set_fact:
+        search_engine_files: "{{ search_engine_config.files | default([]) }}"
+
+    - name: "workflows » magento2 » services » search_engine | set_fact for {{ search_engine }} volume mount"
+      ansible.builtin.set_fact:
+        "{{ search_engine }}_extra_volumes": >-
+          {{ (lookup('vars', search_engine + '_extra_volumes', default=[])) +
+             [valet_current_path + '/' + item + ':/usr/share/' + search_engine + '/config/' + (item | basename) + ':Z'] }}
+      loop: "{{ search_engine_files }}"
+      when:
+        - search_engine_files | length > 0
+
+    - name: "workflows » magento2 » services » search_engine | check if files are already mounted in the running container"
+      containers.podman.podman_container_exec:
+        name: "vsh-{{ search_engine_canonical_name }}"
+        command: "test -f /usr/share/{{ search_engine }}/config/{{ item }}"
+      register: search_engine_files_mounted
+      loop: "{{ search_engine_files | map('basename') | list }}"
+      failed_when: false
+      when:
+        - search_engine_files | length > 0
+        - search_engine_installed.kinds | length > 0
+
     - name: "workflows » magento2 » services » search_engine | include service-specific roles"
       ansible.builtin.include_role:
         name: "{{ search_engine }}"
@@ -51,6 +75,9 @@
         valet_resolved_service: "{{ search_engine_service }}"
         valet_install_services: ["{{ search_engine }}{{ search_engine_version }}"]
       when: search_engine_installed.kinds | length == 0
+      when: >-
+        search_engine_installed.kinds | length == 0
+        or (search_engine_files | length > 0 and (search_engine_files_mounted.rc | default(1)) != 0)
 
     - name: "workflows » magento2 » services » search_engine | ensure {{ search_engine }}{{ search_engine_version }} is started and enabled"
       ansible.builtin.systemd:
@@ -114,6 +141,30 @@
       ansible.builtin.set_fact:
         search_engine_plugins: "{{ search_engine_config.plugins | default([]) }}"
 
+    - name: "workflows » magento2 » services » search_engine | read files from .valet-sh.yml"
+      ansible.builtin.set_fact:
+        search_engine_files: "{{ search_engine_config.files | default([]) }}"
+
+    - name: "workflows » magento2 » services » search_engine | set_fact for {{ search_engine }} volume mount"
+      ansible.builtin.set_fact:
+        "{{ search_engine }}_extra_volumes": >-
+          {{ (lookup('vars', search_engine + '_extra_volumes', default=[])) +
+             [valet_current_path + '/' + item + ':/usr/share/' + search_engine + '/config/' + (item | basename) + ':Z'] }}
+      loop: "{{ search_engine_files }}"
+      when:
+        - search_engine_files | length > 0
+
+    - name: "workflows » magento2 » services » search_engine | check if files are already mounted in the running container"
+      containers.podman.podman_container_exec:
+        name: "vsh-{{ search_engine_canonical_name }}"
+        command: "test -f /usr/share/{{ search_engine }}/config/{{ item }}"
+      register: search_engine_files_mounted
+      loop: "{{ search_engine_files | map('basename') | list }}"
+      failed_when: false
+      when:
+        - search_engine_files | length > 0
+        - search_engine_installed.kinds | length > 0
+
     - name: "workflows » magento2 » services » search_engine | include service-specific roles"
       ansible.builtin.include_role:
         name: "{{ search_engine }}"
@@ -121,6 +172,9 @@
         valet_resolved_service: "{{ search_engine_service }}"
         valet_install_services: ["{{ search_engine }}{{ search_engine_version }}"]
       when: search_engine_installed.kinds | length == 0
+      when: >-
+        search_engine_installed.kinds | length == 0
+        or (search_engine_files | length > 0 and (search_engine_files_mounted.rc | default(1)) != 0)
 
     - name: "workflows » magento2 » services » search_engine | ensure {{ search_engine }}{{ search_engine_version }} is started"
       apple_container:

@@ -71,12 +71,14 @@
     cpus: "{{ current_service.configuration.limits.cpus | default(2) }}"
     memory: "{{ current_service.configuration.limits.memory | default('2g') }}"
     user: "1000:1000"
-    volumes:
-      - "vsh-{{ current_service.canonical }}-data:/usr/share/opensearch/data"
-      - "{{ current_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z"
+    volumes: "{{ elasticsearch_base_volumes + (elasticsearch_extra_volumes | default([])) }}"
     env:
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 90 * 1024) | int }}m -Xmx{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 90 * 1024) | int }}m"
+  vars:
+    opensearch_base_volumes:
+      - "vsh-{{ current_service.canonical }}-data:/usr/share/opensearch/data"
+      - "{{ current_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z"
 
 - name: "Wait for {{ current_service.service.name }} to be ready 'http://{{ current_service.service.name }}.vsh:{{ current_service.configuration.ports.http }}/_cluster/health'"
   ansible.builtin.uri:

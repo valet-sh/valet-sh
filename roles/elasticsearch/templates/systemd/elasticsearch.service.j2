@@ -18,6 +18,11 @@ ExecStart=/usr/bin/podman run \
     --volume vsh-{{ current_service.canonical }}-data:/usr/share/elasticsearch/data \
     --volume vsh-{{ current_service.canonical }}-plugins:/usr/share/elasticsearch/plugins \
     --volume {{ current_service.configuration.base_path }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z \
+{% if elasticsearch_extra_volumes is defined and elasticsearch_extra_volumes | length > 0 %}
+{% for volume in elasticsearch_extra_volumes %}
+    --volume {{ volume }} \
+{% endfor %}
+{% endif %}
     --network host \
     --env "discovery.type=single-node" \
     --env "ES_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory }} -Xmx{{ current_service.configuration.limits.memory }}" \
