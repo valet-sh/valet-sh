@@ -13,6 +13,7 @@ service:
 
 configuration:
   docker_image: "docker.io/elasticsearch:5.6.16"
+  arch: "amd64"
   limits:
     memory: "2g"
     cpus: "1"

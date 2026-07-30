@@ -13,6 +13,7 @@ service:
 
 configuration:
   docker_image: "docker.io/library/mysql:5.7"
+  arch: "amd64"
   ports:
     tcp: 3307
   base_path: "/usr/local/valet-sh/packages/mysql57"
