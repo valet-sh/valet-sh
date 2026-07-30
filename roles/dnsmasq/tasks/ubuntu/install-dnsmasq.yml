@@ -70,6 +70,23 @@
       become: true
       notify: Systemd | dnsmasq | restarted
 
+    - name: "ensure dnsmasq 'interfaces=' is set"
+      ansible.builtin.lineinfile:
+        path: "/etc/dnsmasq.conf"
+        regexp: "^interface="
+        line: "interface="
+        state: present
+      become: true
+      notify: Systemd | dnsmasq | restarted
+
+    - name: "ensure dnsmasq 'bind-interfaces' is set"
+      ansible.builtin.lineinfile:
+        path: "/etc/dnsmasq.conf"
+        line: "bind-interfaces"
+        state: present
+      become: true
+      notify: Systemd | dnsmasq | restarted
+
     - name: "ensure domain '*.{{ dnsmasq_domain }}' is handled by local dns"
       ansible.builtin.copy:
         dest: "/etc/dnsmasq.d/{{ dnsmasq_domain }}.conf"

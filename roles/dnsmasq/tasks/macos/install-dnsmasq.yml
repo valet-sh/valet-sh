@@ -36,6 +36,23 @@
   become: true
   notify: brew | dnsmasq | restarted
 
+- name: "ensure dnsmasq 'interfaces=' is set"
+  ansible.builtin.lineinfile:
+    path: "{{ valet_sh_homebrew_prefix }}/etc/dnsmasq.conf"
+    regexp: "^interface="
+    line: "interface="
+    state: present
+  become: true
+  notify: brew | dnsmasq | restarted
+
+- name: "ensure dnsmasq 'bind-interfaces' is set"
+  ansible.builtin.lineinfile:
+    path: "{{ valet_sh_homebrew_prefix }}/etc/dnsmasq.conf"
+    line: "bind-interfaces"
+    state: present
+  become: true
+  notify: brew | dnsmasq | restarted
+
 - name: "ensure dns resolving for .{{ dnsmasq_domain }} domain is handled by dnsmasq"
   ansible.builtin.template:
     src: development-domain.conf.j2
