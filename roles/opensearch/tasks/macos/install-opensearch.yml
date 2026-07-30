@@ -71,7 +71,7 @@
     cpus: "{{ current_service.configuration.limits.cpus | default(2) }}"
     memory: "{{ current_service.configuration.limits.memory | default('2g') }}"
     user: "1000:1000"
-    volumes: "{{ elasticsearch_base_volumes + (elasticsearch_extra_volumes | default([])) }}"
+    volumes: "{{ opensearch_base_volumes + (opensearch_extra_volumes | default([])) }}"
     env:
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 90 * 1024) | int }}m -Xmx{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 90 * 1024) | int }}m"
