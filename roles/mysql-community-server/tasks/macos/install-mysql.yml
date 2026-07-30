@@ -87,6 +87,21 @@
     mode: "0755"
   become: true
 
+- name: "Remove lost+found and .cache from volume 'vsh-{{ current_service.canonical }}-data'"
+  apple_container:
+    name: vsh-volume-fix
+    image: alpine
+    state: started
+    remove: true
+    detach: false
+    volumes:
+      - "{{ current_service.service.name }}-data:/data"
+    command:
+      - rm
+      - -rf
+      - /data/lost+found
+      - /data/.cache
+
 - name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
   apple_container:
     name: "vsh-{{ current_service.canonical }}"
