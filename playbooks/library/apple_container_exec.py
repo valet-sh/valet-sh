@@ -44,6 +44,7 @@ def main():
         name=dict(type='str', required=True),
         command=dict(type='str', required=False),
         argv=dict(type='list', elements='str', required=False, default=[]),
+        user=dict(type='str', required=False),
     )
 
     module = AnsibleModule(
@@ -64,11 +65,16 @@ def main():
     else:
         cmd_args = params['command'].split()
 
+    exec_args = ['exec']
+    if params['user']:
+        exec_args += ['--user', params['user']]
+    exec_args += [name] + cmd_args
+
     if module.check_mode:
         module.exit_json(changed=True, msg='Would execute command (check mode)', name=name,
                          cmd=cmd_args, stdout='', stderr='', rc=0)
 
-    rc, stdout, stderr = run_cli(['exec', name] + cmd_args)
+    rc, stdout, stderr = run_cli(exec_args)
 
     if rc != 0:
         module.fail_json(
