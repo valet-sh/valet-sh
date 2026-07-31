@@ -28,22 +28,23 @@
   vsh_bundle_resolver:
     name: "{{ valet_restart_all_enabled }}"
     current_os: "{{ current_os }}"
+  register: vsh_resolver
 
-- name: "actions » restart | restart {{ service_item.service.name }} service (running as root) (using homebrew)"
+- name: "actions » restart | restart all services (running as root) (using homebrew)"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ service_item.service.name }}"
   loop: "{{ vsh_resolver.services }}"
   loop_control:
     loop_var: service_item
   when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
 
-- name: "actions » restart | restart {{ service_item.service.name }} service (using homebrew)"
+- name: "actions » restart | restart all services (using homebrew)"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ service_item.service.name }}"
   loop: "{{ vsh_resolver.services }}"
   loop_control:
     loop_var: service_item
   when: service_item.service.scope == 'user' and service_item.service.provider == 'homebrew'
 
-- name: "actions »  restart | restart {{ service_item.service.name }} service (using container)"
+- name: "actions »  restart | restart all services (using container)"
   apple_container:
     name: "{{ service_item.service.name }}"
     state: restarted

@@ -15,11 +15,16 @@
 ##
 ---
 
+- name: "actions » stop | fail when service defintion is not defined"
+  ansible.builtin.fail:
+    msg: "service definition is not defined cannot stop service"
+  when: service_item.service is not defined and not '--all' in valet_cli_opts
+
 - name: "actions » stop | include sub-stop-all task when service name is all"
   ansible.builtin.include_tasks: "ubuntu/actions/sub-stop-all.yml"
   when: "'--all' in valet_cli_opts"
 
-- name: "actions » stop | stop {{ service_item.service.name }} service"
+- name: "actions » stop | stop {{ service_item.service.name if service_item is defined else 'service' }} service"
   ansible.builtin.systemd:
     name: "{{ service_item.service.name }}"
     state: stopped

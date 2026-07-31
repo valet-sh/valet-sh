@@ -37,13 +37,27 @@
       ansible.builtin.set_fact:
         vsh_resolver_filtered: "{{ vsh_resolver.services | rejectattr('kind', 'equalto', 'essential') | list }}"
 
-    - name: "actions » stop | stop all resolved services"
-      ansible.builtin.systemd:
+    - name: "actions » stop | stop all services (running as root) (using homebrew)"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services stop {{ service_item.service.name }}"
+      failed_when: false
+      when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
+      loop: "{{ vsh_resolver_filtered }}"
+      loop_control:
+        loop_var: service_item
+
+    - name: "actions » stop | stop all services (using homewbrew)"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop {{ service_item.service.name }}"
+      failed_when: false
+      when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
+      loop: "{{ vsh_resolver_filtered }}"
+      loop_control:
+        loop_var: service_item
+
+    - name: "actions » stop | stop all services (using container)"
+      apple_container:
         name: "{{ service_item.service.name }}"
         state: stopped
-        scope: "{{ service_item.service.scope }}"
-        daemon_reload: true
-      become: "{{ service_item.service.scope == 'system' }}"
+      when: service_item.service.provider == 'container' and service_item.service.scope == 'user'
       loop: "{{ vsh_resolver_filtered }}"
       loop_control:
         loop_var: service_item

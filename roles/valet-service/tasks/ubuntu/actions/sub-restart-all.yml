@@ -30,6 +30,7 @@
       vsh_bundle_resolver:
         name: "{{ valet_restart_all_enabled }}"
         current_os: "{{ current_os }}"
+      register: vsh_resolver
 
     - name: "actions » restart | restart all resolved services"
       ansible.builtin.systemd:
@@ -38,3 +39,6 @@
         scope: "{{ service_item.service.scope }}"
         daemon_reload: true
       become: "{{ service_item.service.scope == 'system' }}"
+      loop: "{{ vsh_resolver.services }}"
+      loop_control:
+        loop_var: service_item

@@ -25,17 +25,17 @@
   when: "'--all' in valet_cli_opts"
 
 - block:
-    - name: "actions » restart | restart {{ service_item.service.name }} service (running as root) (using homebrew)"
+    - name: "actions » restart | restart {{ service_item.service.name if service_item is defined else 'service' }} service (running as root) (using homebrew)"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ service_item.service.name }}"
       failed_when: false
       when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
 
-    - name: "actions » restart | restart {{ service_item.service.name }} service (using homewbrew)"
+    - name: "actions » restart | restart {{ service_item.service.name if service_item is defined else 'service' }} service (using homewbrew)"
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ service_item.service.name }}"
       failed_when: false
       when: service_item.service.scope == 'user' and service_item.service.provider == 'homebrew'
 
-    - name: "actions » restart | restart {{ service_item.service.name }} service (using container)"
+    - name: "actions » restart | restart {{ service_item.service.name if service_item is defined else 'service' }} service (using container)"
       apple_container:
         name: "{{ service_item.service.name }}"
         state: restarted

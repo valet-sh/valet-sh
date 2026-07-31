@@ -19,7 +19,7 @@
   ansible.builtin.include_tasks: "ubuntu/actions/sub-restart-all.yml"
   when: "'--all' in valet_cli_opts"
 
-- name: "actions » restart | restart {{ service_item.service.name }} service"
+- name: "actions » restart | restart {{ service_item.service.name if service_item is defined else 'service' }} service"
   ansible.builtin.systemd:
     name: "{{ service_item.service.name }}"
     state: restarted

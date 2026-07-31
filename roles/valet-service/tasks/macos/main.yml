@@ -25,7 +25,14 @@
   when: not valet_sh_service_internal_action|bool
 
 - ansible.builtin.include_tasks: "macos/actions/{{ valet_service_action }}.yml"
-  when: not valet_sh_service_internal_action|bool
+  when: not valet_sh_service_internal_action|bool and valet_all_services | default([]) | length > 0
   loop: "{{ valet_all_services }}"
   loop_control:
     loop_var: service_item
+
+- name: "main | include action task once for --all when no service names were resolved"
+  ansible.builtin.include_tasks: "macos/actions/{{ valet_service_action }}.yml"
+  when: >-
+    not valet_sh_service_internal_action|bool
+    and valet_all_services | default([]) | length == 0
+    and '--all' in valet_cli_opts
