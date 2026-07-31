@@ -23,9 +23,6 @@
     name: dnsmasq
     state: absent
 
-#- name: "ensure dnsmasq is installed"
-#  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install dnsmasq"
-
 - name: "ensure local dns is removed from '/etc/resolver/{{ dnsmasq_domain }}'"
   ansible.builtin.lineinfile:
     path: "/etc/resolver/{{ dnsmasq_domain }}"
@@ -37,3 +34,8 @@
   file:
     path: "/opt/homebrew/etc/dnsmasq.d/development-domain.conf"
     state: absent
+
+- name: "Remove dnsmasq from installed services"
+  vsh_bundle_state:
+    action: "uninstalled"
+    canonical_names: "dnsmasq"
