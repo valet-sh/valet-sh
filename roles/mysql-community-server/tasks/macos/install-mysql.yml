@@ -44,6 +44,7 @@
   apple_volume:
     name: "vsh-{{ current_service.canonical }}-data"
     state: present
+  register: mysql_data_volume
 
 - name: "provide .my.cnf configuration file"
   ansible.builtin.template:
@@ -95,12 +96,13 @@
     remove: true
     detach: false
     volumes:
-      - "{{ current_service.service.name }}-data:/data"
+      - "vsh-{{ current_service.canonical }}-data:/data"
     command:
       - rm
       - -rf
       - /data/lost+found
       - /data/.cache
+  when: mysql_data_volume.changed
 
 - name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
   apple_container:
