@@ -74,7 +74,6 @@
       vars:
         valet_resolved_service: "{{ search_engine_service }}"
         valet_install_services: ["{{ search_engine }}{{ search_engine_version }}"]
-      when: search_engine_installed.kinds | length == 0
       when: >-
         search_engine_installed.kinds | length == 0
         or (search_engine_files | length > 0 and (search_engine_files_mounted.rc | default(1)) != 0)
@@ -171,7 +170,6 @@
       vars:
         valet_resolved_service: "{{ search_engine_service }}"
         valet_install_services: ["{{ search_engine }}{{ search_engine_version }}"]
-      when: search_engine_installed.kinds | length == 0
       when: >-
         search_engine_installed.kinds | length == 0
         or (search_engine_files | length > 0 and (search_engine_files_mounted.rc | default(1)) != 0)
