@@ -29,3 +29,8 @@
     path: "/usr/local/bin/safe-chain"
     state: absent
   become: true
+
+- name: "Mark aikido_safe_chain as installed in the services file"
+  vsh_bundle_state:
+    action: "installed"
+    canonical_names: "aikido_safe_chain"
