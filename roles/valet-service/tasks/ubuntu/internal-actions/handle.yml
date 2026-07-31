@@ -14,63 +14,11 @@
 #   limitations under the License.
 ##
 ---
-###########################
-## start handle service states
-
-#- name: Debug valet_sh_newly_installed_services
-#  ansible.builtin.debug:
-#    var: valet_sh_newly_installed_services
-
-#- name: "internal-actions » handle | set valet_all_services from newly installed services"
-#  ansible.builtin.set_fact:
-#    valet_all_services: "{{ valet_sh_newly_installed_services | unique(attribute='name') }}"
-
-#- name: "internal-actions » handle | extract canonical names"
-#  ansible.builtin.set_fact:
-#    valet_canonical_names: "{{ valet_all_services | map(attribute='canonical') | list }}"
-#    valet_service_canonical_names: "{{ valet_all_services | selectattr('type', 'equalto', 'service') | map(attribute='canonical') | list }}"
-
-#- name: "internal-actions » handle | initialize state to enabled for services without existing state"
-#  vsh_bundle_state:
-#    action: "initialize_empty"
-#    canonical_names: "{{ valet_service_canonical_names }}"
-#  when: valet_service_canonical_names | length > 0
-
-#- name: "internal-actions » handle | get current state for all services"
-#  vsh_bundle_service_state_info:
-#    name: "{{ valet_service_canonical_names }}"
-#  register: vsh_all_service_states
-#  when: valet_service_canonical_names | length > 0
-
-#- name: "internal-actions » handle | apply service states via systemd"
-#  ansible.builtin.systemd:
-#    name: "{{ service_item.service.name }}"
-#    state: "{{ 'started' if vsh_all_service_states.states[service_item.canonical] == 'enabled' else 'stopped' }}"
-#    enabled: "{{ vsh_all_service_states.states[service_item.canonical] == 'enabled' }}"
-#    scope: "{{ service_item.service.scope }}"
-#    daemon_reload: true
-#  become: "{{ service_item.service.scope == 'system' }}"
-#  loop: "{{ valet_all_services | selectattr('type', 'equalto', 'service') | list }}"
-#  loop_control:
-#    loop_var: service_item
-#  when: service_item.service.name is defined and service_item.enable_allowed
-
-## end handle services states
-########################
-
-#######################
-## start handle defaults
-
-- debug:
-    msg: "{{ valet_etc_services_file }}"
 
 - name: "internal-actions » handle | determine which services should have their default enforced"
   vsh_bundle_default_candidates:
     bundle_etc_file: "{{ valet_etc_services_file }}"
   register: vsh_default_candidates
-
-- debug:
-    msg: "{{ vsh_default_candidates }}"
 
 - name: "internal-actions » handle | resolve default candidate services"
   vsh_bundle_resolver:
@@ -79,21 +27,13 @@
   register: vsh_default_resolver
   when: vsh_default_candidates.canonical_names | length > 0
 
-
-- debug:
-    msg: "{{ vsh_default_resolver }}"
-
 - name: "internal-actions » handle | set valet_all_services to resolved default candidates"
   ansible.builtin.set_fact:
     valet_all_services: "{{ (vsh_default_resolver.services | default([])) + (vsh_default_resolver.packages | default([])) }}"
 
-- debug:
-    msg: "{{ valet_all_services }}"
-
-
 - name: "internal-actions » handle | run default action for resolved default candidates"
   ansible.builtin.include_tasks: "ubuntu/actions/default.yml"
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: service_item
   when: valet_all_services | length > 0
-
-## end handle defaults
-########################

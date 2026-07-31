@@ -18,14 +18,14 @@
 - name: "actions » disable | fail when service defintion is not defined"
   ansible.builtin.fail:
     msg: "service definition is not defined cannot disable service"
-  when: valet_all_services.0.service is not defined
+  when: service_item.service is not defined
 
-- name: "actions » disable | set services as disabled using vsh_bundle_state module"
+- name: "actions » disable | set {{ service_item.service.name }} as disabled using vsh_bundle_state module"
   vsh_bundle_state:
     action: "disabled"
-    canonical_names: "{{ valet_canonical_names }}"
+    canonical_names: "{{ service_item.canonical }}"
 
-- name: "actions » disable | disable resolved services"
+- name: "actions » disable | disable {{ service_item.service.name }} service"
   ansible.builtin.systemd:
     name: "{{ service_item.service.name }}"
     state: stopped
@@ -33,6 +33,3 @@
     scope: "{{ service_item.service.scope }}"
     daemon_reload: true
   become: "{{ service_item.service.scope == 'system' }}"
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item

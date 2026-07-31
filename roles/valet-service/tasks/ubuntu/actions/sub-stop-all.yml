@@ -30,7 +30,6 @@
       vsh_bundle_resolver:
         name: "{{ valet_stop_all_enabled }}"
         current_os: "{{ current_os }}"
-      register: vsh_resolver
 
     # QUESTION: Should we exclude essential services from stopping when --all is given?
     - name: "actions » stop | set all enabled services to stop except essential services"

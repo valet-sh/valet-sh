@@ -15,29 +15,19 @@
 ##
 ---
 
-- name: "actions » default | update valet_all_services with only the first service from loop when multiple versions are available"
-  set_fact:
-    valet_all_services: "{{ valet_all_services | flatten | groupby('name') | map(attribute='list.0') | list }}"
-
 - name: "actions » default | check which service specific default tasks are available"
   ansible.builtin.stat:
-    path: "{{ role_path }}/tasks/ubuntu/actions/defaults/{{ item.family_name | default(item.name, true) }}.yml"
+    path: "{{ role_path }}/tasks/ubuntu/actions/defaults/{{ service_item.family_name | default(service_item.name, true) }}.yml"
   register: service_default_tasks
-  loop: "{{ valet_all_services }}"
-
-- name: "actions » default | set fact with only services which have default tasks"
-  set_fact:
-    valet_all_services_defaults_defined: "{{ valet_all_services_defaults_defined | default([]) + [ item.item ] }}"
-  when: item.stat.exists
-  loop: "{{ service_default_tasks.results }}"
 
 - name: "actions » default | include service specific default tasks"
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/ubuntu/actions/defaults/{{ item.family_name | default(item.name, true) }}.yml"
-  loop: "{{ valet_all_services_defaults_defined | default([]) }}"
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/ubuntu/actions/defaults/{{ service_item.family_name | default(service_item.name, true) }}.yml"
+  vars:
+    item: "{{ service_item }}"
+  when: service_default_tasks.stat.exists
 
 - name: "actions » default | set service as default using vsh_bundle_state module"
   vsh_bundle_state:
     action: "default"
-    name: "{{ item.family_name | default(item.name, true) }}"
-    canonical_names: "{{ item.canonical }}"
-  loop: "{{ valet_all_services }}"
+    name: "{{ service_item.family_name | default(service_item.name, true) }}"
+    canonical_names: "{{ service_item.canonical }}"

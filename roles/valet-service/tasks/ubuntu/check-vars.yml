@@ -36,26 +36,11 @@
     - valet_service_names is defined
     - valet_service_names | length > 0
 
-- name: Debug vsh_resolvers
-  ansible.builtin.debug:
-    var: vsh_resolvers
-
 - name: "check-vars | create combined resolved service variable"
   ansible.builtin.set_fact:
     valet_canonical_names: "{{ vsh_resolvers.results | map(attribute='services') | flatten | map(attribute='canonical') | list + vsh_resolvers.results | map(attribute='packages') | flatten | map(attribute='canonical') | list }}"
     valet_all_services: "{{ vsh_resolvers.results | flatten | map(attribute='services') | flatten +  vsh_resolvers.results | flatten | map(attribute='packages') | flatten | list }}"
   when: vsh_resolvers is defined
-
-- name: Debug valet_canonical_names
-  ansible.builtin.debug:
-    var: valet_canonical_names
-  when: vsh_resolvers is defined
-
-- name: Debug valet_all_services
-  ansible.builtin.debug:
-    var: valet_all_services
-  when: vsh_resolvers is defined
-
 
 - name: "block"
   when: valet_service_action != "list"
@@ -74,11 +59,6 @@
       when: valet_service_action != "list" and (valet_service_names is defined and valet_service_names | length > 0)
       loop: "{{ valet_canonical_names }}"
 
-    - name: Debug service installation check
-      ansible.builtin.debug:
-        var: service_installation_check
-      when: valet_service_names is defined and valet_service_names | length > 0
-
     - name: "check-vars | fail if service is not installed"
       ansible.builtin.fail:
         msg: "Services '{{ item }}' is not installed. Please install them first."
@@ -92,7 +72,7 @@
       when: valet_service_names is defined and valet_service_names | length > 0
       loop: "{{ valet_canonical_names }}"
 
-    - name: Debug service installation check
-      ansible.builtin.debug:
-        var: service_state_check
-      when: valet_service_names is defined and valet_service_names | length > 0
+    - name: "actions » default | update valet_all_services with only the first service from loop when multiple versions are available"
+      set_fact:
+        valet_all_services: "{{ valet_all_services | flatten | groupby('name') | map(attribute='list.0') | list }}"
+      when: valet_service_action == "default"
