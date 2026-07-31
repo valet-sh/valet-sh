@@ -37,6 +37,10 @@
         current_os: "{{ current_os }}"
         custom_fact: "database_service"
 
+    - name: "workflows » neos » services » database | set_fact database_service"
+      ansible.builtin.set_fact:
+        database_service: "{{ ansible_facts['database_service']}}"
+
     - name: "workflows » magento2 » services » database | include service-specific roles"
       ansible.builtin.include_role:
         name: "{{ 'mysql-community-server' if database == 'mysql' else 'mariadb-server' }}"
@@ -56,10 +60,6 @@
       vsh_bundle_state:
         action: "enabled"
         canonical_names: "{{ database_canonical_name }}"
-
-    - name: set_fact
-      ansible.builtin.set_fact:
-        database_service: "{{ ansible_facts['database_service']}}"
 
     - name: "workflows » magento2 » services » database | wait for {{ database_canonical_name }} to be reachable"
       ansible.builtin.wait_for:
