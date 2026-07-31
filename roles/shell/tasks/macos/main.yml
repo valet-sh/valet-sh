@@ -31,7 +31,16 @@
   when: valet_sh_config.default_shell is defined
 
 - ansible.builtin.include_tasks: macos/bash.yml
-  when: default_shell == "bash"
+  when:
+    - default_shell is defined
+    - default_shell == "bash"
+    - valet_install_services is defined
 
 - ansible.builtin.include_tasks: macos/zsh.yml
-  when: default_shell == "zsh"
+  when:
+    - default_shell is defined
+    - default_shell == "zsh"
+    - valet_install_services is defined
+
+- ansible.builtin.include_tasks: macos/uninstall.yml
+  when: valet_uninstall_services is defined

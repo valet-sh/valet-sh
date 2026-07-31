@@ -15,28 +15,22 @@
 ##
 ---
 
-- name: ZSH-Block
-  when:
-    - default_shell is defined
-    - default_shell == "zsh"
-  block:
-    - name: Remove oh-my-zsh
-      ansible.builtin.file:
-        path: "{{ current_home }}/.oh-my-zsh"
-        state: absent
+- name: Remove oh-my-zsh
+  ansible.builtin.file:
+    path: "{{ current_home }}/.oh-my-zsh"
+    state: absent
 
+- name: Remove aliases file block from .zshrc
+  ansible.builtin.blockinfile:
+    path: "{{ current_home }}/.zshrc"
+    marker_begin: "ZSH BEGIN"
+    marker_end: "ZSH END"
+    state: absent
 
-    - name: Remove aliases file block from .zshrc
-      ansible.builtin.blockinfile:
-        path: "{{ current_home }}/.zshrc"
-        marker_begin: "ZSH BEGIN"
-        marker_end: "ZSH END"
-        state: absent
-
-    - name: Remove zprofile
-      ansible.builtin.file:
-        path: "{{ current_home }}/.zprofile"
-        state: absent
+- name: Remove zprofile
+  ansible.builtin.file:
+    path: "{{ current_home }}/.zprofile"
+    state: absent
 
 - name: Mark shell as uninstalled
   vsh_bundle_state:
