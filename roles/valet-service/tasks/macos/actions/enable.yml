@@ -14,44 +14,26 @@
 #   limitations under the License.
 ##
 ---
-- name: "actions » enable | set default homebrew bin"
-  ansible.builtin.set_fact:
-    valet_sh_homebrew_bin: "{{ valet_sh_homebrew_bin }}"
 
 - name: "actions » enable | fail when service defintion is not defined"
   ansible.builtin.fail:
     msg: "service definition is not defined cannot enable service"
-  when: valet_all_services.0.service is not defined
-
-- name: "actions » enable | set services as enabled using vsh_bundle_state module"
-  vsh_bundle_state:
-    action: "enabled"
-    canonical_names: "{{ valet_canonical_names }}"
-  register: vsh_bundle_state_result
+  when: service_item.service is not defined
 
 - name: "actions » enable | enable {{ service_item.service.name }} service (running as root) (using homebrew)"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ service_item.service.name }}"
   failed_when: false
   when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item
 
 - name: "actions » enable | enable {{ service_item.service.name }} service (using homewbrew)"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ service_item.service.name }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start {{ service_item.service.name }}"
   failed_when: false
   when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item
 
 - name: "actions » enable | enable {{ service_item.service.name }} service (using container)"
   apple_container:
     name: "{{ service_item.service.name }}"
     state: started
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item
   when: service_item.service.provider == 'container' and service_item.service.scope == 'user'
 
 - name: "actions » enable | add {{ service_item.service.name }} to container autostart"
@@ -59,7 +41,10 @@
     path: /usr/local/valet-sh/etc/container-autostart
     line: "vsh-{{ service_item.canonical }}"
     state: "present"
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item
   when: service_item.service.provider == 'container'
+
+- name: "actions » enable | set {{ service_item.canonical }} as enabled using vsh_bundle_state module"
+  vsh_bundle_state:
+    action: "enabled"
+    canonical_names: "{{ service_item.canonical }}"
+  register: vsh_bundle_state_result

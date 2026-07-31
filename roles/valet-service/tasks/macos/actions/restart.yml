@@ -15,14 +15,10 @@
 ##
 ---
 
-- name: "actions » restart | set default homebrew bin"
-  ansible.builtin.set_fact:
-    valet_sh_homebrew_bin: "{{ valet_sh_homebrew_bin }}"
-
 - name: "actions » restart | fail when no service name was given"
   ansible.builtin.fail:
     msg: "no service name was given"
-  when: valet_all_services.0.service is not defined and not '--all' in valet_cli_opts
+  when: service_item.service is not defined and not '--all' in valet_cli_opts
 
 - name: "actions » restart | include sub-restart-all task when service name is all"
   ansible.builtin.include_tasks: "macos/actions/sub-restart-all.yml"
@@ -33,24 +29,15 @@
       ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ service_item.service.name }}"
       failed_when: false
       when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
-      loop: "{{ valet_all_services }}"
-      loop_control:
-        loop_var: service_item
 
     - name: "actions » restart | restart {{ service_item.service.name }} service (using homewbrew)"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ service_item.service.name }}"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ service_item.service.name }}"
       failed_when: false
       when: service_item.service.scope == 'user' and service_item.service.provider == 'homebrew'
-      loop: "{{ valet_all_services }}"
-      loop_control:
-        loop_var: service_item
 
     - name: "actions » restart | restart {{ service_item.service.name }} service (using container)"
       apple_container:
         name: "{{ service_item.service.name }}"
         state: restarted
-      loop: "{{ valet_all_services }}"
-      loop_control:
-        loop_var: service_item
       when: service_item.service.scope == 'user' and service_item.service.provider == 'container'
   when: "'--all' not in valet_cli_opts"

@@ -26,3 +26,6 @@
 
 - ansible.builtin.include_tasks: "macos/actions/{{ valet_service_action }}.yml"
   when: not valet_sh_service_internal_action|bool
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: service_item

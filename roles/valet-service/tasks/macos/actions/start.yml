@@ -14,36 +14,24 @@
 #   limitations under the License.
 ##
 ---
-- name: "actions » start | set default homebrew bin"
-  ansible.builtin.set_fact:
-    valet_sh_homebrew_bin: "{{ valet_sh_homebrew_bin }}"
 
 - name: "actions » start | fail when service defintion is not defined"
   ansible.builtin.fail:
     msg: "service definition is not defined cannot start service"
-  when: valet_all_services.0.service is not defined
+  when: service_item.service is not defined
 
 - name: "actions » start | start {{ service_item.service.name }} service (running as root) (using homebrew)"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ service_item.service.name }}"
   failed_when: false
   when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item
 
 - name: "actions » start | start {{ service_item.service.name }} service (using homewbrew)"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services start {{ service_item.service.name }}"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start {{ service_item.service.name }}"
   failed_when: false
   when: service_item.service.scope == 'system' and service_item.service.provider == 'homebrew'
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item
 
 - name: "actions » start | start {{ service_item.service.name }} service (using container)"
   apple_container:
     name: "{{ service_item.service.name }}"
     state: started
-  loop: "{{ valet_all_services }}"
-  loop_control:
-    loop_var: service_item
   when: service_item.service.provider == 'container' and service_item.service.scope == 'user'
