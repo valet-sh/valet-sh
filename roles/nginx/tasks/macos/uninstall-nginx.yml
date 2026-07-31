@@ -15,39 +15,36 @@
 ##
 ---
 
-# @Fixme possible permission issues?!
-- name: "ensure nginx is installed"
+- name: "ensure nginx is stopped (running as root) (using homebrew)"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services stop nginx"
+  failed_when: false
+
+- name: "fix ownership of nginx keg directory"
+  ansible.builtin.file:
+    path: "/opt/homebrew/Cellar/nginx"
+    state: directory
+    recurse: true
+    owner: "{{ current_user }}"
+  become: true
+
+- name: "ensure nginx is uninstalled"
   homebrew:
     name: nginx
     state: absent
 
-#- name: "ensure nginx is installed"
-#  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install nginx"
-
-- name: Generate dhparams file
-  ansible.builtin.shell: "openssl dhparam -out {{ nginx_dhparams_file }} {{ nginx_dhparams_keysize }}"
-  args:
-    creates: "{{ nginx_dhparams_file }}"
-
-- name: "ensure /opt/homebrew/etc/nginx/nginx.conf is absent"
-  file:
-    path: "/opt/homebrew/etc/nginx/nginx.conf"
-    state: absent
-
-- name: "ensure '/opt/homebrew/etc/nginx/conf.d' is absent"
+- name: "ensure nginx related files and directories are absent"
   ansible.builtin.file:
-    path: "/opt/homebrew/etc/nginx/conf.d"
-    state: absent
-
-- name: Create nginx stream.d dir
-  ansible.builtin.file:
-    path: "/opt/homebrew/etc/nginx/stream.d"
-    state: absent
-
-- name: "ensure vhost directory '{{ valet_sh_default_vhost_root }}' exists"
-  ansible.builtin.file:
-    path: "{{ valet_sh_default_vhost_root }}"
+    path: "{{ item }}"
     state: absent
   become: true
+  loop:
+    - "/opt/homebrew/etc/nginx/stream.d"
+    - "/opt/homebrew/etc/nginx/conf.d"
+    - "{{ valet_sh_default_vhost_root }}"
+    - "/opt/homebrew/etc/nginx/"
+    - "/opt/homebrew/var/log/nginx"
 
-
+- name: "Remove nginx from installed services"
+  vsh_bundle_state:
+    action: "uninstalled"
+    canonical_names: "nginx"
