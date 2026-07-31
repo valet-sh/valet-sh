@@ -49,17 +49,19 @@
       - npm
   become: true
 
+- name: Check user's default shell
+  ansible.builtin.shell: echo $SHELL
+  register: user_shell
+
 - name: check for .bashrc or .zshrc file
   ansible.builtin.set_fact:
     shellrc_file: ".zshrc"
-  when: valet_sh_config.default_shell is not defined or valet_sh_config.default_shell != "bash"
+  when: valet_sh_config.default_shell is defined and valet_sh_config.default_shell == "zsh" or user_shell.stdout == "/bin/zsh"
 
 - name: check for .bashrc or .zshrc file
   ansible.builtin.set_fact:
     shellrc_file: ".bashrc"
-  when:
-    - valet_sh_config.default_shell is defined
-    - valet_sh_config.default_shell == "bash"
+  when: valet_sh_config.default_shell is defined and valet_sh_config.default_shell == "bash" or user_shell.stdout == "/bin/bash"
 
 - name: "check if '{{ shellrc_file }}' exists in home directory"
   ansible.builtin.stat:

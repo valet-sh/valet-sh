@@ -32,7 +32,16 @@
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash
   args:
     creates: "{{ current_home }}/.nvm/nvm.sh"
+  environment:
+    PROFILE: /dev/null
   register: nvm_installation_obj
+
+- name: "remove nvm loader block written directly by the nvm install script"
+  ansible.builtin.replace:
+    path: "{{ current_home }}/{{ shellrc_file }}"
+    regexp: 'export NVM_DIR="\$HOME/\.nvm"\n\[ -s "\$NVM_DIR/nvm\.sh" \] && \\\. "\$NVM_DIR/nvm\.sh"  # This loads nvm\n\[ -s "\$NVM_DIR/bash_completion" \] && \\\. "\$NVM_DIR/bash_completion"  # This loads nvm bash_completion\n?'
+    replace: ""
+  when: shellrc_file_obj.stat.exists
 
 - name: "ensure volta is absent in '{{ current_home }}/{{ shellrc_file }}'"
   ansible.builtin.blockinfile:
