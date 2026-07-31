@@ -28,7 +28,6 @@
   vsh_bundle_resolver:
     name: "{{ valet_restart_all_enabled }}"
     current_os: "{{ current_os }}"
-  register: vsh_resolver
 
 - name: "actions » restart | restart {{ service_item.service.name }} service (running as root) (using homebrew)"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ service_item.service.name }}"

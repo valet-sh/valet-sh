@@ -35,6 +35,9 @@
 
 - name: "internal-actions » handle | run default action for resolved default candidates"
   ansible.builtin.include_tasks: "macos/actions/default.yml"
+  loop: "{{ valet_all_services }}"
+  loop_control:
+    loop_var: service_item
   when: valet_all_services | length > 0
 
 ## end handle defaults
