@@ -36,3 +36,11 @@
     not valet_sh_service_internal_action|bool
     and valet_all_services | default([]) | length == 0
     and '--all' in valet_cli_opts
+
+- name: "main | include action task for actions that don't require service names"
+  ansible.builtin.include_tasks: "ubuntu/actions/{{ valet_service_action }}.yml"
+  when: >-
+    not valet_sh_service_internal_action|bool
+    and valet_all_services | default([]) | length == 0
+    and '--all' not in valet_cli_opts
+    and valet_service_action == "list"
