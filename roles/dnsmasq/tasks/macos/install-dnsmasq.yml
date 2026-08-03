@@ -20,6 +20,12 @@
     name: dnsmasq
     state: present
 
+- name: "ensure /etc/resolver directory exists"
+  ansible.builtin.file:
+    path: /etc/resolver
+    state: directory
+  become: true
+
 - name: "ensure domain '{{ dnsmasq_domain }}' is handled by local dns"
   ansible.builtin.copy:
     dest: "/etc/resolver/{{ dnsmasq_domain }}"
