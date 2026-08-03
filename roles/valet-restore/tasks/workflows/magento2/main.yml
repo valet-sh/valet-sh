@@ -79,6 +79,9 @@
         login_port: "{{ valet_sh_magento2_db_port }}"
         encoding: "utf8"
         state: import
+        use_shell: true
+      args:
+        chdir: "{{ current_tmp_dir | dirname }}"
 
 - name: "block"
   when: valet_opt_flag_skip_fs is not defined or not valet_opt_flag_skip_fs|bool
