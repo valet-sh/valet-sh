@@ -19,9 +19,9 @@
     valet_opt_flag_clean: true
   when: "'--clean' in valet_cli_opts"
 
-- name: "workflows » magento2 » check-vars | set path to composer2 (default)"
+- name: "workflows » magento2 » check-vars | set path to composer (default)"
   ansible.builtin.set_fact:
-    composer_bin: "{{ composer2_bin }}"
+    composer_bin: "{{ composer1_bin }}"
 
 - name: "workflows » magento2 » check-vars | read composer1 version from .valet-sh.yml"
   ansible.builtin.set_fact:
