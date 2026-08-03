@@ -2,6 +2,11 @@
 
 CONTAINER="vsh-{{ current_service.canonical }}"
 
+args=()
+for arg in "$@"; do
+    [[ "$arg" == --defaults-file=* ]] || args+=("$arg")
+done
+
 {% if current_os == 'ubuntu' %}
 if ! podman inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
     echo "Error: $CONTAINER is not running" >&2
@@ -9,9 +14,9 @@ if ! podman inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
 fi
 TTY_FLAG=""; [ -t 0 ] && TTY_FLAG="-t"
 {% if current_service.version | float >= 11.4 %}
-exec podman exec -i $TTY_FLAG "$CONTAINER" mariadb --defaults-file=/root/.my.cnf "$@"
+exec podman exec -i $TTY_FLAG "$CONTAINER" mariadb --defaults-file=/root/.my.cnf "${args[@]}"
 {% else %}
-exec podman exec -i $TTY_FLAG "$CONTAINER" mysql --defaults-file=/root/.my.cnf "$@"
+exec podman exec -i $TTY_FLAG "$CONTAINER" mysql --defaults-file=/root/.my.cnf "${args[@]}"
 {% endif %}
 {% else %}
 if ! container inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
@@ -20,8 +25,8 @@ if ! container inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
 fi
 TTY_FLAG=""; [ -t 0 ] && TTY_FLAG="-t"
 {% if current_service.version | float >= 11.4 %}
-exec container exec -i $TTY_FLAG "$CONTAINER" mariadb --defaults-file=/home/.my.cnf "$@"
+exec container exec -i $TTY_FLAG "$CONTAINER" mariadb --defaults-file=/home/.my.cnf "${args[@]}"
 {% else %}
-exec container exec -i $TTY_FLAG "$CONTAINER" mysql --defaults-file=/home/.my.cnf "$@"
+exec container exec -i $TTY_FLAG "$CONTAINER" mysql --defaults-file=/home/.my.cnf "${args[@]}"
 {% endif %}
 {% endif %}
