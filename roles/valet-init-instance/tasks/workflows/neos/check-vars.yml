@@ -16,7 +16,7 @@
 ---
 - name: "workflows » neos » check-vars | set path to composer1 (default)"
   ansible.builtin.set_fact:
-    composer_bin: "{{ composer2_bin }}"
+    composer_bin: "{{ composer1_bin }}"
 
 - name: "workflows » neos » check-vars | read composer1 version from .valet-sh.yml"
   ansible.builtin.set_fact:
