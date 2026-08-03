@@ -26,10 +26,36 @@
     - valet_sh_project_vars.services.node is defined
     - valet_sh_project_vars.services.node.version is defined
 
+- block:
+    - name: "workflows » neos » services » node | check if node is installed"
+      vsh_bundle_install_state_info:
+        state: "present"
+        name: "nodejs"
+      register: node_installed
+
+    - name: "workflows » neos » services » node | resolve node service"
+      vsh_bundle_resolver:
+        name: "nodejs"
+        current_os: "{{ current_os }}"
+      register: node_install
+
+    - name: "workflows » neos » services » node | include service-specific roles"
+      ansible.builtin.include_role:
+        name: "nodejs"
+      vars:
+        valet_resolved_service: "{{ node_install }}"
+        valet_install_services: ["node"]
+      when: node_installed.kinds | length == 0
+
+- name: "workflows » neos » services » node | install node version '{{ valet_sh_node_version }}'"
+  shell: source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }}
+  args:
+    executable: /bin/bash
+  environment:
+    NVM_DIR: "{{ current_home }}/.nvm"
+
 - name: "workflows » neos » services » node | switch node version to '{{ valet_sh_node_version }}'"
-  shell: |
-    source {{ current_home }}/.nvm/nvm.sh
-    nvm alias default {{ valet_sh_node_version }}
+  shell: source {{ current_home }}/.nvm/nvm.sh && nvm alias default {{ valet_sh_node_version }}
   args:
     chdir: "{{ valet_current_path }}"
     executable: /bin/bash
