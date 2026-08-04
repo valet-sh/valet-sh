@@ -25,12 +25,12 @@
 
 - name: Remove valkey-server container
   containers.podman.podman_container:
-    name: "{{ current_service.service.name }}"
+    name: "vsh-{{ current_service.canonical }}"
     state: absent
 
 - name: Remove valkey-server volume
   containers.podman.podman_volume:
-    name: "{{ current_service.service.name }}-data"
+    name: "{{ current_service.service.name }}"
     state: absent
   when: "'--purge' in valet_cli_opts"
 
