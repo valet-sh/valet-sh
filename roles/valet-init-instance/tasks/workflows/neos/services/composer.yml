@@ -1,0 +1,45 @@
+##
+#   Copyright 2026 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "workflows » neos » services » composer | override composer version based on .valet-sh.yml"
+  ansible.builtin.set_fact:
+    valet_sh_composer_version: "{{ valet_sh_project_vars.services.composer.version }}"
+  when:
+    - valet_sh_project_vars.services is defined
+    - valet_sh_project_vars.services.composer is defined
+    - valet_sh_project_vars.services.composer.version is defined
+
+- block:
+    - name: "workflows » neos » services » composer | check if composer is installed"
+      vsh_bundle_install_state_info:
+        state: "present"
+        name: "composer{{ valet_sh_composer_version }}"
+      register: composer_installed
+
+    - name: "workflows » neos » services » composer | resolve composer service"
+      vsh_bundle_resolver:
+        name: "composer{{ valet_sh_composer_version }}"
+        current_os: "{{ current_os }}"
+      register: composer_install
+
+    - name: "workflows » neos » services » composer | include service-specific roles"
+      ansible.builtin.include_role:
+        name: "composer"
+      vars:
+        valet_resolved_service: "{{ composer_install }}"
+        valet_install_services: ["composer{{ valet_sh_composer_version }}"]
+      when: composer_installed.kinds | length == 0

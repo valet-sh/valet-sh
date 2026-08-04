@@ -18,6 +18,7 @@
 - ansible.builtin.include_tasks: services/php.yml
 - ansible.builtin.include_tasks: services/mysql.yml
 - ansible.builtin.include_tasks: services/node.yml
+- ansible.builtin.include_tasks: services/composer.yml
 
 - name: "include valet-service role to set defaults"
   ansible.builtin.include_role:
