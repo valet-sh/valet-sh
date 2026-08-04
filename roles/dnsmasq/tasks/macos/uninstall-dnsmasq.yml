@@ -18,21 +18,42 @@
 - name: "ensue dnsmasq is stopped"
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop dnsmasq"
 
-- name: "ensure dnsmasq is absent"
-  homebrew:
-    name: dnsmasq
-    state: absent
-
-- name: "ensure local dns is removed from '/etc/resolver/{{ dnsmasq_domain }}'"
-  ansible.builtin.lineinfile:
+- name: "remove dnsmasq domain resolver configuration"
+  ansible.builtin.file:
     path: "/etc/resolver/{{ dnsmasq_domain }}"
-    line: "nameserver 127.0.0.1"
     state: absent
   become: true
 
-- name: "ensure '/opt/homebrew/etc/dnsmasq.d/development-domain.conf' is absent"
-  file:
-    path: "/opt/homebrew/etc/dnsmasq.d/development-domain.conf"
+- name: "remove dnsmasq development domain configuration"
+  ansible.builtin.file:
+    path: "{{ valet_sh_homebrew_prefix }}/etc/dnsmasq.d/development-domain.conf"
+    state: absent
+  become: true
+
+- name: "remove dnsmasq port configuration"
+  ansible.builtin.lineinfile:
+    path: "{{ valet_sh_homebrew_prefix }}/etc/dnsmasq.conf"
+    line: "port=5354"
+    state: absent
+  become: true
+
+- name: "remove dnsmasq interfaces configuration"
+  ansible.builtin.lineinfile:
+    path: "{{ valet_sh_homebrew_prefix }}/etc/dnsmasq.conf"
+    regexp: "^interface="
+    state: absent
+  become: true
+
+- name: "remove dnsmasq bind-interfaces configuration"
+  ansible.builtin.lineinfile:
+    path: "{{ valet_sh_homebrew_prefix }}/etc/dnsmasq.conf"
+    line: "bind-interfaces"
+    state: absent
+  become: true
+
+- name: "uninstall dnsmasq"
+  homebrew:
+    name: dnsmasq
     state: absent
 
 - name: "Remove dnsmasq from installed services"
