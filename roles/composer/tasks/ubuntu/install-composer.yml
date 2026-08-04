@@ -15,10 +15,6 @@
 ##
 ---
 
-- name: Debug current_service
-  ansible.builtin.debug:
-    var: current_service
-
 - name: "ensure composer-{{ current_service.version }} is installed"
   ansible.builtin.get_url:
     url: https://getcomposer.org/composer-{{ current_service.version }}.phar
