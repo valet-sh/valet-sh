@@ -46,6 +46,19 @@
     loop_var: php_version_path_item
   become: true
 
+- name: "ensure php repository is removed from sources.list.d'"
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/php.list
+    state: absent
+  become: true
+
+- name: "ensure debsurorg-archive-keyring is removed"
+  ansible.builtin.apt:
+    name: debsuryorg-archive-keyring
+    purge: true
+    state: absent
+  become: true
+
 - name: "Remove vsh-{{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"

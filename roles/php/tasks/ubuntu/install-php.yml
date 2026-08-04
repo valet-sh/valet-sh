@@ -61,10 +61,6 @@
   ansible.builtin.set_fact:
     php_version: "{{ current_service.version }}"
 
-- name: debug current_service
-  ansible.builtin.debug:
-    var: current_service
-
 - name: "override default configuration for current php"
   ansible.builtin.include_tasks: override-config.yml
 

@@ -148,8 +148,3 @@
   ansible.builtin.set_fact:
     php_fpm_settings_additional: "{{ php_fpm_settings_additional_default }}"
   when: current_service.configuration.fpm_settings_additional is not defined
-
-
-- name: Debug current_service_configuration
-  ansible.builtin.debug:
-    var: current_service.configuration
