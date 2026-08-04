@@ -14,70 +14,25 @@
 #   limitations under the License.
 ##
 ---
-- name: "actions » partials » switch-target-db-host | set default my.cnf config path"
-  ansible.builtin.set_fact:
-    valet_db_mysql_target_config_file: "{{ current_home }}/.my.cnf"
 
-- name: "actions » partials » switch-target-db-host | override my.cnf config path"
+- name: "actions » partials » switch-target-db-host | resolve default database engine for family 'database'"
   ansible.builtin.set_fact:
-    valet_db_mysql_target_config_file: "{{ valet_packages_path_default }}/mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}/user/.my.cnf"
-  when:
-    - valet_sh_project_vars is defined
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mysql is defined
-    - valet_sh_project_vars.services.mysql.version is defined
-    - valet_sh_project_vars.services.mysql.version == 5.7
+    valet_db_canonical_name: "{{ (lookup('ansible.builtin.file', '/usr/local/valet-sh/etc/bundles.yml') | from_yaml).bundles.services.defaults.database }}"
+  when: valet_db_canonical_name is not defined
 
-- name: "actions » partials » switch-target-db-host | override my.cnf config path"
-  ansible.builtin.set_fact:
-    valet_db_mysql_target_config_file: "{{ valet_packages_path_default }}/mysql{{ valet_sh_project_vars.services.mysql.version | replace('.','') }}/user/.my.cnf"
-  when:
-    - valet_sh_project_vars is defined
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mysql is defined
-    - valet_sh_project_vars.services.mysql.version is defined
-    - valet_sh_project_vars.services.mysql.version == 8.0
+- name: "actions » partials » switch-target-db-host | fail when no default database engine for family 'database' could be resolved"
+  ansible.builtin.fail:
+    msg: "no default database engine for family 'database' could be resolved"
+  when: valet_db_canonical_name is not defined
 
-- name: "actions » partials » switch-target-db-host | override my.cnf config path"
-  ansible.builtin.set_fact:
-    valet_db_mysql_target_config_file: "{{ valet_packages_path_default }}/mariadb{{ valet_sh_project_vars.services.mariadb.version | replace('.','') }}/user/.my.cnf"
-  when:
-    - valet_sh_project_vars is defined
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mariadb is defined
-    - valet_sh_project_vars.services.mariadb.version is defined
-    - valet_sh_project_vars.services.mariadb.version == 10.4
+- name: "actions » partials » switch-target-db-host | resolve {{ valet_db_canonical_name }} service"
+  vsh_bundle_resolver:
+    name: "{{ valet_db_canonical_name }}"
+    current_os: "{{ current_os }}"
+  register: database_service
 
-- name: "actions » partials » switch-target-db-host | set default mysql client binary"
+- name: "actions » partials » switch-target-db-host | derive config file, client binary and connection info"
   ansible.builtin.set_fact:
-    valet_db_mysql_client_binary: "mysql"
-
-- name: "actions » partials » switch-target-db-host | override mysql client binary"
-  ansible.builtin.set_fact:
-    valet_db_mysql_client_binary: "mysql5.7"
-  when:
-    - valet_sh_project_vars is defined
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mysql is defined
-    - valet_sh_project_vars.services.mysql.version is defined
-    - valet_sh_project_vars.services.mysql.version == 5.7
-
-- name: "actions » partials » switch-target-db-host | override mysql client binary"
-  ansible.builtin.set_fact:
-    valet_db_mysql_client_binary: "mysql8.0"
-  when:
-    - valet_sh_project_vars is defined
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mysql is defined
-    - valet_sh_project_vars.services.mysql.version is defined
-    - valet_sh_project_vars.services.mysql.version == 8.0
-
-- name: "actions » partials » switch-target-db-host | override mysql client binary"
-  ansible.builtin.set_fact:
-    valet_db_mysql_client_binary: "mariadb10.4"
-  when:
-    - valet_sh_project_vars is defined
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.mariadb is defined
-    - valet_sh_project_vars.services.mariadb.version is defined
-    - valet_sh_project_vars.services.mariadb.version == 10.4
+    valet_db_mysql_target_config_file: "{{ database_service.services[0].configuration.base_path }}/user/.my.cnf"
+    valet_db_mysql_client_binary: "{{ database_service.services[0].name }}"
+    valet_db_mysql_port: "{{ database_service.services[0].configuration.ports.tcp }}"

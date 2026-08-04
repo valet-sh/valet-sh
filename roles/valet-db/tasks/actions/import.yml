@@ -43,6 +43,8 @@
   community.mysql.mysql_db:
     state: import
     config_file: "{{ valet_db_mysql_target_config_file }}"
+    login_host: "{{ '127.0.0.1' if current_os == 'ubuntu' or database_service.services is not defined else database_service.services[0].service.name + '.vsh' }}"
+    login_port: "{{ valet_db_mysql_port }}"
     config_overrides_defaults: true
     name: "{{ valet_db_name }}"
     target: "{{ valet_db_file }}"
