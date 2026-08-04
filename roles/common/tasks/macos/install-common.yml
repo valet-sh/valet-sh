@@ -90,6 +90,13 @@
         mode: "0755"
         force: true
 
+    - name: Download apple container uninstall script
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/apple/container/refs/tags/1.2.0/scripts/uninstall-container.sh"
+        dest: "/usr/local/bin/uninstall-container.sh"
+        mode: "0755"
+        force: true
+
     - name: Install apple container
       ansible.builtin.command:
         cmd: "installer -pkg /tmp/apple-container.pkg -target /"

@@ -32,6 +32,35 @@
     state: absent
   become: true
 
+- name: "unload LaunchAgent '{{ current_home}}/Library/LaunchAgents/com.apple.container.autostart.plist'"
+  ansible.builtin.shell: "launchctl unload {{ current_home }}/Library/LaunchAgents/com.apple.container.autostart.plist"
+
+- name: "ensure LaunchAgent '{{ current_home}}/Library/LaunchAgents/com.apple.container.autostart.plist' is absent"
+  ansible.builtin.file:
+    path: "{{ current_home }}/Library/LaunchAgents/com.apple.container.autostart.plist"
+    state: absent
+
+- name: "unload LaunchAgent '{{ current_home}}/Library/LaunchAgents/sh.valet.container.autostart.plist'"
+  ansible.builtin.shell: "launchctl unload {{ current_home }}/Library/LaunchAgents/sh.valet.container.autostart.plist"
+
+- name: "ensure LaunchAgent '{{ current_home}}/Library/LaunchAgents/sh.valet.container.autostart.plist' is absent"
+  ansible.builtin.file:
+    path: "{{ current_home }}/Library/LaunchAgents/sh.valet.container.autostart.plist"
+    state: absent
+
+- name: "ensure apple container is removed - data retained"
+  ansible.builtin.shell: "/usr/local/bin/uninstall-container.sh -k"
+  when: "'--purge' not in valet_cli_opts"
+
+- name: "ensure apple container is removed - data removed"
+  ansible.builtin.shell: "/usr/local/bin/uninstall-container.sh -d"
+  when: "'--purge' in valet_cli_opts"
+
+- name: "remove apple container uninstall script"
+  ansible.builtin.file:
+    path: "/usr/local/bin/uninstall-container.sh"
+    state: absent
+
 - name: Mark common as uninstalled
   vsh_bundle_state:
     action: "uninstalled"

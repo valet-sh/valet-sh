@@ -15,6 +15,12 @@
 ##
 ---
 
+- name: "ensure podman is uninstalled"
+  ansible.builtin.package:
+    name: "podman"
+    state: "absent"
+  become: true
+
 - name: Mark common as uninstalled
   vsh_bundle_state:
     action: "uninstalled"
