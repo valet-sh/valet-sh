@@ -34,6 +34,12 @@
     state: absent
   when: "'--purge' in valet_cli_opts"
 
+- name: Remove mailpit nginx vhost configuration
+  ansible.builtin.file:
+    path: "/etc/nginx/conf.d/mailpit.conf"
+    state: absent
+  become: true
+
 - name: Remove mailpit systemd service
   ansible.builtin.file:
     path: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"
