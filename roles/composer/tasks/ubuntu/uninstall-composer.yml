@@ -15,9 +15,21 @@
 ##
 ---
 
-- name: "Ensure composer2 is absent"
+- name: "ensure composer-{{ current_service.version }} is uninstalled"
   ansible.builtin.file:
-    path: "{{ composer2_bin }}"
+    path: "{{ current_service.configuration.phar_bin }}"
+    state: absent
+  become: true
+
+- name: "Remove symlink for default composer version"
+  ansible.builtin.file:
+    path: "{{ current_service.configuration.bin_path }}"
+    state: absent
+  become: true
+
+- name: "Remove symlink for default composer version"
+  ansible.builtin.file:
+    path: "/usr/local/bin/composer"
     state: absent
   become: true
 
