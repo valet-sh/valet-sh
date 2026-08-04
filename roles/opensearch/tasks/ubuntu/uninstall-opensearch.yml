@@ -25,7 +25,7 @@
 
 - name: "Remove vsh-{{ current_service.canonical }} container"
   containers.podman.podman_container:
-    name: "{{ current_service.canonical }}"
+    name: "vsh-{{ current_service.canonical }}"
     state: absent
 
 - name: "Remove vsh-{{ current_service.canonical }}-data volumes"
@@ -34,7 +34,7 @@
     state: absent
   loop:
     - "vsh-{{ current_service.canonical }}-data"
-    - "vsh-{{ current_service.canonical }}-plugins"
+    - "vsh-{{ current_service.canonical }}-plugins-{{ current_service.configuration.docker_image.split(':')[1] | replace('.','_') }}"
   loop_control:
     loop_var: current_volume_name
   when: "'--purge' in valet_cli_opts"
