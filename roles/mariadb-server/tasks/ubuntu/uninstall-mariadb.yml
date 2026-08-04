@@ -25,7 +25,7 @@
 
 - name: "Remove {{ current_service.service.name }} container"
   containers.podman.podman_container:
-    name: "{{ current_service.canonical }}"
+    name: "vsh-{{ current_service.canonical }}"
     state: absent
 
 - name: "Remove {{ current_service.service.name }}-data volume"
