@@ -44,6 +44,12 @@
     path: "{{ current_home }}/.config/systemd/user/default.target.wants/{{ current_service.service.name }}.service"
     state: absent
 
+- name: "Remove {{ current_service.service.name }} vhost configuration for rabbitmq management plugin"
+  ansible.builtin.file:
+    path: "/etc/nginx/conf.d/{{ current_service.canonical }}.conf"
+    state: absent
+  become: true
+
 - name: Remove rabbitmq image
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"
