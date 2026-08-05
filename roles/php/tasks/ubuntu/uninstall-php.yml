@@ -28,10 +28,20 @@
     state: stopped
   become: true
 
-- name: "ensure 'php{{ php_version }}-common' is absent"
+- name: "uninstall php{{ php_version }}-common"
   ansible.builtin.apt:
     name: "php{{ php_version }}-common"
+    state: absent
     purge: true
+  become: true
+
+- name: create specific php module list
+  ansible.builtin.set_fact:
+    php_specific_modules: "{{ php_modules | map('regex_replace', '^(.*)$', php_version_string + '-\\1') | list }}"
+
+- name: "uninstall {{ php_version_string }} modules"
+  ansible.builtin.apt:
+    name: "{{ php_specific_modules }}"
     state: absent
   become: true
 
@@ -42,6 +52,7 @@
   with_items:
     - "/etc/php/{{ php_version }}"
     - "/etc/apt/preferences.d/valet-sh-php{{ php_version | replace('.', '-') }}-xdebug"
+    - "/etc/php"
   loop_control:
     loop_var: php_version_path_item
   become: true
