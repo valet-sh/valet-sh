@@ -15,10 +15,59 @@
 ##
 ---
 
-- name: Remove certificate base directory
+- name: "ca | search for cert9.db files in user's home directory"
+  ansible.builtin.shell: "find {{ current_home }}/ -maxdepth 6 -name 'cert9.db' 2>/dev/null"
+  register: available_cert9_files_obj
+  become: true
+  changed_when: false
+
+- name: "ca | remove CA from browser cert9.db files"
+  ansible.builtin.shell: 'certutil -D -n "TechDivision Development CA" -d sql:{{ item | dirname }}'
+  with_items: "{{ available_cert9_files_obj.stdout_lines }}"
+  failed_when: false
+  become: true
+
+- name: "ca | check if directory '{{ current_home }}/snap' exists"
+  ansible.builtin.stat:
+    path: "{{ current_home }}/snap"
+  register: snap_directory_obj
+
+- block:
+    - name: "ca | search for cert9.db files in snap directory"
+      ansible.builtin.shell: "find {{ current_home }}/snap/ -maxdepth 7 -name 'cert9.db' 2>/dev/null"
+      register: available_cert9_files_snap_obj
+      become: true
+      changed_when: false
+
+    - name: "ca | remove CA from snap browser cert9.db files"
+      ansible.builtin.shell: 'certutil -D -n "TechDivision Development CA" -d sql:{{ item | dirname }}'
+      with_items: "{{ available_cert9_files_snap_obj.stdout_lines }}"
+      failed_when: false
+      become: true
+  when: snap_directory_obj.stat.exists | bool
+
+- name: "ca | remove copied CA-Certificate file from system store"
   ansible.builtin.file:
-    path: "{{ certificate_base_path }}"
+    path: "{{ certificate_trusted_root_ca_path }}/valet-sh_development_CA.crt"
     state: absent
+  register: ca_file_removed_obj
+  become: true
+
+- name: "ca | update ca certificates keystore after removal"
+  ansible.builtin.shell: "update-ca-certificates --fresh"
+  become: true
+  when: ca_file_removed_obj is changed
+
+- name: "ca | remove generated CA files and base directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ certificate_ca_cert_file }}"
+    - "{{ certificate_ca_key_file }}"
+    - "{{ certificate_ca_cert_path }}"
+    - "{{ certificate_server_cert_path }}"
+    - "{{ certificate_base_path }}"
   become: true
 
 - name: Mark certificate as uninstalled
