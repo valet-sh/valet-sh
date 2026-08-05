@@ -21,7 +21,9 @@
     state: absent
 
 - name: Ensure valet-sh/php is untapped
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} untap valet-sh/php"
+  community.general.homebrew_tap:
+    name: "valet-sh/php"
+    state: absent
 
 - name: "ensure Service '/Library/LaunchDaemons/limit.maxfiles.plist' is unloaded"
   ansible.builtin.shell: "launchctl unload /Library/LaunchDaemons/limit.maxfiles.plist"
@@ -31,6 +33,9 @@
     path: "/Library/LaunchDaemons/limit.maxfiles.plist"
     state: absent
   become: true
+
+- name: "ensure apple container is stopped"
+  ansible.builtin.shell: "container system stop"
 
 - name: "unload LaunchAgent '{{ current_home}}/Library/LaunchAgents/com.apple.container.autostart.plist'"
   ansible.builtin.shell: "launchctl unload {{ current_home }}/Library/LaunchAgents/com.apple.container.autostart.plist"
