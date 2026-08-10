@@ -96,6 +96,7 @@
         dest: "/usr/local/bin/uninstall-container.sh"
         mode: "0755"
         force: true
+      become: true
 
     - name: Install apple container
       ansible.builtin.command:
