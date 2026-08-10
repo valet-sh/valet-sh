@@ -15,35 +15,106 @@
 ##
 ---
 
-- name: "Ensure dnsmasq config files are absent"
-  ansible.builtin.file:
-    path: "{{ valet_sh_dnsmasq_conf_item }}"
-    state: absent
-  with_items:
-    - "{{ dnsmasq_conf_file }}"
-  loop_control:
-    loop_var: valet_sh_dnsmasq_conf_item
-  notify: Systemd | NetworkManager | reload
-  become: true
+- name: Uninstall NetworkManager dnsmasq config for Ubuntu jammy and noble
+  when:
+    - os_codename != "resolute"
+  block:
+    - name: "remove dnsmasq config for .{{ dnsmasq_domain }} domain"
+      ansible.builtin.file:
+        path: "{{ dnsmasq_conf_file }}"
+        state: absent
+      notify: Systemd | NetworkManager | reload
+      become: true
 
-- name: Enable dnsmasq absent in NetworkManager
-  ansible.builtin.lineinfile:
-    path: "/etc/NetworkManager/NetworkManager.conf"
-    state: absent
-    line: 'dns=dnsmasq'
-  notify: Systemd | NetworkManager | reload
-  become: true
+    - name: "remove dnsmasq config for .{{ dnsmasq_vsh_service_domain }} domain"
+      ansible.builtin.file:
+        path: "/etc/NetworkManager/dnsmasq.d/vsh.conf"
+        state: absent
+      notify: Systemd | NetworkManager | reload
+      become: true
 
-- name: "reset '../run/systemd/resolve/stub-resolv.conf' symlink"
-  ansible.builtin.file:
-    src: "../run/systemd/resolve/stub-resolv.conf"
-    dest: "/etc/resolv.conf"
-    state: link
-    force: true
-  notify: Systemd | NetworkManager | reload
-  become: true
+    - name: "disable dnsmasq in NetworkManager"
+      ansible.builtin.lineinfile:
+        path: "/etc/NetworkManager/NetworkManager.conf"
+        line: "dns=dnsmasq"
+        state: absent
+      notify: Systemd | NetworkManager | reload
+      become: true
 
-- name: "Remove dnsmasq from installed services"
+- name: Uninstall systemd-resolved dnsmasq config for Ubuntu resolute
+  when:
+    - os_codename == "resolute"
+  block:
+    - name: "stop and disable dnsmasq service"
+      ansible.builtin.systemd:
+        name: dnsmasq
+        state: stopped
+        enabled: no
+      become: true
+      ignore_errors: yes
+
+    - name: "remove dnsmasq domain config .{{ dnsmasq_domain }}"
+      ansible.builtin.file:
+        path: "/etc/dnsmasq.d/{{ dnsmasq_domain }}.conf"
+        state: absent
+      become: true
+
+    - name: "remove dnsmasq domain config .{{ dnsmasq_vsh_service_domain }}"
+      ansible.builtin.file:
+        path: "/etc/dnsmasq.d/{{ dnsmasq_vsh_service_domain }}.conf"
+        state: absent
+      become: true
+
+    - name: "remove dnsmasq port config"
+      ansible.builtin.lineinfile:
+        path: "/etc/dnsmasq.conf"
+        line: "port=5353"
+        state: absent
+      become: true
+
+    - name: "remove dnsmasq interfaces config"
+      ansible.builtin.lineinfile:
+        path: "/etc/dnsmasq.conf"
+        regexp: "^interface="
+        state: absent
+      become: true
+
+    - name: "remove dnsmasq bind-interfaces config"
+      ansible.builtin.lineinfile:
+        path: "/etc/dnsmasq.conf"
+        line: "bind-interfaces"
+        state: absent
+      become: true
+
+    - name: "remove systemd-resolved domain config .{{ dnsmasq_domain }}"
+      ansible.builtin.file:
+        path: "/etc/systemd/resolved.conf.d/{{ dnsmasq_domain }}.conf"
+        state: absent
+      notify: Systemd | SystemdResolved | restarted
+      become: true
+
+    - name: "remove systemd-resolved domain config .{{ dnsmasq_vsh_service_domain }}"
+      ansible.builtin.file:
+        path: "/etc/systemd/resolved.conf.d/{{ dnsmasq_vsh_service_domain }}.conf"
+        state: absent
+      notify: Systemd | SystemdResolved | restarted
+      become: true
+
+    - name: "uninstall dnsmasq package"
+      apt:
+        name: dnsmasq
+        state: absent
+      become: true
+
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers
+
+- name: "Mark dnsmasq as uninstalled in the services file"
   vsh_bundle_state:
     action: "uninstalled"
+    canonical_names: "dnsmasq"
+
+- name: "Mark dnsmasq as disabled in the services file"
+  vsh_bundle_state:
+    action: "disabled"
     canonical_names: "dnsmasq"
