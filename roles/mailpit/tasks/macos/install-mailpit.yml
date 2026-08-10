@@ -70,3 +70,8 @@
   vsh_bundle_state:
     action: "installed"
     canonical_names: "{{ current_service.canonical }}"
+
+- name: "Mark mailpit as enabled in the services file"
+  vsh_bundle_state:
+    action: "enabled"
+    canonical_names: "mailpit"
