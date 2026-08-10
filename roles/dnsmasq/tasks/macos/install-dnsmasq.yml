@@ -72,3 +72,8 @@
   vsh_bundle_state:
     action: "installed"
     canonical_names: "dnsmasq"
+
+- name: "Mark dnsmasq as enabled in the services file"
+  vsh_bundle_state:
+    action: "enabled"
+    canonical_names: "dnsmasq"
