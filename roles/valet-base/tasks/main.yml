@@ -65,6 +65,24 @@
     mode: "0755"
   become: true
 
+- name: "check if '{{ valet_etc_path }}/services.yml' from vsh 2.x exists"
+  stat:
+    path: "{{ valet_etc_path }}/services.yml"
+  register: vsh_migrate_etc_legacy_services_file_obj
+
+- name: "check if '{{ valet_etc_services_file }}' from vsh 3.x exists"
+  stat:
+    path: "{{ valet_etc_services_file }}"
+  register: vsh_migrate_etc_services_file_obj
+
+- name: "run migration"
+  include_tasks: "migrate/main.yml"
+  when:
+    - vsh_migrate_etc_legacy_services_file_obj.stat.exists|bool
+    - not vsh_migrate_etc_services_file_obj.stat.exists|bool
+
+- fail:
+
 - name: "ensure valet bundle file exists"
   ansible.builtin.template:
     src: "bundles.yml.j2"
