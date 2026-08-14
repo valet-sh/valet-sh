@@ -80,7 +80,7 @@
   when:
     - vsh_migrate_etc_legacy_services_file_obj.stat.exists|bool
     - not vsh_migrate_etc_services_file_obj.stat.exists|bool
-    - vsh_migrate|bool
+    - vsh_migrate|default(false)|bool
 
 - name: "ensure valet bundle file exists"
   ansible.builtin.template:
