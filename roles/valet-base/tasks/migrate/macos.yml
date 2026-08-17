@@ -20,6 +20,7 @@
   with_items:
     - dnsmasq
     - nginx
+  ignore_errors: true
 
 - name: "ensure all brew services are stopped"
   shell: "/usr/local/bin/brew_x86 services stop {{ item }}"
@@ -55,6 +56,7 @@
     - vsh-php84
     - vsh-php85
     - vsh-valkey8
+  ignore_errors: true
 
 - name: ensure brew_x86 is uninstalled
   ansible.builtin.shell:
@@ -68,11 +70,13 @@
   shell: "/opt/homebrew/bin/brew services stop {{ item }}"
   with_items:
     - rabbitmq
+  ignore_errors: true
 
 - name: "ensure old services are uninstalled"
   shell: "/opt/homebrew/bin/brew uninstall {{ item }}"
   with_items:
     - rabbitmq
+  ignore_errors: true
 
 - name: "remove vsh related files in '/usr/local/bin/'"
   file:
