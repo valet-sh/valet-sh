@@ -91,7 +91,7 @@
     force: false
     mode: "0644"
 
-- name: "include valet config file"
+- name: "include valet config file '{{ valet_etc_config_file }}'"
   ansible.builtin.include_vars:
     file: "{{ valet_etc_config_file }}"
     name: valet_sh_config

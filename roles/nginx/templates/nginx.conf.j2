@@ -43,8 +43,10 @@ http {
 
 {% if current_os == 'mac' %}
     resolver 127.0.0.1:2053 valid=10s ipv6=off;
-{% else %}
+{% elseif current_os == 'ubuntu' and os_codename == "resolute" %}
     resolver 127.0.0.1:5353 valid=10s ipv6=off;
+{% else %}
+    resolver 127.0.1.1:53 valid=10s ipv6=off;
 {% endif %}
 
     gzip on;
@@ -80,8 +82,10 @@ stream {
 
 {% if current_os == 'mac' %}
     resolver 127.0.0.1:2053 valid=10s ipv6=off;
-{% else %}
+{% elseif current_os == 'ubuntu' and os_codename == "resolute" %}
     resolver 127.0.0.1:5353 valid=10s ipv6=off;
+{% else %}
+    resolver 127.0.1.1:53 valid=10s ipv6=off;
 {% endif %}
 
     include {{ valet_sh_prefix }}/etc/nginx/stream.d/*.conf;
