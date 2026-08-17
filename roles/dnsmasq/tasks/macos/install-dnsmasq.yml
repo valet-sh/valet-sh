@@ -21,8 +21,7 @@
     state: present
 
 - name: "ensure 'dnsmasq' is not running as root"
-  shell: "/opt/homebrew/bin/brew services stop dnsmasq"
-  become: true
+  shell: "sudo /opt/homebrew/bin/brew services stop dnsmasq"
   ignore_errors: true
 
 - name: "ensure /etc/resolver directory exists"

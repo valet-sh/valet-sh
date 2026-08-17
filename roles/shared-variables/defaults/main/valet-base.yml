@@ -59,6 +59,7 @@ valet_sh_sudo_commands:
   - "{{ valet_sh_homebrew_bin }} services start nginx"
   - "{{ valet_sh_homebrew_bin }} services stop nginx"
   - "{{ valet_sh_homebrew_bin }} services restart nginx"
+  - "{{ valet_sh_homebrew_bin }} services stop dnsmasq"
 
 available_php_versions_alias_mapping:
   - aliases:
