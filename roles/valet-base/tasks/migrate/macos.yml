@@ -111,6 +111,8 @@
     - default-mysql
     - default-mysqladmin
     - default-mysqldump
+    - php
+    - default-php
     - mysqldump
     - mysqldump5.7
     - mysqldump8.0
