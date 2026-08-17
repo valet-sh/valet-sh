@@ -20,6 +20,10 @@
     name: dnsmasq
     state: present
 
+- name: "ensure 'dnsmasq' is not running as root"
+  shell: "sudo /opt/homebrew/bin/brew services stop dnsmasq"
+  ignore_errors: true
+
 - name: "ensure /etc/resolver directory exists"
   ansible.builtin.file:
     path: /etc/resolver
