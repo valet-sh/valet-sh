@@ -85,14 +85,14 @@
   block:
     - name: Download apple container installer
       ansible.builtin.get_url:
-        url: "https://github.com/apple/container/releases/download/1.2.0/container-1.2.0-installer-signed.pkg"
+        url: "https://github.com/apple/container/releases/download/1.2.2/container-1.2.2-installer-signed.pkg"
         dest: "/tmp/apple-container.pkg"
         mode: "0755"
         force: true
 
     - name: Download apple container uninstall script
       ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/apple/container/refs/tags/1.2.0/scripts/uninstall-container.sh"
+        url: "https://raw.githubusercontent.com/apple/container/refs/tags/1.2.2/scripts/uninstall-container.sh"
         dest: "/usr/local/bin/uninstall-container.sh"
         mode: "0755"
         force: true
