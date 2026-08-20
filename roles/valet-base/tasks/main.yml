@@ -26,31 +26,6 @@
   loop_control:
     loop_var: current_valet_base_dir
 
-- name: "get stat for {{ valet_etc_links_file }}"
-  ansible.builtin.stat:
-    path: "{{ valet_etc_links_file }}"
-  register: valet_etc_links_file_obj
-
-- name: "transform object into nice yaml output"
-  ansible.builtin.set_fact:
-    valet_links_list_stub: "{{ valet_links_stub | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
-  when: not valet_etc_links_file_obj.stat.exists
-
-- name: "write new links.yml file"
-  ansible.builtin.copy:
-    content: "{{ valet_links_list_stub }}"
-    dest: "{{ valet_etc_links_file }}"
-  when: not valet_etc_links_file_obj.stat.exists
-
-- name: "ensure valet links file exists"
-  ansible.builtin.file:
-    dest: "{{ valet_etc_links_file }}"
-    owner: "{{ current_user }}"
-    group: "{{ current_group }}"
-    state: "{{ 'file' if valet_etc_links_file_obj.stat.exists else 'touch' }}"
-    mode: "0755"
-  become: true
-
 - name: "get stat for {{ valet_etc_config_file }}"
   ansible.builtin.stat:
     path: "{{ valet_etc_config_file }}"
@@ -75,12 +50,38 @@
     path: "{{ valet_etc_services_file }}"
   register: vsh_migrate_etc_services_file_obj
 
+- name: "get stat for {{ valet_etc_links_file }}"
+  ansible.builtin.stat:
+    path: "{{ valet_etc_links_file }}"
+  register: valet_etc_links_file_obj
+
 - name: "run migration"
   include_tasks: "migrate/main.yml"
   when:
     - vsh_migrate_etc_legacy_services_file_obj.stat.exists|bool
     - not vsh_migrate_etc_services_file_obj.stat.exists|bool
     - vsh_migrate|default(false)|bool
+
+- name: "transform object into nice yaml output"
+  ansible.builtin.set_fact:
+    valet_links_list_stub: "{{ valet_links_stub | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
+  when: not valet_etc_links_file_obj.stat.exists
+
+- name: "write new links.yml file"
+  ansible.builtin.copy:
+    content: "{{ valet_links_list_stub }}"
+    dest: "{{ valet_etc_links_file }}"
+  when: not valet_etc_links_file_obj.stat.exists
+
+- name: "ensure valet links file exists"
+  ansible.builtin.file:
+    dest: "{{ valet_etc_links_file }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    state: "{{ 'file' if valet_etc_links_file_obj.stat.exists else 'touch' }}"
+    mode: "0755"
+  become: true
+
 
 - name: "ensure valet bundle file exists"
   ansible.builtin.template:

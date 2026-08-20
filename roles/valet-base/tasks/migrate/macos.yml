@@ -141,6 +141,29 @@
   with_items:
     - /usr/local/bin/brew_x86
 
+- name: "cleanup old links"
+  when: valet_etc_links_file_obj.stat.exists
+  block:
+    - name: "| include variables from '{{ valet_etc_links_file }}' file"
+      ansible.builtin.include_vars:
+        file: "{{ valet_etc_links_file }}"
+        name: valet_migrate_links
+
+    - name: "ensure all old nginx vhost configs are deleted"
+      file:
+        path: "/usr/local/etc/nginx/conf.d/{{ valet_migrate_links_valet_links_links_index_item }}.{{ dnsmasq_domain }}.conf"
+        state: absent
+      with_items: "{{ valet_migrate_links.valet_links.links_index }}"
+      loop_control:
+        loop_var: valet_migrate_links_valet_links_links_index_item
+      become: true
+
+    - name: "ensure '{{ valet_etc_links_file }}' is deleted"
+      file:
+        path: "{{ valet_etc_links_file }}"
+        state: absent
+      become: true
+
 - name: "remove '{{ valet_etc_path }}/services.yml'"
   file:
     path: "{{ valet_etc_path }}/services.yml"
