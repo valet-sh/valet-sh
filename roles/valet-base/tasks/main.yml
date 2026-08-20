@@ -45,11 +45,6 @@
     path: "{{ valet_etc_path }}/.migrate-v2"
   register: vsh_etc_v2_migrate_file_obj
 
-- name: "get stat for {{ valet_etc_links_file }}"
-  ansible.builtin.stat:
-    path: "{{ valet_etc_links_file }}"
-  register: valet_etc_links_file_obj
-
 - name: "run migration"
   include_tasks: "migrate/main.yml"
   when:
@@ -66,6 +61,11 @@
     dest: "{{ valet_etc_links_file }}"
   when: not valet_etc_links_file_obj.stat.exists
 
+- name: "get stat for {{ valet_etc_links_file }}"
+  ansible.builtin.stat:
+    path: "{{ valet_etc_links_file }}"
+  register: valet_etc_links_file_obj
+
 - name: "ensure valet links file exists"
   ansible.builtin.file:
     dest: "{{ valet_etc_links_file }}"
@@ -74,7 +74,6 @@
     state: "{{ 'file' if valet_etc_links_file_obj.stat.exists else 'touch' }}"
     mode: "0755"
   become: true
-
 
 - name: "ensure valet bundle file exists"
   ansible.builtin.template:

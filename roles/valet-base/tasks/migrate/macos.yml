@@ -149,6 +149,11 @@
     creates: /usr/local/valet-sh/packages-migrated-v2
   become: true
 
+- name: "get stat for {{ valet_etc_links_file }}"
+  ansible.builtin.stat:
+    path: "{{ valet_etc_links_file }}"
+  register: valet_etc_links_file_obj
+
 - name: "cleanup old links"
   when: valet_etc_links_file_obj.stat.exists
   block:
