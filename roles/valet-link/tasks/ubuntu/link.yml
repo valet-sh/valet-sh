@@ -116,7 +116,7 @@
 
 - name: "link | set resolved php version"
   ansible.builtin.set_fact:
-    current_php_version: "{{ php_resolve.services[0].canonical }}"
+    current_php_version: "{{ php_resolve.services[0] }}"
 
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
@@ -132,18 +132,13 @@
       ansible.builtin.set_fact:
         restart_php_service: "{{ current_php_version[:3] }}{{ current_php_version[-2:] | join('.') }}-fpm"
 
-    - name: "actions » restart | restart {{ restart_php_service }} (running as root)"
-      ansible.builtin.systemd:
-        name: "{{ restart_php_service }}"
-      become: true
-      failed_when: false
-      when: current_php_version in valet_sh_service_privileged_services
-
     - name: "actions » restart | restart {{ restart_php_service }}"
       ansible.builtin.systemd:
         name: "{{ restart_php_service }}"
-      failed_when: false
-      when: current_php_version not in valet_sh_service_privileged_services
+        state: "restarted"
+        scope: "{{ current_php_version.service.scope }}"
+      become: "{{ 'true' if current_service.service.scope == 'system' else 'false' }}"
+
   when: current_php_version is defined
 
 - name: "link | find a matching application template"
