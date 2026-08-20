@@ -6,15 +6,9 @@ See https://valet.sh
 
 ## Installation
 
-for Ubuntu and MacOS (Intel)
+for Ubuntu and MacOS (ARM64)
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/valet-sh/install/master/install.sh)
-```
-
-At the moment valet.sh on Apple m1 requires rosetta2:
-```bash
-/usr/sbin/softwareupdate --install-rosetta --agree-to-license
-bash <(curl -fsSL https://raw.githubusercontent.com/valet-sh/install/master/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/valet-sh/install/3.x/install.sh)
 ```
 
 ## Usage

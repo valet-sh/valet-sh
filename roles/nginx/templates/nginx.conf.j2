@@ -69,9 +69,12 @@ http {
                 image/svg+xml
                 application/javascript;
 
-{% for (valet_sh_php_socket_item_key,valet_sh_php_socket_item_value) in valet_sh_php_sockets.items() %}
-    upstream {{ valet_sh_php_socket_item_key }} {
-        server unix:{{ valet_sh_php_socket_item_value }};
+{% for php_version in valet_sh_bundle_definitions.services.php.versions %}
+{% set php_bundle_file = valet_dist_path_default + '/roles/shared-variables/defaults/main/bundles/php/' + php_version + '.yml' %}
+{% set php_bundle = lookup('file', php_bundle_file) | from_yaml %}
+{% set php_socket = ('/var/run/php/' + php_bundle.service.name.ubuntu + '.sock') if current_os == 'ubuntu' else ('/tmp/' + php_bundle.service.name.mac + '.sock') %}
+    upstream php{{ php_version | replace('.', '') }} {
+        server unix:{{ php_socket }};
     }
 {% endfor %}
 
