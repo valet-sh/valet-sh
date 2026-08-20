@@ -38,6 +38,7 @@
     - elasticsearch7
     - elasticsearch8
   become: true
+  ignore_errors: true
 
 - name: "remove vsh systemd service files"
   file:
