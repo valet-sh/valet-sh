@@ -14,6 +14,7 @@ skip-external-locking
 
 {% if current_service.version | float >= 8.4 %}
 mysql_native_password=ON
+restrict_fk_on_non_standard_key=OFF
 {% endif %}
 
 key_buffer_size		= 16M
