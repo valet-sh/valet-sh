@@ -40,28 +40,22 @@
 - name: "check if php_version variable is set"
   ansible.builtin.fail:
     msg: "php_version variable is not set"
-  when: php_version is not defined or php_version|length==0
+  when: php_version is not defined or php_version|string|length==0
 
-- block:
-    - name: "check if php_version string mapped to origin"
-      ansible.builtin.set_fact:
-        php_version: "{{ valet_sh_available_php_versions_alias_mapping_item.0.origin }}"
-      when: php_version in valet_sh_available_php_versions_alias_mapping_item.1
-      with_subelements:
-        - "{{ available_php_versions_alias_mapping }}"
-        - aliases
-      loop_control:
-        loop_var: valet_sh_available_php_versions_alias_mapping_item
-  when: "not php_version in available_php_versions"
+- name: "check if requested php version is available"
+  vsh_bundle_resolver:
+    name: "php{{ php_version | regex_replace('(?i)^php', '') }}"
+    current_os: "{{ current_os }}"
+  register: php_resolve
 
 - name: "fail when php version is not available"
   ansible.builtin.fail:
     msg: "requested PHP version {{ php_version }} is not available!"
-  when: "not php_version in available_php_versions"
+  when: php_resolve.services | length == 0
 
 - name: set php_version_number
   ansible.builtin.set_fact:
-    php_version_number: "{{ php_version[-2:-1] }}{{ php_version[-1] }}"
+    php_version_number: "{{ php_resolve.services[0].version }}"
 
 - ansible.builtin.include_tasks: on.yml
   when: valet_action == "on"
