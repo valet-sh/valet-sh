@@ -50,6 +50,11 @@
   when:
     - vsh_etc_v2_migrate_file_obj.stat.exists|bool
 
+- name: "get stat for {{ valet_etc_links_file }}"
+  ansible.builtin.stat:
+    path: "{{ valet_etc_links_file }}"
+  register: valet_etc_links_file_obj
+
 - name: "transform object into nice yaml output"
   ansible.builtin.set_fact:
     valet_links_list_stub: "{{ valet_links_stub | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}"
@@ -60,11 +65,6 @@
     content: "{{ valet_links_list_stub }}"
     dest: "{{ valet_etc_links_file }}"
   when: not valet_etc_links_file_obj.stat.exists
-
-- name: "get stat for {{ valet_etc_links_file }}"
-  ansible.builtin.stat:
-    path: "{{ valet_etc_links_file }}"
-  register: valet_etc_links_file_obj
 
 - name: "ensure valet links file exists"
   ansible.builtin.file:
