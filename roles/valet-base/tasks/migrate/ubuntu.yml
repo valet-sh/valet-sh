@@ -150,6 +150,8 @@
   ansible.builtin.shell:
     cmd: mv /usr/local/valet-sh/packages /usr/local/valet-sh/packages-migrated-v2
     executable: /bin/bash
+  args:
+    creates: /usr/local/valet-sh/packages-migrated-v2
   become: true
 
 - name: "cleanup old links"
@@ -178,5 +180,11 @@
 - name: "remove '{{ valet_etc_path }}/services.yml'"
   file:
     path: "{{ valet_etc_path }}/services.yml"
+    state: absent
+  become: true
+
+- name: "remove '{{ valet_etc_path }}/.migrate-v2'"
+  file:
+    path: "{{ valet_etc_path }}/.migrate-v2"
     state: absent
   become: true

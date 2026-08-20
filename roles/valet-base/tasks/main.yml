@@ -40,15 +40,10 @@
     mode: "0755"
   become: true
 
-- name: "check if '{{ valet_etc_path }}/services.yml' from vsh 2.x exists"
+- name: "check if '{{ valet_etc_path }}/.migrate-v2' flag exists"
   stat:
-    path: "{{ valet_etc_path }}/services.yml"
-  register: vsh_migrate_etc_legacy_services_file_obj
-
-- name: "check if '{{ valet_etc_services_file }}' from vsh 3.x exists"
-  stat:
-    path: "{{ valet_etc_services_file }}"
-  register: vsh_migrate_etc_services_file_obj
+    path: "{{ valet_etc_path }}/.migrate-v2"
+  register: vsh_etc_v2_migrate_file_obj
 
 - name: "get stat for {{ valet_etc_links_file }}"
   ansible.builtin.stat:
@@ -58,9 +53,7 @@
 - name: "run migration"
   include_tasks: "migrate/main.yml"
   when:
-    - vsh_migrate_etc_legacy_services_file_obj.stat.exists|bool
-    - not vsh_migrate_etc_services_file_obj.stat.exists|bool
-    - vsh_migrate|default(false)|bool
+    - vsh_etc_v2_migrate_file_obj.stat.exists|bool
 
 - name: "transform object into nice yaml output"
   ansible.builtin.set_fact:
