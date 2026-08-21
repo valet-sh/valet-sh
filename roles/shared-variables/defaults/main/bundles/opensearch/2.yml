@@ -15,6 +15,7 @@ configuration:
   docker_image: "docker.io/opensearchproject/opensearch:2.19.5"
   limits:
     memory: "4g"
+    memory_fraction: 50
     cpus: "2"
   ports:
     http: 9222

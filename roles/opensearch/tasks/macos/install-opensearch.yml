@@ -75,8 +75,11 @@
     arch: "{{ current_service.configuration.arch | default(omit) }}"
     env:
       - "discovery.type=single-node"
-      - "OPENSEARCH_JAVA_OPTS=-Xms{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 75 * 1024) | int }}m -Xmx{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 75 * 1024) | int }}m"
+      - "OPENSEARCH_JAVA_OPTS=-Xms{{ opensearch_heap_mb }}m -Xmx{{ opensearch_heap_mb }}m"
   vars:
+    opensearch_heap_mb: >-
+      {{ current_service.configuration.limits.memory | default('2g')
+         | container_process_memory_mb(max_fraction=(current_service.configuration.limits.memory_fraction | default(50) | int) / 100) }}
     opensearch_base_volumes:
       - "vsh-{{ current_service.canonical }}-data:/usr/share/opensearch/data"
       - "{{ current_service.configuration.base_path }}/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:Z"

@@ -16,6 +16,7 @@ configuration:
   arch: "amd64"
   limits:
     memory: "2g"
+    memory_fraction: 50
     cpus: "1"
   ports:
     http: 9206

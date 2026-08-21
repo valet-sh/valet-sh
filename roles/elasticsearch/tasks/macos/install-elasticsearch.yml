@@ -74,9 +74,12 @@
     arch: "{{ current_service.configuration.arch | default(omit) }}"
     env:
       - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 60 * 1024) | int }}m -Xmx{{ (current_service.configuration.limits.memory | default('2g') | lower | replace('g', '') | int / 100 * 60 * 1024) | int }}m"
+      - "ES_JAVA_OPTS=-Xms{{ elasticsearch_heap_mb }}m -Xmx{{ elasticsearch_heap_mb }}m"
       - "xpack.security.enabled=false"
   vars:
+    elasticsearch_heap_mb: >-
+      {{ current_service.configuration.limits.memory | default('2g')
+         | container_process_memory_mb(max_fraction=(current_service.configuration.limits.memory_fraction | default(50) | int) / 100) }}
     elasticsearch_base_volumes:
       - "vsh-{{ current_service.canonical }}-data:/usr/share/elasticsearch/data"
       - "{{ current_service.configuration.base_path }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z"
