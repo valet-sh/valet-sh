@@ -17,5 +17,4 @@
 
 apple_container_version: "1.2.2"
 apple_container_download_url: "https://github.com/apple/container/releases/download/{{ apple_container_version }}/container-{{ apple_container_version }}-installer-signed.pkg"
-apple_container_update_download_url: "https://raw.githubusercontent.com/apple/container/refs/tags/{{ apple_container_version }}/scripts/update-container.sh"
 apple_container_uninstall_download_url: "https://raw.githubusercontent.com/apple/container/refs/tags/{{ apple_container_version }}/scripts/uninstall-container.sh"
