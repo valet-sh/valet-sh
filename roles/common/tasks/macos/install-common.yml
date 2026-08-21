@@ -80,23 +80,38 @@
     path: "/usr/local/bin/container"
   register: container_install_state_obj
 
-- name: install apple container when absent
-  when: not container_install_state_obj.stat.exists|bool
+- name: check apple container version
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/container --version"
+  register: container_version_obj
+  failed_when: false
+  changed_when: false
+  when: container_install_state_obj.stat.exists|bool
+
+- name: install apple container when absent or outdated
+  when: |
+    not container_install_state_obj.stat.exists|bool or
+    (container_version_obj.stdout is defined and
+     container_version_obj.stdout is not search(apple_container_version))
   block:
     - name: Download apple container installer
       ansible.builtin.get_url:
-        url: "https://github.com/apple/container/releases/download/1.2.2/container-1.2.2-installer-signed.pkg"
+        url: "https://github.com/apple/container/releases/download/{{ apple_container_version }}/container-{{ apple_container_version }}-installer-signed.pkg"
         dest: "/tmp/apple-container.pkg"
         mode: "0755"
         force: true
 
     - name: Download apple container uninstall script
       ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/apple/container/refs/tags/1.2.2/scripts/uninstall-container.sh"
+        url: "https://raw.githubusercontent.com/apple/container/refs/tags/{{ apple_container_version }}/scripts/uninstall-container.sh"
         dest: "/usr/local/bin/uninstall-container.sh"
         mode: "0755"
         force: true
       become: true
+
+    - name: Stop apple container if already installed but outdated
+      ansible.builtin.shell: "container system stop"
+      when: container_install_state_obj.stat.exists|bool
 
     - name: Install apple container
       ansible.builtin.command:
@@ -109,6 +124,12 @@
     - name: Create apple container dns
       command: container system dns create vsh
       become: true
+      when: not container_install_state_obj.stat.exists|bool
+
+    - name: Remove apple container installer
+      ansible.builtin.file:
+        path: "/tmp/apple-container.pkg"
+        state: absent
 
 - name: "ensure '{{ current_home }}/Library/LaunchAgents' exists"
   ansible.builtin.file:
