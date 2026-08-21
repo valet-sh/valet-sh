@@ -13,6 +13,9 @@ service:
 
 configuration:
   docker_image: "docker.io/library/mysql:8.4"
+  limits:
+    memory: "4g"
+    cpus: "2"
   ports:
     tcp: 3309
   base_path: "/usr/local/valet-sh/packages/mysql84"

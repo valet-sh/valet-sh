@@ -13,6 +13,9 @@ service:
 
 configuration:
   docker_image: "docker.io/library/mariadb:10.6"
+  limits:
+    memory: "4g"
+    cpus: "2"
   ports:
     tcp: 3319
   base_path: "/usr/local/valet-sh/packages/mariadb106"
