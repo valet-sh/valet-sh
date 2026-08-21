@@ -13,6 +13,9 @@ service:
 
 configuration:
   docker_image: "docker.io/library/mysql:5.7"
+  limits:
+    memory: "4g"
+    cpus: "2"
   arch: "amd64"
   ports:
     tcp: 3307
