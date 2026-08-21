@@ -116,7 +116,8 @@
 
 - name: "link | set resolved php version"
   ansible.builtin.set_fact:
-    current_php_version: "{{ php_resolve.services[0] }}"
+    current_php_version: "{{ php_resolve.services[0].canonical }}"
+    current_php_service: "{{ php_resolve.services[0] }}"
 
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
@@ -130,19 +131,15 @@
     cert_prefix: "{{ link_name }}"
 
 - block:
-    - name: Set fact for restart_php_service
-      ansible.builtin.set_fact:
-        restart_php_service: "vsh-{{ current_php_version }}"
-
-    - name: "actions » restart | restart {{ restart_php_service }} (running as root)"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ restart_php_service }}"
+    - name: "actions » restart | restart {{ current_php_service.service.name }} (running as root)"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin_sudo }} services restart {{ current_php_service.service.name }}"
       failed_when: false
-      when: current_php_version.service.scope == 'system'
+      when: current_php_service.service.scope == 'system'
 
-    - name: "actions » restart | restart {{ restart_php_service }}"
-      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ restart_php_service }}"
+    - name: "actions » restart | restart {{ current_php_service.service.name }}"
+      ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart {{ current_php_service.service.name }}"
       failed_when: false
-      when: current_php_version.service.scope != 'system'
+      when: current_php_service.service.scope != 'system'
   when: current_php_version is defined
 
 - name: "link | find a matching application template"
