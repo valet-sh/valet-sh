@@ -24,7 +24,7 @@ ExecStart=/usr/bin/podman run \
 {% endfor %}
 {% endif %}
     --network host \
-    --env "ES_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory }} -Xmx{{ current_service.configuration.limits.memory }}" \
+    --env "OPENSEARCH_JAVA_OPTS=-Xms{{ current_service.configuration.limits.memory }} -Xmx{{ current_service.configuration.limits.memory }}" \
     --env "OPENSEARCH_INITIAL_ADMIN_PASSWORD=admin" \
     {{ current_service.configuration.docker_image }}
 ExecReload=/usr/bin/podman restart vsh-{{ current_service.canonical }}
