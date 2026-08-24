@@ -40,14 +40,14 @@ def main():
 
             for name in installed_item:
 
-                is_default = '1' if name in active_defaults else '-'
+                is_default = '✓' if name in active_defaults else '✘'
+                state = '✓' if states.get(name) else '✘'
                 table_rows.append([
                     row_type,
                     name,
                     is_default,
-                    states.get(name, '-')
-                ])
-
+                    state
+               ])
 
         module.exit_json(changed=False, table_rows=table_rows)
 
