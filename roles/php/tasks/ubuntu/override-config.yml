@@ -22,12 +22,6 @@
 - name: set php_modules variable
   ansible.builtin.set_fact:
     php_modules: "{{ current_service.configuration.modules }}"
-  when: current_service.configuration.modules is defined
-
-- name: reset php_modules variable
-  ansible.builtin.set_fact:
-    php_modules: "{{ php_modules_default }}"
-  when: current_service.configuration.modules is not defined
 
 - name: set php_version_string variable
   ansible.builtin.set_fact:
@@ -38,16 +32,6 @@
   ansible.builtin.set_fact:
     php_version_string: "{{ php_version_string_default }}"
   when: current_service.version is not defined
-
-- name: set php_error_log_path variable
-  ansible.builtin.set_fact:
-    php_error_log_path: "{{ current_service.configuration.error_log_path }}"
-  when: current_service.configuration.error_log_path is defined
-
-- name: reset php_error_log_path variable
-  ansible.builtin.set_fact:
-    php_error_log_path: "{{ php_error_log_path_default }}"
-  when: current_service.configuration.error_log_path is not defined
 
 - name: set php_error_log_path variable
   ansible.builtin.set_fact:
@@ -72,12 +56,6 @@
 - name: set php_cli_settings variable
   ansible.builtin.set_fact:
     php_cli_settings: "{{ current_service.configuration.cli_settings }}"
-  when: current_service.configuration.cli_settings is defined
-
-- name: reset php_cli_settings variable
-  ansible.builtin.set_fact:
-    php_cli_settings: "{{ php_cli_settings_default }}"
-  when: current_service.configuration.cli_settings is not defined
 
 - name: set php_cli_settings_additional variable
   ansible.builtin.set_fact:
@@ -87,12 +65,12 @@
 - name: reset php_cli_settings_additional variable
   ansible.builtin.set_fact:
     php_cli_settings_additional: "{{ php_cli_settings_additional_default }}"
-  when: current_service.configuration._cli_settings_additional is not defined
+  when: current_service.configuration.cli_settings_additional is not defined
 
 - name: set php_fpm_conf_path variable
   ansible.builtin.set_fact:
     php_fpm_conf_path: "{{ current_service.configuration.fpm_conf_path }}"
-  when: current_service.configuration.cli_conf_path is defined
+  when: current_service.configuration.fpm_conf_path is defined
 
 - name: reset php_fpm_conf_path variable
   ansible.builtin.set_fact:
@@ -109,16 +87,6 @@
     php_fpm_pool_config: "{{ php_fpm_pool_config_default }}"
   when: current_service.configuration.fpm_pool_config is not defined
 
-- name: set php_fpm_pool_config variable
-  ansible.builtin.set_fact:
-    php_fpm_pool_config: "{{ current_service.configuration.fpm_pool_config }}"
-  when: current_service.configuration.fpm_pool_config is defined
-
-- name: reset php_fpm_pool_config variable
-  ansible.builtin.set_fact:
-    php_fpm_pool_config: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
-  when: current_service.configuration.fpm_pool_config is not defined
-
 - name: set php_fpm_pool_configuration variable
   ansible.builtin.set_fact:
     php_fpm_pool_configuration: "{{ current_service.configuration.fpm_pool_configuration }}"
@@ -132,12 +100,6 @@
 - name: set php_fpm_settings variable
   ansible.builtin.set_fact:
     php_fpm_settings: "{{ current_service.configuration.fpm_settings }}"
-  when: current_service.configuration.fpm_settings is defined
-
-- name: reset php_fpm_settings variable
-  ansible.builtin.set_fact:
-    php_fpm_settings: "{{ php_fpm_settings_default }}"
-  when: current_service.configuration.fpm_settings is not defined
 
 - name: set php_fpm_settings_additional variable
   ansible.builtin.set_fact:
