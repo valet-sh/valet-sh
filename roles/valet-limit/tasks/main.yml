@@ -15,11 +15,6 @@
 ##
 ---
 
-- name: "Fail when current_os is not supported"
-  ansible.builtin.fail:
-    msg: "Current OS '{{ current_os }}' is not supported for valet.sh limit command"
-  when: current_os == "ubuntu"
-
 - ansible.builtin.include_tasks: "commands/set.yml"
   when: valet_limit_action == "set"
 
