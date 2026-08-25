@@ -121,10 +121,17 @@
     - name: ensure apple container is started
       shell: container system start --enable-kernel-install
 
+    - name: check apple container dns list
+      command: "container system dns list"
+      register: container_dns_list_obj
+      changed_when: false
+
     - name: Create apple container dns
       command: container system dns create vsh
       become: true
-      when: not container_install_state_obj.stat.exists|bool
+      when:
+        - container_dns_list_obj.stdout is defined
+        - container_dns_list_obj.stdout is not search('vsh')
 
     - name: Remove apple container installer
       ansible.builtin.file:
