@@ -30,7 +30,7 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_rabbitmq_current_name }}"
         current_os: "{{ current_os }}"
-        rabbitmq_fact: "rabbitmq_service"
+        custom_fact: "rabbitmq_service"
 
     - name: set_fact
       ansible.builtin.set_fact:
