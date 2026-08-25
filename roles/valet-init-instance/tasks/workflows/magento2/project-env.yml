@@ -113,6 +113,14 @@
         - database_service.services is defined
         - database_service.services | length > 0
 
+    - name: "workflows » magento2 » project-env | override magento2 'valet_sh_magento2_rabbitmq_port' var"
+      ansible.builtin.set_fact:
+        valet_sh_magento2_rabbitmq_port: "{{ rabbitmq_service.services[0].configuration.ports.amqp }}"
+      when:
+        - database_service is defined
+        - database_service.services is defined
+        - database_service.services | length > 0
+
     - name: "workflows » magento2 » project-env | set 'valet_sh_magento2_rabbitmq_virtualhost' var"
       ansible.builtin.set_fact:
         valet_sh_magento2_rabbitmq_virtualhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"

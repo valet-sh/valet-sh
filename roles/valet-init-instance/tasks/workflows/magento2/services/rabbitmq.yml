@@ -30,13 +30,17 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_rabbitmq_current_name }}"
         current_os: "{{ current_os }}"
-      register: rabbitmq_install
+        rabbitmq_fact: "rabbitmq_service"
+
+    - name: set_fact
+      ansible.builtin.set_fact:
+        rabbitmq_service: "{{ ansible_facts['rabbitmq_service']}}"
 
     - name: "workflows » magento2 » services » rabbitmq | include service-specific roles"
       ansible.builtin.include_role:
         name: "rabbitmq"
       vars:
-        valet_resolved_service: "{{ rabbitmq_install }}"
+        valet_resolved_service: "{{ rabbitmq_service }}"
         valet_install_services: ["{{ valet_sh_service_rabbitmq_current_name }}"]
       when: rabbitmq_installed.kinds | length == 0
 
@@ -54,7 +58,7 @@
 
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
       ansible.builtin.wait_for:
-        port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
+        port: "{{ rabbitmq_service.services[0].configuration.ports.http }}"
         delay: 5
 
     - block:
@@ -82,7 +86,7 @@
         login_host: localhost
         login_user: guest
         login_password: guest
-        login_port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
+        login_port: "{{ rabbitmq_service.services[0].configuration.ports.http }}"
       retries: 5
       delay: 3
 
@@ -99,7 +103,7 @@
         login_host: localhost
         login_user: guest
         login_password: guest
-        login_port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
+        login_port: "{{ rabbitmq_service.services[0].configuration.ports.http }}"
       retries: 5
       delay: 3
   when:
@@ -119,13 +123,17 @@
       vsh_bundle_resolver:
         name: "{{ valet_sh_service_rabbitmq_current_name }}"
         current_os: "{{ current_os }}"
-      register: rabbitmq_install
+        custom_fact: "rabbitmq_service"
+
+    - name: set_fact
+      ansible.builtin.set_fact:
+        rabbitmq_service: "{{ ansible_facts['rabbitmq_service']}}"
 
     - name: "workflows » magento2 » services » rabbitmq | include service-specific roles"
       ansible.builtin.include_role:
         name: "rabbitmq"
       vars:
-        valet_resolved_service: "{{ rabbitmq_install }}"
+        valet_resolved_service: "{{ rabbitmq_service }}"
         valet_install_services: ["{{ valet_sh_service_rabbitmq_current_name }}"]
       when: rabbitmq_installed.kinds | length == 0
 
@@ -142,7 +150,7 @@
     - name: "workflows » magento2 » services » rabbitmq | wait for rabbitmq to be reachable"
       ansible.builtin.wait_for:
         host: "vsh-{{ valet_sh_service_rabbitmq_current_name }}"
-        port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
+        port: "{{ rabbitmq_service.services[0].configuration.ports.http }}"
         delay: 5
 
     - block:
@@ -152,7 +160,7 @@
             node: "rabbit@localhost"
             state: absent
             login_host: "vsh-{{ valet_sh_service_rabbitmq_current_name }}"
-            login_port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
+            login_port: "{{ rabbitmq_service.services[0].configuration.ports.http }}"
             login_user: guest
             login_password: guest
 
@@ -165,7 +173,7 @@
             tags: "administrator"
             state: absent
             login_host: "vsh-{{ valet_sh_service_rabbitmq_current_name }}"
-            login_port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
+            login_port: "{{ rabbitmq_service.services[0].configuration.ports.http }}"
             login_user: guest
             login_password: guest
       when: valet_opt_flag_clean is defined and valet_opt_flag_clean|bool
@@ -176,7 +184,7 @@
         node: "rabbit@localhost"
         state: present
         login_host: "vsh-{{ valet_sh_service_rabbitmq_current_name }}"
-        login_port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
+        login_port: "{{ rabbitmq_service.services[0].configuration.ports.http }}"
         login_user: guest
         login_password: guest
 
@@ -186,7 +194,7 @@
         password: "{{ valet_sh_service_rabbitmq_password }}"
         vhost: "{{ valet_sh_project_vars.services.rabbitmq.vhost }}"
         login_host: "vsh-{{ valet_sh_service_rabbitmq_current_name }}"
-        login_port: "{{ rabbitmq_install.services[0].configuration.ports.http }}"
+        login_port: "{{ rabbitmq_service.services[0].configuration.ports.http }}"
         login_user: guest
         login_password: guest
         node: "rabbit@localhost"
