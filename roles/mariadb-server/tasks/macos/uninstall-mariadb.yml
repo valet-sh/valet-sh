@@ -49,6 +49,13 @@
   loop_control:
     loop_var: current_wrapper_script
 
+- name: "Remove mariadb{{ current_service.version }} nginx streams config"
+  ansible.builtin.file:
+    path: "{{ valet_sh_prefix }}/etc/nginx/stream.d/{{ current_service.service.name }}.conf"
+    state: absent
+  become: true
+  notify: brew | nginx | restarted
+
 - name: "Remove vsh-{{ current_service.canonical }} image"
   apple_image:
     name: "{{ current_service.configuration.docker_image }}"

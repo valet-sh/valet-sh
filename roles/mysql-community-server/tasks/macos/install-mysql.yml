@@ -130,6 +130,15 @@
   retries: 30
   delay: 3
 
+- name: "provide nginx stream configuration"
+  template:
+    src: "nginx/mysql.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/{{ current_service.service.name }}.conf"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+  notify: brew | nginx | restarted
+
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
 
