@@ -49,6 +49,18 @@
     path: "{{ current_service.configuration.base_path }}"
     state: absent
 
+- name: "Remove mysql{{ current_service.version }} wrapper scripts"
+  ansible.builtin.file:
+    path: "{{ current_wrapper_script }}"
+    state: absent
+  become: true
+  loop:
+    - "/usr/local/bin/mysql{{ current_service.version }}"
+    - "/usr/local/bin/mysqldump{{ current_service.version }}"
+    - "/usr/local/bin/mysqladmin{{ current_service.version }}"
+  loop_control:
+    loop_var: current_wrapper_script
+
 - name: "Remove {{ current_service.service.name }} image"
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"
