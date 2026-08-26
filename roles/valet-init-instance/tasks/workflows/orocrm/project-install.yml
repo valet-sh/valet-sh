@@ -16,14 +16,16 @@
 ---
 
 - name: "workflows » orocrm » project-install | run composer install in project source path when defined in .valet-sh.yml"
-  command: "{{ php_bin }} {{ composer_bin }} install -n"
+  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && {{ php_bin }} {{ composer_bin }} install -n"
   args:
     chdir: "{{ valet_sh_project_src_path }}"
     removes: "composer.json"
+    executable: /bin/bash
   when: valet_current_path != valet_sh_project_src_path
 
 - name: "workflows » orocrm » project-install | run composer install in current dir"
-  command: "{{ php_bin }} {{ composer_bin }} install -n"
+  shell: "source {{ current_home }}/.nvm/nvm.sh && nvm install {{ valet_sh_node_version }} && {{ php_bin }} {{ composer_bin }} install -n"
   args:
     chdir: "{{ valet_current_path }}"
     removes: "composer.json"
+    executable: /bin/bash
