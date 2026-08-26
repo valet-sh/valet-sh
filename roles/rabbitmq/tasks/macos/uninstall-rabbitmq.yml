@@ -41,6 +41,12 @@
     path: "{{ current_service.configuration.base_path }}"
     state: absent
 
+- name: "Remove vsh-{{ current_service.canonical }} wrapper scripts"
+  ansible.builtin.file:
+    path: "/usr/local/bin/rabbitmqctl{{ current_service.version }}"
+    state: absent
+  become: true
+
 - name: "Remove vsh-{{ current_service.canonical }} nginx vhost"
   ansible.builtin.file:
     path: "/opt/homebrew/etc/nginx/conf.d/{{ current_service.canonical }}.conf"

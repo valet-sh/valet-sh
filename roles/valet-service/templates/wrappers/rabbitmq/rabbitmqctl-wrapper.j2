@@ -1,0 +1,39 @@
+#!/bin/bash
+
+AVAILABLE_RABBITMQ_VERSIONS='{{ valet_sh_bundle_definitions.services.rabbitmq.versions | join(" ") }}'
+
+function get_target_version {
+    VALET_SH_FILE=$1
+
+    SELECTED_RABBITMQ_VERSION=$(/usr/local/valet-sh/venv/bin/shyaml get-value services.rabbitmq.version < "${VALET_SH_FILE}" 2>/dev/null)
+   	# shellcheck disable=SC2181
+    if [ $? -eq 0 ]
+    then
+      if [[ " $AVAILABLE_RABBITMQ_VERSIONS " =~ .*\ $SELECTED_RABBITMQ_VERSION\ .* ]]; then
+         TARGET_EDITION=rabbitmqctl
+         TARGET_VERSION=$SELECTED_RABBITMQ_VERSION
+         return 0
+      fi
+    fi
+    return 1
+}
+
+if test -f ".valet-sh.yml"; then
+  CURRENT_VALET_SH_FILE=".valet-sh.yml"
+elif test -f "../.valet-sh.yml"; then
+  CURRENT_VALET_SH_FILE="../.valet-sh.yml"
+fi
+
+if [[ $CURRENT_VALET_SH_FILE ]]
+then
+  get_target_version $CURRENT_VALET_SH_FILE
+  # shellcheck disable=SC2181
+  if [ $? -eq 0 ]
+  then
+    exec /usr/local/bin/"${TARGET_EDITION}${TARGET_VERSION}" "$@"
+  else
+    exec /usr/local/bin/default-rabbitmqctl "$@"
+  fi
+else
+  exec /usr/local/bin/default-rabbitmqctl "$@"
+fi

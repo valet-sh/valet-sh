@@ -50,6 +50,12 @@
     state: absent
   become: true
 
+- name: "Remove vsh-{{ current_service.canonical }} wrapper scripts"
+  ansible.builtin.file:
+    path: "/usr/local/bin/rabbitmqctl{{ current_service.version }}"
+    state: absent
+  become: true
+
 - name: Remove rabbitmq image
   containers.podman.podman_image:
     name: "{{ current_service.configuration.docker_image }}"

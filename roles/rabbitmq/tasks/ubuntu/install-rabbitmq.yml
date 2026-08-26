@@ -58,6 +58,15 @@
     mode: "0644"
   notify: "systemd | vsh-rabbitmq | restarted"
 
+- name: "provide {{ current_service.service.name }} rabbitmqctl"
+  ansible.builtin.template:
+    src: "wrapper/rabbitmqctl.j2"
+    dest: "/usr/local/bin/rabbitmqctl{{ current_service.version }}"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+  become: true
+
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
     cert_prefix: "{{ current_service.canonical }}"
