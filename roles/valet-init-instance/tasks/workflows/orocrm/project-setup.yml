@@ -15,9 +15,9 @@
 ##
 ---
 
-- name: "running restore commmand"
-  include_role:
-    name: valet-restore
+# - name: "running restore commmand"
+#   include_role:
+#     name: valet-restore
 
 - set_fact:
     valet_link_php_target_version: "php{{ php_version_number | replace('.','') }}"
