@@ -31,6 +31,9 @@
 - ansible.builtin.include_tasks: "workflows/aem/main.yml"
   when: valet_sh_project_vars.instance.type == "aem"
 
+- include_tasks: "workflows/orocrm/main.yml"
+  when: valet_sh_project_vars.instance.type == "orocrm"
+
 - name: "partials » load-project-workflow | fail when no project workflow was included"
   ansible.builtin.fail:
     msg: "could not include project workflow for type '{{ valet_sh_project_vars.instance.type }}'"
