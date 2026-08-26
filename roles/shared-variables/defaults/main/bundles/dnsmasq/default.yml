@@ -6,7 +6,7 @@ service:
     mac: "dnsmasq"
   scope:
     ubuntu: "system"
-    mac: "system"
+    mac: "user"
   provider:
     ubuntu: "systemd"
     mac: "homebrew"
