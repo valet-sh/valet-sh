@@ -49,6 +49,15 @@
     mode: "0644"
   notify: "systemd | vsh-redis | restarted"
 
+- name: "provide {{ current_service.service.name }} redis-cli"
+  ansible.builtin.template:
+    src: "wrapper/redis-cli.j2"
+    dest: "/usr/local/bin/redis{{ current_service.version }}-cli"
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
 
