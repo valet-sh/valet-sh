@@ -1,0 +1,56 @@
+##
+#   Copyright 2026 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: ensure redis-cli wrapper script is up2date
+  ansible.builtin.template:
+    src: "wrappers/redis/redis-cli-wrapper.j2"
+    dest: "/usr/local/bin/redis-cli"
+    mode: "0755"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+  become: true
+
+- name: "create symlinks for default redis-cli"
+  file:
+    src: "/usr/local/bin/redis{{ item.version }}-cli"
+    dest: "/usr/local/bin/default-redis-cli"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    state: link
+    force: true
+  become: true
+  when: item.name == "redis"
+
+- name: ensure valkey-cli wrapper script is up2date
+  ansible.builtin.template:
+    src: "wrappers/valkey/valkey-cli-wrapper.j2"
+    dest: "/usr/local/bin/valkey-cli"
+    mode: "0755"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+  become: true
+
+- name: "create symlinks for default valkey-cli"
+  file:
+    src: "/usr/local/bin/valkey{{ item.version }}-cli"
+    dest: "/usr/local/bin/default-valkey-cli"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    state: link
+    force: true
+  become: true
+  when: item.name == "valkey"
