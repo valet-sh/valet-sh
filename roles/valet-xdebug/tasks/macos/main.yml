@@ -55,7 +55,7 @@
 
 - name: set php_version_number
   ansible.builtin.set_fact:
-    php_version_number: "{{ php_resolve.services[0].version }}"
+    php_version_number: "{{ php_resolve.services[0].version_compact }}"
 
 - ansible.builtin.include_tasks: on.yml
   when: valet_action == "on"
