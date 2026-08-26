@@ -34,6 +34,16 @@
     state: absent
   when: "'--purge' in valet_cli_opts"
 
+- name: "Remove valkey{{ current_service.version }} wrapper scripts"
+  ansible.builtin.file:
+    path: "{{ current_wrapper_script }}"
+    state: absent
+  become: true
+  loop:
+    - "/usr/local/bin/valkey{{ current_service.version }}-cli"
+  loop_control:
+    loop_var: current_wrapper_script
+
 - name: "Remove vsh-{{ current_service.canonical }} from installed services"
   vsh_bundle_state:
     action: "uninstalled"

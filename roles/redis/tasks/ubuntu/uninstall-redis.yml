@@ -34,6 +34,16 @@
     state: absent
   when: "'--purge' in valet_cli_opts"
 
+- name: "Remove redis{{ current_service.version }} wrapper scripts"
+  ansible.builtin.file:
+    path: "{{ current_wrapper_script }}"
+    state: absent
+  become: true
+  loop:
+    - "/usr/local/bin/redis{{ current_service.version }}-cli"
+  loop_control:
+    loop_var: current_wrapper_script
+
 - name: Remove redis-server systemd service
   ansible.builtin.file:
     path: "{{ current_home }}/.config/systemd/user/{{ current_service.service.name }}.service"

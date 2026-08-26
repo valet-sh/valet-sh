@@ -37,6 +37,15 @@
     user: "1000:1000"
     arch: "{{ current_service.configuration.arch | default(omit) }}"
 
+- name: "provide {{ current_service.service.name }} cli"
+  ansible.builtin.template:
+    src: "wrapper/valkey-cli.j2"
+    dest: "/usr/local/bin/valkey{{ current_service.version }}-cli"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+  become: true
+
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
 
