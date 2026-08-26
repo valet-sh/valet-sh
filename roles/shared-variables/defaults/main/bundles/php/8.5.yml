@@ -51,3 +51,4 @@ configuration:
     - "sqlite3"
     - "imagick"
     - "xdebug"
+    - "pgsql"
