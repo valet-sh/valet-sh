@@ -23,7 +23,7 @@
     valet_link_php_target_version: "php{{ php_version_number | replace('.','') }}"
   when:
     - php_version_number is defined
-    - php_version_number|length > 0
+    - php_version_number | string | length > 0
 
 - name: "running link command"
   include_role:
