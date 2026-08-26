@@ -40,5 +40,6 @@
   when: >
     (valet_sh_project_vars.instance.type != "magento2" and
      valet_sh_project_vars.instance.type != "neos" and
-     valet_sh_project_vars.instance.type != "aem") or
+     valet_sh_project_vars.instance.type != "aem" and
+     valet_sh_project_vars.instance.type != "orocrm") or
     (valet_sh_project_vars.instance.type is not defined)
