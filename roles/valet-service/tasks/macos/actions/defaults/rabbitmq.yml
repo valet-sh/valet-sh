@@ -33,3 +33,12 @@
     state: link
     force: true
   become: true
+
+- name: "provide nginx stream configuration"
+  template:
+    src: "nginx/rabbitmq.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/rabbitmq.conf"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+  notify: brew | nginx | restarted

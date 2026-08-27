@@ -54,3 +54,12 @@
     force: true
   become: true
   when: item.name == "valkey"
+
+- name: "provide nginx stream configuration"
+  template:
+    src: "nginx/cache.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/cache.conf"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+  notify: brew | nginx | restarted
