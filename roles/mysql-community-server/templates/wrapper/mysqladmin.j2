@@ -2,8 +2,25 @@
 CONTAINER="vsh-{{ current_service.canonical }}"
 
 args=()
+skip_next=0
 for arg in "$@"; do
-    [[ "$arg" == --defaults-file=* ]] || args+=("$arg")
+    if [[ $skip_next -eq 1 ]]; then
+        skip_next=0
+        continue
+    fi
+    case "$arg" in
+        --defaults-file=*)
+            continue
+            ;;
+        -h|--host|-P|--port)
+            skip_next=1
+            continue
+            ;;
+        -h*|-P*|--host=*|--port=*)
+            continue
+            ;;
+    esac
+    args+=("$arg")
 done
 
 {% if current_os == 'ubuntu' %}
