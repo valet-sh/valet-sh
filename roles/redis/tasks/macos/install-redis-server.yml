@@ -51,6 +51,11 @@
     memory: "{{ current_service.configuration.limits.memory | default('1g') }}"
     user: "1000:1000"
     arch: "{{ current_service.configuration.arch | default(omit) }}"
+    volumes:
+      - "{{ current_service.configuration.base_path }}/config/{{ current_service.service.name }}.conf:/usr/local/etc/redis/redis.conf:Z"
+    command:
+      - redis-server
+      - /usr/local/etc/redis/redis.conf
 
 - name: "provide {{ current_service.service.name }} cli"
   ansible.builtin.template:
@@ -60,6 +65,15 @@
     group: "{{ current_group }}"
     mode: "0755"
   become: true
+
+- name: "provide nginx stream configuration"
+  template:
+    src: "nginx/redis.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/{{ current_service.service.name }}.conf"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+  notify: brew | nginx | restarted
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
