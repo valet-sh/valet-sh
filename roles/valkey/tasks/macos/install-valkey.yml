@@ -27,6 +27,43 @@
     pull: true
     state: present
 
+- name: "ensure volume '{{ current_service.service.name }}-data' exists"
+  apple_volume:
+    name: "{{ current_service.service.name }}-data"
+    state: present
+  register: data_volume_obj
+
+- name: "fix volume permissions for '{{ current_service.service.name }}-data'"
+  apple_container:
+    name: vsh-volume-fix
+    image: alpine
+    state: started
+    remove: true
+    detach: false
+    volumes:
+      - "{{ current_service.service.name }}-data:/data"
+    command:
+      - chown
+      - -R
+      - "1000:"
+      - /data
+  when: data_volume_obj.changed
+
+- name: "Create vsh-{{ current_service.canonical }} config directory"
+  ansible.builtin.file:
+    path: "{{ current_service.configuration.base_path }}/config"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0755"
+    state: directory
+
+- name: "provide vsh-{{ current_service.canonical }} configuration"
+  ansible.builtin.template:
+    src: "{{ current_service.name }}.conf.j2"
+    dest: "{{ current_service.configuration.base_path }}/config/{{ current_service.service.name }}.conf"
+    mode: "0644"
+  notify: "container | vsh-valkey | restarted"
+
 - name: "ensure container 'vsh-{{ current_service.canonical }}' is started"
   apple_container:
     name: "vsh-{{ current_service.canonical }}"
@@ -36,9 +73,12 @@
     memory: "{{ current_service.configuration.limits.memory | default('1g') }}"
     user: "1000:1000"
     arch: "{{ current_service.configuration.arch | default(omit) }}"
+    volumes:
+      - "{{ current_service.service.name }}-data:/data"
+      - "{{ current_service.configuration.base_path }}/config/{{ current_service.service.name }}.conf:/usr/local/etc/valkey/valkey.conf:Z"
     command:
-      - "--port"
-      - "{{ current_service.configuration.ports.tcp }}"
+      - valkey-server
+      - /usr/local/etc/valkey/valkey.conf
 
 - name: "provide {{ current_service.service.name }} cli"
   ansible.builtin.template:
@@ -48,6 +88,15 @@
     group: "{{ current_group }}"
     mode: "0755"
   become: true
+
+- name: "provide nginx stream configuration"
+  template:
+    src: "nginx/valkey.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/{{ current_service.service.name }}.conf"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+  notify: brew | nginx | restarted
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers

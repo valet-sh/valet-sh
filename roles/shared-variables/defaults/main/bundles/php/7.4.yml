@@ -55,3 +55,4 @@ configuration:
     - "bcmath"
     - "ldap"
     - "sqlite3"
+    - "pgsql"

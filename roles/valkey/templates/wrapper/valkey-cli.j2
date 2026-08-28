@@ -12,12 +12,12 @@ if ! podman inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
     exit 1
 fi
 TTY_FLAG=""; [ -t 0 ] && TTY_FLAG="-t"
-exec podman exec -i $TTY_FLAG "$CONTAINER" valkey-cli "${args[@]}"
+exec podman exec -i $TTY_FLAG "$CONTAINER" valkey-cli -p {{ current_service.configuration.ports.tcp }} "${args[@]}"
 {% else %}
 if ! container inspect "$CONTAINER" 2>/dev/null | grep -q '"running"'; then
     echo "Error: $CONTAINER is not running" >&2
     exit 1
 fi
 TTY_FLAG=""; [ -t 0 ] && TTY_FLAG="-t"
-exec container exec -i $TTY_FLAG "$CONTAINER" valkey-cli "${args[@]}"
+exec container exec -i $TTY_FLAG "$CONTAINER" valkey-cli -p {{ current_service.configuration.ports.tcp }} "${args[@]}"
 {% endif %}

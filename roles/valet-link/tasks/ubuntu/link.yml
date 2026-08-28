@@ -146,6 +146,7 @@
     - ansible.builtin.include_tasks: templates/aem.yml
     - ansible.builtin.include_tasks: templates/shopware6.yml
     - ansible.builtin.include_tasks: templates/magento1.yml
+    - ansible.builtin.include_tasks: templates/orocrm.yml
     - ansible.builtin.include_tasks: templates/fallback.yml
   when: not template_found
 

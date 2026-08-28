@@ -1,0 +1,9 @@
+{{ ansible_managed | comment }}
+
+server {
+    listen 127.0.0.1:{{ current_service.configuration.ports.amqp }};
+
+    set $target "vsh-{{ current_service.canonical }}.vsh:{{ current_service.configuration.ports.amqp }}";
+
+    proxy_pass $target;
+}

@@ -15,29 +15,50 @@
 ##
 ---
 
-- name: ensure rabbitmqctl wrapper script is up2date
+- name: ensure redis-cli wrapper script is up2date
   ansible.builtin.template:
-    src: "wrappers/rabbitmq/rabbitmqctl-wrapper.j2"
-    dest: "/usr/local/bin/rabbitmqctl"
+    src: "wrappers/redis/redis-cli-wrapper.j2"
+    dest: "/usr/local/bin/redis-cli"
     mode: "0755"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
   become: true
 
-- name: "create symlinks for default rabbitmqctl"
+- name: "create symlinks for default redis-cli"
   file:
-    src: "/usr/local/bin/rabbitmqctl{{ item.version }}"
-    dest: "/usr/local/bin/default-rabbitmqctl"
+    src: "/usr/local/bin/redis{{ item.version }}-cli"
+    dest: "/usr/local/bin/default-redis-cli"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     state: link
     force: true
   become: true
+  when: item.name == "redis"
+
+- name: ensure valkey-cli wrapper script is up2date
+  ansible.builtin.template:
+    src: "wrappers/valkey/valkey-cli-wrapper.j2"
+    dest: "/usr/local/bin/valkey-cli"
+    mode: "0755"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+  become: true
+
+- name: "create symlinks for default valkey-cli"
+  file:
+    src: "/usr/local/bin/valkey{{ item.version }}-cli"
+    dest: "/usr/local/bin/default-valkey-cli"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    state: link
+    force: true
+  become: true
+  when: item.name == "valkey"
 
 - name: "provide nginx stream configuration"
   template:
-    src: "nginx/rabbitmq.conf.j2"
-    dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/rabbitmq.conf"
+    src: "nginx/cache.conf.j2"
+    dest: "{{ valet_sh_prefix }}/etc/nginx/stream.d/cache.conf"
     owner: "{{ current_user }}"
     group: "{{ current_group }}"
     mode: "0644"

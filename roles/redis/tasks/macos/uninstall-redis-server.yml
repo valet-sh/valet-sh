@@ -28,6 +28,12 @@
     line: "vsh-{{ current_service.canonical }}"
     state: "absent"
 
+- name: "Remove 'vsh-{{ current_service.canonical }}-data' volume"
+  apple_volume:
+    name: "{{ current_service.service.name }}-data"
+    state: absent
+  when: "'--purge' in valet_cli_opts"
+
 - name: "Remove vsh-{{ current_service.canonical }} configurations"
   ansible.builtin.file:
     path: "{{ current_service.configuration.base_path }}"
