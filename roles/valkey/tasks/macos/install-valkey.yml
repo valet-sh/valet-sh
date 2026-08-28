@@ -27,6 +27,28 @@
     pull: true
     state: present
 
+- name: "ensure volume '{{ current_service.service.name }}-data' exists"
+  apple_volume:
+    name: "{{ current_service.service.name }}-data"
+    state: present
+  register: data_volume_obj
+
+- name: "fix volume permissions for '{{ current_service.service.name }}-data'"
+  apple_container:
+    name: vsh-volume-fix
+    image: alpine
+    state: started
+    remove: true
+    detach: false
+    volumes:
+      - "{{ current_service.service.name }}-data:/data"
+    command:
+      - chown
+      - -R
+      - "1000:"
+      - /data
+  when: data_volume_obj.changed
+
 - name: "Create vsh-{{ current_service.canonical }} config directory"
   ansible.builtin.file:
     path: "{{ current_service.configuration.base_path }}/config"
@@ -52,6 +74,7 @@
     user: "1000:1000"
     arch: "{{ current_service.configuration.arch | default(omit) }}"
     volumes:
+      - "{{ current_service.service.name }}-data:/data"
       - "{{ current_service.configuration.base_path }}/config/{{ current_service.service.name }}.conf:/usr/local/etc/valkey/valkey.conf:Z"
     command:
       - valkey-server
