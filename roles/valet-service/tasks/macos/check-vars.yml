@@ -25,6 +25,15 @@
     msg: "action '{{ valet_service_action }}' is not allowed"
   when: valet_service_action not in valet_sh_service_allowed_actions
 
+- name: "check-vars | normalize 'all' service name argument to --all option"
+  ansible.builtin.set_fact:
+    valet_cli_opts: "{{ (valet_cli_opts | default([])) + ['--all'] }}"
+    valet_service_names: []
+  when:
+    - valet_service_names is defined
+    - "'all' in valet_service_names"
+    - "'--all' not in (valet_cli_opts | default([]))"
+
 # FIXME: no user readable error message
 - name: "check-vars | resolve multiple service names and configurations"
   vsh_bundle_resolver:
