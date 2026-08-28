@@ -196,8 +196,32 @@ def env_matches(info, desired_env):
     return set(desired_env).issubset(set(current_env))
 
 
+def container_command(info):
+    """Extract the launch arguments list from container inspect data.
+    Apple container inspect stores this at configuration.initProcess.arguments."""
+    try:
+        return info['configuration']['initProcess']['arguments']
+    except (KeyError, TypeError):
+        return None
+
+
+def command_matches(info, desired_command):
+    """Return True if the container's launch arguments match the desired command override.
+    An unset/empty desired command is treated as 'don't care', since a container's arguments
+    otherwise reflect the image's own default CMD rather than an explicit override."""
+    if not desired_command:
+        return True
+    desired = desired_command
+    if isinstance(desired, str):
+        desired = shlex.split(desired)
+    current = container_command(info)
+    if current is None:
+        return False
+    return [str(item) for item in current] == [str(item) for item in desired]
+
+
 def container_config_changed(info, params):
-    """Return True if image, volumes, resources, or env differ from the running container."""
+    """Return True if image, volumes, resources, env, or command differ from the running container."""
     if params['image'] and not image_matches(info, params['image']):
         return True
     if not volumes_match(info, params['volumes']):
@@ -205,6 +229,8 @@ def container_config_changed(info, params):
     if not resources_match(info, params):
         return True
     if not env_matches(info, params['env']):
+        return True
+    if not command_matches(info, params['command']):
         return True
     return False
 
