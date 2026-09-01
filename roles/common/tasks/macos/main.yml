@@ -42,6 +42,28 @@
     creates: "/opt/homebrew/bin/brew"
   when: current_arch == "arm64"
 
+- name: ensure x86_64 homebrew config directory exists
+  file:
+    path: "/usr/local/etc/homebrew"
+    state: directory
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: '0755'
+  become: true
+
+- name: create x86_64 homebrew brew.env file
+  copy:
+    content: |
+      HOMEBREW_NO_AUTO_UPDATE=1
+      HOMEBREW_NO_INSTALL_UPGRADE=1
+      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
+      HOMEBREW_NO_INSTALL_CLEANUP=1
+    dest: "/usr/local/etc/homebrew/brew.env"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: '0644'
+  become: true
+
 - name: ensure brew_x86 wrapper script is up2date (only on m1)
   template:
     src: "brew_x86.j2"
