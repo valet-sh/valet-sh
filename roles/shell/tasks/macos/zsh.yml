@@ -38,7 +38,7 @@
       if [ -f ~/.aliases ]; then
           . ~/.aliases
       fi
-      export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/sbin:$PATH
+      export PATH=/opt/homebrew/opt/gpatch/libexec/gnubin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:$PATH
 
 - name: ensure .profile file exists
   ansible.builtin.file:
