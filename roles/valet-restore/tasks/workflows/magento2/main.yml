@@ -182,7 +182,7 @@
         | join(' ') }}"
       when:
         - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex is defined
-        - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex
+        - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex | length > 0
   when:
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.sync is defined
