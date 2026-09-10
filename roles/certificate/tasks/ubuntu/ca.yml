@@ -96,8 +96,7 @@
     loop_var: current_cert9_file_item
 
 - name: "ca | run certutil for every cert9 file"
-  ansible.builtin.shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:{{ current_cert9_file_item | dirname
-    }}'
+  ansible.builtin.shell: 'certutil -A -n "TechDivision Development CA" -t "TCu,Cu,Tu" -i {{ certificate_ca_cert_file }} -d sql:"{{ current_cert9_file_item | dirname }}"'
   with_items: "{{ available_cert9_files_obj.stdout_lines }}"
   loop_control:
     loop_var: current_cert9_file_item
