@@ -41,13 +41,13 @@
   args:
     creates: "/opt/homebrew/bin/brew"
 
+- name: Ensure valet-sh/php is trusted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} trust valet-sh/php"
+
 - name: Ensure valet-sh/php is tapped
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} tap valet-sh/php"
   environment:
     NONINTERACTIVE: true
-
-- name: Ensure valet-sh/php is trusted
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} trust valet-sh/php"
 
 - name: ensure LaunchDaemons script for maxfiles limit is deployed
   ansible.builtin.template:
