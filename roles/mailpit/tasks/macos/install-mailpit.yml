@@ -25,6 +25,11 @@
     pull: true
     state: present
 
+- name: "ensure mailpit is installed via homebrew so php can relay mail to the mailpit container"
+  homebrew:
+    name: mailpit
+    state: present
+
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
     cert_prefix: "mailpit"

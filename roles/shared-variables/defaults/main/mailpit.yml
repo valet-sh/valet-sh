@@ -22,5 +22,12 @@ mailpit_arch_map:
 
 mailpit_download_url: "https://github.com/axllent/mailpit/releases/latest/download/mailpit-linux-{{ mailpit_arch_map[ansible_facts['architecture']] | default('amd64') }}.tar.gz"
 
-mailpit_bin_path: "/usr/local/bin/mailpit"
+mailpit_bin_path_default: "/usr/local/bin/mailpit"
+mailpit_bin_path_mac: "{{ valet_sh_homebrew_prefix }}/bin/mailpit"
+mailpit_bin_path: "{{ lookup('vars', 'mailpit_bin_path' + '_' + current_os, default=mailpit_bin_path_default) }}"
+
+mailpit_smtp_target_default: "127.0.0.1:1025"
+mailpit_smtp_target_mac: "vsh-mailpit.vsh:1025"
+mailpit_smtp_target: "{{ lookup('vars', 'mailpit_smtp_target' + '_' + current_os, default=mailpit_smtp_target_default) }}"
+
 mailpit_sendmail_path: "/usr/sbin/sendmail"

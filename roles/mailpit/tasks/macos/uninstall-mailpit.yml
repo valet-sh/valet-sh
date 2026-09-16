@@ -44,6 +44,11 @@
     state: absent
   when: "'--purge' in valet_cli_opts"
 
+- name: "ensure mailpit homebrew formula is absent"
+  homebrew:
+    name: mailpit
+    state: absent
+
 - name: "Remove mailpit from installed services"
   vsh_bundle_state:
     action: "uninstalled"
