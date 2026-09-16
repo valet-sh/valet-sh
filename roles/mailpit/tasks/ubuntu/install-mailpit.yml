@@ -21,6 +21,41 @@
     pull: true
     state: present
 
+- name: "ensure temporary download directory for mailpit binary exists"
+  ansible.builtin.file:
+    path: "/tmp/vsh-mailpit-download"
+    state: directory
+    mode: "0755"
+
+- name: "download and extract mailpit binary from {{ mailpit_download_url }}"
+  ansible.builtin.unarchive:
+    src: "{{ mailpit_download_url }}"
+    dest: "/tmp/vsh-mailpit-download"
+    remote_src: true
+
+- name: "install mailpit binary to {{ mailpit_bin_path }}"
+  ansible.builtin.copy:
+    src: "/tmp/vsh-mailpit-download/mailpit"
+    dest: "{{ mailpit_bin_path }}"
+    remote_src: true
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: "remove temporary mailpit download directory"
+  ansible.builtin.file:
+    path: "/tmp/vsh-mailpit-download"
+    state: absent
+
+- name: "use mailpit binary as local sendmail replacement so php can relay mail to the mailpit container"
+  ansible.builtin.file:
+    src: "{{ mailpit_bin_path }}"
+    dest: "{{ mailpit_sendmail_path }}"
+    state: link
+    force: true
+  become: true
+
 - name: "ensure user systemd directory exists"
   ansible.builtin.file:
     path: "{{ current_home }}/.config/systemd/user"

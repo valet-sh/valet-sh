@@ -57,6 +57,18 @@
     force: true
   when: "'--purge' in valet_cli_opts"
 
+- name: Remove mailpit sendmail symlink
+  ansible.builtin.file:
+    path: "{{ mailpit_sendmail_path }}"
+    state: absent
+  become: true
+
+- name: Remove mailpit binary
+  ansible.builtin.file:
+    path: "{{ mailpit_bin_path }}"
+    state: absent
+  become: true
+
 - name: Remove mailpit from installed services
   vsh_bundle_state:
     action: "uninstalled"
