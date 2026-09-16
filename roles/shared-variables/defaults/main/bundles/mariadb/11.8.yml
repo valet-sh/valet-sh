@@ -13,6 +13,7 @@ service:
 
 configuration:
   docker_image: "docker.io/library/mariadb:11.8"
+  arch: "arm64"
   limits:
     memory: "4g"
     cpus: "2"

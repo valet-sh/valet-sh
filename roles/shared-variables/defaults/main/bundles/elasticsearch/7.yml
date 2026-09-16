@@ -13,6 +13,7 @@ service:
 
 configuration:
   docker_image: "docker.io/elasticsearch:7.17.7"
+  arch: "arm64"
   limits:
     memory: "4g"
     memory_fraction: 50

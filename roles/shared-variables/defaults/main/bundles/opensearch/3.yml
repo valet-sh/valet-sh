@@ -13,6 +13,7 @@ service:
 
 configuration:
   docker_image: "docker.io/opensearchproject/opensearch:3.6.0"
+  arch: "arm64"
   limits:
     memory: "4g"
     memory_fraction: 50

@@ -15,7 +15,13 @@ def load_yaml_file(file_path):
 def normalize_input(input):
     return re.sub(r'[.\s]', '', input).lower()
 
+def remove_vsh_prefix(input):
+    if input.lower().startswith('vsh-'):
+        return input[4:]
+    return input
+
 def parse_input(input):
+    input = remove_vsh_prefix(input)
     normalized = normalize_input(input)
 
     match = re.match(r'^([a-z]+)(\d+.*)?$', normalized)

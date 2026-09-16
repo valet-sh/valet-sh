@@ -13,6 +13,7 @@ service:
 
 configuration:
   docker_image: "docker.io/valkey/valkey:8"
+  arch: "arm64"
   ports:
     tcp: 6389
   base_path: "/usr/local/valet-sh/packages/valkey8"

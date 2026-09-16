@@ -13,6 +13,7 @@ service:
 
 configuration:
   docker_image: "docker.io/axllent/mailpit:latest"
+  arch: "arm64"
   limits:
     memory: "1g"
     cpus: "1"

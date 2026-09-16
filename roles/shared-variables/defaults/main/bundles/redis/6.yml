@@ -13,6 +13,7 @@ service:
 
 configuration:
   docker_image: "docker.io/library/redis:6"
+  arch: "arm64"
   ports:
     tcp: 6380
   base_path: "/usr/local/valet-sh/packages/redis6"

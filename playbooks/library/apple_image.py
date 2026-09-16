@@ -24,8 +24,12 @@ def parse_image_ref(name, tag):
     return '%s:%s' % (name, tag) if tag else name
 
 
-def image_id(ref):
-    rc, stdout, _ = run_cli(['image', 'inspect', ref])
+def image_id(ref, platform=None):
+    args = ['image', 'inspect']
+    if platform:
+        args.extend(['--platform', platform])
+    args.append(ref)
+    rc, stdout, _ = run_cli(args)
     if rc != 0:
         return None
     try:
@@ -38,8 +42,8 @@ def image_id(ref):
     return stdout
 
 
-def image_exists(ref):
-    return image_id(ref) is not None
+def image_exists(ref, platform=None):
+    return image_id(ref, platform) is not None
 
 
 def main():
@@ -50,6 +54,7 @@ def main():
         # pull=true forces a fresh pull even when the image is already present,
         # matching the behaviour of the community.general.podman_image module.
         pull=dict(type='bool', default=False),
+        platform=dict(type='str', required=False, default=None),
     )
 
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
@@ -58,14 +63,15 @@ def main():
     ref = parse_image_ref(params['name'], params['tag'])
     state = params['state']
     force_pull = params['pull']
+    platform = params['platform']
 
-    exists = image_exists(ref)
+    exists = image_exists(ref, platform)
 
     if state == 'present':
         if exists and not force_pull:
             module.exit_json(changed=False, msg='Image already present', image=ref)
 
-        id_before = image_id(ref)
+        id_before = image_id(ref, platform)
 
         if module.check_mode:
             # cannot know without pulling whether the remote image changed
@@ -73,11 +79,16 @@ def main():
             msg = 'Image pulled' if not exists else 'Image would be refreshed (pull=true)'
             module.exit_json(changed=changed, msg=msg, image=ref)
 
-        rc, stdout, stderr = run_cli(['image', 'pull', ref])
+        pull_args = ['image', 'pull']
+        if platform:
+            pull_args.extend(['--platform', platform])
+        pull_args.append(ref)
+
+        rc, stdout, stderr = run_cli(pull_args)
         if rc != 0:
             module.fail_json(msg='Failed to pull image', image=ref, stderr=stderr, rc=rc)
 
-        id_after = image_id(ref)
+        id_after = image_id(ref, platform)
         changed = id_before != id_after
         if not exists:
             msg = 'Image pulled'

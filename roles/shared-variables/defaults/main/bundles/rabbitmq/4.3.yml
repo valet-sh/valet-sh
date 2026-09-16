@@ -13,6 +13,7 @@ service:
 
 configuration:
   docker_image: "docker.io/rabbitmq:4.3-management"
+  arch: "arm64"
   ports:
     http: 15678
     amqp: 5678

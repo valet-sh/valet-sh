@@ -24,6 +24,7 @@
     name: "{{ current_service.configuration.docker_image }}"
     pull: true
     state: present
+    platform: "linux/{{ current_service.configuration.arch | default(omit) }}"
 
 - name: "ensure volume 'vsh-{{ current_service.canonical }}-data' exists"
   apple_volume:
