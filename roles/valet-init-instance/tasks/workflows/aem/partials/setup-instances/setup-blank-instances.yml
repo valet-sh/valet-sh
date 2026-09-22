@@ -14,12 +14,12 @@
 #   limitations under the License.
 ##
 ---
-- name: "workflows » aem » partials » setup-instances | extract 'aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip' to '{{ runtime_tmp_dir }}'"
+- name: "workflows » aem » partials » setup-instances | extract 'aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip' to '{{ valet_sh_aem_runtime_tmp_dir }}'"
   ansible.builtin.unarchive:
     src: "{{ valet_sh_aem_sdk_local_cache_dir }}/aem-sdk-{{ valet_sh_aem_sdk_target_version }}.zip"
     dest: "{{ valet_sh_aem_runtime_tmp_dir }}"
 
-- name: "workflows » aem » partials » setup-instances | copy 'aem-sdk-quickstart-{{ valet_sh_aem_sdk_target_version }}.jar' to '{{ author_dir }}/aem-author.jar'"
+- name: "workflows » aem » partials » setup-instances | copy 'aem-sdk-quickstart-{{ valet_sh_aem_sdk_target_version }}.jar' to '{{ valet_sh_aem_author_dir  }}/aem-author.jar'"
   ansible.builtin.copy:
     src: "{{ valet_sh_aem_runtime_tmp_dir }}/aem-sdk-quickstart-{{ valet_sh_aem_sdk_target_version }}.jar"
     dest: "{{ valet_sh_aem_author_dir }}/aem-author.jar"
@@ -29,7 +29,7 @@
   args:
     chdir: "{{ valet_sh_aem_author_dir }}"
 
-- name: "workflows » aem » partials » setup-instances | copy 'aem-sdk-quickstart-{{ valet_sh_aem_sdk_target_version }}.jar' to '{{ publish_dir }}/aem-publish.jar'"
+- name: "workflows » aem » partials » setup-instances | copy 'aem-sdk-quickstart-{{ valet_sh_aem_sdk_target_version }}.jar' to '{{ valet_sh_aem_publish_dir }}/aem-publish.jar'"
   ansible.builtin.copy:
     src: "{{ valet_sh_aem_runtime_tmp_dir }}/aem-sdk-quickstart-{{ valet_sh_aem_sdk_target_version }}.jar"
     dest: "{{ valet_sh_aem_publish_dir }}/aem-publish.jar"

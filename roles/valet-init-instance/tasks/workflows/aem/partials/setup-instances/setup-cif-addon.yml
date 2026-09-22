@@ -14,7 +14,7 @@
 #   limitations under the License.
 ##
 ---
-- name: "workflows » aem » partials » setup-instances | extract 'aem-cif-addon-{{ valet_sh_aem_addons.cif }}.zip' to '{{ runtime_tmp_dir }}'"
+- name: "workflows » aem » partials » setup-instances | extract 'aem-cif-addon-{{ valet_sh_aem_addons.cif }}.zip' to '{{ valet_sh_aem_runtime_tmp_dir  }}'"
   ansible.builtin.unarchive:
     src: "{{ valet_sh_aem_local_cache_dir }}/addons/cif/aem-cif-addon-{{ valet_sh_aem_addons.cif }}.zip"
     dest: "{{ valet_sh_aem_runtime_tmp_dir }}"

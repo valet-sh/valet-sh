@@ -38,7 +38,7 @@
     namespaces:
       ns: "http://maven.apache.org/POM/4.0.0"
     xpath: "/ns:project/ns:properties/ns:aem.port"
-    value: "{{ valet_sh_project_vars.instance.author_port }}"
+    value: "{{ valet_sh_project_vars.instance.author_port | string }}"
     state: present
 
 - name: "workflows » aem » project-env | ensure aem.publish.port in pom.xml is up2date"
@@ -47,7 +47,7 @@
     namespaces:
       ns: "http://maven.apache.org/POM/4.0.0"
     xpath: "/ns:project/ns:properties/ns:aem.publish.port"
-    value: "{{ valet_sh_project_vars.instance.publish_port }}"
+    value: "{{ valet_sh_project_vars.instance.publish_port | string }}"
     state: present
 
 - name: "workflows » aem » project-env | ensure repo tool url is up2date"

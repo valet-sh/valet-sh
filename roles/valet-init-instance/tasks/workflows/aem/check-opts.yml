@@ -13,7 +13,7 @@
 #   limitations under the License.
 ##
 ---
-- name: "workflows » aem » check-opts | check if '--skip-restore' opt is set"
+- name: "workflows » aem » check-opts | check if '--force-reinstall' opt is set"
   ansible.builtin.set_fact:
     valet_opt_flag_force_reinstall: true
   when: "'--force-reinstall' in valet_cli_opts"
