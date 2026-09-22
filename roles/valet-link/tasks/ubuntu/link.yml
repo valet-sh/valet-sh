@@ -69,55 +69,66 @@
     - valet_sh_project_vars.instance is defined
     - valet_sh_project_vars.instance.path is defined
 
-- name: "link | check selected php version"
+- name: "link | determine whether the linked project needs a php version"
   ansible.builtin.set_fact:
-    current_php_version: "{{ php_version }}"
-  when: (php_version is defined) and (php_version | length > 0)
-
-- name: "link | check for php version in .valet-sh.yml file"
-  ansible.builtin.set_fact:
-    current_php_version: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
-  when:
-    - valet_sh_project_vars is defined
-    - valet_sh_project_vars.services is defined
-    - valet_sh_project_vars.services.php is defined
-    - valet_sh_project_vars.services.php.version is defined
-    - current_php_version is not defined
+    valet_link_php_required: "{{ not (valet_sh_project_vars is defined and valet_sh_project_vars.instance is defined and valet_sh_project_vars.instance.type is defined and valet_sh_project_vars.instance.type in valet_link_no_php_instance_types) }}"
 
 - block:
-    - name: "link | include valet services file"
-      ansible.builtin.include_vars:
-        file: "{{ valet_etc_services_file }}"
-        name: valet_sh_services_obj
-    - name: "link | check for system default php version in services.yml file"
+    - name: "link | check selected php version"
       ansible.builtin.set_fact:
-        current_php_version: "{{ valet_sh_services_obj.defaults.php }}"
+        current_php_version: "{{ php_version }}"
+      when: (php_version is defined) and (php_version | length > 0)
+
+    - name: "link | check for php version in .valet-sh.yml file"
+      ansible.builtin.set_fact:
+        current_php_version: "php{{ valet_sh_project_vars.services.php.version | replace('.', '') }}"
       when:
-        - valet_sh_services_obj is defined
-        - valet_sh_services_obj.defaults is defined
-        - valet_sh_services_obj.defaults.php is defined
-  when: current_php_version is not defined or current_php_version|length==0
+        - valet_sh_project_vars is defined
+        - valet_sh_project_vars.services is defined
+        - valet_sh_project_vars.services.php is defined
+        - valet_sh_project_vars.services.php.version is defined
+        - current_php_version is not defined
 
-- name: "link | set default php version"
+    - block:
+        - name: "link | include valet services file"
+          ansible.builtin.include_vars:
+            file: "{{ valet_etc_services_file }}"
+            name: valet_sh_services_obj
+        - name: "link | check for system default php version in services.yml file"
+          ansible.builtin.set_fact:
+            current_php_version: "{{ valet_sh_services_obj.defaults.php }}"
+          when:
+            - valet_sh_services_obj is defined
+            - valet_sh_services_obj.defaults is defined
+            - valet_sh_services_obj.defaults.php is defined
+      when: current_php_version is not defined or current_php_version|length==0
+
+    - name: "link | set default php version"
+      ansible.builtin.set_fact:
+        current_php_version: "{{ php_default_version_string }}"
+      when: (current_php_version is undefined) or (current_php_version | length == 0)
+
+    - name: "link | resolve requested php version"
+      vsh_bundle_resolver:
+        name: "php{{ current_php_version | regex_replace('(?i)^php', '') }}"
+        current_os: "{{ current_os }}"
+      register: php_resolve
+
+    - name: "link | fail when php_version is unknown"
+      ansible.builtin.fail:
+        msg: "unknown php version '{{ current_php_version }}'"
+      when: php_resolve.services | length == 0
+
+    - name: "link | set resolved php version"
+      ansible.builtin.set_fact:
+        current_php_version: "{{ php_resolve.services[0].canonical }}"
+        current_php_service: "{{ php_resolve.services[0] }}"
+  when: valet_link_php_required | bool
+
+- name: "link | set php version placeholder for projects without php (e.g. aem)"
   ansible.builtin.set_fact:
-    current_php_version: "{{ php_default_version_string }}"
-  when: (current_php_version is undefined) or (current_php_version | length == 0)
-
-- name: "link | resolve requested php version"
-  vsh_bundle_resolver:
-    name: "php{{ current_php_version | regex_replace('(?i)^php', '') }}"
-    current_os: "{{ current_os }}"
-  register: php_resolve
-
-- name: "link | fail when php_version is unknown"
-  ansible.builtin.fail:
-    msg: "unknown php version '{{ current_php_version }}'"
-  when: php_resolve.services | length == 0
-
-- name: "link | set resolved php version"
-  ansible.builtin.set_fact:
-    current_php_version: "{{ php_resolve.services[0].canonical }}"
-    current_php_service: "{{ php_resolve.services[0] }}"
+    current_php_version: "-"
+  when: not (valet_link_php_required | bool)
 
 - name: set 'cert_prefix' variable
   ansible.builtin.set_fact:
@@ -136,7 +147,7 @@
         scope: "{{ current_php_service.service.scope }}"
       become: "{{ 'true' if current_php_service.service.scope == 'system' else 'false' }}"
 
-  when: current_php_version is defined
+  when: valet_link_php_required | bool
 
 - name: "link | find a matching application template"
   block:
