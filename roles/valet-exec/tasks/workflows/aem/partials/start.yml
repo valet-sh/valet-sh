@@ -114,15 +114,66 @@
         path: "{{ valet_sh_project_src_path }}/.env.dispatcher"
       register: dispatcher_env_file
 
-    #@TODO ensure docker daemon is started
-    - name: "workflows » aem » partials » start | start dispatcher tools"
-      ansible.builtin.shell: "HOT_RELOAD=true ALLOW_CACHE_INVALIDATION_GLOBALLY=true {{ dispatcher_env_var }} {{ valet_sh_aem_dispatcher_dir }}/bin/docker_run.sh
-        {{ valet_sh_project_src_path }}/dispatcher/src host.docker.internal:{{ valet_sh_project_vars.instance.publish_port }} {{ valet_sh_project_vars.instance.dispatcher_port
-        }} &> {{ valet_sh_aem_dispatcher_dir }}/output.log &"
-      args:
-        chdir: "{{ valet_sh_aem_dispatcher_dir }}"
-      vars:
-        dispatcher_env_var: "{{ 'ENV_FILE=' + valet_sh_project_src_path + '/.env.dispatcher' if dispatcher_env_file.stat.exists else '' }}"
+    - name: "workflows » aem » partials » start | check if docker is available"
+      ansible.builtin.shell: "docker info"
+      register: dispatcher_docker_info_obj
+      changed_when: false
+      failed_when: false
+
+    - name: "workflows » aem » partials » start | fail when docker is not available"
+      ansible.builtin.fail:
+        msg: "docker not available\n{{ dispatcher_docker_info_obj.stderr | default('') }}"
+      when: dispatcher_docker_info_obj.rc != 0
+
+    - name: "workflows » aem » partials » start | check if dispatcher container is already running"
+      ansible.builtin.shell: "docker container ls --format '{% raw %}{{.Ports}}{% endraw %}' | grep ':{{ valet_sh_project_vars.instance.dispatcher_port }}->'"
+      register: dispatcher_running_container_obj
+      changed_when: false
+      failed_when: dispatcher_running_container_obj.rc not in [ 0, 1 ]
+
+    - block:
+        # start docker_run.sh in background, log to output.log, print pid
+        - name: "workflows » aem » partials » start | start dispatcher tools"
+          ansible.builtin.shell: "HOT_RELOAD=true ALLOW_CACHE_INVALIDATION_GLOBALLY=true {{ dispatcher_env_var }} {{ valet_sh_aem_dispatcher_dir }}/bin/docker_run.sh
+            {{ valet_sh_project_src_path }}/dispatcher/src host.docker.internal:{{ valet_sh_project_vars.instance.publish_port }} {{ valet_sh_project_vars.instance.dispatcher_port
+            }} > {{ valet_sh_aem_dispatcher_dir }}/output.log 2>&1 & echo $!"
+          args:
+            chdir: "{{ valet_sh_aem_dispatcher_dir }}"
+          vars:
+            dispatcher_env_var: "{{ 'ENV_FILE=' + valet_sh_project_src_path + '/.env.dispatcher' if dispatcher_env_file.stat.exists else '' }}"
+          register: dispatcher_start_obj
+
+        - name: "workflows » aem » partials » start | wait for dispatcher container to be started"
+          ansible.builtin.shell: |
+            if docker container ls --format '{% raw %}{{.Ports}}{% endraw %}' | grep -q ':{{ valet_sh_project_vars.instance.dispatcher_port }}->'; then
+              echo "running"
+            elif ! kill -0 {{ dispatcher_start_obj.stdout | trim }} 2>/dev/null; then
+              echo "exited"
+            else
+              echo "pending"
+            fi
+          register: dispatcher_state_obj
+          changed_when: false
+          retries: 30
+          delay: 2
+          until: dispatcher_state_obj.stdout != "pending"
+          ignore_errors: true
+
+        - name: "workflows » aem » partials » start | read dispatcher output log"
+          ansible.builtin.command: "tail -n 20 {{ valet_sh_aem_dispatcher_dir }}/output.log"
+          register: dispatcher_output_log_obj
+          changed_when: false
+          failed_when: false
+          when: dispatcher_state_obj.stdout != "running"
+
+        - name: "workflows » aem » partials » start | fail when dispatcher could not be started"
+          ansible.builtin.fail:
+            msg: "{{ dispatcher_fail_reason }}, log: {{ valet_sh_aem_dispatcher_dir }}/output.log\n{{ dispatcher_output_log_obj.stdout | default('') }}"
+          vars:
+            dispatcher_fail_reason: "{{ 'dispatcher start timed out after 60s (docker_run.sh pid ' + dispatcher_start_obj.stdout | trim + ')'
+              if dispatcher_state_obj.stdout == 'pending' else 'dispatcher start failed' }}"
+          when: dispatcher_state_obj.stdout != "running"
+      when: dispatcher_running_container_obj.stdout | length == 0
   when: valet_action_target == "dispatcher" or valet_action_target == "all"
 
 - name: "workflows » aem » partials » start | fix folder permissions"
