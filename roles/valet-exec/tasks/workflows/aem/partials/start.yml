@@ -115,14 +115,25 @@
       register: dispatcher_env_file
 
     - name: "workflows » aem » partials » start | check if docker is available"
-      ansible.builtin.shell: "docker info"
-      register: dispatcher_docker_info_obj
+      ansible.builtin.command: "docker --version"
+      register: dispatcher_docker_version_obj
       changed_when: false
       failed_when: false
 
     - name: "workflows » aem » partials » start | fail when docker is not available"
       ansible.builtin.fail:
-        msg: "docker not available\n{{ dispatcher_docker_info_obj.stderr | default('') }}"
+        msg: "Docker is not available, please install docker and make sure it is running"
+      when: dispatcher_docker_version_obj.rc != 0
+
+    - name: "workflows » aem » partials » start | check if docker socket is available"
+      ansible.builtin.command: "docker info"
+      register: dispatcher_docker_info_obj
+      changed_when: false
+      failed_when: false
+
+    - name: "workflows » aem » partials » start | fail when docker socket is not available"
+      ansible.builtin.fail:
+        msg: Docker daemon is not reachable. Make sure docker is running and you have access to the docker socket.
       when: dispatcher_docker_info_obj.rc != 0
 
     - name: "workflows » aem » partials » start | check if dispatcher container is already running"
