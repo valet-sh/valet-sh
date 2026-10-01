@@ -106,6 +106,14 @@
     mode: "0644"
   notify: "brew | vsh-php | restarted"
 
+- name: ensure php-fpm pool configuration is up2date
+  ansible.builtin.template:
+    src: "macos/valet-sh-fpm.conf.j2"
+    dest: "{{ valet_sh_homebrew_prefix }}/etc/{{ current_service.service.name }}/php-fpm.d/zz-valet-sh.conf"
+    mode: "0644"
+  notify: "brew | vsh-php | restarted"
+  when: current_service.configuration.settings.mac.fpm_pool is defined
+
 - name: "get stat for '{{ valet_sh_homebrew_prefix }}/bin/default-php'"
   ansible.builtin.stat:
     path: "{{ valet_sh_homebrew_prefix }}/bin/default-php"

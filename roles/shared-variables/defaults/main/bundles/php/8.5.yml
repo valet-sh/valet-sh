@@ -102,3 +102,9 @@ configuration:
         opcache.preferred_memory_model = ""
         opcache.protect_memory = 0
         apc.cache_by_default = false
+
+      fpm_pool: |
+        [www]
+        ; libpq's default gssencmode=prefer calls into Apple's Kerberos.framework,
+        ; which is not fork-safe and crashes php-fpm workers on pg_connect() / PDO pgsql
+        env[PGGSSENCMODE] = disable
