@@ -16,7 +16,7 @@
 ---
 
 - name: "install | ensure openssl is installed"
-  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install openssl"
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} install openssl@3"
 
 - name: Mark certificate as installed
   vsh_bundle_state:
