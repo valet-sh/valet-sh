@@ -201,7 +201,9 @@
 - name: "workflows » magento2 » check-vars | ensure valet_instancebackup_identifier has a value"
   ansible.builtin.fail:
     msg: "you need to set a valid 'instancebackup-identifier' ether in your .valet-sh.yml file or as an argument"
-  when: not valet_instancebackup_identifier
+  when:
+    - valet_instancebackup_identifier | default('') | length == 0
+    - not (valet_opt_flag_skip_db | default(false) | bool and valet_opt_flag_skip_fs | default(false) | bool)
 
 - name: "workflows » magento2 » check-vars | set default restore commands"
   ansible.builtin.set_fact:
