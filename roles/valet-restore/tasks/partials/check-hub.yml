@@ -1,0 +1,36 @@
+#   Copyright 2026 TechDivision GmbH
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+##
+---
+
+- name: "partials » check-hub | check if a hub is configured in '{{ valet_sh_filename }}'"
+  ansible.builtin.set_fact:
+    valet_sh_hub_configured: "{{ (valet_sh_project_vars.hub.host | default('') | string | trim | length) > 0 }}"
+
+- name: "partials » check-hub | set skipped-without-hub state"
+  ansible.builtin.set_fact:
+    valet_restore_skipped_no_hub: "{{ not valet_sh_hub_configured | bool and valet_restore_skip_without_hub | default(false) | bool }}"
+
+- name: "block"
+  when: valet_restore_skipped_no_hub | bool
+  block:
+    - name: "partials » check-hub | no hub configured in '{{ valet_sh_filename }}', skipping restore"
+      ansible.builtin.debug:
+        msg: "no hub configured in '{{ valet_sh_filename }}' - skipping restore"
+
+    - name: "partials » check-hub | set skip flags"
+      ansible.builtin.set_fact:
+        valet_opt_flag_skip_restore: true
+        valet_opt_flag_skip_db: true
+        valet_opt_flag_skip_fs: true
