@@ -17,11 +17,19 @@
 
 - ansible.builtin.include_tasks: "check-opts.yml"
 
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/partials/check-hub.yml"
+
 - ansible.builtin.include_tasks: "check-vars.yml"
 
 - name: "block"
   when: not valet_opt_flag_skip_db|bool or not valet_opt_flag_skip_fs|bool
   block:
+
+    - name: "workflows » magento2 | fail when no hub is configured"
+      ansible.builtin.fail:
+        msg: "no hub is configured in your .valet-sh.yml file - configure a hub or use '--skip-restore'"
+      when: valet_sh_hub_host is not defined or valet_sh_hub_port is not defined or valet_sh_hub_user is not defined
+
     - name: "workflows » magento2 | register hub host"
       ansible.builtin.add_host:
         hostname: hub
@@ -124,68 +132,71 @@
       tags:
         - skip_ansible_lint
 
-- name: "workflows » magento2 | run custom sql-queries for database '{{ valet_sh_project_database_name }}'"
-  mysql_query:
-    login_db: "{{ valet_sh_project_database_name }}"
-    config_file: "{{ valet_sh_project_mysql_client_configuration }}"
-    login_host: "{{ '127.0.0.1' if current_os == 'ubuntu' or database_service.services is not defined else database_service.services[0].service.name + '.vsh' }}"
-    login_port: "{{ valet_sh_magento2_db_port }}"
-    query: "{{ valet_restore_current_custom_post_restore_sql_queries }}"
-  with_items: "{{ valet_restore_custom_post_restore_sql_queries }}"
-  loop_control:
-    loop_var: valet_restore_current_custom_post_restore_sql_queries
-  tags:
-    - skip_ansible_lint
+- name: "block"
+  when: not valet_restore_skipped_no_hub | default(false) | bool
+  block:
+    - name: "workflows » magento2 | run custom sql-queries for database '{{ valet_sh_project_database_name }}'"
+      mysql_query:
+        login_db: "{{ valet_sh_project_database_name }}"
+        config_file: "{{ valet_sh_project_mysql_client_configuration }}"
+        login_host: "{{ '127.0.0.1' if current_os == 'ubuntu' or database_service.services is not defined else database_service.services[0].service.name + '.vsh' }}"
+        login_port: "{{ valet_sh_magento2_db_port }}"
+        query: "{{ valet_restore_current_custom_post_restore_sql_queries }}"
+      with_items: "{{ valet_restore_custom_post_restore_sql_queries }}"
+      loop_control:
+        loop_var: valet_restore_current_custom_post_restore_sql_queries
+      tags:
+        - skip_ansible_lint
 
-- name: "workflows » magento2 | set var 'valet_restore_run_post_restore_commands'"
-  ansible.builtin.set_fact:
-    valet_restore_run_post_restore_commands: true
+    - name: "workflows » magento2 | set var 'valet_restore_run_post_restore_commands'"
+      ansible.builtin.set_fact:
+        valet_restore_run_post_restore_commands: true
 
-- name: "workflows » magento2 | override var 'valet_restore_run_post_restore_commands'"
-  ansible.builtin.set_fact:
-    valet_restore_run_post_restore_commands: false
-  when:
-    - valet_sh_project_vars.instance is defined
-    - valet_sh_project_vars.instance.sync is defined
-    - valet_sh_project_vars.instance.sync.post_restore_actions is defined
-    - valet_sh_project_vars.instance.sync.post_restore_actions.skip_default_commands is defined
-    - valet_sh_project_vars.instance.sync.post_restore_actions.skip_default_commands|bool
-
-- name: "workflows » magento2 | run post restore commands"
-  shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_post_command }}"
-  with_items: "{{ valet_restore_post_restore_commands }}"
-  loop_control:
-    loop_var: valet_sh_restore_current_post_command
-  when: valet_restore_run_post_restore_commands
-  tags:
-    - skip_ansible_lint
-
-- name: "workflows » magento2 | run custom post restore commands"
-  shell: "{{ valet_sh_restore_current_custom_post_command }}"
-  args:
-    chdir: "{{ valet_current_path }}/{{ valet_project_src_dir }}"
-  with_items: "{{ valet_restore_custom_post_restore_commands }}"
-  loop_control:
-    loop_var: valet_sh_restore_current_custom_post_command
-  tags:
-    - skip_ansible_lint
-
-- block:
-    - name: "workflows » magento2 | run full reindex when defined in .valet-sh.yml"
-      ansible.builtin.shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/bin/magento indexer:reindex"
+    - name: "workflows » magento2 | override var 'valet_restore_run_post_restore_commands'"
+      ansible.builtin.set_fact:
+        valet_restore_run_post_restore_commands: false
       when:
-        - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindexAll is defined
-        - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindexAll|bool
+        - valet_sh_project_vars.instance is defined
+        - valet_sh_project_vars.instance.sync is defined
+        - valet_sh_project_vars.instance.sync.post_restore_actions is defined
+        - valet_sh_project_vars.instance.sync.post_restore_actions.skip_default_commands is defined
+        - valet_sh_project_vars.instance.sync.post_restore_actions.skip_default_commands|bool
 
-    - name: "workflows » magento2 | run custom indexer commands defined in .valet-sh.yml"
-      ansible.builtin.shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/bin/magento indexer:reindex {{ valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex
-        | join(' ') }}"
+    - name: "workflows » magento2 | run post restore commands"
+      shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/{{ valet_sh_restore_current_post_command }}"
+      with_items: "{{ valet_restore_post_restore_commands }}"
+      loop_control:
+        loop_var: valet_sh_restore_current_post_command
+      when: valet_restore_run_post_restore_commands
+      tags:
+        - skip_ansible_lint
+
+    - name: "workflows » magento2 | run custom post restore commands"
+      shell: "{{ valet_sh_restore_current_custom_post_command }}"
+      args:
+        chdir: "{{ valet_current_path }}/{{ valet_project_src_dir }}"
+      with_items: "{{ valet_restore_custom_post_restore_commands }}"
+      loop_control:
+        loop_var: valet_sh_restore_current_custom_post_command
+      tags:
+        - skip_ansible_lint
+
+    - block:
+        - name: "workflows » magento2 | run full reindex when defined in .valet-sh.yml"
+          ansible.builtin.shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/bin/magento indexer:reindex"
+          when:
+            - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindexAll is defined
+            - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindexAll|bool
+
+        - name: "workflows » magento2 | run custom indexer commands defined in .valet-sh.yml"
+          ansible.builtin.shell: "{{ php_bin }} {{ valet_current_path }}/{{ valet_project_src_dir }}/bin/magento indexer:reindex {{ valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex
+            | join(' ') }}"
+          when:
+            - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex is defined
+            - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex | length > 0
       when:
-        - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex is defined
-        - valet_sh_project_vars.instance.sync.post_restore_actions.indexer.reindex | length > 0
-  when:
-    - valet_sh_project_vars.instance is defined
-    - valet_sh_project_vars.instance.sync is defined
-    - valet_sh_project_vars.instance.sync.post_restore_actions is defined
-    - valet_sh_project_vars.instance.sync.post_restore_actions.indexer is defined
-    - valet_opt_flag_skip_db is not defined or not valet_opt_flag_skip_db|bool
+        - valet_sh_project_vars.instance is defined
+        - valet_sh_project_vars.instance.sync is defined
+        - valet_sh_project_vars.instance.sync.post_restore_actions is defined
+        - valet_sh_project_vars.instance.sync.post_restore_actions.indexer is defined
+        - valet_opt_flag_skip_db is not defined or not valet_opt_flag_skip_db|bool

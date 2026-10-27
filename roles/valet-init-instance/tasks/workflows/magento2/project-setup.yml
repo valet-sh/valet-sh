@@ -17,6 +17,8 @@
 - name: "running restore commmand"
   ansible.builtin.include_role:
     name: valet-restore
+  vars:
+    valet_restore_skip_without_hub: true
 
 - ansible.builtin.set_fact:
     valet_link_php_target_version: "php{{ php_version_number | replace('.', '') }}"
