@@ -51,6 +51,7 @@ native_xdebug3_versions:
   - "8.2"
   - "8.3"
   - "8.4"
+  - "8.5"
 
 compiled_xdebug2_versions:
   - "7.3"
