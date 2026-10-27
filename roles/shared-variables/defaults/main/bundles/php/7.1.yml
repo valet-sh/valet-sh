@@ -17,6 +17,9 @@ configuration:
     mac: ["php7.1-fpm", "php7.1-cli"]
   config_paths:
     ubuntu: ["/etc/php/7.1"]
+  xdebug:
+    native_versions: ["2"]
+    compiled_versions: []
   settings:
     ubuntu:
       cli: |

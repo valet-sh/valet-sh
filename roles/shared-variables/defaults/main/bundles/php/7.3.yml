@@ -17,10 +17,11 @@ configuration:
     mac: ["php7.3-fpm", "php7.3-cli"]
   config_paths:
     ubuntu: ["/etc/php/7.3"]
-  compile_xdebug:
-    status: true
-    version: 2.9.8
-    config_suffix: "compiled"
+  xdebug:
+    native_versions: ["3"]
+    compiled_versions: ["2"]
+    compile:
+      version: "2.9.8"
   settings:
     ubuntu:
       cli: |

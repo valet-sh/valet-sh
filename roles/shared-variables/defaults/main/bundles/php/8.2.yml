@@ -17,6 +17,9 @@ configuration:
     mac: ["php8.2-fpm", "php8.2-cli"]
   config_paths:
     ubuntu: ["/etc/php/8.2"]
+  xdebug:
+    native_versions: ["3"]
+    compiled_versions: []
   settings:
     ubuntu:
       cli: |

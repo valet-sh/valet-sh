@@ -98,10 +98,7 @@
 
 - name: "include xdebug compilation tasks"
   ansible.builtin.include_tasks: compile-xdebug.yml
-  when:
-    - current_service.compile_xdebug is defined
-    - current_service.compile_xdebug.status is defined
-    - current_service.compile_xdebug.status|bool
+  when: current_service.configuration.xdebug.compile is defined
 
 - name: get stat for xdebug cli configuration file
   ansible.builtin.stat:
@@ -180,7 +177,7 @@
     group: root
     mode: "0644"
   become: true
-  when: "php_version in native_xdebug2_versions"
+  when: "'2' in current_service.configuration.xdebug.native_versions"
 
 - name: ensure xdebug3 config is deployed
   ansible.builtin.template:
@@ -190,7 +187,7 @@
     group: root
     mode: "0644"
   become: true
-  when: "php_version in native_xdebug3_versions"
+  when: "'3' in current_service.configuration.xdebug.native_versions"
 
 - name: ensure compiled xdebug2 config is deployed
   ansible.builtin.template:
@@ -200,7 +197,7 @@
     group: root
     mode: "0644"
   become: true
-  when: "php_version in compiled_xdebug2_versions"
+  when: "'2' in current_service.configuration.xdebug.compiled_versions"
 
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers

@@ -17,7 +17,7 @@
 - name: fail when no xdebug version is set
   ansible.builtin.fail:
     msg: "no xdebug version set"
-  when: current_php.compile_xdebug.version is not defined
+  when: current_service.configuration.xdebug.compile.version is not defined
 
 - name: "install php-dev and pecl package when required"
   ansible.builtin.apt:
@@ -33,7 +33,7 @@
 
 - name: "download and unpack xdebug sources into tmp directory {{ xdebug_tmp_directory_obj.path }}"
   ansible.builtin.unarchive:
-    src: "https://github.com/xdebug/xdebug/archive/{{ current_php.compile_xdebug.version }}.tar.gz"
+    src: "https://github.com/xdebug/xdebug/archive/{{ current_service.configuration.xdebug.compile.version }}.tar.gz"
     dest: "{{ xdebug_tmp_directory_obj.path }}"
     remote_src: true
     extra_opts: [--strip-components=1]
@@ -65,7 +65,7 @@
 - name: "copy xdebug.so extension to extension dir"
   ansible.builtin.copy:
     src: "{{ xdebug_tmp_directory_obj.path }}/modules/xdebug.so"
-    dest: "{{ php_extension_dir.stdout }}/{{ current_php.compile_xdebug.target_module_name | default('xdebug2') }}.so"
+    dest: "{{ php_extension_dir.stdout }}/xdebug2.so"
   become: true
 
 - name: ensure tmp directory is deleted
