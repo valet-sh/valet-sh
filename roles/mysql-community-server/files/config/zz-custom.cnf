@@ -1,0 +1,11 @@
+# valet.sh | MySQL custom configuration
+#
+# This file is mounted into the container as
+# /etc/mysql/conf.d/zz-custom.cnf and is read after valet-sh.cnf,
+# so every option set here overrides the valet.sh defaults.
+#
+# valet.sh creates this file once and never overwrites it.
+# Restart the MySQL service after changing it:
+#   valet.sh service restart mysql<version>
+
+[mysqld]

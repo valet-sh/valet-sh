@@ -1,0 +1,11 @@
+# valet.sh | MariaDB custom configuration
+#
+# This file is mounted into the container as
+# /etc/mysql/mariadb.conf.d/zz-custom.cnf and is read after valet-sh.cnf,
+# so every option set here overrides the valet.sh defaults.
+#
+# valet.sh creates this file once and never overwrites it.
+# Restart the MariaDB service after changing it:
+#   valet.sh service restart mariadb<version>
+
+[mysqld]
