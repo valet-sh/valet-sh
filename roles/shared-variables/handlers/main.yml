@@ -336,6 +336,34 @@
     state: reloaded
   become: true
 
+
+- name: "systemd | php8.6-fpm | started"
+  ansible.builtin.systemd:
+    name: "php8.6-fpm"
+    state: started
+  become: true
+
+- name: "systemd | php8.6-fpm | stopped"
+  ansible.builtin.systemd:
+    name: "php8.6-fpm"
+    state: stopped
+  become: true
+
+- name: "systemd | php8.6-fpm | restarted"
+  ansible.builtin.systemd:
+    name: "php8.6-fpm"
+    state: restarted
+  become: true
+
+- name: "systemd | php8.6-fpm | reloaded"
+  ansible.builtin.systemd:
+    name: "php8.6-fpm"
+    state: reloaded
+  become: true
+
+
+
+
 - name: brew | vsh-php56 | restarted
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php56"
 
@@ -443,6 +471,15 @@
 
 - name: brew | vsh-php85 | started
   ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php85"
+
+- name: brew | vsh-php86 | restarted
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services restart vsh-php86"
+
+- name: brew | vsh-php86 | stopped
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services stop vsh-php86"
+
+- name: brew | vsh-php86 | started
+  ansible.builtin.shell: "{{ valet_sh_homebrew_bin }} services start vsh-php86"
 
 - name: "brew | nginx | restarted"
   ansible.builtin.command: "{{ valet_sh_homebrew_bin_sudo }} services restart nginx"
