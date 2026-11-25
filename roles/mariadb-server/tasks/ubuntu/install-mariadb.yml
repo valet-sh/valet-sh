@@ -56,6 +56,15 @@
     mode: "0644"
   notify: "systemd | vsh-mariadb | restarted"
 
+- name: "provide user writable zz-custom.cnf configuration file"
+  ansible.builtin.copy:
+    src: "config/zz-custom.cnf"
+    dest: "{{ current_service.configuration.base_path }}/etc/mariadb.conf.d/zz-custom.cnf"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+    force: false
+
 - name: "Provide systemd service for {{ current_service.service.name }} container"
   ansible.builtin.template:
     src: "systemd/mariadb.service.j2"

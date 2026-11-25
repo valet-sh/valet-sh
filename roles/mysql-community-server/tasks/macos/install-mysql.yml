@@ -62,6 +62,15 @@
     mode: "0644"
   notify: "container | vsh-mysql | restarted"
 
+- name: "provide user writable zz-custom.cnf configuration file"
+  ansible.builtin.copy:
+    src: "config/zz-custom.cnf"
+    dest: "{{ current_service.configuration.base_path }}/etc/conf.d/zz-custom.cnf"
+    owner: "{{ current_user }}"
+    group: "{{ current_group }}"
+    mode: "0644"
+    force: false
+
 - name: "provide {{ current_service.service.name }} mysql client"
   ansible.builtin.template:
     src: "wrapper/mysql.j2"
@@ -116,6 +125,7 @@
     volumes:
       - "vsh-{{ current_service.canonical }}-data:/var/lib/mysql"
       - "{{ current_service.configuration.base_path }}/etc/conf.d/valet-sh.cnf:/etc/mysql/conf.d/valet-sh.cnf:Z"
+      - "{{ current_service.configuration.base_path }}/etc/conf.d/zz-custom.cnf:/etc/mysql/conf.d/zz-custom.cnf:Z"
       - "{{ current_service.configuration.base_path }}/user/.my.cnf:/home/.my.cnf:Z"
     env:
       - "MYSQL_ROOT_PASSWORD={{ current_service.configuration.default_root_password }}"
