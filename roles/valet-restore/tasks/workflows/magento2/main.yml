@@ -178,8 +178,25 @@
       with_items: "{{ valet_restore_custom_post_restore_commands }}"
       loop_control:
         loop_var: valet_sh_restore_current_custom_post_command
+        label: "{{ valet_sh_restore_current_custom_post_command | regex_replace('(?i)((?:password|passwd|secret|token|api[_-]?key)[\\w-]*(?:=|\\s+|:\\s*))(\\S+)', '\\1********') }}"
+      register: valet_restore_custom_post_restore_results
+      ignore_errors: true
+      no_log: true
       tags:
         - skip_ansible_lint
+
+    - name: "workflows » magento2 | fail when custom post restore commands failed"
+      ansible.builtin.fail:
+        msg: |-
+          One or more custom post restore commands failed:
+          {% for failed_item in valet_restore_custom_post_restore_results.results | selectattr('failed', 'defined') | selectattr('failed') %}
+          ---
+          command: {{ failed_item.cmd | default(failed_item.item) | regex_replace('(?i)((?:password|passwd|secret|token|api[_-]?key)[\w-]*(?:=|\s+|:\s*))(\S+)', '\1********') }}
+          rc: {{ failed_item.rc | default('n/a') }}
+          stdout: {{ failed_item.stdout | default('') }}
+          stderr: {{ failed_item.stderr | default(failed_item.msg | default('')) }}
+          {% endfor %}
+      when: valet_restore_custom_post_restore_results is failed
 
     - block:
         - name: "workflows » magento2 | run full reindex when defined in .valet-sh.yml"
