@@ -23,6 +23,7 @@ import sys
 import logging
 import itertools
 import atexit
+import re
 
 from ansible import constants as C
 
@@ -87,6 +88,54 @@ def _restore_terminal():
 
 # Register at module level (LIFO: runs last, after all other atexit handlers).
 atexit.register(_restore_terminal)
+
+
+_SECRET_RE = re.compile(r'(?i)((?:--?)?[\w-]*(?:password|passwd|secret|token|api[_-]?key)[\w-]*(?:=|\s+|:\s*))(\S+)')
+
+
+def _mask_secrets(text):
+    """Mask values of password/secret-like options before printing to the terminal."""
+    return _SECRET_RE.sub(lambda m: m.group(1) + '********', text)
+
+
+def _format_failure(result_dict):
+    """Build a message for a failed task result.
+
+    For loop tasks every failed item is listed with command/item, rc, stdout
+    and stderr (not only the first item). Only failed items are printed.
+    """
+    msg = ''
+    if 'msg' in result_dict:
+        msg = '%s' % result_dict['msg']
+
+    items = result_dict.get('results')
+    if not items:
+        return msg
+
+    details = []
+    for item in items:
+        if not isinstance(item, dict) or not (item.get('failed') or item.get('rc') not in (None, 0)):
+            continue
+        label = item.get('cmd')
+        if isinstance(label, list):
+            label = ' '.join('%s' % c for c in label)
+        if not label:
+            label = item.get('_ansible_item_label') or item.get('item')
+        lines = []
+        if label is not None:
+            lines.append('failed item: %s' % label)
+        if item.get('rc') is not None:
+            lines.append('rc: %s' % item['rc'])
+        for key in ('msg', 'stdout', 'stderr', 'module_stdout', 'module_stderr'):
+            val = item.get(key)
+            if val:
+                lines.append('%s:\n%s' % (key, val))
+        if lines:
+            details.append('\n'.join(lines))
+
+    if details:
+        msg = (msg + '\n' if msg else '') + '\n---\n'.join(details)
+    return _mask_secrets(msg)
 
 
 class Cursor:
@@ -172,19 +221,7 @@ class CallbackModule(CallbackModule_default):
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
         if not self._debug_enabled():
-            vsh_msg = ''
-
-            if 'msg' in result._result:
-                vsh_msg = '%s' % (result._result['msg'])
-
-            if result._result.get('results'):
-                first = result._result['results'][0]
-                if 'msg' in first:
-                    vsh_msg = '%s' % first['msg']
-                if 'stderr' in first:
-                    vsh_msg += '\n%s' % first['stderr']
-                if 'module_stderr' in first:
-                    vsh_msg += '\n%s' % first['module_stderr']
+            vsh_msg = _format_failure(result._result)
 
             if not ignore_errors:
                 print(FLUSH)
@@ -195,18 +232,7 @@ class CallbackModule(CallbackModule_default):
 
     def v2_runner_on_unreachable(self, result):
         if not self._debug_enabled():
-            vsh_msg = ''
-            if 'msg' in result._result:
-                vsh_msg = '%s' % (result._result['msg'])
-            if result._result.get('results'):
-                first = result._result['results'][0]
-                if 'msg' in first:
-                    vsh_msg = '%s' % first['msg']
-                if 'stderr' in first:
-                    vsh_msg += '\n%s' % first['stderr']
-                if 'module_stderr' in first:
-                    vsh_msg += '\n%s' % first['module_stderr']
-
+            vsh_msg = _format_failure(result._result)
             print(FLUSH)
             print(RED + "✘ " + vsh_msg + RESET, end="\n")
             print(BLUE + "ℹ " + "check /usr/local/valet-sh/valet-sh/log/debug.log" + RESET, end="\n")
